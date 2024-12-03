@@ -11,12 +11,306 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model Sample {
-  id        Int      @id @default(autoincrement())
-  name      String
-  code      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  @@map("samples") // if you want to use snake_case format
+model User {
+  id   String @id @default(cuid())
+  email String @unique
+  password String
+
+  profile Profile[]
+  transaction Transaction[]
+  review Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @unique
+  deletedAt DateTime?
+
+  @@map("users")
+}
+
+model Profile {
+  id String @id @default(cuid())
+  username String
+  phone_number String
+  birth_date DateTime
+  nationality String
+  gender String
+  address String
+
+  userId String
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @unique
+  deletedAt DateTime?
+
+  @@map("profile")
+}
+
+model Tenant {
+  id String @id @default(cuid())
+  email String
+  password String 
+
+  propertyId Int
+  property Property @relation(fields: [propertyId], references: [id])
+
+  transaction Transaction[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @unique
+  deletedAt DateTime?
+
+  @@map("tenants")
+}
+
+model Property {
+  id Int @id @default(autoincrement())
+  name String
+  country String
+  address String
+  zip_code String
+  city String
+  location String
+  checkInStartTime DateTime
+  checkInEndTime DateTime
+  checkOutStartTime DateTime
+  checkOutEndTime DateTime
+
+  propertyTypeId Int
+  propertyType PropertyType @relation(fields: [propertyTypeId], references: [id])
+
+  propertyRoomType PropertyRoomType[]
+  propertyDetail PropertyDetail?
+  tenant Tenant[]
+  propertyHasFacility PropertyHasFacility[]
+  transaction Transaction[]
+  review Review[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @unique
+  deletedAt DateTime?
+
+  @@map("property")
+}
+
+model PropertyDetail {
+  id Int @id @default(autoincrement())
+  property_description String
+  neighborhood_description String
+  phone_number String
+  url String
+  total_room Int
+
+  propertyImageId Int 
+  propertyImage PropertyImage @relation(fields: [propertyImageId], references: [id])
+
+  propertyId Int @unique
+  property Property @relation(fields: [propertyId], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @unique
+  deletedAt DateTime? 
+
+  @@map("property_details")
+}
+
+model PropertyImage {
+  id Int @id @default(autoincrement())
+  directory String
+  filename String
+  
+  propertyDetail PropertyDetail[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @unique
+  deletedAt DateTime? 
+
+  @@map("property_images")
+}
+
+
+model PropertyType {
+  id Int @id @default(autoincrement())
+  name String
+  
+  property Property[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @unique
+  deletedAt DateTime? 
+
+  @@map("property_types")
+}
+
+model PropertyFacility {
+  id Int @id @default(autoincrement())
+  name String
+  icon_directory String
+  icon_filename String
+
+  propertyHasFacility PropertyHasFacility[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @unique
+  deletedAt DateTime? 
+
+  @@map("property_facilities")
+}
+
+model PropertyHasFacility {
+  propertyId Int
+  property Property @relation(fields: [propertyId], references: [id])
+
+  propertyFacilityId Int
+  propertyFacility PropertyFacility @relation(fields: [propertyFacilityId], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @unique
+  deletedAt DateTime? 
+
+  @@id([propertyFacilityId, propertyId])
+  @@map("property_has_facilities")
+}
+
+model PropertyRoomType {
+  id Int @id @default(autoincrement())
+  name String
+  rooms Int
+  capacity Int
+  bathrooms Int
+  price Int
+  total_rooms Int
+
+  propertyRoomImageId Int
+  propertyRoomImage PropertyRoomImage @relation(fields: [propertyRoomImageId], references: [id])
+
+  propertyId Int
+  property Property @relation(fields: [propertyId], references: [id])
+
+  transaction Transaction[]
+  roomHasFacilities RoomHasFacilities[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @unique
+  deletedAt DateTime? 
+
+  @@map("property_room_types")
+}
+
+model PropertyRoomFacility {
+  id Int @id @default(autoincrement())
+  name String
+  icon_directory String
+  icon_filename String
+
+  roomHasFacilities RoomHasFacilities[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @unique
+  deletedAt DateTime? 
+
+  @@map("property_room_facilites")
+}
+
+model RoomHasFacilities {
+  propertyRoomTypeId Int
+  propertyRoomType PropertyRoomType @relation(fields: [propertyRoomTypeId], references: [id])
+  
+  propertyRoomFacilityId Int
+  propertyRoomFacility PropertyRoomFacility @relation(fields: [propertyRoomFacilityId], references: [id])
+
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @unique
+  deletedAt DateTime? 
+
+  @@map("room_has_facilities")
+}
+
+model PropertyRoomImage {
+  id Int @id @default(autoincrement())
+  directory String
+  filename String
+  
+  propertyRoomType PropertyRoomType[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @unique
+  deletedAt DateTime? 
+  
+  @@map("property_room_images")
+}
+
+model Transaction {
+  id String @id @unique
+  checkInDate DateTime
+  checkOutDate DateTime
+  total Int
+  price Int
+  qty Int
+  
+  userId String
+  user User @relation(fields: [userId], references: [id])
+
+  tenantId String
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  propertyId Int
+  property Property @relation(fields: [propertyId], references: [id])
+
+  roomId Int
+  room PropertyRoomType @relation(fields: [roomId], references: [id])
+  
+  transactionStatus TransactionStatus[]
+  review Review?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @unique
+  deletedAt DateTime?
+
+  @@map("transactions")
+}
+
+model TransactionStatus {
+  id Int @id @default(autoincrement())
+  status Status
+  
+  transactionId String
+  transaction Transaction @relation(fields: [transactionId], references: [id])
+
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @unique
+  deletedAt DateTime? 
+
+  @@map("transaction_status")
+}
+
+enum Status {
+  WAITING_FOR_PAYMENT
+  WAITING_FOR_CONFIRMATION_PAYMENT
+  PAID
+  CANCELLED
+}
+
+model Review {
+  comment String
+  
+  propertyId Int
+  property Property @relation(fields: [propertyId], references: [id])
+  
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  
+  transactionId String @unique
+  transaction Transaction @relation(fields: [transactionId], references: [id])
+  
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @unique
+  deletedAt DateTime? 
+
+  @@map("reviews")
+  @@id([propertyId, userId, transactionId])
 }

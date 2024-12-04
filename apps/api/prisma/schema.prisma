@@ -11,278 +11,281 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-
 model User {
-  id   String @id @default(cuid())
-  email String @unique
+  id       String @id @default(cuid())
+  email    String @unique
   password String
 
-  profile Profile[]
+  profile     Profile[]
   transaction Transaction[]
-  review Review[]
+  review      Review[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   @@map("users")
 }
 
 model Profile {
-  id String @id @default(cuid())
-  username String
+  id           String   @id @default(cuid())
+  username     String
   phone_number String
-  birth_date DateTime
-  nationality String
-  gender String
-  address String
+  birth_date   DateTime
+  nationality  String
+  gender       Gender
+  address      String
 
   userId String
-  user User @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   @@map("profile")
 }
 
+enum Gender {
+  MALE
+  FEMALE
+}
+
 model Tenant {
-  id String @id @default(cuid())
-  email String
-  password String 
+  id       String @id @default(cuid())
+  email    String @unique
+  password String
 
-  propertyId Int
-  property Property @relation(fields: [propertyId], references: [id])
-
+  property    Property[]
   transaction Transaction[]
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @unique
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   @@map("tenants")
 }
 
 model Property {
-  id Int @id @default(autoincrement())
-  name String
-  country String
-  address String
-  zip_code String
-  city String
-  location String
-  checkInStartTime DateTime
-  checkInEndTime DateTime
+  id                Int      @id @default(autoincrement())
+  name              String
+  country           String
+  address           String
+  zip_code          String
+  city              String
+  location          String
+  checkInStartTime  DateTime
+  checkInEndTime    DateTime
   checkOutStartTime DateTime
-  checkOutEndTime DateTime
+  checkOutEndTime   DateTime
 
   propertyTypeId Int
-  propertyType PropertyType @relation(fields: [propertyTypeId], references: [id])
+  propertyType   PropertyType @relation(fields: [propertyTypeId], references: [id])
 
-  propertyRoomType PropertyRoomType[]
-  propertyDetail PropertyDetail?
-  tenant Tenant[]
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+
+  propertyRoomType    PropertyRoomType[]
+  propertyDetail      PropertyDetail?
   propertyHasFacility PropertyHasFacility[]
-  transaction Transaction[]
-  review Review[]
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @unique
+  transaction         Transaction[]
+  review              Review[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   @@map("property")
 }
 
 model PropertyDetail {
-  id Int @id @default(autoincrement())
-  property_description String
-  neighborhood_description String
-  phone_number String
-  url String
-  total_room Int
+  id                       Int    @id @default(autoincrement())
+  property_description     String @db.Text
+  neighborhood_description String @db.Text
+  phone_number             String
+  url                      String
+  total_room               Int
 
-  propertyImageId Int 
-  propertyImage PropertyImage @relation(fields: [propertyImageId], references: [id])
+  propertyImage PropertyImage[]
 
-  propertyId Int @unique
-  property Property @relation(fields: [propertyId], references: [id])
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @unique
-  deletedAt DateTime? 
+  propertyId Int      @unique
+  property   Property @relation(fields: [propertyId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   @@map("property_details")
 }
 
 model PropertyImage {
-  id Int @id @default(autoincrement())
+  id        Int    @id @default(autoincrement())
   directory String
-  filename String
-  
-  propertyDetail PropertyDetail[]
+  filename  String
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @unique
-  deletedAt DateTime? 
+  propertyDetailId Int
+  propertyDetail   PropertyDetail @relation(fields: [propertyDetailId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   @@map("property_images")
 }
 
-
 model PropertyType {
-  id Int @id @default(autoincrement())
-  name String
-  
+  id          Int    @id @default(autoincrement())
+  name        String
+  description String @db.Text
+
   property Property[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @unique
-  deletedAt DateTime? 
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   @@map("property_types")
 }
 
 model PropertyFacility {
-  id Int @id @default(autoincrement())
-  name String
-  icon_directory String
-  icon_filename String
+  id            Int     @id @default(autoincrement())
+  name          String
+  iconDirectory String?
+  iconFilename  String?
 
   propertyHasFacility PropertyHasFacility[]
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @unique
-  deletedAt DateTime? 
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   @@map("property_facilities")
 }
 
 model PropertyHasFacility {
   propertyId Int
-  property Property @relation(fields: [propertyId], references: [id])
+  property   Property @relation(fields: [propertyId], references: [id])
 
   propertyFacilityId Int
-  propertyFacility PropertyFacility @relation(fields: [propertyFacilityId], references: [id])
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @unique
-  deletedAt DateTime? 
+  propertyFacility   PropertyFacility @relation(fields: [propertyFacilityId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   @@id([propertyFacilityId, propertyId])
   @@map("property_has_facilities")
 }
 
 model PropertyRoomType {
-  id Int @id @default(autoincrement())
-  name String
-  rooms Int
-  capacity Int
-  bathrooms Int
-  price Int
+  id          Int    @id @default(autoincrement())
+  name        String
+  rooms       Int?
+  capacity    Int
+  bathrooms   Int
+  price       Int
   total_rooms Int
 
-  propertyRoomImageId Int
-  propertyRoomImage PropertyRoomImage @relation(fields: [propertyRoomImageId], references: [id])
+  propertyRoomImage PropertyRoomImage[]
 
   propertyId Int
-  property Property @relation(fields: [propertyId], references: [id])
+  property   Property @relation(fields: [propertyId], references: [id])
 
-  transaction Transaction[]
+  transaction       Transaction[]
   roomHasFacilities RoomHasFacilities[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @unique
-  deletedAt DateTime? 
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   @@map("property_room_types")
 }
 
 model PropertyRoomFacility {
-  id Int @id @default(autoincrement())
-  name String
-  icon_directory String
-  icon_filename String
+  id            Int     @id @default(autoincrement())
+  name          String
+  iconDirectory String?
+  iconFilename  String?
 
   roomHasFacilities RoomHasFacilities[]
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @unique
-  deletedAt DateTime? 
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   @@map("property_room_facilites")
 }
 
 model RoomHasFacilities {
   propertyRoomTypeId Int
-  propertyRoomType PropertyRoomType @relation(fields: [propertyRoomTypeId], references: [id])
-  
+  propertyRoomType   PropertyRoomType @relation(fields: [propertyRoomTypeId], references: [id])
+
   propertyRoomFacilityId Int
-  propertyRoomFacility PropertyRoomFacility @relation(fields: [propertyRoomFacilityId], references: [id])
+  propertyRoomFacility   PropertyRoomFacility @relation(fields: [propertyRoomFacilityId], references: [id])
 
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @unique
-  deletedAt DateTime? 
-
+  @@id([propertyRoomFacilityId, propertyRoomTypeId])
   @@map("room_has_facilities")
 }
 
 model PropertyRoomImage {
-  id Int @id @default(autoincrement())
+  id        Int    @id @default(autoincrement())
   directory String
-  filename String
-  
-  propertyRoomType PropertyRoomType[]
+  filename  String
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @unique
-  deletedAt DateTime? 
-  
+  propertyRoomTypeId Int
+  propertyRoomType   PropertyRoomType @relation(fields: [propertyRoomTypeId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
   @@map("property_room_images")
 }
 
 model Transaction {
-  id String @id @unique
-  checkInDate DateTime
+  id           String   @id @unique
+  checkInDate  DateTime
   checkOutDate DateTime
-  total Int
-  price Int
-  qty Int
-  
+  total        Int
+  price        Int
+  qty          Int
+
   userId String
-  user User @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 
   tenantId String
-  tenant Tenant @relation(fields: [tenantId], references: [id])
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
 
   propertyId Int
-  property Property @relation(fields: [propertyId], references: [id])
+  property   Property @relation(fields: [propertyId], references: [id])
 
   roomId Int
-  room PropertyRoomType @relation(fields: [roomId], references: [id])
-  
-  transactionStatus TransactionStatus[]
-  review Review?
+  room   PropertyRoomType @relation(fields: [roomId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @unique
+  transactionStatus TransactionStatus[]
+  review            Review?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   @@map("transactions")
 }
 
 model TransactionStatus {
-  id Int @id @default(autoincrement())
+  id     Int    @id @default(autoincrement())
   status Status
-  
+
   transactionId String
-  transaction Transaction @relation(fields: [transactionId], references: [id])
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
 
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @unique
-  deletedAt DateTime? 
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   @@map("transaction_status")
 }
@@ -295,22 +298,21 @@ enum Status {
 }
 
 model Review {
-  comment String
-  
+  comment String @db.Text
+
   propertyId Int
-  property Property @relation(fields: [propertyId], references: [id])
-  
+  property   Property @relation(fields: [propertyId], references: [id])
+
   userId String
-  user User @relation(fields: [userId], references: [id])
-  
-  transactionId String @unique
-  transaction Transaction @relation(fields: [transactionId], references: [id])
-  
+  user   User   @relation(fields: [userId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @unique
-  deletedAt DateTime? 
+  transactionId String      @unique
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
 
-  @@map("reviews")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
   @@id([propertyId, userId, transactionId])
+  @@map("reviews")
 }

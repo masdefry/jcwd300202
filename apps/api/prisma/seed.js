@@ -16,10 +16,11 @@ const { Property12 } = require('./property12')
 const { Property13 } = require('./property13')
 const { Property14 } = require('./property14')
 const { Property15 } = require('./property15')
-
+const { Property16 } = require('./property16')
 const { Property17 } = require('./property17')
-
+const { Property18 } = require('./property18')
 const { Property19 } = require('./property19')
+const { Property20 } = require('./property20')
 
 const hashPassword = async(password) => {
   const saltRound = 10
@@ -217,10 +218,11 @@ async function main() {
     await Property13({ tenantAccounts })
     await Property14({ tenantAccounts })
     await Property15({ tenantAccounts })
-
+    await Property16({ tenantAccounts })
     await Property17({ tenantAccounts })
-
+    await Property18({ tenantAccounts })
     await Property19({ tenantAccounts })
+    await Property20({ tenantAccounts })
 }
 
 main()

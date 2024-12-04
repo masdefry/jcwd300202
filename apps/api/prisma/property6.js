@@ -124,7 +124,7 @@ async function Property6 ({ tenantAccounts }) {
     const room1HasFacility = [2, 4, 7, 10, 13, 15, 16, 17, 18, 20, 21, 22, 23, 25]
     room1HasFacility.forEach(item => {
         const addedRoomHasFacility = {
-            propertyRoomTypeId: 10,
+            propertyRoomTypeId: 16,
             propertyRoomFacilityId: item
         }
         roomHasFacility.push(addedRoomHasFacility)
@@ -132,7 +132,7 @@ async function Property6 ({ tenantAccounts }) {
     const room2HasFacility = [2, 4, 7, 10, 13, 15, 16, 17, 18, 21, 22, 23, 25]
     room2HasFacility.forEach(item => {
         const addedRoomHasFacility = {
-            propertyRoomTypeId: 11,
+            propertyRoomTypeId: 17,
             propertyRoomFacilityId: item
         }
         roomHasFacility.push(addedRoomHasFacility)
@@ -140,7 +140,7 @@ async function Property6 ({ tenantAccounts }) {
     const room3HasFacility = [2, 4, 6, 10, 13, 15, 16, 17, 18, 21, 22, 25]
     room3HasFacility.forEach(item => {
         const addedRoomHasFacility = {
-            propertyRoomTypeId: 12,
+            propertyRoomTypeId: 18,
             propertyRoomFacilityId: item
         }
         roomHasFacility.push(addedRoomHasFacility)

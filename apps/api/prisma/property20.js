@@ -107,7 +107,7 @@ async function Property20 ({ tenantAccounts }) {
     const property20HasFacility = [4, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
     property20HasFacility.forEach(item => {
         const addedPropertyHasFacility = {
-            propertyId: 18,
+            propertyId: 20,
             propertyFacilityId: item
         }
         propertyHasFacility.push(addedPropertyHasFacility)
@@ -170,7 +170,7 @@ async function Property20 ({ tenantAccounts }) {
                 phone_number: propertyDetail[0].phone_number,
                 url: propertyDetail[0].url,
                 total_room: propertyDetail[0].total_room,
-                propertyId: 18
+                propertyId: 20
             }
         })
     

@@ -66,7 +66,7 @@ async function Property19 ({tenantAccounts}) {
     const propertyImages = Array.from({length: 5}).map((_,index) => {
         return {
             propertyDetailId: 19,
-            filename: `property_3_images_${index + 1}`,
+            filename: `property_19_images_${index + 1}`,
             directory: 'src/public/images'
         }
     })
@@ -74,7 +74,7 @@ async function Property19 ({tenantAccounts}) {
     const room1Images = Array.from({length: 3}).map((_,index) => {
         return {
             propertyRoomTypeId: 55,
-            filename: `property_3_room_7_images_${index + 1}`,
+            filename: `property_19_room_55_images_${index + 1}`,
             directory: 'src/public/images'
         }
     })
@@ -82,7 +82,7 @@ async function Property19 ({tenantAccounts}) {
     const room2Images = Array.from({length: 3}).map((_,index) => {
         return {
             propertyRoomTypeId: 56,
-            filename: `property_3_room_8_images_${index + 1}`,
+            filename: `property_19_room_56_images_${index + 1}`,
             directory: 'src/public/images'
         }
     })
@@ -90,7 +90,7 @@ async function Property19 ({tenantAccounts}) {
     const room3Images = Array.from({length: 3}).map((_,index) => {
         return {
             propertyRoomTypeId: 57,
-            filename: `property_3_room_9_images_${index + 1}`,
+            filename: `property_19_room_57_images_${index + 1}`,
             directory: 'src/public/images'
         }
     })

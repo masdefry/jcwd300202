@@ -117,19 +117,6 @@ async function Property10 ({ tenantAccounts }) {
         propertyHasFacility.push(addedPropertyHasFacility)
     })
     
-    
-    const room_facility_arr = [
-        'Smoking Room', 'Non Smoking', 'Pets Allowed', 
-        'Children', 'Parties', 'Twin Bed', 
-        'Queen Size Bed', 'King Size Bed', 'Bunk Bed Type', 
-        'Sofa Bed Type', 'Futon Bed Type', 'Cribs', 
-        'Minibar', 'Jacuzzi', 'Bathtub', 
-        'Sandals', 'Flat screen TV', 'Safe-deposit Box', 
-        'Ironing Center', 'Kitchen', 'Hair Dryer', 
-        'Bathroom Amenities', 'Balcony View', 'Private Pool',
-        'Breakfast'
-    ]
-    
     const roomHasFacility = []
     const room1HasFacility = [2, 3, 4, 8, 10, 13, 14, 15, 17, 18, 19, 20, 21, 22, 23]
     room1HasFacility.forEach(item => {
@@ -197,8 +184,7 @@ async function Property10 ({ tenantAccounts }) {
         })
         
         await prisma.roomHasFacilities.createMany({
-            data: roomHasFacility,
-            skipDuplicates: true
+            data: roomHasFacility
         })
         
         await prisma.propertyHasFacility.createMany({

@@ -9,15 +9,15 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property1 ({ tenantAccounts }) {
+async function Property10 ({ tenantAccounts }) {
     const property = [
         {
-            name: 'Pan Pacific Jakarta',
+            name: 'Heaven Villa Ubud',
             country: 'Indonesia',
-            address: 'Thamrin Nine, Luminary Tower Jalan MH Thamrin No 10, Central Jakarta, Jakarta, Special Capital Region of Jakarta',
-            zip_code: '10230',
-            city: 'Jakarta',
-            location: '-6.1980338, 106.8213679',
+            address: 'Jl. Raya Sanggingan, Banjar Lungsiakan, Kedewatan, Ubud, Gianyar Regency, Indonesia',
+            zip_code: '80571',
+            city: 'Gianyar Regency',
+            location: '-8.4847646,115.2511835',
             checkInStartTime: new Date('2024-12-03T15:00:00Z'),
             checkInEndTime: new Date('2024-12-03T23:59:00Z'),
             checkOutStartTime: new Date('2024-12-04T06:00:00Z'),
@@ -28,72 +28,79 @@ async function Property1 ({ tenantAccounts }) {
     const propertyDetail = [
         {
             property_description: `
-                Located in Jakarta, a 8-minute walk from Selamat Datang Monument, Pan Pacific Jakarta has accommodations with a restaurant, free private parking and a bar. Each room at the 5-star hotel has city views, and guests can enjoy access to an indoor pool. The property provides a 24-hour front desk, airport transportation, room service and free WiFi throughout the property.
-                The hotel will provide guests with air-conditioned rooms offering a desk, a coffee machine, a minibar, a safety deposit box, a flat-screen TV and a private bathroom with a shower. At Pan Pacific Jakarta the rooms come with bed linen and towels.
-                The daily breakfast offers buffet, continental or Asian options.
+                The accommodation is air conditioned and has a flat-screen TV Some units have a seating area and/or balcony. 
+                There is also a kitchen, equipped with an oven and microwave. 
+                A fridge and stovetop are also featured, as well as a kettle. Bed linen is available.
             `,
-            neighborhood_description: 'Popular points of interest near the accommodation include Grand Indonesia Mall, Sarinah and Tanah Abang Market. Halim Perdanakusuma International Airport is 15 miles from the property.',
-            phone_number: '+1-555-123-4567',
-            url: 'https://www.panpacific.com',
-            total_room: 100,
+            neighborhood_description: `
+                The property has water sports facilities and bike hire and car hire are available. 
+                You can engage in various activities, such as horse riding, windsurfing and diving. 
+                Ubud Monkey Forest is 3.7 km from Heaven Villa Ubud, while Elephant Cave is 6 km away. 
+                The nearest airport is Ngurah Rai International Airport, 30 km from the property.
+            `,
+            phone_number: '+62-595-213-444',
+            url: 'https://www.ubudheaven.com/',
+            total_room: 4,
         }
     ]
     
     
     const propertyRoomType = [
         {
-            name: 'Suite',
+            name: 'Naturity',
+            rooms: 4,
+            capacity: 8,
+            bathrooms: 4,
+            price: 2800000,
+            total_rooms: 1,
+            propertyId: 10
+        },
+        {
+            name: 'Elegant',
+            rooms: 4,
+            capacity: 8,
+            bathrooms: 4,
+            price: 2700000,
+            total_rooms: 1,
+            propertyId: 10
+        },
+        {
+            name: 'Village',
             rooms: 3,
             capacity: 6,
-            bathrooms: 2,
-            price: 8000000,
-            total_rooms: 30,
-            propertyId: 1
-        },
-        {
-            name: 'Premiere',
-            capacity: 4,
-            bathrooms: 1,
-            price: 4500000,
-            total_rooms: 30,
-            propertyId: 1
-        },
-        {
-            name: 'Deluxe',
-            capacity: 2,
-            bathrooms: 1,
-            price: 2500000,
-            total_rooms: 40,
-            propertyId: 1
+            bathrooms: 3,
+            price: 1900000,
+            total_rooms: 2,
+            propertyId: 10
         }
     ]
     
     const propertyImages = Array.from({length: 5}).map((_,index) => {
         return {
-            propertyDetailId: 1,
-            filename: `property_1_images_${index + 1}`,
+            propertyDetailId: 10,
+            filename: `property_10_images_${index + 1}`,
             directory: 'src/public/images'
         }
     }) 
 
     const room1Images = Array.from({length: 3}).map((_,index) => {
         return {
-            propertyRoomTypeId: 1,
-            filename: `property_1_room_1_images_${index + 1}`,
+            propertyRoomTypeId: 28,
+            filename: `property_10_room_28_images_${index + 1}`,
             directory: 'src/public/images'
         }
     })
     const room2Images = Array.from({length: 3}).map((_,index) => {
         return {
-            propertyRoomTypeId: 2,
-            filename: `property_1_room_2_images_${index + 1}`,
+            propertyRoomTypeId: 29,
+            filename: `property_10_room_29_images_${index + 1}`,
             directory: 'src/public/images'
         }
     })
     const room3Images = Array.from({length: 3}).map((_,index) => {
         return {
-            propertyRoomTypeId: 3,
-            filename: `property_1_room_3_images_${index + 1}`,
+            propertyRoomTypeId: 30,
+            filename: `property_10_room_30_images_${index + 1}`,
             directory: 'src/public/images'
         }
     })
@@ -101,36 +108,49 @@ async function Property1 ({ tenantAccounts }) {
     const propertyRoomImages = [...room1Images, ...room2Images, ...room3Images]
 
     const propertyHasFacility = []
-    const property1HasFacility = [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
-    property1HasFacility.forEach(item => {
+    const property10HasFacility = [4, 5, 6, 7, 8, 9, 12, 13, 18]
+    property10HasFacility.forEach(item => {
         const addedPropertyHasFacility = {
-            propertyId: 1,
+            propertyId: 10,
             propertyFacilityId: item
         }
         propertyHasFacility.push(addedPropertyHasFacility)
     })
-
+    
+    
+    const room_facility_arr = [
+        'Smoking Room', 'Non Smoking', 'Pets Allowed', 
+        'Children', 'Parties', 'Twin Bed', 
+        'Queen Size Bed', 'King Size Bed', 'Bunk Bed Type', 
+        'Sofa Bed Type', 'Futon Bed Type', 'Cribs', 
+        'Minibar', 'Jacuzzi', 'Bathtub', 
+        'Sandals', 'Flat screen TV', 'Safe-deposit Box', 
+        'Ironing Center', 'Kitchen', 'Hair Dryer', 
+        'Bathroom Amenities', 'Balcony View', 'Private Pool',
+        'Breakfast'
+    ]
+    
     const roomHasFacility = []
-    const room1HasFacility = [2, 3, 4, 8, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
+    const room1HasFacility = [2, 3, 4, 8, 10, 13, 14, 15, 17, 18, 19, 20, 21, 22, 23]
     room1HasFacility.forEach(item => {
         const addedRoomHasFacility = {
-            propertyRoomTypeId: 1,
+            propertyRoomTypeId: 28,
             propertyRoomFacilityId: item
         }
         roomHasFacility.push(addedRoomHasFacility)
     })
-    const room2HasFacility = [2, 3, 4, 7, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
+    const room2HasFacility = [2, 3, 4, 8, 10, 13, 14, 15, 17, 18, 19, 20, 21, 22, 23]
     room2HasFacility.forEach(item => {
         const addedRoomHasFacility = {
-            propertyRoomTypeId: 2,
+            propertyRoomTypeId: 29,
             propertyRoomFacilityId: item
         }
         roomHasFacility.push(addedRoomHasFacility)
     })
-    const room3HasFacility = [2, 4, 6, 15, 16, 17, 18, 19, 21, 22, 25]
+    const room3HasFacility = [2, 3, 4, 8, 10, 13, 14, 15, 17, 18, 19, 20, 21, 22, 23]
     room3HasFacility.forEach(item => {
         const addedRoomHasFacility = {
-            propertyRoomTypeId: 3,
+            propertyRoomTypeId: 30,
             propertyRoomFacilityId: item
         }
         roomHasFacility.push(addedRoomHasFacility)
@@ -154,7 +174,7 @@ async function Property1 ({ tenantAccounts }) {
                     checkInEndTime: properties.checkInEndTime,
                     checkOutStartTime: properties.checkOutStartTime,
                     checkOutEndTime: properties.checkOutEndTime,
-                    propertyTypeId: 1,
+                    propertyTypeId: 3,
                     tenantId: tenant.id 
                 }
             })
@@ -167,7 +187,7 @@ async function Property1 ({ tenantAccounts }) {
                 phone_number: propertyDetail[0].phone_number,
                 url: propertyDetail[0].url,
                 total_room: propertyDetail[0].total_room,
-                propertyId: 1
+                propertyId: 10
             }
         })
     
@@ -177,7 +197,8 @@ async function Property1 ({ tenantAccounts }) {
         })
         
         await prisma.roomHasFacilities.createMany({
-            data: roomHasFacility
+            data: roomHasFacility,
+            skipDuplicates: true
         })
         
         await prisma.propertyHasFacility.createMany({
@@ -204,4 +225,4 @@ async function Property1 ({ tenantAccounts }) {
       });
 }
 
-module.exports = { Property1 }
+module.exports = { Property10 }

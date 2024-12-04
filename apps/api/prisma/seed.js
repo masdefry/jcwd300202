@@ -2,6 +2,24 @@ const { PrismaClient, Status, Gender } = require('@prisma/client');
 const bcrypt = require('bcrypt')
 const { v4 } = require('uuid');
 const { Property1 } = require('./property1');
+const { Property2 } = require('./property2');
+const { Property3 } = require('./property3')
+const { Property4 } = require('./property4')
+const { Property5 } = require('./property5')
+const { Property6 } = require('./property6')
+const { Property7 } = require('./property7')
+const { Property8 } = require('./property8')
+const { Property9 } = require('./property9')
+const { Property10 } = require('./property10')
+const { Property11 } = require('./property11')
+const { Property12 } = require('./property12')
+const { Property13 } = require('./property13')
+const { Property14 } = require('./property14')
+const { Property15 } = require('./property15')
+
+const { Property17 } = require('./property17')
+
+const { Property19 } = require('./property19')
 
 const hashPassword = async(password) => {
   const saltRound = 10
@@ -65,7 +83,8 @@ const room_facility_arr = [
     'Minibar', 'Jacuzzi', 'Bathtub', 
     'Sandals', 'Flat screen TV', 'Safe-deposit Box', 
     'Ironing Center', 'Kitchen', 'Hair Dryer', 
-    'Bathroom Amenities', 'Balcony View', 'Private Pool', 
+    'Bathroom Amenities', 'Balcony View', 'Private Pool',
+    'Breakfast'
 ]
 
 const roomFacility = room_facility_arr.map(item => {
@@ -184,6 +203,24 @@ async function main() {
 
     
     await Property1({ tenantAccounts })
+    await Property2({ tenantAccounts })
+    await Property3({ tenantAccounts })
+    await Property4({ tenantAccounts })
+    await Property5({ tenantAccounts })
+    await Property6({ tenantAccounts })
+    await Property7({ tenantAccounts })
+    await Property8({ tenantAccounts })
+    await Property9({ tenantAccounts })
+    await Property10({ tenantAccounts })
+    await Property11({ tenantAccounts })
+    await Property12({ tenantAccounts })
+    await Property13({ tenantAccounts })
+    await Property14({ tenantAccounts })
+    await Property15({ tenantAccounts })
+
+    await Property17({ tenantAccounts })
+
+    await Property19({ tenantAccounts })
 }
 
 main()

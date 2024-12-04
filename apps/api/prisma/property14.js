@@ -9,15 +9,15 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property1 ({ tenantAccounts }) {
+async function Property14 ({ tenantAccounts }) {
     const property = [
         {
-            name: 'Pan Pacific Jakarta',
+            name: 'Best Western Papilio Hotel',
             country: 'Indonesia',
-            address: 'Thamrin Nine, Luminary Tower Jalan MH Thamrin No 10, Central Jakarta, Jakarta, Special Capital Region of Jakarta',
-            zip_code: '10230',
-            city: 'Jakarta',
-            location: '-6.1980338, 106.8213679',
+            address: 'Jl. Ahmad Yani No.176-178, Gayungan, Gayungan District, Surabaya, East Java',
+            zip_code: '60235',
+            city: 'Surabaya',
+            location: '-7.3311302,112.7273021',
             checkInStartTime: new Date('2024-12-03T15:00:00Z'),
             checkInEndTime: new Date('2024-12-03T23:59:00Z'),
             checkOutStartTime: new Date('2024-12-04T06:00:00Z'),
@@ -28,109 +28,120 @@ async function Property1 ({ tenantAccounts }) {
     const propertyDetail = [
         {
             property_description: `
-                Located in Jakarta, a 8-minute walk from Selamat Datang Monument, Pan Pacific Jakarta has accommodations with a restaurant, free private parking and a bar. Each room at the 5-star hotel has city views, and guests can enjoy access to an indoor pool. The property provides a 24-hour front desk, airport transportation, room service and free WiFi throughout the property.
-                The hotel will provide guests with air-conditioned rooms offering a desk, a coffee machine, a minibar, a safety deposit box, a flat-screen TV and a private bathroom with a shower. At Pan Pacific Jakarta the rooms come with bed linen and towels.
-                The daily breakfast offers buffet, continental or Asian options.
+                Boasting a rooftop pool overlooking the city, Best Western Papilio Hotel is conveniently located a 3-minute drive away from City of Tomorrow and a 10-minute drive from Surabaya Carnival Night Market. 
+                Free WiFi access is available throughout. Staff at the 24-hour front desk can assist with car hire and airport transfers, while the concierge service will be happy to assist with luggage storage. 
+                There is also meeting/banqueting facilities and a business centre. After a day of sightseeing guests may enjoy relaxing massage at the spa and wellness centre.
             `,
-            neighborhood_description: 'Popular points of interest near the accommodation include Grand Indonesia Mall, Sarinah and Tanah Abang Market. Halim Perdanakusuma International Airport is 15 miles from the property.',
-            phone_number: '+1-555-123-4567',
-            url: 'https://www.panpacific.com',
-            total_room: 100,
+            neighborhood_description: `
+                Best Western Papilio Hotel is a 15-minute drive away from Royal Plaza and a 20-minute drive away from Juanda International Airport.
+            `,
+            phone_number: '+62-593-999-844',
+            url: 'https://bwpapilio.com/',
+            total_room: 120,
         }
     ]
     
     
     const propertyRoomType = [
         {
-            name: 'Suite',
-            rooms: 3,
-            capacity: 6,
-            bathrooms: 2,
-            price: 8000000,
-            total_rooms: 30,
-            propertyId: 1
-        },
-        {
-            name: 'Premiere',
-            capacity: 4,
+            name: 'Special',
+            capacity: 2,
             bathrooms: 1,
-            price: 4500000,
-            total_rooms: 30,
-            propertyId: 1
+            price: 800000,
+            total_rooms: 20,
+            propertyId: 14 
         },
         {
             name: 'Deluxe',
             capacity: 2,
             bathrooms: 1,
-            price: 2500000,
+            price: 650000,
             total_rooms: 40,
-            propertyId: 1
+            propertyId: 14 
+        },
+        {
+            name: 'Comfort',
+            capacity: 2,
+            bathrooms: 1,
+            price: 445000,
+            total_rooms: 60,
+            propertyId: 14 
         }
     ]
     
     const propertyImages = Array.from({length: 5}).map((_,index) => {
         return {
-            propertyDetailId: 1,
-            filename: `property_1_images_${index + 1}`,
+            propertyDetailId: 14 ,
+            filename: `property_14_images_${index + 1}`,
             directory: 'src/public/images'
         }
     }) 
 
     const room1Images = Array.from({length: 3}).map((_,index) => {
         return {
-            propertyRoomTypeId: 1,
-            filename: `property_1_room_1_images_${index + 1}`,
+            propertyRoomTypeId: 40,
+            filename: `property_14_room_40_images_${index + 1}`,
             directory: 'src/public/images'
         }
     })
     const room2Images = Array.from({length: 3}).map((_,index) => {
         return {
-            propertyRoomTypeId: 2,
-            filename: `property_1_room_2_images_${index + 1}`,
+            propertyRoomTypeId: 41,
+            filename: `property_14_room_41_images_${index + 1}`,
             directory: 'src/public/images'
         }
     })
     const room3Images = Array.from({length: 3}).map((_,index) => {
         return {
-            propertyRoomTypeId: 3,
-            filename: `property_1_room_3_images_${index + 1}`,
+            propertyRoomTypeId: 42,
+            filename: `property_14_room_42_images_${index + 1}`,
             directory: 'src/public/images'
         }
     })
-
+    const room_facility_arr = [
+        'Smoking Room', 'Non Smoking', 'Pets Allowed', 
+        'Children', 'Parties', 'Twin Bed', 
+        'Queen Size Bed', 'King Size Bed', 'Bunk Bed Type', 
+        'Sofa Bed Type', 'Futon Bed Type', 'Cribs', 
+        'Minibar', 'Jacuzzi', 'Bathtub', 
+        'Sandals', 'Flat screen TV', 'Safe-deposit Box', 
+        'Ironing Center', 'Kitchen', 'Hair Dryer', 
+        'Bathroom Amenities', 'Balcony View', 'Private Pool',
+        'Breakfast'
+    ]
     const propertyRoomImages = [...room1Images, ...room2Images, ...room3Images]
 
     const propertyHasFacility = []
-    const property1HasFacility = [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
-    property1HasFacility.forEach(item => {
+    const property14HasFacility = [4, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+    property14HasFacility.forEach(item => {
         const addedPropertyHasFacility = {
-            propertyId: 1,
+            propertyId: 14,
             propertyFacilityId: item
         }
         propertyHasFacility.push(addedPropertyHasFacility)
     })
-
+    
     const roomHasFacility = []
-    const room1HasFacility = [2, 3, 4, 8, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
+    const room1HasFacility = [2, 4, 7, 15, 16, 17, 18, 21, 22, 23, 25]
     room1HasFacility.forEach(item => {
         const addedRoomHasFacility = {
-            propertyRoomTypeId: 1,
+            propertyRoomTypeId: 40,
             propertyRoomFacilityId: item
         }
         roomHasFacility.push(addedRoomHasFacility)
     })
-    const room2HasFacility = [2, 3, 4, 7, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
+    const room2HasFacility = [2, 4, 6, 15, 16, 17, 18, 21, 22, 23, 25]
     room2HasFacility.forEach(item => {
         const addedRoomHasFacility = {
-            propertyRoomTypeId: 2,
+            propertyRoomTypeId: 41,
             propertyRoomFacilityId: item
         }
         roomHasFacility.push(addedRoomHasFacility)
     })
-    const room3HasFacility = [2, 4, 6, 15, 16, 17, 18, 19, 21, 22, 25]
+    const room3HasFacility = [2, 4, 6, 16, 17, 18, 21, 22, 25]
     room3HasFacility.forEach(item => {
         const addedRoomHasFacility = {
-            propertyRoomTypeId: 3,
+            propertyRoomTypeId: 42,
             propertyRoomFacilityId: item
         }
         roomHasFacility.push(addedRoomHasFacility)
@@ -167,7 +178,7 @@ async function Property1 ({ tenantAccounts }) {
                 phone_number: propertyDetail[0].phone_number,
                 url: propertyDetail[0].url,
                 total_room: propertyDetail[0].total_room,
-                propertyId: 1
+                propertyId: 14
             }
         })
     
@@ -177,7 +188,7 @@ async function Property1 ({ tenantAccounts }) {
         })
         
         await prisma.roomHasFacilities.createMany({
-            data: roomHasFacility
+            data: roomHasFacility,
         })
         
         await prisma.propertyHasFacility.createMany({
@@ -204,4 +215,4 @@ async function Property1 ({ tenantAccounts }) {
       });
 }
 
-module.exports = { Property1 }
+module.exports = { Property14 }

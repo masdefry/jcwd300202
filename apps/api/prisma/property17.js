@@ -1,26 +1,20 @@
-const { PrismaClient, Status, Gender } = require('@prisma/client');
+const { PrismaClient } = require('@prisma/client')
 const bcrypt = require('bcrypt')
-const { v4 } = require('uuid')
-
-const hashPassword = async(password) => {
-  const saltRound = 10
-  return await bcrypt.hash(password, saltRound)
-}
 
 const prisma = new PrismaClient();
 
-async function Property1 ({ tenantAccounts }) {
+async function Property17 ({tenantAccounts}) {
     const property = [
         {
-            name: 'Pan Pacific Jakarta',
-            country: 'Indonesia',
-            address: 'Thamrin Nine, Luminary Tower Jalan MH Thamrin No 10, Central Jakarta, Jakarta, Special Capital Region of Jakarta',
-            zip_code: '10230',
-            city: 'Jakarta',
-            location: '-6.1980338, 106.8213679',
+            name: 'The Grand Manhattan Residences',
+            country: 'USA',
+            address: '15 West 53rd Street, Midtown, New York City, NY 10019',
+            zip_code: '10019',
+            city: 'New York',
+            location: '40.761432, -73.977621',
             checkInStartTime: new Date('2024-12-03T15:00:00Z'),
-            checkInEndTime: new Date('2024-12-03T23:59:00Z'),
-            checkOutStartTime: new Date('2024-12-04T06:00:00Z'),
+            checkInEndTime: new Date('2024-12-03T22:00:00Z'),
+            checkOutStartTime: new Date('2024-12-04T08:00:00Z'),
             checkOutEndTime: new Date('2024-12-04T12:00:00Z'),
         }
     ]
@@ -28,72 +22,75 @@ async function Property1 ({ tenantAccounts }) {
     const propertyDetail = [
         {
             property_description: `
-                Located in Jakarta, a 8-minute walk from Selamat Datang Monument, Pan Pacific Jakarta has accommodations with a restaurant, free private parking and a bar. Each room at the 5-star hotel has city views, and guests can enjoy access to an indoor pool. The property provides a 24-hour front desk, airport transportation, room service and free WiFi throughout the property.
-                The hotel will provide guests with air-conditioned rooms offering a desk, a coffee machine, a minibar, a safety deposit box, a flat-screen TV and a private bathroom with a shower. At Pan Pacific Jakarta the rooms come with bed linen and towels.
-                The daily breakfast offers buffet, continental or Asian options.
+                Situated in the heart of Manhattan, The Grand Manhattan Residences offer unparalleled luxury and modern sophistication. The property boasts breathtaking skyline views and world-class amenities, including an indoor swimming pool, a state-of-the-art fitness center, a private cinema, and a 24/7 concierge service.
+                Each residence features custom-designed interiors with Italian marble flooring, gourmet kitchens with high-end appliances, and spa-like bathrooms. Floor-to-ceiling windows flood the spaces with natural light, creating a serene retreat amidst the bustling city.
             `,
-            neighborhood_description: 'Popular points of interest near the accommodation include Grand Indonesia Mall, Sarinah and Tanah Abang Market. Halim Perdanakusuma International Airport is 15 miles from the property.',
-            phone_number: '+1-555-123-4567',
-            url: 'https://www.panpacific.com',
-            total_room: 100,
+            neighborhood_description: `
+                Located just steps away from iconic landmarks such as Central Park, Rockefeller Center, and the Museum of Modern Art (MoMA), The Grand Manhattan Residences are at the epicenter of culture, dining, and shopping. Residents enjoy easy access to Fifth Avenue's luxury boutiques, Broadway theaters, and Michelin-starred restaurants. The building is also conveniently located near major transportation hubs, including Grand Central Terminal and Penn Station.
+            `,
+            phone_number: '+1-212-555-7890',
+            url: 'https://www.grandmanhattanresidences.com',
+            total_room: 75,
         }
     ]
-    
     
     const propertyRoomType = [
         {
-            name: 'Suite',
-            rooms: 3,
-            capacity: 6,
-            bathrooms: 2,
-            price: 8000000,
-            total_rooms: 30,
-            propertyId: 1
-        },
-        {
-            name: 'Premiere',
-            capacity: 4,
-            bathrooms: 1,
-            price: 4500000,
-            total_rooms: 30,
-            propertyId: 1
-        },
-        {
-            name: 'Deluxe',
+            name: 'Executive Studio',
             capacity: 2,
             bathrooms: 1,
-            price: 2500000,
-            total_rooms: 40,
-            propertyId: 1
+            price: 4500000,
+            total_rooms: 25,
+            propertyId: 17
+        },
+        {
+            name: 'Premium One-Bedroom Suite',
+            capacity: 4,
+            bathrooms: 1,
+            price: 6500000,
+            total_rooms: 30,
+            propertyId: 17
+        },
+        {
+            name: 'Grand Penthouse Suite',
+            rooms: 3,
+            capacity: 6,
+            bathrooms: 3,
+            price: 15000000,
+            total_rooms: 20,
+            propertyId: 17
         }
-    ]
+    ];
     
+
     const propertyImages = Array.from({length: 5}).map((_,index) => {
         return {
-            propertyDetailId: 1,
-            filename: `property_1_images_${index + 1}`,
+            propertyDetailId: 17,
+            filename: `property_17_images_${index + 1}`,
             directory: 'src/public/images'
         }
-    }) 
+    })
 
     const room1Images = Array.from({length: 3}).map((_,index) => {
         return {
-            propertyRoomTypeId: 1,
-            filename: `property_1_room_1_images_${index + 1}`,
+            propertyRoomTypeId: 49,
+            filename: `property_17_room_49_images_${index + 1}`,
             directory: 'src/public/images'
         }
     })
+
     const room2Images = Array.from({length: 3}).map((_,index) => {
         return {
-            propertyRoomTypeId: 2,
-            filename: `property_1_room_2_images_${index + 1}`,
+            propertyRoomTypeId: 50,
+            filename: `property_17_room_50_images_${index + 1}`,
             directory: 'src/public/images'
         }
     })
+
     const room3Images = Array.from({length: 3}).map((_,index) => {
         return {
-            propertyRoomTypeId: 3,
-            filename: `property_1_room_3_images_${index + 1}`,
+            propertyRoomTypeId: 51,
+            filename: `property_17_room_51_images_${index + 1}`,
             directory: 'src/public/images'
         }
     })
@@ -101,41 +98,41 @@ async function Property1 ({ tenantAccounts }) {
     const propertyRoomImages = [...room1Images, ...room2Images, ...room3Images]
 
     const propertyHasFacility = []
-    const property1HasFacility = [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
-    property1HasFacility.forEach(item => {
+    const property17HasFacility = [1, 4, 5, 8, 9, 10, 11, 12, 13, 17, 18]
+    property17HasFacility.forEach(item => {
         const addedPropertyHasFacility = {
-            propertyId: 1,
+            propertyId: 17,
             propertyFacilityId: item
         }
         propertyHasFacility.push(addedPropertyHasFacility)
     })
 
     const roomHasFacility = []
-    const room1HasFacility = [2, 3, 4, 8, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
+    const room1HasFacility = [1, 2, 7, 17, 20, 23, 25]
     room1HasFacility.forEach(item => {
         const addedRoomHasFacility = {
-            propertyRoomTypeId: 1,
+            propertyRoomTypeId: 49,
             propertyRoomFacilityId: item
         }
         roomHasFacility.push(addedRoomHasFacility)
     })
-    const room2HasFacility = [2, 3, 4, 7, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
+    const room2HasFacility = [1, 2, 7, 15, 17, 20, 23, 25]
     room2HasFacility.forEach(item => {
         const addedRoomHasFacility = {
-            propertyRoomTypeId: 2,
+            propertyRoomTypeId: 50,
             propertyRoomFacilityId: item
         }
         roomHasFacility.push(addedRoomHasFacility)
     })
-    const room3HasFacility = [2, 4, 6, 15, 16, 17, 18, 19, 21, 22, 25]
+    const room3HasFacility = [1, 2, 3, 4, 5, 7, 8, 13, 14, 15, 17, 18, 19, 20, 23, 24, 25]
     room3HasFacility.forEach(item => {
         const addedRoomHasFacility = {
-            propertyRoomTypeId: 3,
+            propertyRoomTypeId: 51,
             propertyRoomFacilityId: item
         }
         roomHasFacility.push(addedRoomHasFacility)
     })
-    
+
     async function main() {
     
         for(let i=0; i < property.length; i++){
@@ -154,7 +151,7 @@ async function Property1 ({ tenantAccounts }) {
                     checkInEndTime: properties.checkInEndTime,
                     checkOutStartTime: properties.checkOutStartTime,
                     checkOutEndTime: properties.checkOutEndTime,
-                    propertyTypeId: 1,
+                    propertyTypeId: 2,
                     tenantId: tenant.id 
                 }
             })
@@ -167,7 +164,7 @@ async function Property1 ({ tenantAccounts }) {
                 phone_number: propertyDetail[0].phone_number,
                 url: propertyDetail[0].url,
                 total_room: propertyDetail[0].total_room,
-                propertyId: 1
+                propertyId: 17
             }
         })
     
@@ -202,6 +199,7 @@ async function Property1 ({ tenantAccounts }) {
       .finally(async () => {
         await prisma.$disconnect();
       });
+
 }
 
-module.exports = { Property1 }
+module.exports = { Property17 }

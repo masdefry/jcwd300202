@@ -27,14 +27,14 @@ const AuthPage = () => {
             >
                 <Form className='flex flex-col gap-5'>
                 <div className="grid items-center gap-1.5 w-full">
-                    <Label htmlFor="email" className='text-base'>Email</Label>
-                    <Field as={Input} name="email" type="email" id="email" placeholder="example@email.com" className="w-full p-3 text-base"/>
+                    <Label htmlFor="email" className='text-base ml-4'>Email</Label>
+                    <Field as={Input} name="email" type="email" id="email" placeholder="example@email.com" className="w-full p-6 text-base rounded-full"/>
                 </div>
                 <div className="grid items-center gap-1.5 w-full">
-                    <Label htmlFor="password" className='text-base'>Password</Label>
-                    <Field as={Input} name="password" type="password" id="password" placeholder="example123" className="w-full p-3 text-base"/>
+                    <Label htmlFor="password" className='text-base ml-4'>Password</Label>
+                    <Field as={Input} name="password" type="password" id="password" placeholder="example123" className="w-full p-6 text-base rounded-full"/>
                 </div>
-                <Button className='p-5 text-base active:scale-95 transition duration-200' type='submit'>Continue with email</Button>
+                <Button className='p-6 rounded-full text-base active:scale-95 transition duration-200' type='submit'>Continue with email</Button>
                 </Form>
             </Formik>
             <div className='flex gap-2 items-center justify-between'>

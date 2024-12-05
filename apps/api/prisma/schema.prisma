@@ -19,6 +19,7 @@ model User {
   profile     Profile[]
   transaction Transaction[]
   review      Review[]
+  historyView HistoryView[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -30,8 +31,8 @@ model User {
 model Profile {
   id           String   @id @default(cuid())
   username     String
-  phone_number String
-  birth_date   DateTime
+  phoneNumber String
+  birthDate   DateTime
   nationality  String
   gender       Gender
   address      String
@@ -67,17 +68,18 @@ model Tenant {
 }
 
 model Property {
-  id                Int      @id @default(autoincrement())
+  id                String      @id @unique
   name              String
   country           String
   address           String
-  zip_code          String
+  zipCode           String
   city              String
   location          String
   checkInStartTime  DateTime
   checkInEndTime    DateTime
   checkOutStartTime DateTime
   checkOutEndTime   DateTime
+  slug              String  @unique
 
   propertyTypeId Int
   propertyType   PropertyType @relation(fields: [propertyTypeId], references: [id])
@@ -90,6 +92,7 @@ model Property {
   propertyHasFacility PropertyHasFacility[]
   transaction         Transaction[]
   review              Review[]
+  historyView         HistoryView[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -100,15 +103,15 @@ model Property {
 
 model PropertyDetail {
   id                       Int    @id @default(autoincrement())
-  property_description     String @db.Text
-  neighborhood_description String @db.Text
-  phone_number             String
-  url                      String
-  total_room               Int
+  propertyDescription     String @db.Text
+  neighborhoodDescription String @db.Text
+  phoneNumber             String
+  url                     String
+  totalRooms               Int
 
   propertyImage PropertyImage[]
 
-  propertyId Int      @unique
+  propertyId String      @unique
   property   Property @relation(fields: [propertyId], references: [id])
 
   createdAt DateTime  @default(now())
@@ -163,7 +166,7 @@ model PropertyFacility {
 }
 
 model PropertyHasFacility {
-  propertyId Int
+  propertyId String
   property   Property @relation(fields: [propertyId], references: [id])
 
   propertyFacilityId Int
@@ -184,11 +187,11 @@ model PropertyRoomType {
   capacity    Int
   bathrooms   Int
   price       Int
-  total_rooms Int
+  totalRooms Int
 
   propertyRoomImage PropertyRoomImage[]
 
-  propertyId Int
+  propertyId String
   property   Property @relation(fields: [propertyId], references: [id])
 
   transaction       Transaction[]
@@ -246,6 +249,22 @@ model PropertyRoomImage {
   @@map("property_room_images")
 }
 
+model HistoryView {
+  id        String @id @default(cuid())
+  
+  userId    String
+  user User @relation(fields: [userId], references: [id])
+  
+  propertyId String
+  property  Property @relation(fields: [propertyId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("history_view")
+}
+
 model Transaction {
   id           String   @id @unique
   checkInDate  DateTime
@@ -253,6 +272,7 @@ model Transaction {
   total        Int
   price        Int
   qty          Int
+  expiryDate   DateTime 
 
   userId String
   user   User   @relation(fields: [userId], references: [id])
@@ -260,7 +280,7 @@ model Transaction {
   tenantId String
   tenant   Tenant @relation(fields: [tenantId], references: [id])
 
-  propertyId Int
+  propertyId String
   property   Property @relation(fields: [propertyId], references: [id])
 
   roomId Int
@@ -300,8 +320,8 @@ enum Status {
 model Review {
   comment String @db.Text
 
-  propertyId Int
-  property   Property @relation(fields: [propertyId], references: [id])
+  propertyId String
+  property  Property @relation(fields: [propertyId], references: [id])
 
   userId String
   user   User   @relation(fields: [userId], references: [id])

@@ -26,20 +26,20 @@ const AuthPage = () => {
             >
                 <Form className='flex flex-col gap-5'>
                 <div className="grid items-center gap-1.5 w-full">
-                    <Label htmlFor="email" className='text-base'>Email</Label>
-                    <Field as={Input} name="email" type="email" id="email" placeholder="example@email.com" className="w-full p-3 text-base"/>
+                    <Label htmlFor="email" className='text-base ml-4'>Email</Label>
+                    <Field as={Input} name="email" type="email" id="email" placeholder="example@email.com" className="rounded-full w-full p-6 text-base"/>
                 </div>
-                <Button className='p-5 text-base active:scale-95 transition duration-200' type='submit'>Continue with email</Button>
+                <Button className='p-6 rounded-full text-base active:scale-95 transition duration-200' type='submit'>Continue with email</Button>
                 </Form>
             </Formik>
             <div className='flex gap-2 items-center justify-between'>
                 <div className='h-[1px] w-full bg-gray-300'></div>
-                <p className='min-w-max text-center rounded text-sm font-light'>or use of these option</p>
+                <p className='min-w-max text-center text-sm font-light'>or use of these option</p>
                 <div className='h-[1px] w-full bg-gray-300'></div>
             </div>
             <section>
                 <section className='flex flex-col gap-1'>
-                    <button className='p-2 active:scale-95 transition duration-200 hover:bg-gray-300 rounded-md border border-gray-300 w-full text-base flex items-center justify-center font-bold gap-3'><FcGoogle size={23}/>Sign in with Google</button>
+                    <button className='p-2 active:scale-95 transition duration-200 hover:bg-gray-300 rounded-full border border-gray-300 w-full text-base flex items-center justify-center font-bold gap-3'><FcGoogle size={23}/>Sign in with Google</button>
                 </section>
             </section>
             <div className='h-[1px] w-full bg-gray-300'></div>

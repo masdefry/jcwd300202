@@ -12,13 +12,12 @@ const AuthPage = () => {
     <main className='flex justify-center'>
         <section className='md:w-[768px] w-full flex flex-col gap-5'>
             <hgroup className='flex flex-col gap-2 text-center'>
-                <h1 className='text-2xl md:text-3xl font-bold'>Sign in create an account</h1>
-                <h6 className='text-base font-light'>You can sign in using your Roomify account to access  our services</h6>
+                <h1 className='text-2xl md:text-3xl font-bold'>Create an account</h1>
+                <h6 className='text-base font-light'>You can create new Roomify account to access our services</h6>
             </hgroup>
             <Formik
             initialValues={{
-                email: '',
-                password: ''
+                email: ''
             }}
         
             onSubmit={(values) => {
@@ -29,10 +28,6 @@ const AuthPage = () => {
                 <div className="grid items-center gap-1.5 w-full">
                     <Label htmlFor="email" className='text-base'>Email</Label>
                     <Field as={Input} name="email" type="email" id="email" placeholder="example@email.com" className="w-full p-3 text-base"/>
-                </div>
-                <div className="grid items-center gap-1.5 w-full">
-                    <Label htmlFor="password" className='text-base'>Password</Label>
-                    <Field as={Input} name="password" type="password" id="password" placeholder="example123" className="w-full p-3 text-base"/>
                 </div>
                 <Button className='p-5 text-base active:scale-95 transition duration-200' type='submit'>Continue with email</Button>
                 </Form>

@@ -12,6 +12,12 @@ module.exports = {
   ],
   theme: {
   	extend: {
+		maxWidth: {
+			'screen-2xl': '1536px',
+			'screen-3xl': '1792px',
+			'screen-4xl': '2048px',
+			'screen-5xl': '2304px',
+		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
@@ -61,6 +67,9 @@ module.exports = {
   		}
   	}
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+	require("tailwindcss-animate"), 
+	require('daisyui')
+],
 }
 

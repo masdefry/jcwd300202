@@ -19,6 +19,7 @@ model User {
   profile     Profile[]
   transaction Transaction[]
   review      Review[]
+  historyView HistoryView[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -91,6 +92,7 @@ model Property {
   propertyHasFacility PropertyHasFacility[]
   transaction         Transaction[]
   review              Review[]
+  historyView         HistoryView[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -247,6 +249,22 @@ model PropertyRoomImage {
   @@map("property_room_images")
 }
 
+model HistoryView {
+  id        String @id @default(cuid())
+  
+  userId    String
+  user User @relation(fields: [userId], references: [id])
+  
+  propertyId String
+  property  Property @relation(fields: [propertyId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("history_view")
+}
+
 model Transaction {
   id           String   @id @unique
   checkInDate  DateTime
@@ -254,6 +272,7 @@ model Transaction {
   total        Int
   price        Int
   qty          Int
+  expiryDate   DateTime 
 
   userId String
   user   User   @relation(fields: [userId], references: [id])

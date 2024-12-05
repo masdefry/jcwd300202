@@ -166,63 +166,69 @@ const propertyType = [
 ]
 
 async function main() {
-    const tenantAccounts = []
-    for (let tenant of tenants){
-        const hashedPassword = await hashPassword(tenant.password)
-        const newTenant = await prisma.tenant.create({
-            data: {
-                email: tenant.email,
-                password: hashedPassword
-            }
+    await prisma.$transaction(async(tx) => {
+        const tenantAccounts = []
+        for (let tenant of tenants){
+            const hashedPassword = await hashPassword(tenant.password)
+            const newTenant = await tx.tenant.create({
+                data: {
+                    email: tenant.email,
+                    password: hashedPassword
+                }
+            })
+            tenantAccounts.push(newTenant)
+        }
+
+        const userAccounts = []
+        for (let user of users){
+            const hashedPassword = await hashPassword(user.password)
+            const newUser = await tx.user.create({
+                data: {
+                    email: user.email,
+                    password: hashedPassword
+                }
+            })
+            userAccounts.push(newUser)
+        }
+
+        await tx.propertyType.createMany({
+            data: propertyType
         })
-        tenantAccounts.push(newTenant)
-    }
-
-    const userAccounts = []
-    for (let user of users){
-        const hashedPassword = await hashPassword(user.password)
-        const newUser = await prisma.user.create({
-            data: {
-                email: user.email,
-                password: hashedPassword
-            }
+        
+        await tx.propertyFacility.createMany({
+            data: propertyFacility
         })
-        userAccounts.push(newUser)
-    }
 
-    await prisma.propertyType.createMany({
-        data: propertyType
-    })
-    
-    await prisma.propertyFacility.createMany({
-        data: propertyFacility
-    })
+        await tx.propertyRoomFacility.createMany({
+            data: roomFacility
+        })
 
-    await prisma.propertyRoomFacility.createMany({
-        data: roomFacility
-    })
+        
+        await Property1({ tenantAccounts, tx })
+        // await Property2({ tenantAccounts, tx })
+        // await Property3({ tenantAccounts, tx })
+        // await Property4({ tenantAccounts, tx })
+        // await Property5({ tenantAccounts, tx })
+        // await Property6({ tenantAccounts, tx })
+        // await Property7({ tenantAccounts, tx })
+        // await Property8({ tenantAccounts, tx })
+        // await Property9({ tenantAccounts, tx })
+        // await Property10({ tenantAccounts, tx })
+        // await Property11({ tenantAccounts, tx })
+        // await Property12({ tenantAccounts, tx })
+        // await Property13({ tenantAccounts, tx })
+        // await Property14({ tenantAccounts, tx })
+        // await Property15({ tenantAccounts, tx })
+        // await Property16({ tenantAccounts, tx })
+        // await Property17({ tenantAccounts, tx })
+        // await Property18({ tenantAccounts, tx })
+        // await Property19({ tenantAccounts, tx })
+        // await Property20({ tenantAccounts, tx })
 
-    
-    await Property1({ tenantAccounts })
-    await Property2({ tenantAccounts })
-    await Property3({ tenantAccounts })
-    await Property4({ tenantAccounts })
-    await Property5({ tenantAccounts })
-    await Property6({ tenantAccounts })
-    await Property7({ tenantAccounts })
-    await Property8({ tenantAccounts })
-    await Property9({ tenantAccounts })
-    await Property10({ tenantAccounts })
-    await Property11({ tenantAccounts })
-    await Property12({ tenantAccounts })
-    await Property13({ tenantAccounts })
-    await Property14({ tenantAccounts })
-    await Property15({ tenantAccounts })
-    await Property16({ tenantAccounts })
-    await Property17({ tenantAccounts })
-    await Property18({ tenantAccounts })
-    await Property19({ tenantAccounts })
-    await Property20({ tenantAccounts })
+    },{ 
+        maxWait: 1800000,
+        timeout: 3600000 
+    }) 
 }
 
 main()

@@ -133,7 +133,7 @@ async function Property3 ({tenantAccounts}) {
     })
 
     async function main() {
-    
+        
         for(let i=0; i < property.length; i++){
             const tenant = tenantAccounts[i % tenantAccounts.length]
             const properties = property[i]

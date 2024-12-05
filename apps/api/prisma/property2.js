@@ -9,7 +9,7 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property2 ({ tenantAccounts }) {
+async function Property2 ({ tenantAccounts, tx }) {
     const property = [
         {
             name: 'Ashley Tugu Tani Menteng',
@@ -147,61 +147,64 @@ async function Property2 ({ tenantAccounts }) {
     })
     
     async function main() {
-    
-        for(let i=0; i < property.length; i++){
-            const tenant = tenantAccounts[i % tenantAccounts.length]
-            const properties = property[i]
-    
-            await prisma.property.create({
+        await prisma.$transaction(async(tx) => {
+            for(let i=0; i < property.length; i++){
+                const tenant = tenantAccounts[i % tenantAccounts.length]
+                const properties = property[i]
+        
+                await tx.property.create({
+                    data: {
+                        name: properties.name,
+                        country: properties.country,
+                        address: properties.address,
+                        zip_code: properties.zip_code,
+                        city: properties.city,
+                        location: properties.location,
+                        checkInStartTime: properties.checkInStartTime,
+                        checkInEndTime: properties.checkInEndTime,
+                        checkOutStartTime: properties.checkOutStartTime,
+                        checkOutEndTime: properties.checkOutEndTime,
+                        propertyTypeId: 1,
+                        tenantId: tenant.id 
+                    }
+                })
+            }
+        
+            await tx.propertyDetail.create({
                 data: {
-                    name: properties.name,
-                    country: properties.country,
-                    address: properties.address,
-                    zip_code: properties.zip_code,
-                    city: properties.city,
-                    location: properties.location,
-                    checkInStartTime: properties.checkInStartTime,
-                    checkInEndTime: properties.checkInEndTime,
-                    checkOutStartTime: properties.checkOutStartTime,
-                    checkOutEndTime: properties.checkOutEndTime,
-                    propertyTypeId: 1,
-                    tenantId: tenant.id 
+                    property_description: propertyDetail[0].property_description,
+                    neighborhood_description: propertyDetail[0].neighborhood_description,
+                    phone_number: propertyDetail[0].phone_number,
+                    url: propertyDetail[0].url,
+                    total_room: propertyDetail[0].total_room,
+                    propertyId: 2
                 }
             })
-        }
-    
-        await prisma.propertyDetail.create({
-            data: {
-                property_description: propertyDetail[0].property_description,
-                neighborhood_description: propertyDetail[0].neighborhood_description,
-                phone_number: propertyDetail[0].phone_number,
-                url: propertyDetail[0].url,
-                total_room: propertyDetail[0].total_room,
-                propertyId: 2
-            }
-        })
-    
         
-        await prisma.propertyRoomType.createMany({
-            data: propertyRoomType
-        })
+            
+            await tx.propertyRoomType.createMany({
+                data: propertyRoomType
+            })
+            
+            await tx.roomHasFacilities.createMany({
+                data: roomHasFacility
+            })
+            
+            await tx.propertyHasFacility.createMany({
+                data: propertyHasFacility
+            })
+            
+            await tx.propertyImage.createMany({
+                data: propertyImages
+            })
         
-        await prisma.roomHasFacilities.createMany({
-            data: roomHasFacility
+            await tx.propertyRoomImage.createMany({
+                data: propertyRoomImages
+            })
+        },{ 
+            maxWait: 1800000,
+            timeout: 3600000 
         })
-        
-        await prisma.propertyHasFacility.createMany({
-            data: propertyHasFacility
-        })
-        
-        await prisma.propertyImage.createMany({
-            data: propertyImages
-        })
-    
-        await prisma.propertyRoomImage.createMany({
-            data: propertyRoomImages
-        })
-    
     }
     
     main()

@@ -14,7 +14,7 @@ const AuthPage = () => {
     <main className='flex justify-center'>
         <section className='md:w-[768px] w-full flex flex-col gap-8'>
             <AuthHGroup 
-            header1='Sign in create an account' 
+            header1='Sign in' 
             header6='You can sign in using your Roomify account to access  our services'
             />
             <Formik
@@ -28,7 +28,7 @@ const AuthPage = () => {
             }}
             >
                 <Form className='flex flex-col gap-5'>
-                    <TextInput labelName='Enail' name='email' placeholder='example@email.com' type='email'/>
+                    <TextInput labelName='Email' name='email' placeholder='example@email.com' type='email'/>
                     <TextInput labelName='Password' name='password' placeholder='example123' type='password'/>
                     <AuthButton text='Continue'/>
                 </Form>

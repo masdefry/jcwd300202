@@ -8,9 +8,9 @@ interface IAuthLayout {
 
 const AuthLayout = ({ children }: IAuthLayout) => {
   return (
-    <main className='p-10'>
-      {children}
-    </main>
+    <div>
+      
+    </div>
   )
 }
 

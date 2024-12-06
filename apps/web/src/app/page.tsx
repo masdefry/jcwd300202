@@ -1,95 +1,51 @@
+'use client'
+
 import Image from 'next/image'
 import styles from './page.module.css'
+import CityRecommendationCard from '@/features/home/components/CityRecommendationCard'
 
 export default function Home() {
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+    <main className='flex flex-col gap-10 lg:p-16 md:p-12 sm:p-8 p-4'>
+      <section className='grid grid-cols-2 h-fit gap-10'>
+        <CityRecommendationCard 
+        imgSrc='https://cdn.antaranews.com/cache/1200x800/2020/06/03/20200603_172512.jpg'
+        alt='jakarta'
+        city='Jakarta'
+        country='Indonesia'
+        h1Size='text-5xl'
         />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+        <CityRecommendationCard 
+        imgSrc='https://klcciconic.com.my/wp-content/uploads/2020/03/TwinTower-e1587708654823-1024x767.jpg'
+        alt='kuala-lumpur'
+        city='Kuala Lumpur'
+        country='Malaysia'
+        h1Size='text-5xl'
+        />
+      </section>
+      <section className='grid grid-cols-3 h-fit gap-10'>
+        <CityRecommendationCard 
+        imgSrc='https://www.judethetourist.com/wp-content/uploads/2023/11/BGC.jpg'
+        alt='makati'
+        city='Makati'
+        country='Philiphines'
+        h1Size='text-3xl'
+        />
+        <CityRecommendationCard 
+        imgSrc='https://video.cgtn.com/news/2020-10-14/Shenzhen-four-decades-of-transformation-UAy7Niyfq8/video/36316ad55ce34e0f91200c2318d638f9/36316ad55ce34e0f91200c2318d638f9.jpg'
+        alt='shenzhen'
+        city='Shenzhen'
+        country='China'
+        h1Size='text-3xl'
+        />
+        <CityRecommendationCard 
+        imgSrc='https://wallpaperaccess.com/full/26403.jpg'
+        alt='tokyo'
+        city='Tokyo'
+        country='Japan'
+        h1Size='text-3xl'
+        />
+      </section>
     </main>
   )
 }

@@ -25,7 +25,7 @@ const VerifyEmailTenantPage = () => {
             }}
             >
                 <Form className='flex flex-col gap-5'>
-                    <TextInput labelName='Password' name='createPassword' placeholder='example123' type='password'/>
+                    <TextInput labelName='Set Password' name='createPassword' placeholder='example123' type='password'/>
                     <TextInput labelName='Confirm Password' name='createPasswordConfirmation' placeholder='example123' type='password'/>
                     <AuthButton text='Continue'/>
                 </Form>

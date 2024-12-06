@@ -50,12 +50,3 @@ export default function Header() {
   </header>
 );
 };
-
-    // <label className="input input-bordered h-[100px] rounded-l-full flex flex-col justify-center gap-2 px-12 py-2">
-    //   Where are you going? (required)
-    //   <input type="text" className="grow" placeholder="Destination, Accomodation" />
-    // </label>
-    // <label className="input input-bordered h-[100px] rounded-none flex flex-col justify-center gap-2 px-12 py-2">
-    //   Check-In
-    //   <input type="text" className="grow" placeholder="Destination, Accomodation" />
-    // </label>

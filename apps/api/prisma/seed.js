@@ -90,36 +90,7 @@ const countriesWithCities = [
     },
 ]
 
-const countries = countriesWithCities.map(item => {
-    return {
-        name: item.name
-    }
-})
 
-const cities = countriesWithCities.map(item => {
-    const citiesArr = item.cities.forEach(itm => {
-        return {
-            name: itm,
-
-        }
-    })
-    return {
-        name: i
-    }
-})
-
-await prisma.country.createMany({
-    data: countries
-})
-
-await prisma.city.createMany({
-    data: [
-        {
-            name,
-            co
-        }
-    ]
-})
 
 const property_facility_arr = [
     'Bar','Club', 'Sauna', 
@@ -227,11 +198,49 @@ const propertyType = [
 ]
 
 async function main() {
-    await prisma.$transaction(async(tx) => {
+
+        const country1 = await prisma.country.create({
+            data: {
+                name: 'Indonesia'
+            }
+        })
+        
+        const country2 = await prisma.country.create({
+            data: {
+                name: 'United States of America'
+            }
+        })
+        
+        
+        const cities1 = ['Jakarta', 'Surabaya', 'Gianyar Regency', 'Denpasar', 'Bandung', 'Surakarta', 'Tangerang', 'Yogyakarta', 'South Tangerang'];
+        const cities1Id = await Promise.all(
+        cities1.map(async (item) => {
+            const createdCity = await prisma.city.create({
+            data: {
+                name: item,
+                countryId: country1.id,
+            },
+            });
+            return createdCity.id;
+        })
+        );
+        
+        const cities2 = ['Chicago', 'Los Angeles', 'New York']
+        const cities2Id = await Promise.all(
+        cities2.map(async (item) => {
+            const createdCity = await prisma.city.create({
+            data: {
+                name: item,
+                countryId: country2.id,
+            },
+            });
+            return createdCity.id;
+        })
+        );
         const tenantAccounts = []
         for (let tenant of tenants){
             const hashedPassword = await hashPassword(tenant.password)
-            const newTenant = await tx.tenant.create({
+            const newTenant = await prisma.tenant.create({
                 data: {
                     email: tenant.email,
                     password: hashedPassword
@@ -243,7 +252,7 @@ async function main() {
         const userAccounts = []
         for (let user of users){
             const hashedPassword = await hashPassword(user.password)
-            const newUser = await tx.user.create({
+            const newUser = await prisma.user.create({
                 data: {
                     email: user.email,
                     password: hashedPassword
@@ -254,44 +263,40 @@ async function main() {
 
         
 
-        await tx.propertyType.createMany({
+        await prisma.propertyType.createMany({
             data: propertyType
         })
         
-        await tx.propertyFacility.createMany({
+        await prisma.propertyFacility.createMany({
             data: propertyFacility
         })
 
-        await tx.propertyRoomFacility.createMany({
+        await prisma.propertyRoomFacility.createMany({
             data: roomFacility
         })
 
         
-        await Property1({ tenantAccounts, tx })
-        await Property2({ tenantAccounts, tx })
-        await Property3({ tenantAccounts, tx })
-        await Property4({ tenantAccounts, tx })
-        await Property5({ tenantAccounts, tx })
-        await Property6({ tenantAccounts, tx })
-        await Property7({ tenantAccounts, tx })
-        await Property8({ tenantAccounts, tx })
-        await Property9({ tenantAccounts, tx })
-        await Property10({ tenantAccounts, tx })
-        await Property11({ tenantAccounts, tx })
-        await Property12({ tenantAccounts, tx })
-        await Property13({ tenantAccounts, tx })
-        await Property14({ tenantAccounts, tx })
-        await Property15({ tenantAccounts, tx })
-        await Property16({ tenantAccounts, tx })
-        await Property17({ tenantAccounts, tx })
-        await Property18({ tenantAccounts, tx })
-        await Property19({ tenantAccounts, tx })
-        await Property20({ tenantAccounts, tx })
+        await Property1({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[0].id })
+        await Property2({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[0].id })
+        await Property3({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[0].id })
+        await Property4({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[4].id })
+        await Property5({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[0].id })
+        await Property6({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[7].id })
+        await Property7({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[0].id })
+        await Property8({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[9].id })
+        await Property9({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[0].id })
+        await Property10({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[3].id })
+        await Property11({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[0].id })
+        await Property12({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[3].id })
+        await Property13({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[0].id })
+        await Property14({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[2].id })
+        await Property15({ tenantAccounts, countryId: country2.id, cityId: await cities1Id[3].id })
+        await Property16({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[0].id })
+        await Property17({ tenantAccounts, countryId: country2.id, cityId: await cities2Id[2].id })
+        await Property18({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[0].id })
+        await Property19({ tenantAccounts, countryId: country2.id, cityId: await cities2Id[1].id })
+        await Property20({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[0].id })
 
-    },{ 
-        maxWait: 1800000,
-        timeout: 3600000 
-    }) 
 }
 
 main()

@@ -9,7 +9,7 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property5 ({ tenantAccounts }) {
+async function Property5 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
@@ -46,10 +46,10 @@ async function Property5 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,

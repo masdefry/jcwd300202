@@ -9,7 +9,7 @@ import Separator from '@/features/auth/components/Separator'
 import GoogleSignInButton from '@/features/auth/components/GoogleSignInButton'
 import AuthHGroup from '@/features/auth/components/AuthHGroup'
 
-const RegisterPage = () => {
+const TenantRegisterPage = () => {
   return (
     <main className='flex justify-center'>
         <section className='md:w-[768px] w-full flex flex-col gap-8'>
@@ -44,4 +44,4 @@ const RegisterPage = () => {
   )
 }
 
-export default RegisterPage
+export default TenantRegisterPage

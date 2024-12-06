@@ -9,15 +9,13 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property19 ({ tenantAccounts }) {
+async function Property19 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
         name: 'The Grandview Residences',
-        country: 'United States',
         address: '1012 Sunset Boulevard, Los Angeles, CA 90026',
         zipCode: '90026',
-        city: 'Los Angeles',
         location: '34.070212, -118.258470',
         checkInStartTime: new Date('2024-12-03T16:00:00Z'),
         checkInEndTime: new Date('2024-12-03T23:00:00Z'),
@@ -46,10 +44,10 @@ async function Property19 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,

@@ -9,15 +9,13 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property6 ({ tenantAccounts }) {
+async function Property6 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
             name: 'M-Town Residence Gading Serpong by J`s Luxury Apartment',
-            country: 'Indonesia',
             address: 'Jl. Gading Serpong Boulevard Blok M5 No.3, Pakulonan Bar., Kec. Cpl. Dua, Tangerang Regency, Banten',
             zipCode: '15810',
-            city: 'Tangerang',
             location: '-6.2425476, 106.6296588',
             checkInStartTime: new Date('2024-12-03T15:00:00Z'),
             checkInEndTime: new Date('2024-12-03T23:59:00Z'),
@@ -48,10 +46,10 @@ async function Property6 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,

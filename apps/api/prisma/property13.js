@@ -9,15 +9,13 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property13 ({ tenantAccounts }) {
+async function Property13 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
             name: 'Serenity Park Residences',
-            country: 'Indonesia',
             address: 'Jl. Rasuna Said No.35, Kuningan, Setiabudi, South Jakarta, Special Capital Region of Jakarta',
             zipCode: '12950',
-            city: 'Jakarta',
             location: '-6.214992, 106.832457',
             checkInStartTime: new Date('2024-12-03T15:00:00Z'),
             checkInEndTime: new Date('2024-12-03T22:00:00Z'),
@@ -46,10 +44,10 @@ async function Property13 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,

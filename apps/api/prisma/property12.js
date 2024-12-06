@@ -9,15 +9,13 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property12 ({ tenantAccounts }) {
+async function Property12 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
         name: 'Juli House by Mahaputra',
-        country: 'Indonesia',
-        address: '27 Jl. Bisma, Downtown, Ubud,',
+        address: '27 Jl. Bisma, Downtown, Ubud',
         zipCode: '80582',
-        city: 'Gianyar Regency',
         location: '-8.5082263,115.2563687',
         checkInStartTime: new Date('2024-12-03T15:00:00Z'),
         checkInEndTime: new Date('2024-12-03T23:59:00Z'),
@@ -47,10 +45,10 @@ async function Property12 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,

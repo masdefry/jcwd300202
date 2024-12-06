@@ -9,15 +9,13 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property1 ({ tenantAccounts }) {
+async function Property1 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
             name: 'Pan Pacific Jakarta',
-            country: 'Indonesia',
             address: 'Thamrin Nine, Luminary Tower Jalan MH Thamrin No 10, Central Jakarta, Jakarta, Special Capital Region of Jakarta',
             zipCode: '10230',
-            city: 'Jakarta',
             location: '-6.1980338, 106.8213679',
             checkInStartTime: new Date('2024-12-03T15:00:00Z'),
             checkInEndTime: new Date('2024-12-03T23:59:00Z'),
@@ -45,10 +43,10 @@ async function Property1 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,

@@ -10,15 +10,13 @@ const hashPassword = async(password) => {
 const prisma = new PrismaClient();
 
 
-async function Property2 ({ tenantAccounts, tx }) {
+async function Property2 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
             name: 'Ashley Tugu Tani Menteng',
-            country: 'Indonesia',
             address: 'Jl. KH Wahid Hasyim No.4A, RT.7/RW.7, Kb. Sirih, Menteng District, Central Jakarta City, Special Capital Region of Jakarta',
             zipCode: '10350',
-            city: 'Jakarta',
             location: '-6.1837852, 106.83133',
             checkInStartTime: new Date('2024-12-03T15:00:00Z'),
             checkInEndTime: new Date('2024-12-03T23:59:00Z'),
@@ -46,10 +44,10 @@ async function Property2 ({ tenantAccounts, tx }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,

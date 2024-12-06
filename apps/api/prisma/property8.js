@@ -9,15 +9,13 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property8 ({ tenantAccounts }) {
+async function Property8 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
             name: 'Pranaya Boutique Hotel',
-            country: 'Indonesia',
             address: 'Lengkong Gudang, Serpong District, South Tangerang City, Banten',
             zipCode: '15321',
-            city: 'South Tangerang City',
             location: '-6.2962567, 106.6651068',
             checkInStartTime: new Date('2024-12-03T15:00:00Z'),
             checkInEndTime: new Date('2024-12-03T23:59:00Z'),
@@ -45,10 +43,10 @@ async function Property8 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,

@@ -9,15 +9,13 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property18 ({ tenantAccounts }) {
+async function Property18 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
         name: 'Sotis Residence Pejompongan',
-        country: 'Indonesia',
         address: 'Jl. Penjernihan 1 No.10 B 9, RT.9/RW.6, Bend. Hilir, Tanah Abang District, Central Jakarta City, Special Capital Region of Jakarta',
         zipCode: '10210',
-        city: 'Central Jakarta',
         location: '-6.2036277, 106.8033332',
         checkInStartTime: new Date('2024-12-03T15:00:00Z'),
         checkInEndTime: new Date('2024-12-03T23:59:00Z'),
@@ -48,10 +46,10 @@ async function Property18 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,

@@ -9,15 +9,13 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property20 ({ tenantAccounts }) {
+async function Property20 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
         name: 'Whiz Hotel Cikini Jakarta',
-        country: 'Indonesia',
         address: 'Jl. Cikini Raya No. 06, RT.13/RW.5, Cikini, Menteng District, Central Jakarta City, Special Capital Region of Jakarta',
         zipCode: '10330',
-        city: 'Central Jakarta',
         location: '-6.1883333, 106.8340918',
         checkInStartTime: new Date('2024-12-03T15:00:00Z'),
         checkInEndTime: new Date('2024-12-03T23:59:00Z'),
@@ -49,10 +47,10 @@ async function Property20 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,

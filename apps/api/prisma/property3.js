@@ -9,15 +9,13 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property3 ({ tenantAccounts }) {
+async function Property3 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
         name: 'Green Haven Apartments',
-        country: 'Indonesia',
         address: 'Jl. Senopati No.45, Kebayoran Baru, South Jakarta, Special Capital Region of Jakarta',
         zipCode: '12190',
-        city: 'Jakarta',
         location: '-6.236845, 106.807230',
         checkInStartTime: new Date('2024-12-03T14:00:00Z'),
         checkInEndTime: new Date('2024-12-03T21:00:00Z'),
@@ -46,10 +44,10 @@ async function Property3 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,

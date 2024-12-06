@@ -9,15 +9,13 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property16 ({ tenantAccounts }) {
+async function Property16 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
         name: 'Grand Whiz Poins Simatupang Jakarta',
-        country: 'Indonesia',
         address: 'Simatupang, Jl. R.A. Kartini No.1, Lb. Bulus, Cilandak District, Jakarta, Special Capital Region of Jakarta',
         zipCode: '12440',
-        city: 'South Jakarta',
         location: '-6.2899462, 106.7755765',
         checkInStartTime: new Date('2024-12-03T15:00:00Z'),
         checkInEndTime: new Date('2024-12-03T23:59:00Z'),
@@ -48,10 +46,10 @@ async function Property16 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,

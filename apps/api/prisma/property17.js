@@ -9,15 +9,13 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property17 ({ tenantAccounts }) {
+async function Property17 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
         name: 'The Grand Manhattan Residences',
-        country: 'USA',
         address: '15 West 53rd Street, Midtown, New York City, NY 10019',
         zipCode: '10019',
-        city: 'New York',
         location: '40.761432, -73.977621',
         checkInStartTime: new Date('2024-12-03T15:00:00Z'),
         checkInEndTime: new Date('2024-12-03T22:00:00Z'),
@@ -46,10 +44,10 @@ async function Property17 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,

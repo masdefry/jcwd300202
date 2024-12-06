@@ -14,7 +14,7 @@ const TenantAuthPage = () => {
     <main className='flex justify-center'>
         <section className='md:w-[768px] w-full flex flex-col gap-8'>
             <AuthHGroup 
-            header1='Sign in create an account' 
+            header1='Sign in' 
             header6='You can sign in using your Roomify account to access  our services'
             />
             <Formik
@@ -28,18 +28,11 @@ const TenantAuthPage = () => {
             }}
             >
                 <Form className='flex flex-col gap-5'>
-                    <TextInput labelName='Enail' name='email' placeholder='example@email.com' type='email'/>
+                    <TextInput labelName='Email' name='email' placeholder='example@email.com' type='email'/>
                     <TextInput labelName='Password' name='password' placeholder='example123' type='password'/>
                     <AuthButton text='Continue'/>
                 </Form>
             </Formik>
-            <div className='flex gap-2 items-center justify-between'>
-                <div className='h-[1px] w-full bg-gray-300'></div>
-                <p className='min-w-max text-center rounded text-sm font-light'>or use of these option</p>
-                <div className='h-[1px] w-full bg-gray-300'></div>
-            </div>
-            <GoogleSignInButton />
-            <Separator />
             <Footer />
         </section>
     </main>

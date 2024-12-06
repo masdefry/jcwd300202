@@ -27,7 +27,7 @@ const RegisterPage = () => {
             }}
             >
                 <Form className='flex flex-col gap-5'>
-                    <TextInput labelName='Enail' name='email' placeholder='example@email.com' type='email'/>
+                    <TextInput labelName='Email' name='email' placeholder='example@email.com' type='email'/>
                     <AuthButton text='Continue with email'/>
                 </Form>
             </Formik>

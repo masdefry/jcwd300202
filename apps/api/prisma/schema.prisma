@@ -15,6 +15,10 @@ model User {
   id       String @id @default(cuid())
   email    String @unique
   password String
+  isVerified Boolean @default(false)
+  role     Role   @default(USER)
+  isGoogleRegistered Boolean @default(false)
+  token   String? @db.Text 
 
   profile     Profile[]
   transaction Transaction[]
@@ -30,12 +34,14 @@ model User {
 
 model Profile {
   id           String   @id @default(cuid())
-  username     String
-  phoneNumber String
-  birthDate   DateTime
-  nationality  String
-  gender       Gender
-  address      String
+  username     String   @default("Roomify friend's")
+  phoneNumber String?
+  birthDate   DateTime?
+  nationality  String?
+  gender       Gender?
+  address      String?
+  profilePictureUrl   String?
+
 
   userId String
   user   User   @relation(fields: [userId], references: [id])
@@ -52,10 +58,43 @@ enum Gender {
   FEMALE
 }
 
+model Country {
+  id Int @id @default(autoincrement())
+  name String 
+
+  cities City[]
+  property Property[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("countries")
+}
+
+model City {
+  id Int @id @default(autoincrement())
+  name String
+
+  countryId Int
+  country Country @relation(fields: [countryId], references: [id])
+
+  property Property[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("cities")
+}
+
 model Tenant {
   id       String @id @default(cuid())
   email    String @unique
   password String
+  role     Role   @default(TENANT)
+  isVerified Boolean @default(false)
+  token   String? @db.Text
 
   property    Property[]
   transaction Transaction[]
@@ -67,13 +106,16 @@ model Tenant {
   @@map("tenants")
 }
 
+enum Role {
+  USER
+  TENANT
+}
+
 model Property {
   id                String      @id @unique
   name              String
-  country           String
   address           String
   zipCode           String
-  city              String
   location          String
   checkInStartTime  DateTime
   checkInEndTime    DateTime
@@ -86,6 +128,12 @@ model Property {
 
   tenantId String
   tenant   Tenant @relation(fields: [tenantId], references: [id])
+
+  countryId Int
+  country Country @relation(fields: [countryId], references: [id])
+
+  cityId Int
+  city City @relation(fields: [cityId], references: [id])
 
   propertyRoomType    PropertyRoomType[]
   propertyDetail      PropertyDetail?

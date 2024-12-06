@@ -12,13 +12,13 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(cuid())
-  email    String @unique
-  password String
-  isVerified Boolean @default(false)
-  role     Role   @default(USER)
+  id                 String  @id @default(cuid())
+  email              String  @unique
+  password           String?
+  isVerified         Boolean @default(false)
+  role               Role    @default(USER)
   isGoogleRegistered Boolean @default(false)
-  token   String? @db.Text 
+  token              String? @db.Text
 
   profile     Profile[]
   transaction Transaction[]
@@ -33,17 +33,16 @@ model User {
 }
 
 model Profile {
-  id           String   @id @default(cuid())
-  username     String   @default("Roomify friend's")
-  phoneNumber String?
-  birthDate   DateTime?
-  nationality  String?
-  gender       Gender?
-  address      String?
-  profilePictureUrl   String?
+  id                String    @id @default(cuid())
+  username          String    @default("Roomify friend's")
+  phoneNumber       String?
+  birthDate         DateTime?
+  nationality       String?
+  gender            Gender?
+  address           String?
+  profilePictureUrl String?
 
-
-  userId String
+  userId String @unique
   user   User   @relation(fields: [userId], references: [id])
 
   createdAt DateTime  @default(now())
@@ -59,10 +58,10 @@ enum Gender {
 }
 
 model Country {
-  id Int @id @default(autoincrement())
-  name String 
+  id   Int    @id @default(autoincrement())
+  name String
 
-  cities City[]
+  cities   City[]
   property Property[]
 
   createdAt DateTime  @default(now())
@@ -73,11 +72,11 @@ model Country {
 }
 
 model City {
-  id Int @id @default(autoincrement())
+  id   Int    @id @default(autoincrement())
   name String
 
   countryId Int
-  country Country @relation(fields: [countryId], references: [id])
+  country   Country @relation(fields: [countryId], references: [id])
 
   property Property[]
 
@@ -89,12 +88,12 @@ model City {
 }
 
 model Tenant {
-  id       String @id @default(cuid())
-  email    String @unique
-  password String
-  role     Role   @default(TENANT)
+  id         String  @id @default(cuid())
+  email      String  @unique
+  password   String?
+  role       Role    @default(TENANT)
   isVerified Boolean @default(false)
-  token   String? @db.Text
+  token      String? @db.Text
 
   property    Property[]
   transaction Transaction[]
@@ -112,7 +111,7 @@ enum Role {
 }
 
 model Property {
-  id                String      @id @unique
+  id                String   @id @unique
   name              String
   address           String
   zipCode           String
@@ -121,7 +120,7 @@ model Property {
   checkInEndTime    DateTime
   checkOutStartTime DateTime
   checkOutEndTime   DateTime
-  slug              String  @unique
+  slug              String   @unique
 
   propertyTypeId Int
   propertyType   PropertyType @relation(fields: [propertyTypeId], references: [id])
@@ -130,10 +129,10 @@ model Property {
   tenant   Tenant @relation(fields: [tenantId], references: [id])
 
   countryId Int
-  country Country @relation(fields: [countryId], references: [id])
+  country   Country @relation(fields: [countryId], references: [id])
 
   cityId Int
-  city City @relation(fields: [cityId], references: [id])
+  city   City @relation(fields: [cityId], references: [id])
 
   propertyRoomType    PropertyRoomType[]
   propertyDetail      PropertyDetail?
@@ -150,16 +149,16 @@ model Property {
 }
 
 model PropertyDetail {
-  id                       Int    @id @default(autoincrement())
+  id                      Int    @id @default(autoincrement())
   propertyDescription     String @db.Text
   neighborhoodDescription String @db.Text
   phoneNumber             String
   url                     String
-  totalRooms               Int
+  totalRooms              Int
 
   propertyImage PropertyImage[]
 
-  propertyId String      @unique
+  propertyId String   @unique
   property   Property @relation(fields: [propertyId], references: [id])
 
   createdAt DateTime  @default(now())
@@ -229,12 +228,12 @@ model PropertyHasFacility {
 }
 
 model PropertyRoomType {
-  id          Int    @id @default(autoincrement())
-  name        String
-  rooms       Int?
-  capacity    Int
-  bathrooms   Int
-  price       Int
+  id         Int    @id @default(autoincrement())
+  name       String
+  rooms      Int?
+  capacity   Int
+  bathrooms  Int
+  price      Int
   totalRooms Int
 
   propertyRoomImage PropertyRoomImage[]
@@ -298,13 +297,13 @@ model PropertyRoomImage {
 }
 
 model HistoryView {
-  id        String @id @default(cuid())
-  
-  userId    String
-  user User @relation(fields: [userId], references: [id])
-  
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
   propertyId String
-  property  Property @relation(fields: [propertyId], references: [id])
+  property   Property @relation(fields: [propertyId], references: [id])
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -320,7 +319,7 @@ model Transaction {
   total        Int
   price        Int
   qty          Int
-  expiryDate   DateTime 
+  expiryDate   DateTime
 
   userId String
   user   User   @relation(fields: [userId], references: [id])
@@ -369,7 +368,7 @@ model Review {
   comment String @db.Text
 
   propertyId String
-  property  Property @relation(fields: [propertyId], references: [id])
+  property   Property @relation(fields: [propertyId], references: [id])
 
   userId String
   user   User   @relation(fields: [userId], references: [id])

@@ -59,6 +59,67 @@ const users = [
     }
 ]
 
+const countriesWithCities = [
+    {
+        name: 'China',
+        cities: ['Beijing', 'Hongkong', 'Shenzen', 'Chongqing', 'Wuhan', 'Shanghai', 'Chengdu', 'Nanning', 'Tianjin', 'Nanjing']
+    },
+    {
+        name: 'Indonesia',
+        cities: ['Jakarta', 'Surabaya', 'Gianyar Regency', 'Denpasar', 'Bandung', 'Surakarta', 'Tangerang', 'Yogyakarta', 'South Tangerang']
+    },
+    {
+        name: 'Japan',
+        cities: ['Osaka', 'Tokyo']
+    },
+    {
+        name: 'Malaysia',
+        cities: ['Kuala Lumpur']
+    },
+    {
+        name: 'South Korea',
+        cities: ['Seoul', 'Busan', 'Daegu']
+    },
+    {
+        name: 'Thailand',
+        cities: ['Bangkok', 'Pattaya']
+    },
+    {
+        name: 'United States of America',
+        cities: ['Chicago', 'Los Angeles', 'New York']
+    },
+]
+
+const countries = countriesWithCities.map(item => {
+    return {
+        name: item.name
+    }
+})
+
+const cities = countriesWithCities.map(item => {
+    const citiesArr = item.cities.forEach(itm => {
+        return {
+            name: itm,
+
+        }
+    })
+    return {
+        name: i
+    }
+})
+
+await prisma.country.createMany({
+    data: countries
+})
+
+await prisma.city.createMany({
+    data: [
+        {
+            name,
+            co
+        }
+    ]
+})
 
 const property_facility_arr = [
     'Bar','Club', 'Sauna', 
@@ -190,6 +251,8 @@ async function main() {
             })
             userAccounts.push(newUser)
         }
+
+        
 
         await tx.propertyType.createMany({
             data: propertyType

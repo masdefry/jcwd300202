@@ -7,23 +7,23 @@ import CityRecommendationCard from '@/features/home/components/CityRecommendatio
 export default function Home() {
   return (
     <main className='flex flex-col gap-10 lg:p-16 md:p-12 sm:p-8 p-4'>
-      <section className='grid grid-cols-2 h-fit gap-10'>
+      <section className='grid grid-cols-1 lg:grid-cols-2 h-fit gap-10'>
         <CityRecommendationCard 
         imgSrc='https://cdn.antaranews.com/cache/1200x800/2020/06/03/20200603_172512.jpg'
         alt='jakarta'
         city='Jakarta'
         country='Indonesia'
-        h1Size='text-5xl'
+        h1Size='lg:text-5xl text-3xl'
         />
         <CityRecommendationCard 
         imgSrc='https://klcciconic.com.my/wp-content/uploads/2020/03/TwinTower-e1587708654823-1024x767.jpg'
         alt='kuala-lumpur'
         city='Kuala Lumpur'
         country='Malaysia'
-        h1Size='text-5xl'
+        h1Size='lg:text-5xl text-3xl'
         />
       </section>
-      <section className='grid grid-cols-3 h-fit gap-10'>
+      <section className='grid grid-cols-1 lg:grid-cols-3 h-fit gap-10'>
         <CityRecommendationCard 
         imgSrc='https://www.judethetourist.com/wp-content/uploads/2023/11/BGC.jpg'
         alt='makati'

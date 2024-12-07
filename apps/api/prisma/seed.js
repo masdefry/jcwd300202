@@ -198,7 +198,11 @@ const propertyType = [
 ]
 
 async function main() {
-
+    
+        await prisma.propertyType.createMany({
+            data: propertyType
+        })
+    
         const country1 = await prisma.country.create({
             data: {
                 name: 'Indonesia'
@@ -219,6 +223,8 @@ async function main() {
             data: {
                 name: item,
                 countryId: country1.id,
+                directory: 'src/public/images',
+                filename: `Indonesia_${item}`
             },
             });
             return createdCity.id;
@@ -232,6 +238,8 @@ async function main() {
             data: {
                 name: item,
                 countryId: country2.id,
+                directory: 'src/public/images',
+                filename: `United_States_of_America_${item}`
             },
             });
             return createdCity.id;
@@ -261,11 +269,8 @@ async function main() {
             userAccounts.push(newUser)
         }
 
-        
-
-        await prisma.propertyType.createMany({
-            data: propertyType
-        })
+        console.log(cities1Id[0])
+        console.log(await cities1Id[0])
         
         await prisma.propertyFacility.createMany({
             data: propertyFacility
@@ -281,16 +286,16 @@ async function main() {
         await Property3({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[0].id })
         await Property4({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[4].id })
         await Property5({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[0].id })
-        await Property6({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[7].id })
+        await Property6({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[6].id })
         await Property7({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[0].id })
-        await Property8({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[9].id })
+        await Property8({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[8].id })
         await Property9({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[0].id })
-        await Property10({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[3].id })
+        await Property10({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[2].id })
         await Property11({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[0].id })
-        await Property12({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[3].id })
+        await Property12({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[2].id })
         await Property13({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[0].id })
-        await Property14({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[2].id })
-        await Property15({ tenantAccounts, countryId: country2.id, cityId: await cities1Id[3].id })
+        await Property14({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[1].id })
+        await Property15({ tenantAccounts, countryId: country2.id, cityId: await cities1Id[2].id })
         await Property16({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[0].id })
         await Property17({ tenantAccounts, countryId: country2.id, cityId: await cities2Id[2].id })
         await Property18({ tenantAccounts, countryId: country1.id, cityId: await cities1Id[0].id })

@@ -20,7 +20,7 @@ model User {
   isGoogleRegistered Boolean @default(false)
   token              String? @db.Text
 
-  profile     Profile[]
+  profile     Profile?
   transaction Transaction[]
   review      Review[]
   historyView HistoryView[]
@@ -74,6 +74,8 @@ model Country {
 model City {
   id   Int    @id @default(autoincrement())
   name String
+  directory String
+  filename String
 
   countryId Int
   country   Country @relation(fields: [countryId], references: [id])

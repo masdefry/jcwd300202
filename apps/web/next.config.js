@@ -32,6 +32,11 @@ const nextConfig = {
                 hostname: 'cache.marriott.com',
                 pathname: '**'
             },
+            {
+                protocol: 'https',
+                hostname: 'cf.bstatic.com',
+                pathname: '**'
+            },
         ]
     }
 }

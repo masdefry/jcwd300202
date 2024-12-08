@@ -5,7 +5,6 @@ interface IUploadMulterProps {
     storageType:string
 }
 
-export const uploadMulter = ({storageType}: IUploadMulterProps) => {
     const storage = multer.diskStorage({
         destination: function (req: Request, file: Express.Multer.File, cb:  (error: Error | null, destination: string) => void){
             cb(null, 'src/public/images')
@@ -28,5 +27,4 @@ export const uploadMulter = ({storageType}: IUploadMulterProps) => {
         return cb(null, true)
     }
 
-    return multer({storage: storage, fileFilter: fileFilter, limits: {fileSize: 2000000}})
-}
+    export const uploadMulter = multer({storage, fileFilter, limits: { fieldSize: 2000000 }})

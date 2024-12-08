@@ -181,7 +181,7 @@ export const registerTenant = async(req: Request, res: Response, next: NextFunct
     }
 }
 
-export const sendVerifyEmail = async(req: Request, res: Response, next: NextFunction) => {
+export const verifyEmailRequest = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const { id, role } = req.body
         let account
@@ -260,4 +260,65 @@ export const sendVerifyEmail = async(req: Request, res: Response, next: NextFunc
     } catch (error) {
         next(error)
     }
+}
+
+export const verifyEmail = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id, role, token, password } = req.body
+    
+        let account, profile;
+        if(role === 'TENANT') {
+            account = await prisma.tenant.update({
+                where: {
+                    id,
+                    token
+                }, 
+                data: {
+                    password
+                }
+            })
+            
+            if(!account) throw { msg: 'Id or token invalid!', status: 406 }
+
+            profile = await prisma.profile.findUnique({
+                where: {
+                    userId: account.id
+                }
+            })
+
+        } else if( role === "USER") {
+            account = await prisma.user.update({
+                where: {
+                    id,
+                    token
+                },
+                data: {
+                    password,
+                    isVerified: true
+                }
+            })
+        } else {
+            throw { msg: 'Role invalid!', status: 406 }
+        }
+    
+        if(!account) throw { msg: 'Id or token invalid!', status: 406 }
+
+        const createdToken = await createToken({ id: account.id, role: account.role })
+
+        res.status(200).json({
+            error: false,
+            message: 'Verify email and set password success',
+            data: {
+                token: createdToken,
+                role: account.role,
+                username: profile?.username,
+                profilePictureUrl: profile?.profilePictureUrl,
+                isVerified: account.isVerified
+            }
+        })
+    } catch (error) {
+        next(error)
+    }
+
+
 }

@@ -13,7 +13,7 @@ export const createToken = async({ id, role }: ICreateToken) => {
     return await jwt.sign({data: {id, role}}, privateKeyJsonWebToken, { expiresIn: '1d' })
 }
 
-export const verifyToken = async( token: string) => {
+export const decodeToken = async( token: string) => {
     return await jwt.verify(token, privateKeyJsonWebToken)
 }
 

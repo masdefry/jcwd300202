@@ -13,11 +13,8 @@ const OrderPage = () => {
   }
   
 
-  const openModal = () => setIsOpen(true)
-  const closeModal = () => setIsOpen(false)
-
   return (
-    <main className="w-full h-screen">
+    <main className="w-full min-h-min">
       <section className="m-auto max-w-screen-2xl w-full h-full flex items-start gap-5 px-5 py-5">
         <div className="flex flex-col gap-3">
           <div className="collapse bg-white border w-[60rem] min-h-min rounded">

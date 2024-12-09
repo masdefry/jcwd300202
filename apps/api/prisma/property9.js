@@ -76,6 +76,7 @@ async function Property9 ({ tenantAccounts, countryId, cityId }) {
         const createdProperty9RoomType1 = await prisma.propertyRoomType.create({
             data: {
                 name: 'River View Studio',
+                description: 'The River View Studio offers stunning views of the serene river and is designed for those who cherish minimalistic living with modern comforts. This cozy and well-equipped studio features a clean design, a comfortable living space, and convenient amenities perfect for solo travelers or couples. Wake up to the calming sounds of the river and unwind in style. It offers both affordability and relaxation in a prime waterfront location.',
                 capacity: 2,
                 bathrooms: 1,
                 price: 4000000,
@@ -86,6 +87,7 @@ async function Property9 ({ tenantAccounts, countryId, cityId }) {
         const createdProperty9RoomType2 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Deluxe One-Bedroom Apartment',
+                description: 'Experience sophistication and comfort in the Deluxe One-Bedroom Apartment, ideal for couples and small families. With a spacious design, modern kitchen, and an elegantly furnished bedroom, this apartment offers a seamless combination of style and functionality. Relax in the spacious living area after a long day or cook your favorite meals in the fully equipped kitchen. The perfect choice for those seeking both relaxation and convenience.',
                 capacity: 4,
                 bathrooms: 1,
                 price: 6000000,
@@ -96,6 +98,7 @@ async function Property9 ({ tenantAccounts, countryId, cityId }) {
         const createdProperty9RoomType3 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Luxury Two-Bedroom Suite',
+                description: 'The Luxury Two-Bedroom Suite offers the perfect blend of elegance, comfort, and modern living. Featuring two spacious bedrooms, two bathrooms, and premium design elements, this suite is ideal for families, groups, or business travelers seeking a premium experience. Guests can enjoy access to all necessary amenities while reveling in a stylish, well-thought-out interior. It’s the perfect choice for both long-term and short-term stays.',
                 rooms: 2,
                 capacity: 5,
                 bathrooms: 2,

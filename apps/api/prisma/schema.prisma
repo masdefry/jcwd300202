@@ -34,13 +34,14 @@ model User {
 
 model Profile {
   id                String    @id @default(cuid())
-  username          String    @default("Roomify friend's")
+  username          String    @default("Roomify's friend")
   phoneNumber       String?
   birthDate         DateTime?
   nationality       String?
   gender            Gender?
   address           String?
-  profilePictureUrl String?
+  directory String?
+  filename  String?
 
   userId String @unique
   user   User   @relation(fields: [userId], references: [id])
@@ -52,6 +53,7 @@ model Profile {
   @@map("profile")
 }
 
+
 enum Gender {
   MALE
   FEMALE
@@ -59,7 +61,10 @@ enum Gender {
 
 model Country {
   id   Int    @id @default(autoincrement())
+  description String
   name String
+  filename String
+  directory String
 
   cities   City[]
   property Property[]
@@ -96,6 +101,11 @@ model Tenant {
   role       Role    @default(TENANT)
   isVerified Boolean @default(false)
   token      String? @db.Text
+  pic        String? @default("Roomify's tenant")
+  phoneNumber       String?
+  address           String?
+  directory String?
+  filename  String?
 
   property    Property[]
   transaction Transaction[]
@@ -123,18 +133,19 @@ model Property {
   checkOutStartTime DateTime
   checkOutEndTime   DateTime
   slug              String   @unique
+  
 
-  propertyTypeId Int
-  propertyType   PropertyType @relation(fields: [propertyTypeId], references: [id])
+  propertyTypeId Int?
+  propertyType   PropertyType? @relation(fields: [propertyTypeId], references: [id])
 
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
+  tenantId String?
+  tenant   Tenant? @relation(fields: [tenantId], references: [id])
 
-  countryId Int
-  country   Country @relation(fields: [countryId], references: [id])
+  countryId Int?
+  country   Country? @relation(fields: [countryId], references: [id])
 
-  cityId Int
-  city   City @relation(fields: [cityId], references: [id])
+  cityId Int?
+  city   City? @relation(fields: [cityId], references: [id])
 
   propertyRoomType    PropertyRoomType[]
   propertyDetail      PropertyDetail?
@@ -232,6 +243,7 @@ model PropertyHasFacility {
 model PropertyRoomType {
   id         Int    @id @default(autoincrement())
   name       String
+  description String
   rooms      Int?
   capacity   Int
   bathrooms  Int

@@ -3,11 +3,15 @@
 import Image from 'next/image'
 import styles from './page.module.css'
 import CityRecommendationCard from '@/features/home/components/CityRecommendationCard'
+import Hero from '@/features/home/components/Hero'
 
 export default function Home() {
   return (
     <main className='flex flex-col gap-10 lg:p-16 md:p-12 sm:p-8 p-4'>
       <section className='grid grid-cols-1 lg:grid-cols-2 h-fit gap-10'>
+        <section className='col-[1/2] lg:col-[1/3] relative right-4 sm:right-8 md:right-12 lg:right-16'>
+          <Hero />
+        </section>
         <CityRecommendationCard 
         imgSrc='https://cdn.antaranews.com/cache/1200x800/2020/06/03/20200603_172512.jpg'
         alt='jakarta'

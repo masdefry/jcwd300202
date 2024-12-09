@@ -82,6 +82,14 @@ export const loginUser = async(req: Request, res: Response, next: NextFunction) 
 export const registerUser = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const { email } = req.body
+
+        const isUserExist = await prisma.user.findUnique({
+            where: {
+                email
+            }
+        })
+
+        if(isUserExist) throw { msg: 'User already exist!', status: 406 }
         
         const createdUser = await prisma.user.create({
             data: {
@@ -140,6 +148,15 @@ export const registerUser = async(req: Request, res: Response, next: NextFunctio
 export const registerTenant = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const { email, password } = req.body
+
+        
+        const isTenantExist = await prisma.tenant.findUnique({
+            where: {
+                email
+            }
+        })
+
+        if(isTenantExist) throw { msg: 'Tenant already exist!', status: 406 }
 
         const createdTenant = await prisma.tenant.create({
             data: {

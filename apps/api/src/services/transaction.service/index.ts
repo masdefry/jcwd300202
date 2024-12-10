@@ -64,7 +64,7 @@ export const createTransactionService = async({ checkInDate, checkOutDate, total
             id,
             snapToken,
             checkInDate, 
-            checkOutDate, 
+            checkOutDate,  
             total, 
             price, 
             qty, 

@@ -1,38 +1,52 @@
 'use client'
 
 import React from 'react'
-import { Formik, Form, Field, ErrorMessage } from 'formik'
+import { Formik, Form, ErrorMessage } from 'formik'
 import Footer from '@/features/auth/components/Footer'
 import AuthButton from '@/features/auth/components/AuthButton'
 import TextInput from '@/features/auth/components/TextInput'
-import GoogleSignInButton from '@/features/auth/components/GoogleSignInButton'
 import AuthHGroup from '@/features/auth/components/AuthHGroup'
+import { loginValidationSchema } from '@/features/auth/schemas/loginValidationSchema'
+import useLoginHook from '@/features/auth/hooks/useLoginHook'
 import Separator from '@/features/auth/components/Separator'
 
+
 const TenantAuthPage = () => {
+  const { 
+    mutateLogin,
+    isPendingLogin
+   } = useLoginHook({
+    role: 'tenant',
+    endPoint: '/auth/tenant'
+  })
+
   return (
     <main className='flex justify-center'>
         <section className='md:w-[768px] w-full flex flex-col gap-8'>
             <AuthHGroup 
             header1='Sign in' 
-            header6='You can sign in using your Roomify account to access  our services'
+            header6='You can sign in using your Roomify account to access our services'
             />
             <Formik
             initialValues={{
                 email: '',
                 password: ''
             }}
-        
-            onSubmit={(values) => {
-
+            validationSchema={loginValidationSchema}
+            onSubmit={(values, {resetForm }) => {
+                mutateLogin(values)
+                resetForm()
             }}
             >
                 <Form className='flex flex-col gap-5'>
                     <TextInput labelName='Email' name='email' placeholder='example@email.com' type='email'/>
+                    <ErrorMessage name='email' component={'div'} className='text-red-600 text-sm mt-[-10px] ml-4'/>
                     <TextInput labelName='Password' name='password' placeholder='example123' type='password'/>
-                    <AuthButton text='Continue'/>
+                    <ErrorMessage name='password' component={'div'} className='text-red-600 text-sm mt-[-10px] ml-4'/>
+                    <AuthButton isPending={isPendingLogin} text='Continue'/>
                 </Form>
             </Formik>
+            <Separator />
             <Footer />
         </section>
     </main>

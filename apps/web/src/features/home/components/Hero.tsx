@@ -7,7 +7,11 @@ import { useEffect } from 'react'
 import { IoMdArrowDropright } from "react-icons/io";
 import { IoMdArrowDropleft } from "react-icons/io";
 
-const Hero = () => {
+interface IHeroProps {
+  isPending: boolean
+}
+
+const Hero = ({ isPending }: IHeroProps) => {
 
   const { 
     heroSlider,
@@ -19,6 +23,13 @@ const Hero = () => {
   useEffect(() => {
     setTimeout(next,5000)
   })
+
+  if(isPending) {
+    return (
+      <section className='w-screen h-[300px] overflow-hidden relative skeleton rounded-none'></section>
+    )
+  }
+
 
   return (
         <section id='hero-section-carousel' className='w-screen h-[300px] overflow-hidden relative'>

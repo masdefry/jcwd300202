@@ -139,7 +139,7 @@ export const registerUser = async(req: Request, res: Response, next: NextFunctio
 
 export const registerTenant = async(req: Request, res: Response, next: NextFunction) => {
     try {
-        const { email, password } = req.body
+        const { email } = req.body
 
         const createdTenant = await prisma.tenant.create({
             data: {
@@ -321,4 +321,130 @@ export const verifyEmail = async(req: Request, res: Response, next: NextFunction
     }
 
 
+}
+
+export const signInWithGoogle = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const sendEmailResetPassword = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { email, role } = req.body
+        let account;
+
+        if(role === 'USER') {
+            account = await prisma.user.findUnique({
+                where: {
+                    email
+                }
+            })
+
+            if(!account!.id) throw { msg: 'User not found!', status: 406 }
+
+            const token = await createTokenExpiresIn1H({ id: account!.id, role: account!.role })
+            const link = `http://localhost:3000/auth/reset-password/${token}`
+
+            // bikin html
+
+            await transporter.sendMail({
+                to: email,
+                subject: 'Reset Password [Roomify]',
+                html: ''
+            })
+
+        }else if( role === 'TENANT' ) {
+            account = await prisma.tenant.findUnique({
+                where: {
+                    email
+                }
+            })
+
+            if(!account!.id)  throw {msg:'Tenant not found!', status: 406}
+            
+            const token = await createTokenExpiresIn1H({ id: account!.id, role: account!.role })
+            const link = `http://localhost:3000/auth/reset-password/${token}`
+
+            // bikin html
+
+            await transporter.sendMail({
+                to: email,
+                subject: 'Reset Password [Roomify]',
+                html: ''
+            })
+
+        } else {
+            throw { msg: 'Role unauthorized!', status: 406 }
+        }
+
+        res.status(200).json({
+            error: false,
+            message: 'Send email reset password success',
+            data: {
+                email
+            }
+        })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const keepAuth = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id, role } = req.body
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const resetPassword = async(req: Request, res: Response, next: NextFunction) => {
+    try {   
+        const { password, email, role, token } = req.body
+        let account;
+
+        if( role === 'USER') {
+            account = await prisma.user.update({
+                where: {
+                    email,
+                    token
+                },
+                data: {
+                    password,
+                    token: ''
+                }
+            })
+
+            if(!account.id) throw { msg: 'User not found!', status: 406 }
+        } else if( role === 'TENANT' ) {
+            account = await prisma.tenant.update({
+                where: {
+                    email,
+                    token
+                },
+                data: {
+                    password,
+                    token: ''
+                }
+            })
+
+            if( !account.id ) throw { msg: 'Tenant not found!', status: 406 }
+        } else {
+            throw { msg: 'Role unauthorized!', status: 406 }
+        }
+
+        res.status(200).json({
+            error: false,
+            message: 'Update password success',
+            data: {
+                email
+            }
+        })
+    } catch (error) {
+        next(error)
+    }
 }

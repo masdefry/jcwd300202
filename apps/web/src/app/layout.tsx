@@ -23,7 +23,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <TanstackProvider>
           <Header />
-          {children}
+            {children}
           <Toaster />
           <Footer />
         </TanstackProvider>

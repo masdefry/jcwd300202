@@ -3,6 +3,8 @@ import { comparePassword } from "@/utils/hashPassword";
 import { createToken, createTokenExpiresIn1H } from "@/utils/jwt";
 import { transporter } from "@/utils/transporter";
 import { NextFunction, Request, Response } from "express";
+import fs from 'fs'
+import { compile } from "handlebars";
 
 export const loginTenant = async(req: Request, res: Response, next: NextFunction) => {
     try {
@@ -91,14 +93,13 @@ export const registerUser = async(req: Request, res: Response, next: NextFunctio
 
         if(isEmailExist?.id) throw { msg: 'User already exist!', status: 406 } 
         let tokenForVerifyEmail, username, profilePictureUrl, token, createdUser
-        console.log(1)
+        
         await prisma.$transaction(async(tx) => {
             createdUser = await tx.user.create({
                 data: {
                     email
                 }
             })
-            console.log(2)
             
             const createdProfile = await tx.profile.create({
                 data: {
@@ -125,13 +126,14 @@ export const registerUser = async(req: Request, res: Response, next: NextFunctio
         
         const verifyEmailLink = `https://localhost:3000/auth/verify/${tokenForVerifyEmail}`
         
-        console.log(3)
-        //VERIFY LINK DIPAKAI BUAT HTMLNYA NANTI
+        const emailBody = fs.readFileSync('./src/public/body.email.html/verify.email.html', 'utf-8')
+        let compiledEmailBody: any = await compile(emailBody)
+        compiledEmailBody({username, url: verifyEmailLink})
 
         await transporter.sendMail({
             to: email,
             subject: 'Verify Email [Roomify]',
-            html: '<h1>Verify Please</h1>'
+            html: compiledEmailBody
         })
 
         res.status(201).json({
@@ -162,7 +164,6 @@ export const registerTenant = async(req: Request, res: Response, next: NextFunct
 
         if(isEmailExist?.id) throw { msg: 'Tenant already exist!', status: 406 }
 
-
         const createdTenant = await prisma.tenant.create({
             data: {
                 email
@@ -171,6 +172,12 @@ export const registerTenant = async(req: Request, res: Response, next: NextFunct
 
         const token = await createToken({id: createdTenant.id, role: createdTenant.role})
         const tokenForVerifyEmail = await createTokenExpiresIn1H({id: createdTenant.id, role: createdTenant.role})
+
+        const verifyEmailLink = `https://localhost:3000/auth/verify/${tokenForVerifyEmail}`
+        
+        const emailBody = fs.readFileSync('./src/public/body.email.html/verify.email.html', 'utf-8')
+        let compiledEmailBody: any = await compile(emailBody)
+        compiledEmailBody({username: createdTenant.pic, url: verifyEmailLink})
 
         await prisma.tenant.update({
             where: {
@@ -184,7 +191,7 @@ export const registerTenant = async(req: Request, res: Response, next: NextFunct
         await transporter.sendMail({
             to: email,
             subject: 'Verify Email [Roomify]',
-            html: '<h1>Verify Please</h1>'
+            html: compiledEmailBody
         })
 
         res.status(201).json({

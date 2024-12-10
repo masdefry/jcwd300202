@@ -76,7 +76,8 @@ async function Property6 ({ tenantAccounts, countryId, cityId }) {
 
         const createdProperty6RoomType1 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Ultimate',
+                name: 'Oceanfront Suite',
+                description: `The Oceanfront Suite offers breathtaking views of the sea, providing a perfect blend of luxury and relaxation. With expansive floor-to-ceiling windows, this suite features a spacious living area, a private bedroom with a king-sized bed, and an elegant bathroom with a soaking tub and separate rain shower. Guests can enjoy amenities such as a minibar, premium coffee maker, smart TV, and a high-end sound system. A private balcony overlooks the coastline, making this suite ideal for those seeking a serene and upscale coastal retreat.`,
                 rooms: 2,
                 capacity: 4,
                 bathrooms: 2,
@@ -87,7 +88,8 @@ async function Property6 ({ tenantAccounts, countryId, cityId }) {
         })
         const createdProperty6RoomType2 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Gold',
+                name: 'Executive Room',
+                description: `The Executive Room is designed with business travelers in mind, offering a perfect balance of work and relaxation. This room features a king-sized bed, a spacious work desk with ergonomic seating, and high-speed internet access to ensure productivity. It also includes a flat-screen TV, a minibar, and a coffee machine for added convenience. The modern bathroom is equipped with a rain shower and luxury bath products. Whether you're attending meetings or relaxing after a long day, the Executive Room offers all the comforts needed for a successful and comfortable stay.`,
                 capacity: 2,
                 bathrooms: 1,
                 price: 1300000,
@@ -97,7 +99,8 @@ async function Property6 ({ tenantAccounts, countryId, cityId }) {
         })
         const createdProperty6RoomType3 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Silver',
+                name: 'Family Room',
+                description: `The Family Room is ideal for families or groups seeking extra space and comfort. This room is thoughtfully designed to accommodate up to four guests, featuring two queen-sized beds and a cozy seating area. The room is equipped with a flat-screen TV, a mini-fridge, and a complimentary tea and coffee station. The spacious bathroom includes a shower and family-friendly amenities. Perfect for family vacations or group getaways, the Family Room ensures a memorable stay with plenty of room to relax and unwind together.`,
                 capacity: 2,
                 bathrooms: 1,
                 price: 800000,

@@ -77,7 +77,8 @@ async function Property4 ({ tenantAccounts, countryId, cityId }) {
         
         const createdProperty4RoomType1 = await prisma.propertyRoomType.create({
             data: {
-                name: 'First',
+                name: 'Penthouse Suite',
+                description: `The Penthouse Suite is the epitome of luxury and sophistication, offering panoramic views of the city or surrounding landscape. This spacious suite features a separate living area, a private bedroom with a king-sized bed, and a lavish bathroom with a Jacuzzi and rain shower. The suite is equipped with top-tier amenities, including a minibar, a Nespresso machine, a smart TV, and a sound system. Guests can enjoy exclusive access to a private terrace or balcony, ideal for unwinding in style. Perfect for those seeking an extravagant escape or a memorable special occasion.`,
                 rooms: 3,
                 capacity: 6,
                 bathrooms: 3,
@@ -88,7 +89,8 @@ async function Property4 ({ tenantAccounts, countryId, cityId }) {
         })
         const createdProperty4RoomType2 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Extra',
+                name: 'Garden View Deluxe',
+                description: `The Garden View Deluxe Room offers a tranquil retreat with beautiful views of the hotel’s lush gardens. This room is elegantly furnished with a king-sized bed, plush linens, and a cozy seating area. It also includes a minibar, coffee machine, and a flat-screen TV. The modern bathroom is designed with a spacious rain shower and high-quality toiletries. With a peaceful ambiance, this room is ideal for those looking for comfort and a serene atmosphere while being surrounded by nature, offering the perfect balance of luxury and tranquility.`,
                 rooms: 2,
                 capacity: 4,
                 bathrooms: 2,
@@ -99,7 +101,8 @@ async function Property4 ({ tenantAccounts, countryId, cityId }) {
         })
         const createdProperty4RoomType3 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Compact',
+                name: 'Cozy Queen Room',
+                description: `The Cozy Queen Room is designed for guests who appreciate a warm and inviting space with all the essentials for a comfortable stay. It features a queen-sized bed with soft linens, a work desk, and a flat-screen TV. The room also includes a mini-fridge, complimentary tea and coffee-making facilities, and free high-speed internet. The private bathroom is equipped with a shower and essential toiletries. Ideal for solo travelers or couples looking for an affordable, yet comfortable option, the Cozy Queen Room offers great value without compromising on quality.`,
                 capacity: 2,
                 bathrooms: 1,
                 price: 1600000,

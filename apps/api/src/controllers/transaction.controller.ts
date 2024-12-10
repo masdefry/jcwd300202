@@ -6,7 +6,7 @@ export const createTransaction = async(req: Request, res: Response, next: NextFu
     try {
         const { checkInDate, checkOutDate, total, price, qty, expiryDate, userId, tenantId, propertyId, roomId }: ITransaction= req.body
 
-        const payment = await createTransactionService({ checkInDate, checkOutDate, total, price, qty, expiryDate, userId, tenantId, propertyId, roomId})
+        const payment = await createTransactionService({ checkInDate, checkOutDate, total, price, qty, expiryDate, userId, tenantId, propertyId, roomId })
 
         res.status(201).json({
             message: 'Transaction created successfully',

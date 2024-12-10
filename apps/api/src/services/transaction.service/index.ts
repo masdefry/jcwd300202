@@ -50,6 +50,27 @@ export const createTransactionService = async({ checkInDate, checkOutDate, total
 
         const snapToken = await tokenSnap.createTransaction(params)
 
-        return snapToken;
+        const room = await prisma.propertyRoomType.findUnique({
+            where: {
+                id: roomId
+            },
+            include: {
+                property: true
+            }
+        })
+
+
+        return {
+            id,
+            snapToken,
+            checkInDate, 
+            checkOutDate, 
+            total, 
+            price, 
+            qty, 
+            expiryDate, 
+            roomName: room?.name,
+            propertyName: room?.property.name
+        };
     })
 }

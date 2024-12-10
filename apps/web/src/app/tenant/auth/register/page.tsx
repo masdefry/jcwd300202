@@ -8,8 +8,16 @@ import AuthButton from '@/features/auth/components/AuthButton'
 import Separator from '@/features/auth/components/Separator'
 import GoogleSignInButton from '@/features/auth/components/GoogleSignInButton'
 import AuthHGroup from '@/features/auth/components/AuthHGroup'
+import useRegisterHook from '@/features/auth/hooks/useRegisterHook'
 
 const TenantRegisterPage = () => {
+  const { 
+    mutateRegister,
+    isPendingRegister
+ } = useRegisterHook({
+    endPoint: '/auth/tenant/register',
+    role: 'tenant'
+  })
   return (
     <main className='flex justify-center'>
         <section className='md:w-[768px] w-full flex flex-col gap-8'>
@@ -22,21 +30,16 @@ const TenantRegisterPage = () => {
                 email: ''
             }}
         
-            onSubmit={(values) => {
-
+            onSubmit={(values, { resetForm }) => {
+                mutateRegister(values)
+                resetForm()
             }}
             >
                 <Form className='flex flex-col gap-5'>
                     <TextInput labelName='Email' name='email' placeholder='example@email.com' type='email'/>
-                    <AuthButton text='Continue with email'/>
+                    <AuthButton isPending={isPendingRegister} text='Continue with email'/>
                 </Form>
             </Formik>
-            <div className='flex gap-2 items-center justify-between'>
-                <div className='h-[1px] w-full bg-gray-300'></div>
-                <p className='min-w-max text-center text-sm font-light'>or use of these option</p>
-                <div className='h-[1px] w-full bg-gray-300'></div>
-            </div>
-            <GoogleSignInButton />
             <Separator />
             <Footer />
         </section>

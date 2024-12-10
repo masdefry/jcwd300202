@@ -162,6 +162,7 @@ export const registerTenant = async(req: Request, res: Response, next: NextFunct
 
         if(isEmailExist?.id) throw { msg: 'Tenant already exist!', status: 406 }
 
+
         const createdTenant = await prisma.tenant.create({
             data: {
                 email

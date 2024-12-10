@@ -37,6 +37,11 @@ const nextConfig = {
                 hostname: 'cf.bstatic.com',
                 pathname: '**'
             },
+            {
+                protocol: 'http',
+                hostname: 'localhost',
+                pathname: '**'
+            },
         ]
     }
 }

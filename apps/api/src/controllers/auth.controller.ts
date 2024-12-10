@@ -93,14 +93,13 @@ export const registerUser = async(req: Request, res: Response, next: NextFunctio
 
         if(isEmailExist?.id) throw { msg: 'User already exist!', status: 406 } 
         let tokenForVerifyEmail, username, profilePictureUrl, token, createdUser
-       
+        
         await prisma.$transaction(async(tx) => {
             createdUser = await tx.user.create({
                 data: {
                     email
                 }
             })
-           
             
             const createdProfile = await tx.profile.create({
                 data: {

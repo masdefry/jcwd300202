@@ -1,19 +1,18 @@
 'use client'
 
-import React from 'react'
-import { Formik, Form } from 'formik'
-import TextInput from '@/features/auth/components/TextInput'
-import AuthButton from '@/features/auth/components/AuthButton'
 import AuthHGroup from '@/features/auth/components/AuthHGroup'
-import Footer from '@/features/auth/components/Footer'
+import AuthButton from '@/features/auth/components/AuthButton'
+import TextInput from '@/features/auth/components/TextInput'
+import { Formik, Form } from 'formik'
+import React from 'react'
 
-const VerifyEmailUserPage = () => {
+const SetResetPasswordUserPage = () => {
   return (
     <main className='flex justify-center'>
         <section className='md:w-[768px] w-full flex flex-col gap-8'>
             <AuthHGroup 
-            header1='Verify Email'
-            header6='Please input new password for completing email verification, enjoy Roomify!'
+            header1='Reset Password'
+            header6='Please enter new password to complete the password reset process, enjoy Roomify!'
             />
             <Formik
             initialValues={{
@@ -35,4 +34,4 @@ const VerifyEmailUserPage = () => {
   )
 }
 
-export default VerifyEmailUserPage
+export default SetResetPasswordUserPage

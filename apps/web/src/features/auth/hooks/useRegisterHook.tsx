@@ -17,11 +17,14 @@ const useRegisterHook = ({ endPoint, role }: IUseRegisterHookProps) => {
         onSuccess:(res) => {
             toast({
                 title: `Register ${role} success`,
+                description: 'Please check your email to verify'
             })
         }, 
         onError: (err) => {
+            console.log(err)
             toast({
                 title: `Register ${role} failed!`,
+                description: 'Try again',
                 variant: 'destructive'
             }) 
         } })

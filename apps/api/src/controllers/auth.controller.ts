@@ -54,12 +54,6 @@ export const loginUser = async(req: Request, res: Response, next: NextFunction) 
         if( !isEmailExist?.id ) throw { msg: 'User not found!', status: 406 }
         if( !isEmailExist?.password ) throw { msg: 'Please verify email first!', status: 406 }
 
-        const userProfile = await prisma.profile.findUnique({
-            where: {
-                userId: isEmailExist!.id
-            }
-        })
-
         const isPasswordValid = await comparePassword( password, isEmailExist!.password )
         if(!isPasswordValid) throw { msg: 'Password invalid!', status: 406 }
 
@@ -69,8 +63,8 @@ export const loginUser = async(req: Request, res: Response, next: NextFunction) 
             errror: false,
             message: 'Login success',
             data: {
-                username: userProfile?.username,
-                profilePictureUrl: `${userProfile?.directory}/${userProfile?.filename}`,
+                username: isEmailExist?.username,
+                profilePictureUrl: `${isEmailExist?.directory}/${isEmailExist?.filename}`,
                 role: isEmailExist?.role,
                 isVerified: isEmailExist?.isVerified,
                 token
@@ -100,14 +94,8 @@ export const registerUser = async(req: Request, res: Response, next: NextFunctio
                     email
                 }
             })
-            
-            const createdProfile = await tx.profile.create({
-                data: {
-                    userId: createdUser.id
-                }
-            })
     
-            username = createdProfile?.username
+            username = createdUser?.username
     
             token = await createToken({id: createdUser.id, role: createdUser.role})
     
@@ -295,7 +283,7 @@ export const verifyEmail = async(req: Request, res: Response, next: NextFunction
     try {
         const { id, role, token, password } = req.body
     
-        let account, profile;
+        let account, username;
         if(role === 'TENANT') {
             account = await prisma.tenant.update({
                 where: {
@@ -307,10 +295,7 @@ export const verifyEmail = async(req: Request, res: Response, next: NextFunction
                 }
             })
 
-            profile = {
-                directory: account.directory,
-                filename: account.filename,
-            }
+            username = account?.pic
             
         } else if( role === "USER") {
             account = await prisma.user.update({
@@ -326,11 +311,7 @@ export const verifyEmail = async(req: Request, res: Response, next: NextFunction
 
             if(!account) throw { msg: 'Id or token invalid!', status: 406 }
 
-            profile = await prisma.profile.findUnique({
-                where: {
-                    userId: account.id
-                }
-            })
+            username = account?.username
         } else {
             throw { msg: 'Role invalid!', status: 406 }
         }
@@ -345,8 +326,8 @@ export const verifyEmail = async(req: Request, res: Response, next: NextFunction
             data: {
                 token: createdToken,
                 role: account.role,
-                username: profile?.username,
-                profilePictureUrl: `${profile?.directory}/${profile?.filename}`,
+                username,
+                profilePictureUrl: `${account?.directory}/${account?.filename}`,
                 isVerified: account.isVerified
             }
         })

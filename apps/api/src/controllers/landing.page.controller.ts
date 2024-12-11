@@ -3,8 +3,107 @@ import { NextFunction, Request, Response } from "express";
 
 export const getLandingPageData = async(req: Request, res: Response, next: NextFunction) => {
     try {
-        let cities;
+        const { id, role } = req.body
+        let cities, user;
+        let propertyByHistoryView: any[] = []
+        let propertyByRecentBooks: any[] = []
+        let propertyByUserCountry: any[] = []
+        if(id) {
+            user = await prisma.user.findUnique({
+                where: {
+                    id
+                }
+            })
 
+            if(user!.id) {
+                const propertyIdByRecentBooks = await prisma.transaction.findMany({
+                    where: {
+                        userId: id
+                    },
+                    include: {
+                        property: {
+                            include: {
+                                city: true,
+                                country: true,
+                                propertyRoomType: {
+                                    orderBy: {
+                                        price: 'asc'
+                                    }
+                                },
+                                propertyDetail: {
+                                    include: {
+                                        propertyImage: true
+                                    }
+                                },
+                                review: true
+                            }
+                        }
+                    }
+                })
+        
+                propertyByRecentBooks = propertyIdByRecentBooks.map(item => {
+                    return item.property
+                })
+        
+                const propertyIdByHistoryView = await prisma.historyView.findMany({
+                    where: {
+                        userId: id
+                    },
+                    include: {
+                        property: {
+                            include: {
+                                city: true,
+                                country: true,
+                                propertyRoomType: {
+                                    orderBy: {
+                                        price: 'asc'
+                                    }
+                                },
+                                propertyDetail: {
+                                    include: {
+                                        propertyImage: true
+                                    }
+                                },
+                                review: true
+                            }
+                        }
+                    },
+                    take: 10
+                })
+        
+                propertyByHistoryView = propertyIdByHistoryView.map(item => {
+                    return item.property
+                })
+                
+                if(user?.countryId) {
+                    propertyByUserCountry = await prisma.property.findMany({
+                        where: {
+                            countryId: user?.countryId
+                        },
+                        take: 10,
+                        include: {
+                            city: true,
+                            country: true,
+                            propertyRoomType: {
+                                orderBy: {
+                                    price: 'asc'
+                                }
+                            },
+                            propertyDetail: {
+                                include: {
+                                    propertyImage: true
+                                }
+                            },
+                            review: true
+                        }
+                    })
+                }
+
+                
+            }
+        }
+
+        
         const transactions = await prisma.transaction.groupBy({
             by: 'propertyId',
             _sum: {
@@ -37,6 +136,25 @@ export const getLandingPageData = async(req: Request, res: Response, next: NextF
         // } else {
         // }
         
+        const properties = await prisma.property.findMany({
+            take: 20,
+            include: {
+                city: true,
+                country: true,
+                propertyRoomType: {
+                    orderBy: {
+                        price: 'asc'
+                    }
+                },
+                propertyDetail: {
+                    include: {
+                        propertyImage: true
+                    }
+                },
+                review: true
+            }
+        })
+
         cities = await prisma.city.findMany({
             take: 5,
             include: {
@@ -44,7 +162,7 @@ export const getLandingPageData = async(req: Request, res: Response, next: NextF
             }
         })
 
-        const properties = await prisma.property.findMany({
+        const propertyTypes = await prisma.propertyType.findMany({
             take: 10
         })
 
@@ -54,7 +172,11 @@ export const getLandingPageData = async(req: Request, res: Response, next: NextF
             data: {
                 cities,
                 properties,
-                transactions
+                propertyTypes,
+                transactions,
+                propertyByHistoryView,
+                propertyByRecentBooks,
+                propertyByUserCountry,
             }
         })
 

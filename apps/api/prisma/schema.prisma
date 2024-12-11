@@ -27,6 +27,7 @@ model User {
   address           String?
   directory String?
   filename  String?
+  fileExtension String?
 
   countryId Int?
   country Country? @relation(fields: [countryId], references: [id])
@@ -57,6 +58,7 @@ model Country {
   name String
   filename String
   directory String
+  fileExtension String @default("jpg")
 
   user User[]
   cities   City[]
@@ -74,6 +76,7 @@ model City {
   name String
   directory String
   filename String
+  fileExtension String @default("jpg")
 
   countryId Int
   country   Country @relation(fields: [countryId], references: [id])
@@ -100,6 +103,7 @@ model Tenant {
   address           String?
   directory String?
   filename  String?
+  fileExtension String?
 
   property    Property[]
   transaction Transaction[]
@@ -179,6 +183,7 @@ model PropertyImage {
   id        Int    @id @default(autoincrement())
   directory String
   filename  String
+  fileExtension String @default("jpg")
 
   propertyDetailId Int
   propertyDetail   PropertyDetail @relation(fields: [propertyDetailId], references: [id])
@@ -209,6 +214,7 @@ model PropertyFacility {
   name          String
   iconDirectory String?
   iconFilename  String?
+  iconFileExtension String @default("png")
 
   propertyHasFacility PropertyHasFacility[]
 
@@ -264,6 +270,7 @@ model PropertyRoomFacility {
   name          String
   iconDirectory String?
   iconFilename  String?
+  iconFileExtension String @default("png")
 
   roomHasFacilities RoomHasFacilities[]
 
@@ -293,6 +300,7 @@ model PropertyRoomImage {
   id        Int    @id @default(autoincrement())
   directory String
   filename  String
+  fileExtension String @default("jpg")
 
   propertyRoomTypeId Int
   propertyRoomType   PropertyRoomType @relation(fields: [propertyRoomTypeId], references: [id])

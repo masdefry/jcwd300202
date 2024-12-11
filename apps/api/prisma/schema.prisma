@@ -19,8 +19,21 @@ model User {
   role               Role    @default(USER)
   isGoogleRegistered Boolean @default(false)
   token              String? @db.Text
+  username          String?    @default("Roomify's friend")
+  phoneNumber       String?
+  birthDate         DateTime?
+  nationality       String?
+  gender            Gender?
+  address           String?
+  directory String?
+  filename  String?
 
-  profile     Profile?
+  countryId Int?
+  country Country? @relation(fields: [countryId], references: [id])
+  
+  cityId Int?
+  city City? @relation(fields: [cityId], references: [id])
+
   transaction Transaction[]
   review      Review[]
   historyView HistoryView[]
@@ -30,27 +43,6 @@ model User {
   deletedAt DateTime?
 
   @@map("users")
-}
-
-model Profile {
-  id                String    @id @default(cuid())
-  username          String    @default("Roomify's friend")
-  phoneNumber       String?
-  birthDate         DateTime?
-  nationality       String?
-  gender            Gender?
-  address           String?
-  directory String?
-  filename  String?
-
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  @@map("profile")
 }
 
 
@@ -66,6 +58,7 @@ model Country {
   filename String
   directory String
 
+  user User[]
   cities   City[]
   property Property[]
 
@@ -85,6 +78,7 @@ model City {
   countryId Int
   country   Country @relation(fields: [countryId], references: [id])
 
+  user User[]
   property Property[]
 
   createdAt DateTime  @default(now())
@@ -379,7 +373,8 @@ enum Status {
 }
 
 model Review {
-  comment String @db.Text
+  comment String? @db.Text
+  rating Int?
 
   propertyId String
   property   Property @relation(fields: [propertyId], references: [id])
@@ -397,3 +392,4 @@ model Review {
   @@id([propertyId, userId, transactionId])
   @@map("reviews")
 }
+

@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from 'express'
 import { createSearchService } from '@/services/header.service'
 import { ISearch } from '@/services/header.service/types'
-
+// import prisma from
 
 export const fetchData = async(req: Request, res: Response, next: NextFunction) => {
     try {
-        const { country, city, checkInDate, checkOutDate, adult, children } = req.query
+        const { propertyTypeId, country, city, checkInDate, checkOutDate, adult, children } = req.query
 
         if (!checkInDate || !checkOutDate) {
             return res.status(400).json({
@@ -32,8 +32,9 @@ export const fetchData = async(req: Request, res: Response, next: NextFunction) 
         const isoCheckOut = new Date(parsedCheckOutDate.toISOString());
 
         const search = await createSearchService({
-            country: country as string, 
-            city: city as string, 
+            propertyTypeId: Number(propertyTypeId),
+            country: Number(country), 
+            city: Number(city), 
             checkInDate: isoCheckIn, 
             checkOutDate: isoCheckOut, 
             adult: Number(adult), 
@@ -58,3 +59,13 @@ export const fetchData = async(req: Request, res: Response, next: NextFunction) 
         })
     }
 }
+
+// export const cityAndCountryList = async(req: Request, res: Response, next:NextFunction) => {
+//     try {
+//         const { search } = req.query
+//         const cities = await prisma.
+
+//     } catch (error) {
+        
+//     }
+// }

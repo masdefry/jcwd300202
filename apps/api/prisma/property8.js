@@ -9,7 +9,7 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property8 ({ tenantAccounts }) {
+async function Property8 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
@@ -45,10 +45,10 @@ async function Property8 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,
@@ -74,7 +74,8 @@ async function Property8 ({ tenantAccounts }) {
     
         const createdProperty8RoomType1 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Luxury',
+                name: 'Luxury Loft',
+                description: `The Luxury Loft offers a unique and spacious design, combining modern elegance with industrial charm. Featuring high ceilings, large windows, and stylish décor, this room includes a comfortable king-sized bed, a separate living area with a sofa, and a work desk. The loft is equipped with premium amenities such as a minibar, espresso machine, smart TV, and high-speed internet access. The expansive bathroom includes a rainfall shower, a soaking tub, and luxury bath products. Perfect for guests looking for an upscale experience with a touch of creativity and space.`,
                 rooms: 2,
                 capacity: 4,
                 bathrooms: 2,
@@ -85,7 +86,8 @@ async function Property8 ({ tenantAccounts }) {
         })
         const createdProperty8RoomType2 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Executive',
+                name: 'Superior King Room',
+                description: `The Superior King Room provides a refined and comfortable retreat with an emphasis on quality and relaxation. This room features a king-sized bed with luxurious linens, a cozy seating area, and a work desk. It’s equipped with modern amenities, including a minibar, flat-screen TV, and high-speed internet. The bathroom is designed with elegance, offering a rain shower, premium toiletries, and soft towels. Perfect for solo travelers or couples, the Superior King Room combines modern luxury with a peaceful atmosphere for a restful stay.`,
                 capacity: 2,
                 bathrooms: 1,
                 price: 1800000,
@@ -95,7 +97,8 @@ async function Property8 ({ tenantAccounts }) {
         })
         const createdProperty8RoomType3 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Premium',
+                name: 'Standard Twin Room',
+                description: `The Standard Twin Room is designed to provide comfort and practicality for travelers seeking simplicity and value. It features two single beds, a work desk, and a flat-screen TV. The room also includes essential amenities such as a mini-fridge, tea and coffee-making facilities, and free Wi-Fi. The private bathroom is equipped with a shower and toiletries. Ideal for friends, family members, or business associates, the Standard Twin Room offers a convenient, affordable space to relax and unwind after a day of exploring or work.`,
                 capacity: 2,
                 bathrooms: 1,
                 price: 1000000,

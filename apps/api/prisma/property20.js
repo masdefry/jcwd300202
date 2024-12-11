@@ -9,7 +9,7 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property20 ({ tenantAccounts }) {
+async function Property20 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
@@ -49,10 +49,10 @@ async function Property20 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,
@@ -78,7 +78,8 @@ async function Property20 ({ tenantAccounts }) {
     
         const createdProperty20RoomType1 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Deluxe + Breakfast',
+                name: 'Standard Room (With Breakfast)',
+                description: `The Standard Room offers great value for guests who want both comfort and convenience, with the added bonus of breakfast included. This room features a comfortable double or twin bed, a flat-screen TV, and a cozy seating area. The room also includes essential amenities like a mini-fridge, a work desk, and a coffee machine. The private bathroom is equipped with a shower and complimentary toiletries. Guests can enjoy a complimentary breakfast to start their day right. The Standard Room is a great choice for both short and extended stays, offering comfort and savings in a budget-friendly package.`,
                 capacity: 2,
                 bathrooms: 1,
                 price: 500000,
@@ -88,7 +89,8 @@ async function Property20 ({ tenantAccounts }) {
         })
         const createdProperty20RoomType2 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Deluxe',
+                name: 'Basic Twin Room (Without Breakfast)',
+                description: `The Basic Twin Room is an affordable option for travelers seeking a no-frills stay. This room features two single beds, a flat-screen TV, and a small table for convenience. The room is equipped with a mini-fridge, free Wi-Fi, and a work desk. The private bathroom comes with a shower and basic amenities. While breakfast is not included, the hotel is conveniently located near local cafés and restaurants. The Basic Twin Room is ideal for guests looking for a simple and affordable place to stay, with everything you need for a restful night.`,
                 capacity: 2,
                 bathrooms: 1,
                 price: 470000,
@@ -98,7 +100,8 @@ async function Property20 ({ tenantAccounts }) {
         })
         const createdProperty20RoomType3 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Reguler',
+                name: 'Economy Room (Without Breakfast)',
+                description: `The Economy Room is the perfect choice for budget-conscious travelers looking for comfort at an affordable price. This simple yet cozy room features a comfortable double bed, a flat-screen TV, a work desk, and a small closet for storage. Amenities include complimentary Wi-Fi, a mini-fridge, and a coffee maker for convenience. The private bathroom comes with a shower and basic toiletries. This room is ideal for short stays or those who just need a place to rest after a day of sightseeing or business, offering great value without the extra frills.`,
                 capacity: 2,
                 bathrooms: 1,
                 price: 395000,

@@ -9,7 +9,7 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property11 ({ tenantAccounts }) {
+async function Property11 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
@@ -46,10 +46,10 @@ async function Property11 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,
@@ -76,6 +76,7 @@ async function Property11 ({ tenantAccounts }) {
         const createdProperty11RoomType1 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Single Room',
+                description: 'The Single Room offers a cozy and functional living space, designed for solo travelers or business trips. With all the essential amenities in a compact layout, it ensures convenience, comfort, and affordability for short stays or quick getaways. Ideal for individuals who value simplicity and practicality.',
                 capacity: 1,
                 bathrooms: 1,
                 price: 2000000,
@@ -86,6 +87,7 @@ async function Property11 ({ tenantAccounts }) {
         const createdProperty11RoomType2 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Double Room',
+                description: 'The Double Room provides a perfect option for couples, friends, or small groups seeking a balance of comfort and affordability. Featuring a well-designed living area, shared bathroom, and cozy sleeping arrangements, it offers a welcoming space that caters to both relaxation and convenience.',
                 capacity: 2,
                 bathrooms: 1,
                 price: 3000000,
@@ -96,6 +98,7 @@ async function Property11 ({ tenantAccounts }) {
         const createdProperty11RoomType3 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Family Suite',
+                description: 'The Family Suite is the ultimate choice for families and groups. Offering two separate bedrooms, two bathrooms, and plenty of space, it ensures a relaxing and convenient experience for all. With modern furnishings and thoughtful design, the Family Suite combines style and functionality, making it ideal for both short and extended stays.',
                 rooms: 2,
                 capacity: 4,
                 bathrooms: 2,

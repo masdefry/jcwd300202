@@ -12,11 +12,29 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(cuid())
-  email    String @unique
-  password String
+  id                 String  @id @default(cuid())
+  email              String  @unique
+  password           String?
+  isVerified         Boolean @default(false)
+  role               Role    @default(USER)
+  isGoogleRegistered Boolean @default(false)
+  token              String? @db.Text
+  username          String?    @default("Roomify's friend")
+  phoneNumber       String?
+  birthDate         DateTime?
+  nationality       String?
+  gender            Gender?
+  address           String?
+  directory String?
+  filename  String?
+  fileExtension String?
 
-  profile     Profile[]
+  countryId Int?
+  country Country? @relation(fields: [countryId], references: [id])
+  
+  cityId Int?
+  city City? @relation(fields: [cityId], references: [id])
+
   transaction Transaction[]
   review      Review[]
   historyView HistoryView[]
@@ -28,34 +46,64 @@ model User {
   @@map("users")
 }
 
-model Profile {
-  id           String   @id @default(cuid())
-  username     String
-  phoneNumber String
-  birthDate   DateTime
-  nationality  String
-  gender       Gender
-  address      String
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  @@map("profile")
-}
 
 enum Gender {
   MALE
   FEMALE
 }
 
+model Country {
+  id   Int    @id @default(autoincrement())
+  description String
+  name String
+  filename String
+  directory String
+  fileExtension String @default("jpg")
+
+  user User[]
+  cities   City[]
+  property Property[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("countries")
+}
+
+model City {
+  id   Int    @id @default(autoincrement())
+  name String
+  directory String
+  filename String
+  fileExtension String @default("jpg")
+
+  countryId Int
+  country   Country @relation(fields: [countryId], references: [id])
+
+  user User[]
+  property Property[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("cities")
+}
+
 model Tenant {
-  id       String @id @default(cuid())
-  email    String @unique
-  password String
+  id         String  @id @default(cuid())
+  email      String  @unique
+  password   String?
+  role       Role    @default(TENANT)
+  isVerified Boolean @default(false)
+  token      String? @db.Text
+  pic        String? @default("Roomify's tenant")
+  phoneNumber       String?
+  address           String?
+  directory String?
+  filename  String?
+  fileExtension String?
 
   property    Property[]
   transaction Transaction[]
@@ -67,25 +115,35 @@ model Tenant {
   @@map("tenants")
 }
 
+enum Role {
+  USER
+  TENANT
+}
+
 model Property {
-  id                String      @id @unique
+  id                String   @id @unique
   name              String
-  country           String
   address           String
   zipCode           String
-  city              String
   location          String
   checkInStartTime  DateTime
   checkInEndTime    DateTime
   checkOutStartTime DateTime
   checkOutEndTime   DateTime
-  slug              String  @unique
+  slug              String   @unique
+  
 
-  propertyTypeId Int
-  propertyType   PropertyType @relation(fields: [propertyTypeId], references: [id])
+  propertyTypeId Int?
+  propertyType   PropertyType? @relation(fields: [propertyTypeId], references: [id])
 
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
+  tenantId String?
+  tenant   Tenant? @relation(fields: [tenantId], references: [id])
+
+  countryId Int?
+  country   Country? @relation(fields: [countryId], references: [id])
+
+  cityId Int?
+  city   City? @relation(fields: [cityId], references: [id])
 
   propertyRoomType    PropertyRoomType[]
   propertyDetail      PropertyDetail?
@@ -102,16 +160,16 @@ model Property {
 }
 
 model PropertyDetail {
-  id                       Int    @id @default(autoincrement())
+  id                      Int    @id @default(autoincrement())
   propertyDescription     String @db.Text
   neighborhoodDescription String @db.Text
   phoneNumber             String
   url                     String
-  totalRooms               Int
+  totalRooms              Int
 
   propertyImage PropertyImage[]
 
-  propertyId String      @unique
+  propertyId String   @unique
   property   Property @relation(fields: [propertyId], references: [id])
 
   createdAt DateTime  @default(now())
@@ -125,6 +183,7 @@ model PropertyImage {
   id        Int    @id @default(autoincrement())
   directory String
   filename  String
+  fileExtension String @default("jpg")
 
   propertyDetailId Int
   propertyDetail   PropertyDetail @relation(fields: [propertyDetailId], references: [id])
@@ -155,6 +214,7 @@ model PropertyFacility {
   name          String
   iconDirectory String?
   iconFilename  String?
+  iconFileExtension String @default("png")
 
   propertyHasFacility PropertyHasFacility[]
 
@@ -181,12 +241,13 @@ model PropertyHasFacility {
 }
 
 model PropertyRoomType {
-  id          Int    @id @default(autoincrement())
-  name        String
-  rooms       Int?
-  capacity    Int
-  bathrooms   Int
-  price       Int
+  id         Int    @id @default(autoincrement())
+  name       String
+  description String
+  rooms      Int?
+  capacity   Int
+  bathrooms  Int
+  price      Int
   totalRooms Int
 
   propertyRoomImage PropertyRoomImage[]
@@ -209,6 +270,7 @@ model PropertyRoomFacility {
   name          String
   iconDirectory String?
   iconFilename  String?
+  iconFileExtension String @default("png")
 
   roomHasFacilities RoomHasFacilities[]
 
@@ -238,6 +300,7 @@ model PropertyRoomImage {
   id        Int    @id @default(autoincrement())
   directory String
   filename  String
+  fileExtension String @default("jpg")
 
   propertyRoomTypeId Int
   propertyRoomType   PropertyRoomType @relation(fields: [propertyRoomTypeId], references: [id])
@@ -250,13 +313,13 @@ model PropertyRoomImage {
 }
 
 model HistoryView {
-  id        String @id @default(cuid())
-  
-  userId    String
-  user User @relation(fields: [userId], references: [id])
-  
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
   propertyId String
-  property  Property @relation(fields: [propertyId], references: [id])
+  property   Property @relation(fields: [propertyId], references: [id])
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -272,7 +335,7 @@ model Transaction {
   total        Int
   price        Int
   qty          Int
-  expiryDate   DateTime 
+  expiryDate   DateTime
 
   userId String
   user   User   @relation(fields: [userId], references: [id])
@@ -318,10 +381,11 @@ enum Status {
 }
 
 model Review {
-  comment String @db.Text
+  comment String? @db.Text
+  rating Int?
 
   propertyId String
-  property  Property @relation(fields: [propertyId], references: [id])
+  property   Property @relation(fields: [propertyId], references: [id])
 
   userId String
   user   User   @relation(fields: [userId], references: [id])
@@ -336,3 +400,4 @@ model Review {
   @@id([propertyId, userId, transactionId])
   @@map("reviews")
 }
+

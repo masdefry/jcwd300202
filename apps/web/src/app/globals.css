@@ -44,6 +44,18 @@
   --card-border-rgb: 131, 134, 135;
 }
 
+.hamburger-active > div:nth-child(1){
+  @apply rotate-45
+}
+
+.hamburger-active > div:nth-child(3){
+  @apply -rotate-45
+}
+
+.hamburger-active > div:nth-child(2){
+  @apply scale-0
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;

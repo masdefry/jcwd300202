@@ -9,7 +9,7 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property10 ({ tenantAccounts }) {
+async function Property10 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
@@ -50,10 +50,10 @@ async function Property10 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,
@@ -79,7 +79,8 @@ async function Property10 ({ tenantAccounts }) {
     
         const createdProperty10RoomType1 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Naturity',
+                name: 'Oceanfront Villa',
+                description: `The Oceanfront Villa offers the ultimate in beachfront luxury, providing stunning views of the ocean from every room. This spacious villa features an expansive living area with a plush sofa, a fully equipped kitchen, and a dining area perfect for entertaining. The villa includes two large bedrooms with king-sized beds, each with its own en-suite bathroom featuring a soaking tub and a rain shower. Step outside to a private terrace with a pool, hot tub, and lounge chairs, or take a few steps to the pristine beach. Ideal for those looking to relax and unwind in a serene, tropical environment, the Oceanfront Villa combines elegance, comfort, and breathtaking views.`,
                 rooms: 4,
                 capacity: 8,
                 bathrooms: 4,
@@ -90,7 +91,8 @@ async function Property10 ({ tenantAccounts }) {
         })
         const createdProperty10RoomType2 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Elegant',
+                name: 'Private Garden Villa',
+                description: `The Private Garden Villa is a peaceful retreat nestled amidst lush greenery, offering complete privacy and tranquility. This beautifully designed villa features an open-plan living and dining area, a fully equipped kitchen, and two spacious bedrooms with en-suite bathrooms. The master bedroom has a king-sized bed and a luxurious outdoor shower, while the second bedroom has two twin beds. The highlight of this villa is the expansive private garden, complete with a secluded outdoor pool, sunbeds, and shaded seating areas for relaxation. Ideal for nature lovers and those seeking a quiet escape, the Private Garden Villa offers an idyllic blend of luxury and serenity.`,
                 rooms: 4,
                 capacity: 8,
                 bathrooms: 4,
@@ -101,7 +103,8 @@ async function Property10 ({ tenantAccounts }) {
         })
         const createdProperty10RoomType3 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Village',
+                name: 'Luxury Hillside Villa',
+                description: `The Luxury Hillside Villa is perched on a hill, offering sweeping views of the surrounding mountains and valleys. This modern villa features a large living room with floor-to-ceiling windows, allowing natural light to flood the space. It includes three beautifully designed bedrooms, each with its own private bathroom. The master suite boasts a king-sized bed, a walk-in closet, and a spa-like bathroom with a freestanding tub. The villa also has a fully equipped kitchen, a private infinity pool, and a large outdoor deck with seating and dining areas, perfect for sunset views. Ideal for families or groups, the Luxury Hillside Villa is the perfect blend of modern amenities and stunning natural beauty.`,
                 rooms: 3,
                 capacity: 6,
                 bathrooms: 3,

@@ -9,7 +9,7 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property19 ({ tenantAccounts }) {
+async function Property19 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
@@ -46,10 +46,10 @@ async function Property19 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId, 
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,
@@ -76,6 +76,7 @@ async function Property19 ({ tenantAccounts }) {
         const createdProperty19RoomType1 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Executive Studio',
+                description: 'A modern and minimalist studio ideal for young professionals or travelers looking for a functional living space.',
                 capacity: 2,
                 bathrooms: 1,
                 price: 3500000,
@@ -86,6 +87,7 @@ async function Property19 ({ tenantAccounts }) {
         const createdProperty19RoomType2 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Luxury One-Bedroom Suite',
+                description: 'Experience the perfect balance of luxury and comfort with spacious living, premium finishes, and modern amenities.',
                 capacity: 4,
                 bathrooms: 1,
                 price: 5500000,
@@ -96,6 +98,7 @@ async function Property19 ({ tenantAccounts }) {
         const createdProperty19RoomType3 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Skyline Penthouse',
+                description: 'Indulge in breathtaking panoramic views with this luxurious penthouse. Features three bedrooms, two bathrooms, and elegant living spaces.',
                 rooms: 3,
                 capacity: 6,
                 bathrooms: 2,

@@ -9,7 +9,7 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property5 ({ tenantAccounts }) {
+async function Property5 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
@@ -46,10 +46,10 @@ async function Property5 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,
@@ -76,6 +76,7 @@ async function Property5 ({ tenantAccounts }) {
         const createdProperty5RoomType1 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Studio',
+                description: 'A modern Studio designed with simplicity and functionality in mind, perfect for solo travelers or couples seeking efficiency. It features an open-plan layout with all the necessary amenities for a relaxed stay. This room type combines style with affordability while maximizing space for an easy living experience. Designed for short or extended stays, it ensures practicality without sacrificing comfort.',
                 capacity: 2,
                 bathrooms: 1,
                 price: 4000000,
@@ -86,6 +87,7 @@ async function Property5 ({ tenantAccounts }) {
         const createdProperty5RoomType2 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Two-Bedroom Apartment',
+                description: 'This Two-Bedroom Apartment offers spacious living with a modern design tailored for families or small groups. It includes two well-appointed bedrooms, a cozy living area, and a bathroom, ensuring both comfort and convenience. Perfect for longer stays, it provides all the necessary amenities while maintaining affordability. Experience flexibility and modern living in this thoughtfully designed space.',
                 rooms: 2,
                 capacity: 4,
                 bathrooms: 1,
@@ -97,6 +99,7 @@ async function Property5 ({ tenantAccounts }) {
         const createdProperty5RoomType3 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Penthouse Suite',
+                description: 'The Penthouse Suite offers a premium and luxurious stay with four spacious bedrooms and three modern bathrooms. It is designed for large families or groups seeking privacy, comfort, and elegance. Guests can enjoy stunning panoramic views, top-tier amenities, and exceptional living space in this exclusive suite. A perfect choice for those who value both style and convenience during their stay.',
                 rooms: 4,
                 capacity: 8,
                 bathrooms: 3,

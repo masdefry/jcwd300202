@@ -9,7 +9,7 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property16 ({ tenantAccounts }) {
+async function Property16 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
@@ -48,10 +48,10 @@ async function Property16 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,
@@ -77,7 +77,8 @@ async function Property16 ({ tenantAccounts }) {
     
         const createdProperty16RoomType1 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Superior',
+                name: 'Superior Room',
+                description: `The Superior Room offers an enhanced level of comfort and style, perfect for guests seeking a bit more space and luxury. This room features a king-sized bed with plush bedding, a cozy seating area, and a spacious work desk for added convenience. Guests can enjoy modern amenities such as a flat-screen TV, a minibar, a coffee machine, and free high-speed internet. The en-suite bathroom comes with a rain shower and high-quality toiletries, ensuring a refreshing experience. Ideal for both business and leisure travelers, the Superior Room provides a relaxing retreat with extra comfort and thoughtful touches.`,
                 capacity: 2,
                 bathrooms: 1,
                 price: 760000,
@@ -87,7 +88,8 @@ async function Property16 ({ tenantAccounts }) {
         })
         const createdProperty16RoomType2 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Deluxe',
+                name: 'Deluxe King Room',
+                description: `The Deluxe King Room offers a luxurious stay with elegant decor and added amenities to elevate your experience. This room features a spacious king-sized bed with a premium mattress, a comfortable sitting area with a sofa, and a work desk. The room is equipped with a flat-screen TV, a minibar, a Nespresso coffee machine, and complimentary Wi-Fi. The modern bathroom includes a rain shower, a soaking tub, and luxury bath products. With its refined design and superior amenities, the Deluxe King Room is perfect for guests looking to indulge in a more upscale experience during their stay.`,
                 capacity: 2,
                 bathrooms: 1,
                 price: 566000,
@@ -97,7 +99,8 @@ async function Property16 ({ tenantAccounts }) {
         })
         const createdProperty16RoomType3 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Reguler',
+                name: 'Family Room',
+                description: `The Family Room is designed with families in mind, offering ample space and all the conveniences needed for a comfortable stay. This room features two queen-sized beds, a cozy sitting area, and a large flat-screen TV with family-friendly channels. The room includes a mini-fridge, a microwave, and a tea and coffee station for added convenience. The en-suite bathroom is spacious, featuring a bathtub and shower combination with family-friendly toiletries. Whether you're traveling with children or as a group, the Family Room provides a welcoming environment for everyone to relax and enjoy their stay together.`,
                 capacity: 2,
                 bathrooms: 1,
                 price: 431000,

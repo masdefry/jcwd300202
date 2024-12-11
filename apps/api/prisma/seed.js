@@ -32,7 +32,7 @@ const prisma = new PrismaClient();
 const tenants = [
     {
         email: 'john.doe@gmail.com',
-        password: 'SecurePass123!'
+        password: 'SecurePass123!',
     },
     {
         email: 'sarah.connor@yahoo.com',
@@ -59,38 +59,103 @@ const users = [
     }
 ]
 
+// const countriesWithCities = [
+//     {
+//         name: 'China',
+//         cities: ['Beijing', 'Hongkong', 'Shenzen', 'Chongqing', 'Wuhan', 'Shanghai', 'Chengdu', 'Nanning', 'Tianjin', 'Nanjing']
+//     },
+//     {
+//         name: 'Indonesia',
+//         cities: ['Jakarta', 'Surabaya', 'Gianyar Regency', 'Denpasar', 'Bandung', 'Surakarta', 'Tangerang', 'Yogyakarta', 'South Tangerang']
+//     },
+//     {
+//         name: 'Japan',
+//         cities: ['Osaka', 'Tokyo']
+//     },
+//     {
+//         name: 'Malaysia',
+//         cities: ['Kuala Lumpur']
+//     },
+//     {
+//         name: 'South Korea',
+//         cities: ['Seoul', 'Busan', 'Daegu']
+//     },
+//     {
+//         name: 'Thailand',
+//         cities: ['Bangkok', 'Pattaya']
+//     },
+//     {
+//         name: 'United States of America',
+//         cities: ['Chicago', 'Los Angeles', 'New York']
+//     },
+// ]
+
+
 
 const property_facility_arr = [
-    'Bar','Club', 'Sauna', 
-    'Garden', 'Terrace', 'Hot Tub/ Jacuzzi',
-    'Heating', 'Free WiFi', 'Swimming Pool', 
-    'Spa', 'Restaurant', 'Parking', 
-    '24 Hours Security', 'Valley', 'Electric Car Charging Station', 
-    'Shuttle', '24 Hours Minimarket', 'Laundry'
+    { iconFilename: 'property_', name: "Bar" },
+    { iconFilename: 'property_', name: "Club" },
+    { iconFilename: 'property_', name: "Sauna" },
+    { iconFilename: 'property_', name: "Garden" },
+    { iconFilename: 'property_', name: "Terrace" },
+    { iconFilename: 'property_', name: "Hot Tub/ Jacuzzi" },
+    { iconFilename: 'property_', name: "Heating" },
+    { iconFilename: 'property_', name: "Free WiFi" },
+    { iconFilename: 'property_', name: "Swimming Pool" },
+    { iconFilename: 'property_', name: "Spa" },
+    { iconFilename: 'property_', name: "Restaurant" },
+    { iconFilename: 'property_', name: "Parking" },
+    { iconFilename: 'property_', name: "24 Hours Security" },
+    { iconFilename: 'property_', name: "Valley" },
+    { iconFilename: 'property_', name: "Electric Car Charging Station" },
+    { iconFilename: 'property_', name: "Shuttle" },
+    { iconFilename: 'property_', name: "24 Hours Minimarket" },
+    { iconFilename: 'property_', name: "Laundry" }
 ]
 
-const propertyFacility = property_facility_arr.map(item => {
+const propertyFacility = property_facility_arr.map((item, index) => {
     return {
-        name: item
+        name: item.name,
+        iconDirectory: 'src/public/images',
+        iconFilename: item.iconFilename + `${index + 1}`
     }
 })
 
 
 const room_facility_arr = [
-    'Smoking Room', 'Non Smoking', 'Pets Allowed', 
-    'Children', 'Parties', 'Twin Bed', 
-    'Queen Size Bed', 'King Size Bed', 'Bunk Bed Type', 
-    'Sofa Bed Type', 'Futon Bed Type', 'Cribs', 
-    'Minibar', 'Jacuzzi', 'Bathtub', 
-    'Sandals', 'Flat screen TV', 'Safe-deposit Box', 
-    'Ironing Center', 'Kitchen', 'Hair Dryer', 
-    'Bathroom Amenities', 'Balcony View', 'Private Pool',
-    'Breakfast'
+    { iconFilename: 'room_', name: "Smoking Room" },
+    { iconFilename: 'room_', name: "Non Smoking" },
+    { iconFilename: 'room_', name: "Pets Allowed" },
+    { iconFilename: 'room_', name: "Children" },
+    { iconFilename: 'room_', name: "Parties" },
+    { iconFilename: 'room_', name: "Twin Bed" },
+    { iconFilename: 'room_', name: "Queen Size Bed" },
+    { iconFilename: 'room_', name: "King Size Bed" },
+    { iconFilename: 'room_', name: "Bunk Bed Type" },
+    { iconFilename: 'room_', name: "Sofa Bed Type" },
+    { iconFilename: 'room_', name: "Futon Bed Type" },
+    { iconFilename: 'room_', name: "Cribs" },
+    { iconFilename: 'room_', name: "Minibar" },
+    { iconFilename: 'room_', name: "Jacuzzi" },
+    { iconFilename: 'room_', name: "Bathtub" },
+    { iconFilename: 'room_', name: "Sandals" },
+    { iconFilename: 'room_', name: "Flat screen TV" },
+    { iconFilename: 'room_', name: "Safe-deposit Box" },
+    { iconFilename: 'room_', name: "Ironing Center" },
+    { iconFilename: 'room_', name: "Kitchen" },
+    { iconFilename: 'room_', name: "Hair Dryer" },
+    { iconFilename: 'room_', name: "Bathroom Amenities" },
+    { iconFilename: 'room_', name: "Balcony View" },
+    { iconFilename: 'room_', name: "Private Pool" },
+    { iconFilename: 'room_', name: "Breakfast" }
 ]
 
-const roomFacility = room_facility_arr.map(item => {
+
+const roomFacility = room_facility_arr.map((item, index) => {
     return {
-        name: item
+        name: item.name,
+        iconDirectory: 'src/public/images',
+        iconFilename: item.iconFilename + `${index + 1}`
     }
 })
 
@@ -166,11 +231,65 @@ const propertyType = [
 ]
 
 async function main() {
-    await prisma.$transaction(async(tx) => {
+    
+        const test = await prisma.propertyType.createMany({
+            data: propertyType
+        })
+        console.log(">>>>>")
+        console.log(test)
+    
+        const country1 = await prisma.country.create({
+            data: {
+                name: 'Indonesia',
+                description: ' A World of Natural Beauty and Culture',
+                filename: 'indonesia',
+                directory: 'src/public/images'
+            }
+        })
+        
+        const country2 = await prisma.country.create({
+            data: {
+                name: 'United States of America',
+                description: 'Experience Freedom, Embrace Opportunity',
+                filename: 'usa',
+                directory: 'src/public/images'
+            }
+        })
+        
+        
+        const cities1 = ['Jakarta', 'Surabaya', 'Gianyar', 'Denpasar', 'Bandung', 'Surakarta', 'Tangerang', 'Yogyakarta', 'South Tangerang'];
+        const cities1Id = await Promise.all(
+        cities1.map(async (item) => {
+            const createdCity = await prisma.city.create({
+            data: {
+                name: item,
+                countryId: country1.id,
+                directory: 'src/public/images',
+                filename: `indonesia_${item.toLowerCase().split(' ').join('_')}`
+            },
+        });
+            return createdCity.id;
+        })
+        );
+        
+        const cities2 = ['Chicago', 'Los Angeles', 'New York']
+        const cities2Id = await Promise.all(
+        cities2.map(async (item) => {
+            const createdCity = await prisma.city.create({
+            data: {
+                name: item,
+                countryId: country2.id,
+                directory: 'src/public/images',
+                filename: `usa_${item.toLowerCase().split(' ').join('_')}`
+            },
+            });
+            return createdCity.id;
+        })
+        );
         const tenantAccounts = []
         for (let tenant of tenants){
             const hashedPassword = await hashPassword(tenant.password)
-            const newTenant = await tx.tenant.create({
+            const newTenant = await prisma.tenant.create({
                 data: {
                     email: tenant.email,
                     password: hashedPassword
@@ -182,7 +301,7 @@ async function main() {
         const userAccounts = []
         for (let user of users){
             const hashedPassword = await hashPassword(user.password)
-            const newUser = await tx.user.create({
+            const newUser = await prisma.user.create({
                 data: {
                     email: user.email,
                     password: hashedPassword
@@ -191,44 +310,43 @@ async function main() {
             userAccounts.push(newUser)
         }
 
-        await tx.propertyType.createMany({
-            data: propertyType
-        })
+        console.log("ini citiesss")
+        console.log(cities1Id[0])
+        console.log(await cities1Id[0])
         
-        await tx.propertyFacility.createMany({
+        await prisma.propertyFacility.createMany({
             data: propertyFacility
         })
 
-        await tx.propertyRoomFacility.createMany({
+        await prisma.propertyRoomFacility.createMany({
             data: roomFacility
         })
 
         
-        await Property1({ tenantAccounts, tx })
-        await Property2({ tenantAccounts, tx })
-        await Property3({ tenantAccounts, tx })
-        await Property4({ tenantAccounts, tx })
-        await Property5({ tenantAccounts, tx })
-        await Property6({ tenantAccounts, tx })
-        await Property7({ tenantAccounts, tx })
-        await Property8({ tenantAccounts, tx })
-        await Property9({ tenantAccounts, tx })
-        await Property10({ tenantAccounts, tx })
-        await Property11({ tenantAccounts, tx })
-        await Property12({ tenantAccounts, tx })
-        await Property13({ tenantAccounts, tx })
-        await Property14({ tenantAccounts, tx })
-        await Property15({ tenantAccounts, tx })
-        await Property16({ tenantAccounts, tx })
-        await Property17({ tenantAccounts, tx })
-        await Property18({ tenantAccounts, tx })
-        await Property19({ tenantAccounts, tx })
-        await Property20({ tenantAccounts, tx })
+        setTimeout(async() => {
 
-    },{ 
-        maxWait: 1800000,
-        timeout: 3600000 
-    }) 
+            await Property1({ tenantAccounts, countryId: country1.id, cityId: cities1Id[0] })
+            await Property2({ tenantAccounts, countryId: country1.id, cityId: cities1Id[0]})
+            await Property3({ tenantAccounts, countryId: country1.id, cityId: cities1Id[0]})
+            await Property4({ tenantAccounts, countryId: country1.id, cityId: cities1Id[4]})
+            await Property5({ tenantAccounts, countryId: country1.id, cityId: cities1Id[0]})
+            await Property6({ tenantAccounts, countryId: country1.id, cityId: cities1Id[6]})
+            await Property7({ tenantAccounts, countryId: country1.id, cityId: cities1Id[0]})
+            await Property8({ tenantAccounts, countryId: country1.id, cityId: cities1Id[8]})
+            await Property9({ tenantAccounts, countryId: country1.id, cityId: cities1Id[0]})
+            await Property10({ tenantAccounts, countryId: country1.id, cityId: cities1Id[2]})
+            await Property11({ tenantAccounts, countryId: country1.id, cityId: cities1Id[0]})
+            await Property12({ tenantAccounts, countryId: country1.id, cityId: cities1Id[2]})
+            await Property13({ tenantAccounts, countryId: country1.id, cityId: cities1Id[0]})
+            await Property14({ tenantAccounts, countryId: country1.id, cityId: cities1Id[1]})
+            await Property15({ tenantAccounts, countryId: country2.id, cityId: cities1Id[2]})
+            await Property16({ tenantAccounts, countryId: country1.id, cityId: cities1Id[0]})
+            await Property17({ tenantAccounts, countryId: country2.id, cityId: cities2Id[2]})
+            await Property18({ tenantAccounts, countryId: country1.id, cityId: cities1Id[0]})
+            await Property19({ tenantAccounts, countryId: country2.id, cityId: cities2Id[1]})
+            await Property20({ tenantAccounts, countryId: country1.id, cityId: cities1Id[0]})
+        }, 5000)
+
 }
 
 main()

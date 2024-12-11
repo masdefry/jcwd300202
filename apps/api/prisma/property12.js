@@ -9,7 +9,7 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property12 ({ tenantAccounts }) {
+async function Property12 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
@@ -47,10 +47,10 @@ async function Property12 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,
@@ -76,7 +76,8 @@ async function Property12 ({ tenantAccounts }) {
     
         const createdProperty12RoomType1 = await prisma.propertyRoomType.create({
             data: {
-                name: 'X-Large',
+                name: 'Family Suite',
+                description: `The Family Suite is designed for families or small groups who need extra space and comfort. This spacious room features one queen-sized bed and two twin beds, making it perfect for up to four guests. The suite includes a comfortable seating area, a large flat-screen TV, and a small dining table. The room is equipped with a mini-fridge, a microwave, and tea and coffee-making facilities for added convenience. The private bathroom offers a bathtub and shower combination, along with family-friendly toiletries. With ample space and cozy amenities, the Family Suite is ideal for those looking to stay together in comfort while enjoying the welcoming atmosphere of the guesthouse.`,
                 capacity: 2,
                 bathrooms: 1,
                 price: 1000000,
@@ -86,7 +87,8 @@ async function Property12 ({ tenantAccounts }) {
         })
         const createdProperty12RoomType2 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Medium',
+                name: 'Comfort Double Room',
+                description: `The Comfort Double Room is perfect for couples or friends looking for a relaxing and affordable stay. This room features a comfortable double bed with plush bedding, a seating area with two chairs, and a small desk for convenience. It comes equipped with a flat-screen TV, a mini-fridge, and a coffee maker. The private bathroom offers a shower and complimentary toiletries. With its cozy, welcoming ambiance, the Comfort Double Room provides a great balance of comfort and value for guests who want a peaceful retreat at the guesthouse.`,
                 capacity: 2,
                 bathrooms: 1,
                 price: 750000,
@@ -96,7 +98,8 @@ async function Property12 ({ tenantAccounts }) {
         })
         const createdProperty12RoomType3 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Compact',
+                name: 'Cozy Single Room',
+                description: `The Cozy Single Room is designed for solo travelers seeking comfort and simplicity. This compact room features a single bed with soft linens, a cozy work desk, and a flat-screen TV for entertainment. The room also includes a small closet, a mini-fridge, and tea and coffee-making facilities for convenience. The private bathroom is equipped with a shower and essential toiletries. Perfect for those on a budget or just passing through, the Cozy Single Room offers all the essentials for a restful stay in a warm and inviting atmosphere.`,
                 capacity: 2,
                 bathrooms: 1,
                 price: 490000,

@@ -9,7 +9,7 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property14 ({ tenantAccounts }) {
+async function Property14 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {            
@@ -47,10 +47,10 @@ async function Property14 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,
@@ -76,7 +76,8 @@ async function Property14 ({ tenantAccounts }) {
     
         const createdProperty14RoomType1 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Special',
+                name: 'Penthouse Suite',
+                description: `The Penthouse Suite offers the height of luxury, with expansive floor plans and breathtaking views of the city. This opulent suite features a large living area with a designer sofa, a dining area, and a fully equipped kitchen. The master bedroom includes a king-sized bed with high-thread-count linens, while the en-suite bathroom offers a soaking tub, a rain shower, and a private sauna. Guests can enjoy additional amenities such as a private balcony, a minibar, and a sound system. Perfect for special occasions or an elevated experience, the Penthouse Suite delivers the ultimate in comfort, style, and privacy.`,
                 capacity: 2,
                 bathrooms: 1,
                 price: 800000,
@@ -86,7 +87,8 @@ async function Property14 ({ tenantAccounts }) {
         })
         const createdProperty14RoomType2 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Deluxe',
+                name: 'Executive Suite',
+                description: `The Executive Suite is designed for guests seeking extra space and comfort during their stay. This elegant suite features a separate living area with a sofa, a large work desk, and a king-sized bed. The room is equipped with a flat-screen TV, a minibar, a coffee machine, and high-speed internet access. The luxurious bathroom includes a soaking tub, a rain shower, and premium bath products. Ideal for business travelers or those looking to indulge in a more spacious and luxurious experience, the Executive Suite offers a perfect blend of functionality and relaxation.`,
                 capacity: 2,
                 bathrooms: 1,
                 price: 650000,
@@ -96,7 +98,8 @@ async function Property14 ({ tenantAccounts }) {
         })
         const createdProperty14RoomType3 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Comfort',
+                name: 'Standard Room',
+                description: `The Standard Room offers comfort and convenience with a straightforward design, ideal for guests looking for a practical and affordable option. Featuring a queen-sized bed with premium linens, this room also includes a work desk, a flat-screen TV, and a mini-fridge. The en-suite bathroom is equipped with a shower and complimentary toiletries. Perfect for short stays or business trips, the Standard Room provides all the essentials for a relaxing stay in a cozy environment.`,
                 capacity: 2,
                 bathrooms: 1,
                 price: 445000,

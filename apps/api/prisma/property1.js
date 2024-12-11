@@ -9,7 +9,7 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property1 ({ tenantAccounts }) {
+async function Property1 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
@@ -45,10 +45,10 @@ async function Property1 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,
@@ -56,9 +56,13 @@ async function Property1 ({ tenantAccounts }) {
                 checkOutEndTime: property.checkOutEndTime,
                 propertyTypeId: 1,
                 tenantId: tenant.id,
-                slug: `${property.name.toLowerCase().split(' ').join('-')}-${id}`
+                slug: `${property.name.toLowerCase().split(' ').join('-')}-${id}`,
             }
+
+            
         })
+
+        console.log(cityId)
         
 
         const createdPropertyDetail = await prisma.propertyDetail.create({
@@ -75,6 +79,7 @@ async function Property1 ({ tenantAccounts }) {
         const createdProperty1RoomType1 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Suite',
+                description: 'The Suite offers expansive spaces with a perfect blend of style and luxury. Featuring elegant interiors, a spacious living area, and premium amenities, it ensures relaxation for families or groups. Guests can unwind while enjoying the panoramic views from their private space. Designed with sophistication, it promises both comfort and convenience.',
                 rooms: 3,
                 capacity: 6,
                 bathrooms: 2,
@@ -86,6 +91,7 @@ async function Property1 ({ tenantAccounts }) {
         const createdProperty1RoomType2 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Premiere',
+                description: 'The Premiere offers modern design with functional spaces and contemporary finishes. Perfect for small families or business travelers, it combines affordability and comfort. Guests will enjoy stylish interiors and a cozy atmosphere with essential amenities. Experience convenience with easy access to all the property features.',
                 capacity: 4,
                 bathrooms: 1,
                 price: 4500000,
@@ -96,6 +102,7 @@ async function Property1 ({ tenantAccounts }) {
         const createdProperty1RoomType3 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Deluxe',
+                description: 'The Deluxe offers a cozy and elegant living space for guests seeking comfort and simplicity. With modern amenities and well-designed interiors, this room provides a peaceful retreat. Ideal for couples or solo travelers, it combines affordability with a touch of style. Relax in comfort with all the features you need for a seamless stay.',
                 capacity: 2,
                 bathrooms: 1,
                 price: 2500000,

@@ -9,7 +9,7 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property3 ({ tenantAccounts }) {
+async function Property3 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
@@ -46,10 +46,10 @@ async function Property3 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,
@@ -76,6 +76,7 @@ async function Property3 ({ tenantAccounts }) {
         const createdProperty3RoomType1 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Studio',
+                description: 'The Studio offers a sleek and minimalist design with a perfect balance of comfort and practicality. Ideal for solo travelers or couples, it maximizes space without compromising style. Featuring essential amenities and a cozy atmosphere, it ensures a convenient and efficient stay. Guests can enjoy modern living in a well-thought-out space.',
                 capacity: 2,
                 bathrooms: 1,
                 price: 3500000,
@@ -86,6 +87,7 @@ async function Property3 ({ tenantAccounts }) {
         const createdProperty3RoomType2 = await prisma.propertyRoomType.create({
             data: {
                 name: 'One-Bedroom Apartment',
+                description: 'The One-Bedroom Apartment combines modern living with cozy design and ample space. Perfect for small families or professionals, it features contemporary finishes and functional living areas. The room offers all the essential amenities for a comfortable lifestyle and provides easy access to shared facilities. A balance of affordability and style makes this choice versatile and inviting.',
                 capacity: 4,
                 bathrooms: 1,
                 price: 5000000,
@@ -96,6 +98,7 @@ async function Property3 ({ tenantAccounts }) {
         const createdProperty3RoomType3 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Penthouse',
+                description: 'The Penthouse offers a luxurious retreat with stunning views and exclusive features. Designed for families or groups, it combines elegance, space, and comfort with a premium finish. Featuring three bedrooms, two bathrooms, and upscale amenities, it provides the ultimate living experience. Relax in style with panoramic views and modern architecture.',
                 rooms: 3,
                 capacity: 6,
                 bathrooms: 2,

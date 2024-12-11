@@ -9,7 +9,7 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property13 ({ tenantAccounts }) {
+async function Property13 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
@@ -46,10 +46,10 @@ async function Property13 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,
@@ -76,6 +76,7 @@ async function Property13 ({ tenantAccounts }) {
         const createdProperty13RoomType1 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Deluxe Suite',
+                description: 'The Deluxe Suite offers a blend of style, comfort, and luxury. Designed with modern interiors and elegant finishes, it features spacious living spaces, a comfortable bedroom, and premium amenities for a relaxing stay. Perfect for couples or small families seeking a touch of sophistication.',
                 capacity: 2,
                 bathrooms: 1,
                 price: 4000000,
@@ -86,6 +87,7 @@ async function Property13 ({ tenantAccounts }) {
         const createdProperty13RoomType2 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Executive Apartment',
+                description: 'The Executive Apartment provides a perfect combination of modern design and convenience, offering ample living space, two bathrooms, and stylish interiors. Ideal for business travelers, families, or groups seeking both functionality and style during their stay.',
                 capacity: 4,
                 bathrooms: 2,
                 price: 6000000,
@@ -96,6 +98,7 @@ async function Property13 ({ tenantAccounts }) {
         const createdProperty13RoomType3 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Skyline Penthouse',
+                description: 'The Skyline Penthouse is a luxurious retreat with breathtaking views and premium features. Boasting three spacious bedrooms, three modern bathrooms, and elegant interiors, it offers unmatched comfort and style. Perfect for families or groups looking for a high-end experience with panoramic city views.',
                 rooms: 3,
                 capacity: 8,
                 bathrooms: 3,

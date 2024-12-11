@@ -9,7 +9,7 @@ const hashPassword = async(password) => {
 
 const prisma = new PrismaClient();
 
-async function Property17 ({ tenantAccounts }) {
+async function Property17 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
@@ -46,10 +46,10 @@ async function Property17 ({ tenantAccounts }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,
@@ -76,6 +76,7 @@ async function Property17 ({ tenantAccounts }) {
         const createdProperty17RoomType1 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Executive Studio',
+                description: 'A sleek and modern studio designed for professionals and solo travelers. Offers an ideal living space with premium features and cozy aesthetics.',
                 capacity: 2,
                 bathrooms: 1,
                 price: 4500000,
@@ -86,6 +87,7 @@ async function Property17 ({ tenantAccounts }) {
         const createdProperty17RoomType2 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Premium One-Bedroom Suite',
+                description: 'Experience luxury with the Premium One-Bedroom Suite. Designed for both comfort and style, it offers modern amenities and spacious living with park views.',
                 capacity: 4,
                 bathrooms: 1,
                 price: 6500000,
@@ -96,6 +98,7 @@ async function Property17 ({ tenantAccounts }) {
         const createdProperty17RoomType3 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Grand Penthouse Suite',
+                description: 'Indulge in the ultimate luxury at the Grand Penthouse Suite. Featuring three bedrooms, three bathrooms, and expansive living space with panoramic city views.',
                 rooms: 3,
                 capacity: 6,
                 bathrooms: 3,

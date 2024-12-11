@@ -10,7 +10,7 @@ const hashPassword = async(password) => {
 const prisma = new PrismaClient();
 
 
-async function Property2 ({ tenantAccounts, tx }) {
+async function Property2 ({ tenantAccounts, countryId, cityId }) {
     const uuid = v4()
     const id = uuid
     const property = {
@@ -46,10 +46,10 @@ async function Property2 ({ tenantAccounts, tx }) {
             data: {
                 id,
                 name: property.name,
-                country: property.country,
+                countryId,
                 address: property.address,
                 zipCode: property.zipCode,
-                city: property.city,
+                cityId,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,
@@ -75,7 +75,13 @@ async function Property2 ({ tenantAccounts, tx }) {
     
         const createdProperty2RoomType1 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Executive',
+                name: 'Suite',
+                description: `The Suite is an elegant and expansive room designed for guests seeking ultimate luxury and privacy. 
+                With separate living and sleeping areas, the Suite offers ample space and an enhanced level of comfort. 
+                The room is furnished with high-end décor, a king-sized bed, a large sofa, and a work area. 
+                Additional amenities include a minibar, a spacious wardrobe, a flat-screen TV, and a state-of-the-art sound system. 
+                The lavish bathroom includes a soaking tub, a rain shower, and premium bath products. 
+                Perfect for families, business travelers, or those celebrating a special occasion, the Suite provides a luxurious retreat with all the comforts of home and more.`,
                 rooms: 2,
                 capacity: 4,
                 bathrooms: 2,
@@ -87,6 +93,11 @@ async function Property2 ({ tenantAccounts, tx }) {
         const createdProperty2RoomType2 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Deluxe',
+                description: `The Deluxe Room is perfect for guests seeking a more spacious and luxurious experience. 
+                It boasts upgraded furnishings, including a king-sized bed, premium linens, and a cozy sitting area. 
+                The room features additional amenities such as a minibar, a coffee machine, and high-speed internet access. 
+                The modern bathroom includes a rain shower or bathtub, along with upscale toiletries. 
+                Designed for relaxation and comfort, the Deluxe Room is ideal for those wanting extra space and added comfort during their stay.`,
                 capacity: 2,
                 bathrooms: 1,
                 price: 2500000,
@@ -97,6 +108,10 @@ async function Property2 ({ tenantAccounts, tx }) {
         const createdProperty2RoomType3 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Reguler',
+                description: `The Reguler Room offers comfort and convenience with essential amenities. 
+                Designed for short stays or budget-conscious travelers, it features a comfortable bed, a flat-screen TV, and a work desk. 
+                The room is equipped with a private bathroom, complete with toiletries and a shower. 
+                Ideal for guests looking for a simple, yet cozy space to rest and recharge, the Reguler Room is perfect for those who need an affordable, no-frills option while exploring the area.`,
                 capacity: 2,
                 bathrooms: 1,
                 price: 1500000,

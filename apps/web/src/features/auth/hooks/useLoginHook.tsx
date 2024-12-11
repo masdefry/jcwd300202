@@ -2,6 +2,7 @@
 
 import { toast } from '@/hooks/use-toast'
 import useMutateLoginApi from '../api/useMutateLoginApi'
+import { AxiosError, AxiosResponse } from 'axios'
 
 interface IUseLoginHookProps {
     endPoint: string,
@@ -19,14 +20,20 @@ const useLoginHook = ({ endPoint, role }: IUseLoginHookProps) => {
         isPendingLogin 
     } = useMutateLoginApi({ 
         endPoint, 
-        onSuccess:(res) => {
+        onSuccess:(res: AxiosResponse) => {
             toast({
                 title: `Login ${role} success`,
+                description: 'Enjoy roomify!'
             })
         }, 
-        onError: (err) => {
+        onError: (err: any) => {
+            let description;
+            if(err?.response?.data?.message === 'Please verify email first!') {
+                description = 'Please check your email to verify'
+            }
             toast({
                 title: `Login ${role} failed!`,
+                description,
                 variant: 'destructive'
             }) 
         } })

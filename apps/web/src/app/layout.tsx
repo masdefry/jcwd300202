@@ -24,7 +24,6 @@ export default function RootLayout({
         <TanstackProvider>
           <Header />
           {children}
-          <Toaster />
           <Footer />
         </TanstackProvider>
       </body>

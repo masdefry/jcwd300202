@@ -4,7 +4,6 @@ export interface ITransaction {
     total: number,
     price: number,
     qty: number,
-    expiryDate: Date,
     userId: string,  
     tenantId: string,  
     propertyId: string,

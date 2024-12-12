@@ -19,8 +19,22 @@ model User {
   role               Role    @default(USER)
   isGoogleRegistered Boolean @default(false)
   token              String? @db.Text
+  username          String?    @default("Roomify's friend")
+  phoneNumber       String?
+  birthDate         DateTime?
+  nationality       String?
+  gender            Gender?
+  address           String?
+  directory         String?
+  filename          String?
+  fileExtension     String?
 
-  profile     Profile?
+  countryId Int?
+  country Country? @relation(fields: [countryId], references: [id])
+  
+  cityId Int?
+  city City? @relation(fields: [cityId], references: [id])
+
   transaction Transaction[]
   review      Review[]
   historyView HistoryView[]
@@ -30,27 +44,6 @@ model User {
   deletedAt DateTime?
 
   @@map("users")
-}
-
-model Profile {
-  id                String    @id @default(cuid())
-  username          String    @default("Roomify's friend")
-  phoneNumber       String?
-  birthDate         DateTime?
-  nationality       String?
-  gender            Gender?
-  address           String?
-  directory String?
-  filename  String?
-
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  @@map("profile")
 }
 
 
@@ -65,9 +58,12 @@ model Country {
   name String
   filename String
   directory String
+  fileExtension String @default("jpg")
 
+  user User[]
   cities   City[]
   property Property[]
+  transaction Transaction[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -77,15 +73,18 @@ model Country {
 }
 
 model City {
-  id   Int    @id @default(autoincrement())
-  name String
-  directory String
-  filename String
+  id            Int    @id @default(autoincrement())
+  name          String
+  directory     String
+  filename      String
+  fileExtension String @default("jpg")
 
   countryId Int
   country   Country @relation(fields: [countryId], references: [id])
 
+  user User[]
   property Property[]
+  transaction Transaction[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -106,6 +105,7 @@ model Tenant {
   address           String?
   directory String?
   filename  String?
+  fileExtension String?
 
   property    Property[]
   transaction Transaction[]
@@ -185,6 +185,7 @@ model PropertyImage {
   id        Int    @id @default(autoincrement())
   directory String
   filename  String
+  fileExtension String @default("jpg")
 
   propertyDetailId Int
   propertyDetail   PropertyDetail @relation(fields: [propertyDetailId], references: [id])
@@ -215,6 +216,7 @@ model PropertyFacility {
   name          String
   iconDirectory String?
   iconFilename  String?
+  iconFileExtension String @default("png")
 
   propertyHasFacility PropertyHasFacility[]
 
@@ -270,6 +272,7 @@ model PropertyRoomFacility {
   name          String
   iconDirectory String?
   iconFilename  String?
+  iconFileExtension String @default("png")
 
   roomHasFacilities RoomHasFacilities[]
 
@@ -299,6 +302,7 @@ model PropertyRoomImage {
   id        Int    @id @default(autoincrement())
   directory String
   filename  String
+  fileExtension String @default("jpg")
 
   propertyRoomTypeId Int
   propertyRoomType   PropertyRoomType @relation(fields: [propertyRoomTypeId], references: [id])
@@ -335,6 +339,12 @@ model Transaction {
   qty          Int
   expiryDate   DateTime
 
+  cityId Int
+  city   City   @relation(fields: [cityId], references: [id])
+
+  countryId Int
+  country   Country   @relation(fields: [countryId], references: [id])
+  
   userId String
   user   User   @relation(fields: [userId], references: [id])
 
@@ -379,7 +389,8 @@ enum Status {
 }
 
 model Review {
-  comment String @db.Text
+  comment String? @db.Text
+  rating Int?
 
   propertyId String
   property   Property @relation(fields: [propertyId], references: [id])
@@ -397,3 +408,4 @@ model Review {
   @@id([propertyId, userId, transactionId])
   @@map("reviews")
 }
+

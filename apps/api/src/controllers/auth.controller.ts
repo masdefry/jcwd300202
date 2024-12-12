@@ -1,8 +1,10 @@
 import prisma from "@/prisma";
-import { comparePassword } from "@/utils/hashPassword";
+import { comparePassword, hashPassword } from "@/utils/hashPassword";
 import { createToken, createTokenExpiresIn1H } from "@/utils/jwt";
 import { transporter } from "@/utils/transporter";
 import { NextFunction, Request, Response } from "express";
+import fs from 'fs'
+import { compile } from "handlebars";
 
 export const loginTenant = async(req: Request, res: Response, next: NextFunction) => {
     try {
@@ -45,18 +47,13 @@ export const loginUser = async(req: Request, res: Response, next: NextFunction) 
 
         const isEmailExist = await prisma.user.findUnique({
             where: {
-                email
+                email,
+                isGoogleRegistered: false
             }
         })
 
         if( !isEmailExist?.id ) throw { msg: 'User not found!', status: 406 }
         if( !isEmailExist?.password ) throw { msg: 'Please verify email first!', status: 406 }
-
-        const userProfile = await prisma.profile.findUnique({
-            where: {
-                userId: isEmailExist!.id
-            }
-        })
 
         const isPasswordValid = await comparePassword( password, isEmailExist!.password )
         if(!isPasswordValid) throw { msg: 'Password invalid!', status: 406 }
@@ -67,8 +64,8 @@ export const loginUser = async(req: Request, res: Response, next: NextFunction) 
             errror: false,
             message: 'Login success',
             data: {
-                username: userProfile?.username,
-                profilePictureUrl: `${userProfile?.directory}/${userProfile?.filename}`,
+                username: isEmailExist?.username,
+                profilePictureUrl: `${isEmailExist?.directory}/${isEmailExist?.filename}`,
                 role: isEmailExist?.role,
                 isVerified: isEmailExist?.isVerified,
                 token
@@ -82,6 +79,14 @@ export const loginUser = async(req: Request, res: Response, next: NextFunction) 
 export const registerUser = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const { email } = req.body
+
+        const isUserExist = await prisma.user.findUnique({
+            where: {
+                email
+            }
+        })
+
+        if(isUserExist) throw { msg: 'User already exist!', status: 406 }
         
         const isEmailExist = await prisma.user.findUnique({
             where: {
@@ -91,22 +96,15 @@ export const registerUser = async(req: Request, res: Response, next: NextFunctio
 
         if(isEmailExist?.id) throw { msg: 'User already exist!', status: 406 } 
         let tokenForVerifyEmail, username, profilePictureUrl, token, createdUser
-        console.log(1)
+        
         await prisma.$transaction(async(tx) => {
             createdUser = await tx.user.create({
                 data: {
                     email
                 }
             })
-            console.log(2)
-            
-            const createdProfile = await tx.profile.create({
-                data: {
-                    userId: createdUser.id
-                }
-            })
     
-            username = createdProfile?.username
+            username = createdUser?.username
     
             token = await createToken({id: createdUser.id, role: createdUser.role})
     
@@ -125,13 +123,14 @@ export const registerUser = async(req: Request, res: Response, next: NextFunctio
         
         const verifyEmailLink = `https://localhost:3000/auth/verify/${tokenForVerifyEmail}`
         
-        console.log(3)
-        //VERIFY LINK DIPAKAI BUAT HTMLNYA NANTI
+        const emailBody = fs.readFileSync('./src/public/body.email.html/verify.email.html', 'utf-8')
+        let compiledEmailBody: any = await compile(emailBody)
+        compiledEmailBody({username, url: verifyEmailLink})
 
         await transporter.sendMail({
             to: email,
             subject: 'Verify Email [Roomify]',
-            html: '<h1>Verify Please</h1>'
+            html: compiledEmailBody
         })
 
         res.status(201).json({
@@ -162,6 +161,14 @@ export const registerTenant = async(req: Request, res: Response, next: NextFunct
 
         if(isEmailExist?.id) throw { msg: 'Tenant already exist!', status: 406 }
 
+        
+        const isTenantExist = await prisma.tenant.findUnique({
+            where: {
+                email
+            }
+        })
+
+        if(isTenantExist) throw { msg: 'Tenant already exist!', status: 406 }
 
         const createdTenant = await prisma.tenant.create({
             data: {
@@ -171,6 +178,12 @@ export const registerTenant = async(req: Request, res: Response, next: NextFunct
 
         const token = await createToken({id: createdTenant.id, role: createdTenant.role})
         const tokenForVerifyEmail = await createTokenExpiresIn1H({id: createdTenant.id, role: createdTenant.role})
+
+        const verifyEmailLink = `https://localhost:3000/auth/verify/${tokenForVerifyEmail}`
+        
+        const emailBody = fs.readFileSync('./src/public/body.email.html/verify.email.html', 'utf-8')
+        let compiledEmailBody: any = await compile(emailBody)
+        compiledEmailBody({username: createdTenant.pic, url: verifyEmailLink})
 
         await prisma.tenant.update({
             where: {
@@ -184,7 +197,7 @@ export const registerTenant = async(req: Request, res: Response, next: NextFunct
         await transporter.sendMail({
             to: email,
             subject: 'Verify Email [Roomify]',
-            html: '<h1>Verify Please</h1>'
+            html: compiledEmailBody
         })
 
         res.status(201).json({
@@ -288,7 +301,7 @@ export const verifyEmail = async(req: Request, res: Response, next: NextFunction
     try {
         const { id, role, token, password } = req.body
     
-        let account, profile;
+        let account, username;
         if(role === 'TENANT') {
             account = await prisma.tenant.update({
                 where: {
@@ -300,10 +313,7 @@ export const verifyEmail = async(req: Request, res: Response, next: NextFunction
                 }
             })
 
-            profile = {
-                directory: account.directory,
-                filename: account.filename,
-            }
+            username = account?.pic
             
         } else if( role === "USER") {
             account = await prisma.user.update({
@@ -319,11 +329,7 @@ export const verifyEmail = async(req: Request, res: Response, next: NextFunction
 
             if(!account) throw { msg: 'Id or token invalid!', status: 406 }
 
-            profile = await prisma.profile.findUnique({
-                where: {
-                    userId: account.id
-                }
-            })
+            username = account?.username
         } else {
             throw { msg: 'Role invalid!', status: 406 }
         }
@@ -338,8 +344,8 @@ export const verifyEmail = async(req: Request, res: Response, next: NextFunction
             data: {
                 token: createdToken,
                 role: account.role,
-                username: profile?.username,
-                profilePictureUrl: `${profile?.directory}/${profile?.filename}`,
+                username,
+                profilePictureUrl: `${account?.directory}/${account?.filename}`,
                 isVerified: account.isVerified
             }
         })
@@ -352,7 +358,60 @@ export const verifyEmail = async(req: Request, res: Response, next: NextFunction
 
 export const signInWithGoogle = async(req: Request, res: Response, next: NextFunction) => {
     try {
+        const { email } = req.body
+
+        const checkUser = await prisma.user.findUnique({
+            where : {
+                email
+            }
+        })
+        let userData;
+    
+        if(!checkUser?.id) {
+                
+            const newUser = await prisma.user.create({
+                data: { 
+                    email, 
+                    isGoogleRegistered: true,
+                    isVerified: true
+                }
+            })
+    
+            userData = {
+                username: newUser?.username,
+                role: newUser?.role,
+                id: checkUser?.id,
+                isVerified: newUser?.isVerified,
+                isGoogleRegistered: newUser?.isGoogleRegistered,
+                profilePictureUrl: newUser?.directory ? `http://localhost:5000/${newUser.directory}/${newUser.filename}/${newUser.fileExtension}` : ''
+            }
         
+        } else {
+            userData = {
+                username: checkUser?.username,
+                role: checkUser?.role,
+                isVerified: checkUser?.isVerified,
+                id: checkUser?.id,
+                isGoogleRegistered: checkUser?.isGoogleRegistered,
+                profilePictureUrl: checkUser?.directory ? `http://localhost:5000/${checkUser?.directory}/${checkUser?.filename}/${checkUser?.fileExtension}` : ''
+            }
+        }
+    
+        const token = await createToken({id: userData?.id as string, role: userData?.role as string})
+
+        res.status(200).json({
+            error: false,
+            message: 'Authentication with Google success',
+            data: {
+                token,
+                username: userData?.username,
+                role: userData?.role,
+                isVerified: userData?.isVerified,
+                isGoogleRegistered: userData?.isGoogleRegistered,
+                profilePictureUrl: userData?.profilePictureUrl
+            }
+        })
+
     } catch (error) {
         next(error)
     }
@@ -422,7 +481,49 @@ export const sendEmailResetPassword = async(req: Request, res: Response, next: N
 
 export const keepAuth = async(req: Request, res: Response, next: NextFunction) => {
     try {
-        const { id, role } = req.body
+        const { id, role, token } = req.body
+
+        let isAccountExist, username, profilePictureUrl, isVerified;
+        
+        if(role === 'USER') {
+            isAccountExist = await prisma.user.findUnique({
+                where: {
+                    id
+                }
+            })
+
+            if(!isAccountExist?.id) throw { msg: 'User not found!', status: 406 }
+            
+            username = isAccountExist?.username
+            isVerified = isAccountExist?.isVerified
+            profilePictureUrl = isAccountExist?.directory ? `http://localhost:5000/${isAccountExist?.directory}/${isAccountExist?.filename}/${isAccountExist?.fileExtension}` : ''             
+        } else if(role === 'TENANT') {
+            isAccountExist = await prisma.tenant.findUnique({
+                where: {
+                    id
+                }
+            })
+
+            if(!isAccountExist?.id) throw { msg: 'User not found!', status: 406 }
+            
+            username = isAccountExist?.pic
+            isVerified = isAccountExist?.isVerified
+            profilePictureUrl = isAccountExist?.directory ? `http://localhost:5000/${isAccountExist?.directory}/${isAccountExist?.filename}/${isAccountExist?.fileExtension}` : ''             
+        } else {
+            throw {msg: 'Role unauthorized!', status: 406}
+        }
+
+        res.status(200).json({
+            error: false,
+            message: 'Keep auth success',
+            data: {
+                username,
+                isVerified,
+                role,
+                profilePictureUrl,
+                token
+            }
+        })
 
     } catch (error) {
         next(error)

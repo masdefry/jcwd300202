@@ -12,6 +12,7 @@ export const verifyToken = async(req: Request, res: Response, next: NextFunction
     
         req.body!.id = decodedToken?.data?.id
         req.body!.role = decodedToken?.data?.role
+        req.body!.token = decodedToken?.data?.token
     
         next()
     } catch (error) {

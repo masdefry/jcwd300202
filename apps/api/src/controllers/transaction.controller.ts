@@ -4,9 +4,9 @@ import { ITransaction } from '@/services/transaction.service/types'
 
 export const createTransaction = async(req: Request, res: Response, next: NextFunction) => {
     try {
-        const { checkInDate, checkOutDate, total, price, qty, expiryDate, userId, tenantId, propertyId, roomId }: ITransaction= req.body
+        const { checkInDate, checkOutDate, total, price, qty, userId, tenantId, propertyId, roomId }: ITransaction= req.body
 
-        const payment = await createTransactionService({ checkInDate, checkOutDate, total, price, qty, expiryDate, userId, tenantId, propertyId, roomId })
+        const payment = await createTransactionService({ checkInDate, checkOutDate, total, price, qty, userId, tenantId, propertyId, roomId })
 
         res.status(201).json({
             message: 'Transaction created successfully',
@@ -15,12 +15,7 @@ export const createTransaction = async(req: Request, res: Response, next: NextFu
         })
 
     } catch (error) {
-        console.log(error)
-        res.status(500).json({
-            message: 'Failed to create transaction',
-            error: true,
-            data: {}
-        })
+        next(error)
     }
 }
 

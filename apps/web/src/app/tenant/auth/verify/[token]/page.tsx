@@ -30,7 +30,6 @@ const VerifyEmailTenantPage = () => {
                     <AuthButton text='Continue'/>
                 </Form>
             </Formik>
-            <Footer />
         </section>
     </main>
   )

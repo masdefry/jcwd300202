@@ -19,8 +19,22 @@ model User {
   role               Role    @default(USER)
   isGoogleRegistered Boolean @default(false)
   token              String? @db.Text
+  username          String?    @default("Roomify's friend")
+  phoneNumber       String?
+  birthDate         DateTime?
+  nationality       String?
+  gender            Gender?
+  address           String?
+  directory         String?
+  filename          String?
+  fileExtension     String?
 
-  profile     Profile?
+  countryId Int?
+  country Country? @relation(fields: [countryId], references: [id])
+  
+  cityId Int?
+  city City? @relation(fields: [cityId], references: [id])
+
   transaction Transaction[]
   review      Review[]
   historyView HistoryView[]
@@ -32,25 +46,6 @@ model User {
   @@map("users")
 }
 
-model Profile {
-  id                String    @id @default(cuid())
-  username          String    @default("Roomify friend's")
-  phoneNumber       String?
-  birthDate         DateTime?
-  nationality       String?
-  gender            Gender?
-  address           String?
-  profilePictureUrl String?
-
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  @@map("profile")
-}
 
 enum Gender {
   MALE
@@ -59,10 +54,16 @@ enum Gender {
 
 model Country {
   id   Int    @id @default(autoincrement())
+  description String
   name String
+  filename String
+  directory String
+  fileExtension String @default("jpg")
 
+  user User[]
   cities   City[]
   property Property[]
+  transaction Transaction[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -72,15 +73,18 @@ model Country {
 }
 
 model City {
-  id   Int    @id @default(autoincrement())
-  name String
-  directory String
-  filename String
+  id            Int    @id @default(autoincrement())
+  name          String
+  directory     String
+  filename      String
+  fileExtension String @default("jpg")
 
   countryId Int
   country   Country @relation(fields: [countryId], references: [id])
 
+  user User[]
   property Property[]
+  transaction Transaction[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -96,6 +100,12 @@ model Tenant {
   role       Role    @default(TENANT)
   isVerified Boolean @default(false)
   token      String? @db.Text
+  pic        String? @default("Roomify's tenant")
+  phoneNumber       String?
+  address           String?
+  directory String?
+  filename  String?
+  fileExtension String?
 
   property    Property[]
   transaction Transaction[]
@@ -123,18 +133,19 @@ model Property {
   checkOutStartTime DateTime
   checkOutEndTime   DateTime
   slug              String   @unique
+  
 
-  propertyTypeId Int
-  propertyType   PropertyType @relation(fields: [propertyTypeId], references: [id])
+  propertyTypeId Int?
+  propertyType   PropertyType? @relation(fields: [propertyTypeId], references: [id])
 
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
+  tenantId String?
+  tenant   Tenant? @relation(fields: [tenantId], references: [id])
 
-  countryId Int
-  country   Country @relation(fields: [countryId], references: [id])
+  countryId Int?
+  country   Country? @relation(fields: [countryId], references: [id])
 
-  cityId Int
-  city   City @relation(fields: [cityId], references: [id])
+  cityId Int?
+  city   City? @relation(fields: [cityId], references: [id])
 
   propertyRoomType    PropertyRoomType[]
   propertyDetail      PropertyDetail?
@@ -174,6 +185,7 @@ model PropertyImage {
   id        Int    @id @default(autoincrement())
   directory String
   filename  String
+  fileExtension String @default("jpg")
 
   propertyDetailId Int
   propertyDetail   PropertyDetail @relation(fields: [propertyDetailId], references: [id])
@@ -204,6 +216,7 @@ model PropertyFacility {
   name          String
   iconDirectory String?
   iconFilename  String?
+  iconFileExtension String @default("png")
 
   propertyHasFacility PropertyHasFacility[]
 
@@ -232,6 +245,7 @@ model PropertyHasFacility {
 model PropertyRoomType {
   id         Int    @id @default(autoincrement())
   name       String
+  description String
   rooms      Int?
   capacity   Int
   bathrooms  Int
@@ -258,6 +272,7 @@ model PropertyRoomFacility {
   name          String
   iconDirectory String?
   iconFilename  String?
+  iconFileExtension String @default("png")
 
   roomHasFacilities RoomHasFacilities[]
 
@@ -287,6 +302,7 @@ model PropertyRoomImage {
   id        Int    @id @default(autoincrement())
   directory String
   filename  String
+  fileExtension String @default("jpg")
 
   propertyRoomTypeId Int
   propertyRoomType   PropertyRoomType @relation(fields: [propertyRoomTypeId], references: [id])
@@ -323,6 +339,12 @@ model Transaction {
   qty          Int
   expiryDate   DateTime
 
+  cityId Int
+  city   City   @relation(fields: [cityId], references: [id])
+
+  countryId Int
+  country   Country   @relation(fields: [countryId], references: [id])
+  
   userId String
   user   User   @relation(fields: [userId], references: [id])
 
@@ -364,10 +386,12 @@ enum Status {
   WAITING_FOR_CONFIRMATION_PAYMENT
   PAID
   CANCELLED
+  EXPIRED
 }
 
 model Review {
-  comment String @db.Text
+  comment String? @db.Text
+  rating Int?
 
   propertyId String
   property   Property @relation(fields: [propertyId], references: [id])
@@ -385,3 +409,4 @@ model Review {
   @@id([propertyId, userId, transactionId])
   @@map("reviews")
 }
+

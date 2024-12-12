@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import { prisma } from './connection';
 import router from './routers';
 
+
 const app: Express = express()
 const port = 5000
 app.use(express.json())
@@ -23,12 +24,12 @@ interface IError extends Error {
 app.use((error: IError, req: Request, res: Response, next: NextFunction) => {
   res.status(error.status || 500).json({
     error: true,
-    message: error.msg || error.message,
+    message: error.message === 'jwt expired' || error.msg || error.message,
     data: {}
   })
 })
 
 app.listen(port, () => {
-  console.log(`Server is running on ${port}`)
+  console.log(`[Server] is running on http://localhost:${port}`)
 })
 

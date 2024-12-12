@@ -30,7 +30,6 @@ const VerifyEmailUserPage = () => {
                     <AuthButton text='Continue'/>
                 </Form>
             </Formik>
-            <Footer />
         </section>
     </main>
   )

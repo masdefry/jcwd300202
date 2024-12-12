@@ -3,11 +3,16 @@
 import React from 'react'
 import { FcGoogle } from 'react-icons/fc'
 
-const GoogleSignInButton = () => {
+interface IGoogleSignInButtonProps {
+  mutateOAuth: any,
+  isPending: boolean,
+}
+
+const GoogleSignInButton = ({ mutateOAuth, isPending }: IGoogleSignInButtonProps) => {
   return (
     <section>
         <section className='flex flex-col gap-1'>
-            <button className='p-3 active:scale-95 transition duration-200 hover:bg-gray-300 rounded-full border border-gray-300 w-full text-base flex items-center justify-center font-bold gap-3'><FcGoogle size={23}/>Sign in with Google</button>
+            <button onClick={() => !isPending && mutateOAuth()} className={`p-3 ${isPending ? 'bg-slate-300 text-gray-600 cursor-default' : 'active:scale-95 hover:bg-slate-300 border-slate-300'} transition duration-200  border rounded-full w-full text-base flex items-center justify-center font-bold gap-3`}><FcGoogle size={23}/>Sign in with Google</button>
         </section>
     </section>
   )

@@ -77,7 +77,8 @@ async function Property18 ({ tenantAccounts, countryId, cityId }) {
     
         const createdProperty18RoomType1 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Ultimate',
+                name: 'Signature Suite',
+                description: `The Signature Suite offers an elevated, luxurious experience with expansive space and thoughtful design. This suite features a large living area with a plush sofa, a work desk, and a dining area, along with a private bedroom that includes a king-sized bed with premium linens. Guests can enjoy top-of-the-line amenities, such as a minibar, a Nespresso machine, a smart TV, and high-speed internet access. The opulent bathroom includes a soaking tub, a rain shower, and luxury bath products. With its sophisticated design and premium amenities, the Signature Suite is perfect for guests who seek elegance and comfort in a spacious setting.`,
                 capacity: 2,
                 bathrooms: 1,
                 price: 800000,
@@ -87,7 +88,8 @@ async function Property18 ({ tenantAccounts, countryId, cityId }) {
         })
         const createdProperty18RoomType2 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Deluxe',
+                name: 'Junior Suite',
+                description: `The Junior Suite combines comfort and extra space with a stylish and modern design. This suite features a spacious bedroom with a king-sized bed, a sitting area with a sofa, and a work desk. It includes high-end amenities such as a flat-screen TV, a minibar, and a coffee machine. The en-suite bathroom offers a walk-in shower, a vanity area, and upscale toiletries. With its additional space and luxurious touches, the Junior Suite is perfect for those looking for a more spacious and comfortable stay with the added benefits of extra room to relax.`,
                 capacity: 2,
                 bathrooms: 1,
                 price: 656000,
@@ -97,7 +99,8 @@ async function Property18 ({ tenantAccounts, countryId, cityId }) {
         })
         const createdProperty18RoomType3 = await prisma.propertyRoomType.create({
             data: {
-                name: 'Reguler',
+                name: 'Classic Room',
+                description: `The Classic Room offers a timeless and cozy stay for those seeking a simple, yet comfortable environment. This room features a queen-sized bed with soft linens, a work desk, and a flat-screen TV. A mini-fridge and tea and coffee-making facilities are provided for convenience. The private bathroom is equipped with a shower, complimentary toiletries, and fresh towels. Ideal for solo travelers or couples, the Classic Room provides a relaxing and affordable space to unwind after a day of exploring or business.`,
                 capacity: 2,
                 bathrooms: 1,
                 price: 500000,

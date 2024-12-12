@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { createSearchService } from '@/services/header.service'
 import { ISearch } from '@/services/header.service/types'
-// import prisma from
+import prisma from '@/prisma'
 
 export const fetchData = async(req: Request, res: Response, next: NextFunction) => {
     try {
@@ -60,12 +60,68 @@ export const fetchData = async(req: Request, res: Response, next: NextFunction) 
     }
 }
 
-// export const cityAndCountryList = async(req: Request, res: Response, next:NextFunction) => {
-//     try {
-//         const { search } = req.query
-//         const cities = await prisma.
+export const getCityAndCountryList = async(req: Request, res: Response, next:NextFunction) => {
+    try {
+        const { search } = req.query
+        interface IDropdown {
+            cityName: string,
+            cityId: number | string,
+            countryName: string,
+            countryId: number | string
+        }
 
-//     } catch (error) {
+        const dropdown: IDropdown[] = []
+
+        const citiesWithCountry = await prisma.city.findMany({
+            where: {
+                name: {
+                    contains: search as string,
+                    mode: 'insensitive'
+                }
+            },
+            include: {
+                country: true
+            }
+        })
         
-//     }
-// }
+        citiesWithCountry.forEach(item => {
+            const cityWithCountry = {
+                cityName: item.name,
+                cityId: item.id,
+                countryName: item.country.name,
+                countryId: item.countryId
+            }
+            dropdown.push({...cityWithCountry})
+        })
+
+        const countries = await prisma.country.findMany({
+            where: {
+                name: {
+                    contains: search as string,
+                    mode: 'insensitive'
+                }
+            }
+        })
+        
+        countries.forEach(item => {
+            const country = {
+                cityName: '',
+                cityId: '',
+                countryName: item.name,
+                countryId: item.id
+            }
+            dropdown.push({...country})
+        })
+
+        res.status(200).json({
+            error: false,
+            message: 'Get city and country list success',
+            data: {
+                dropdown
+            }
+        })
+
+    } catch (error) {
+        next(error)
+    }
+}

@@ -386,6 +386,7 @@ enum Status {
   WAITING_FOR_CONFIRMATION_PAYMENT
   PAID
   CANCELLED
+  EXPIRED
 }
 
 model Review {

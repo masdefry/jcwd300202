@@ -68,6 +68,7 @@ model Country {
 
   cities   City[]
   property Property[]
+  transaction Transaction[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -86,6 +87,7 @@ model City {
   country   Country @relation(fields: [countryId], references: [id])
 
   property Property[]
+  transaction Transaction[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -335,6 +337,12 @@ model Transaction {
   qty          Int
   expiryDate   DateTime
 
+  cityId Int
+  city   City   @relation(fields: [cityId], references: [id])
+
+  countryId Int
+  country   Country   @relation(fields: [countryId], references: [id])
+  
   userId String
   user   User   @relation(fields: [userId], references: [id])
 

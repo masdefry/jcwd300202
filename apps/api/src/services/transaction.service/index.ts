@@ -118,9 +118,12 @@ export const handleExpiredTransaction = async() => {
         }
     })
 
-    // for (const transaction of expiredTransactions) {
-    //     await prisma.transactionStatus.create({
-            
-    //     })
-    // }
+    for (const transaction of expiredTransactions) {
+        await prisma.transactionStatus.create({
+            data: {
+                transactionId: transaction.id,
+                status: Status.EXPIRED
+            }
+        })
+    }
 }

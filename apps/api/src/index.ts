@@ -3,6 +3,8 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import { prisma } from './connection';
 import router from './routers';
+import cron from 'node-cron'
+import { handleExpiredTransaction } from '@/services/transaction.service/index'
 
 
 const app: Express = express()
@@ -15,6 +17,11 @@ const corsOption = {
 }
 app.use(cors(corsOption))
 app.use('/api', router)
+
+cron.schedule('0 0 * * *', async () => {
+  console.log('Running cron job: Handling expired transactions...');
+  await handleExpiredTransaction()
+})
 
 interface IError extends Error {
   msg: string,

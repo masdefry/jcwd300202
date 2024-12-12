@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import { prisma } from './connection';
 import router from './routers';
 
+
 const app: Express = express()
 const port = 5000
 app.use(express.json())

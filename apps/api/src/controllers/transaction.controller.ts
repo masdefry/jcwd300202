@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express' 
-import { createTransactionService } from '@/services/transaction.service'
+import { createTransactionService, handleExpiredTransaction } from '@/services/transaction.service'
 import { ITransaction } from '@/services/transaction.service/types'
 
 export const createTransaction = async(req: Request, res: Response, next: NextFunction) => {
@@ -19,3 +19,15 @@ export const createTransaction = async(req: Request, res: Response, next: NextFu
     }
 }
 
+export const expiredTransaction = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        await handleExpiredTransaction()
+
+        res.status(200).json({
+            message: 'Expired transactions handled successfully',
+            error: false
+        })
+    } catch (error) {
+        next(error)
+    }
+}

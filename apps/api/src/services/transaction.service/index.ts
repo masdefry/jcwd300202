@@ -3,7 +3,7 @@ import { ITransaction } from './types'
 import { decodeToken } from '@/utils/jwt'
 import { Status } from './types'
 import { v4 } from 'uuid'
-import addHours from "date-fns/add_hours";
+import { addHours } from 'date-fns';
 
 const midtransClient = require("midtrans-client")
 
@@ -38,8 +38,6 @@ export const createTransactionService = async({ checkInDate, checkOutDate, total
     const countryId = propertyInTransaction?.countryId as number
     const cityId = propertyInTransaction?.cityId as number
 
-    const expiryDate = addHours(new Date(), 1)
-
     return await prisma.$transaction(async(tx) => {
         const uuid = v4()
         const id = `ORDER_${uuid.slice(0, 5)}_${uuid.slice(0, 5)}_${uuid.slice(0, 5)}`
@@ -53,7 +51,7 @@ export const createTransactionService = async({ checkInDate, checkOutDate, total
                 total,
                 price,
                 qty,
-                expiryDate: new Date(expiryDate),
+                expiryDate: addHours(new Date(), 1),
                 userId,
                 tenantId,
                 propertyId,
@@ -95,9 +93,34 @@ export const createTransactionService = async({ checkInDate, checkOutDate, total
             total, 
             price, 
             qty, 
-            expiryDate, 
             roomName: room?.name,
             propertyName: room?.property.name
         };
     })
+}
+
+export const handleExpiredTransaction = async() => {
+    const now = new Date();
+
+    const expiredTransactions = await prisma.transaction.findMany({
+        where: {
+            expiryDate: {
+                lte: now
+            }, 
+            transactionStatus: {
+                some: {
+                    status: Status.WAITING_FOR_PAYMENT
+                }
+            }
+        },
+        include: {
+            transactionStatus: true
+        }
+    })
+
+    // for (const transaction of expiredTransactions) {
+    //     await prisma.transactionStatus.create({
+            
+    //     })
+    // }
 }

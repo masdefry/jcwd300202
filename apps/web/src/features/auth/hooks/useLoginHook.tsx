@@ -30,6 +30,8 @@ const useLoginHook = ({ endPoint, role }: IUseLoginHookProps) => {
             let description;
             if(err?.response?.data?.message === 'Please verify email first!') {
                 description = 'Please check your email to verify'
+            } else {
+                description = 'Try again'
             }
             toast({
                 title: `Login ${role} failed!`,

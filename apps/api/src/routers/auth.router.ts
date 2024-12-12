@@ -13,6 +13,6 @@ authRouter.patch('/verify-email', verifyEmail)
 authRouter.post('/send-email-reset-password', sendEmailResetPassword)
 authRouter.post('/reset-password', resetPassword)
 authRouter.post('/reset-password', resetPassword)
-authRouter.get('/o-auth', signInWithGoogle)
+authRouter.post('/o-auth', signInWithGoogle)
 
 export default authRouter

@@ -10,8 +10,15 @@ import GoogleSignInButton from '@/features/auth/components/GoogleSignInButton'
 import AuthHGroup from '@/features/auth/components/AuthHGroup'
 import { registerValidationSchema } from '@/features/auth/schemas/registerValidationSchema'
 import useRegisterHook from '@/features/auth/hooks/useRegisterHook'
+import useLoginWithGoogleHook from '@/features/auth/hooks/useLoginWithGoogleHook'
 
 const RegisterPage = () => {
+    const { 
+        isPendingOAuth,
+        isPendingReqOAuth,
+        mutateOAuth
+    } = useLoginWithGoogleHook()
+
   const { 
     mutateRegister,
     isPendingRegister
@@ -38,7 +45,7 @@ const RegisterPage = () => {
             >
                 <Form className='flex flex-col gap-5'>
                     <TextInput labelName='Email' name='email' placeholder='example@email.com' type='email'/>
-                    <AuthButton isPending={isPendingRegister} text='Continue with email'/>
+                    <AuthButton isPending={Boolean(isPendingOAuth || isPendingRegister || isPendingReqOAuth)} text='Continue with email'/>
                     <span className='text-sm font-light mt-[-15px] ml-4'>
                         <span>Have an account?</span>
                         <span className='ml-1 text-sm font-semibold text-blue-600 border-b-2 border-transparent hover:border-blue-600 active:scale-90 transition duration-200 hover:cursor-pointer w-fit'>Login now</span>
@@ -50,7 +57,7 @@ const RegisterPage = () => {
                 <p className='min-w-max text-center text-sm font-light'>or use of these option</p>
                 <div className='h-[1px] w-full bg-gray-300'></div>
             </div>
-            <GoogleSignInButton />
+            <GoogleSignInButton mutateOAuth={mutateOAuth} isPending={Boolean(isPendingOAuth || isPendingRegister || isPendingReqOAuth)} />
             <Separator />
             <Footer />
         </section>

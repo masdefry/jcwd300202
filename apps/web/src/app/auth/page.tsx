@@ -10,8 +10,14 @@ import AuthHGroup from '@/features/auth/components/AuthHGroup'
 import Separator from '@/features/auth/components/Separator'
 import { loginValidationSchema } from '@/features/auth/schemas/loginValidationSchema'
 import useLoginHook from '@/features/auth/hooks/useLoginHook'
+import useLoginWithGoogleHook from '@/features/auth/hooks/useLoginWithGoogleHook'
 
 const AuthPage = () => {
+    const { 
+        isPendingOAuth,
+        isPendingReqOAuth,
+        mutateOAuth
+    } = useLoginWithGoogleHook()
 
   const { 
     mutateLogin, 
@@ -44,7 +50,7 @@ const AuthPage = () => {
                     <ErrorMessage name='email' component={'div'} className='text-red-600 text-sm mt-[-10px] ml-4'/>
                     <TextInput labelName='Password' name='password' placeholder='example123' type='password'/>
                     <ErrorMessage name='password' component={'div'} className='text-red-600 text-sm mt-[-10px] ml-4'/>
-                    <AuthButton isPending={isPendingLogin} text='Continue'/>
+                    <AuthButton isPending={Boolean(isPendingLogin || isPendingReqOAuth)} text='Continue'/>
                     <span className='text-sm font-light mt-[-15px] ml-4'>
                         <span>Don't have an account?</span>
                         <span className='ml-1 text-sm font-semibold text-blue-600 border-b-2 border-transparent hover:border-blue-600 active:scale-90 transition duration-200 hover:cursor-pointer w-fit'>Register now</span>
@@ -56,7 +62,7 @@ const AuthPage = () => {
                 <p className='min-w-max text-center rounded text-sm font-light'>or use of these option</p>
                 <div className='h-[1px] w-full bg-gray-300'></div>
             </div>
-            <GoogleSignInButton />
+            <GoogleSignInButton isPending={Boolean(isPendingLogin || isPendingReqOAuth)} mutateOAuth={mutateOAuth}/>
             <Separator />
             <Footer />
         </section>

@@ -19,7 +19,6 @@ export default function Home() {
     queryKey: ['getLandingPageData'],
     queryFn: async() => {
       const res = await instance.get('/landing-page')
-      console.log(res)
       return res.data
     }
   })
@@ -150,9 +149,9 @@ export default function Home() {
         </hgroup>
         {
           dataLandingPage?.data?.propertyByRecentBooks ? (
-          <div>
-            <h1>Seems you don't have any transactions</h1>
-            <p>Explore Roomify and book any properties you want</p>
+          <div className='flex flex-col gap-1 text-center justify-center w-full'>
+            <h1 className='text-gray-300 text-2xl font-bold'>Oops, Seems you don't have any transactions</h1>
+            <p className='text-gray-300 text-base font-medium'>Explore Roomify and book any properties you want</p>
           </div>
           ):(
           <div className="carousel rounded-none flex gap-8">

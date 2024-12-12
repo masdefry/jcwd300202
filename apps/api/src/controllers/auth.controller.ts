@@ -1,5 +1,5 @@
 import prisma from "@/prisma";
-import { comparePassword } from "@/utils/hashPassword";
+import { comparePassword, hashPassword } from "@/utils/hashPassword";
 import { createToken, createTokenExpiresIn1H } from "@/utils/jwt";
 import { transporter } from "@/utils/transporter";
 import { NextFunction, Request, Response } from "express";
@@ -47,7 +47,8 @@ export const loginUser = async(req: Request, res: Response, next: NextFunction) 
 
         const isEmailExist = await prisma.user.findUnique({
             where: {
-                email
+                email,
+                isGoogleRegistered: false
             }
         })
 
@@ -357,7 +358,60 @@ export const verifyEmail = async(req: Request, res: Response, next: NextFunction
 
 export const signInWithGoogle = async(req: Request, res: Response, next: NextFunction) => {
     try {
+        const { email } = req.body
+
+        const checkUser = await prisma.user.findUnique({
+            where : {
+                email
+            }
+        })
+        let userData;
+    
+        if(!checkUser?.id) {
+                
+            const newUser = await prisma.user.create({
+                data: { 
+                    email, 
+                    isGoogleRegistered: true,
+                    isVerified: true
+                }
+            })
+    
+            userData = {
+                username: newUser?.username,
+                role: newUser?.role,
+                id: checkUser?.id,
+                isVerified: newUser?.isVerified,
+                isGoogleRegistered: newUser?.isGoogleRegistered,
+                profilePictureUrl: newUser?.directory ? `http://localhost:5000/${newUser.directory}/${newUser.filename}/${newUser.fileExtension}` : ''
+            }
         
+        } else {
+            userData = {
+                username: checkUser?.username,
+                role: checkUser?.role,
+                isVerified: checkUser?.isVerified,
+                id: checkUser?.id,
+                isGoogleRegistered: checkUser?.isGoogleRegistered,
+                profilePictureUrl: checkUser?.directory ? `http://localhost:5000/${checkUser?.directory}/${checkUser?.filename}/${checkUser?.fileExtension}` : ''
+            }
+        }
+    
+        const token = await createToken({id: userData?.id as string, role: userData?.role as string})
+
+        res.status(200).json({
+            error: false,
+            message: 'Authentication with Google success',
+            data: {
+                token,
+                username: userData?.username,
+                role: userData?.role,
+                isVerified: userData?.isVerified,
+                isGoogleRegistered: userData?.isGoogleRegistered,
+                profilePictureUrl: userData?.profilePictureUrl
+            }
+        })
+
     } catch (error) {
         next(error)
     }
@@ -427,7 +481,49 @@ export const sendEmailResetPassword = async(req: Request, res: Response, next: N
 
 export const keepAuth = async(req: Request, res: Response, next: NextFunction) => {
     try {
-        const { id, role } = req.body
+        const { id, role, token } = req.body
+
+        let isAccountExist, username, profilePictureUrl, isVerified;
+        
+        if(role === 'USER') {
+            isAccountExist = await prisma.user.findUnique({
+                where: {
+                    id
+                }
+            })
+
+            if(!isAccountExist?.id) throw { msg: 'User not found!', status: 406 }
+            
+            username = isAccountExist?.username
+            isVerified = isAccountExist?.isVerified
+            profilePictureUrl = isAccountExist?.directory ? `http://localhost:5000/${isAccountExist?.directory}/${isAccountExist?.filename}/${isAccountExist?.fileExtension}` : ''             
+        } else if(role === 'TENANT') {
+            isAccountExist = await prisma.tenant.findUnique({
+                where: {
+                    id
+                }
+            })
+
+            if(!isAccountExist?.id) throw { msg: 'User not found!', status: 406 }
+            
+            username = isAccountExist?.pic
+            isVerified = isAccountExist?.isVerified
+            profilePictureUrl = isAccountExist?.directory ? `http://localhost:5000/${isAccountExist?.directory}/${isAccountExist?.filename}/${isAccountExist?.fileExtension}` : ''             
+        } else {
+            throw {msg: 'Role unauthorized!', status: 406}
+        }
+
+        res.status(200).json({
+            error: false,
+            message: 'Keep auth success',
+            data: {
+                username,
+                isVerified,
+                role,
+                profilePictureUrl,
+                token
+            }
+        })
 
     } catch (error) {
         next(error)

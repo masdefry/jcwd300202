@@ -1,7 +1,7 @@
 'use client'
 
 import { toast } from '@/hooks/use-toast'
-import useMutateRegisterApi from '../api/useMutateRegister'
+import useMutateRegisterApi from '../api/useMutateRegisterApi'
 
 interface IUseRegisterHookProps {
     endPoint: string,

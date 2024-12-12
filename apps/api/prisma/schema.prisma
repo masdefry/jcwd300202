@@ -25,9 +25,9 @@ model User {
   nationality       String?
   gender            Gender?
   address           String?
-  directory String?
-  filename  String?
-  fileExtension String?
+  directory         String?
+  filename          String?
+  fileExtension     String?
 
   countryId Int?
   country Country? @relation(fields: [countryId], references: [id])
@@ -72,10 +72,10 @@ model Country {
 }
 
 model City {
-  id   Int    @id @default(autoincrement())
-  name String
-  directory String
-  filename String
+  id            Int    @id @default(autoincrement())
+  name          String
+  directory     String
+  filename      String
   fileExtension String @default("jpg")
 
   countryId Int

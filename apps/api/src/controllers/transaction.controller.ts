@@ -31,3 +31,19 @@ export const expiredTransaction = async(req: Request, res: Response, next: NextF
         next(error)
     }
 }
+
+export const transactionHistory = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.body
+
+        const result = 
+
+        res.status(200).json({
+            message: 'Successfully fetch transactions',
+            error: false,
+            data: result
+        })
+    } catch (error) {
+        
+    }
+}

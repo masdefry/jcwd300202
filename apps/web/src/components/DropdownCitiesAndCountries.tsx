@@ -14,12 +14,12 @@ export interface IDataDropDown {
 interface IDropdownCitesAndCountry {
   dataDropdown : IDataDropDown[] | [],
   setSearchValues : any,
-  setDropdown: any,
+  setDataDropdown: any,
   handleSearchInput: any
   handleClearSearchInput: any
 }
 
-const DropdownCitiesAndCountries = ({ dataDropdown, setSearchValues, setDropdown, handleSearchInput, handleClearSearchInput }: IDropdownCitesAndCountry) => {
+const DropdownCitiesAndCountries = ({ dataDropdown, setSearchValues, setDataDropdown, handleSearchInput, handleClearSearchInput }: IDropdownCitesAndCountry) => {
     
   
     if(!Array.isArray(dataDropdown) || dataDropdown.length <= 0) {
@@ -35,7 +35,7 @@ const DropdownCitiesAndCountries = ({ dataDropdown, setSearchValues, setDropdown
               return (
                 <li onClick={() => {
                   setSearchValues({countryId: item.countryId, cityId: item.cityId, countryName: item.countryName, cityName: item.cityName})
-                  setDropdown([])
+                  setDataDropdown([])
                   handleClearSearchInput()
                 }} 
                 key={index} className='py-2 hover:bg-slate-400 text-black px-8'>{item?.cityName && item?.cityName + ','} {item?.countryName}</li>

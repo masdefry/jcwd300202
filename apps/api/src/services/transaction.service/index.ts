@@ -149,9 +149,12 @@ export const transactionHistoryService = async(id: string) => {
                 id: true,
                 checkInDate: true,
                 checkOutDate: true,
+                nights: true,
                 total: true,
                 price: true,
                 qty: true,
+                adult: true,
+                children: true,
                 expiryDate: true,
                 room: {
                     select: {

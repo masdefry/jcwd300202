@@ -10,14 +10,17 @@ const useDropdownSearchHook = () => {
       mutateShowDropdown 
     } = useMutateShowDropdownApi({
       onSuccess: (res) => {
-        setDataDropdown(res)
+        setDataDropdown(state => {
+          state = [...res]
+          return state
+        })
       },
       onError: (err) => {
         console.log(err)
       }
     })
 
-     const [ dataDropdown, setDataDropdown ] = useState([])
+     const [ dataDropdown, setDataDropdown ] = useState<any[]>([])
       const [ 
         searchValues, 
         setSearchValues 
@@ -31,7 +34,7 @@ const useDropdownSearchHook = () => {
 
       const mutateShowDropdownDebounce = useDebouncedCallback((value:string) => {
           mutateShowDropdown(value)
-        }, 500)
+        }, 200)
       
         const handleSearchInput = (event: React.ChangeEvent<HTMLInputElement>) => {
           setHandleSearch(event.target.value)

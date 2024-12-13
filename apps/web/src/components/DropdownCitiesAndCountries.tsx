@@ -27,7 +27,7 @@ const DropdownCitiesAndCountries = ({ dataDropdown, setSearchValues, setDataDrop
     }
 
     return (
-    <section className='bg-white border border-slate-400 rounded-3xl overflow-hidden w-full'>
+    <section className='bg-white shadow-md rounded-3xl overflow-hidden w-full'>
       <div>
         <ul>
           {
@@ -35,10 +35,13 @@ const DropdownCitiesAndCountries = ({ dataDropdown, setSearchValues, setDataDrop
               return (
                 <li onClick={() => {
                   setSearchValues({countryId: item.countryId, cityId: item.cityId, countryName: item.countryName, cityName: item.cityName})
-                  setDataDropdown([])
+                  setDataDropdown((state: any[]) => {
+                    state = []
+                    return state
+                  })
                   handleClearSearchInput()
                 }} 
-                key={index} className='py-2 hover:bg-slate-400 text-black px-8'>{item?.cityName && item?.cityName + ','} {item?.countryName}</li>
+                key={index} className='py-2 hover:bg-slate-300 text-black px-8'>{item?.cityName && item?.cityName + ','} {item?.countryName}</li>
               )
             })
           }

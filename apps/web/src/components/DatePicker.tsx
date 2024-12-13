@@ -1,4 +1,17 @@
-import React from 'react'
+'use client'
+
+import React, { useState, useEffect } from 'react';
+import { DatePicker } from './DatePicker'; // Gantilah dengan import library datepicker yang sesuai
+import { useForm } from 'react-hook-form';
+
+interface PriceData {
+  [date: string]: number;
+}
+
+interface FormData {
+  date: string;
+  price: number;
+}
 
 const DatePickerWithPrice = () => {
     const [prices, setPrices] = useState<PriceData>({

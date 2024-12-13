@@ -87,14 +87,6 @@ export const registerUser = async(req: Request, res: Response, next: NextFunctio
         })
 
         if(isUserExist) throw { msg: 'User already exist!', status: 406 }
-        
-        const isEmailExist = await prisma.user.findUnique({
-            where: {
-                email
-            }
-        })
-
-        if(isEmailExist?.id) throw { msg: 'User already exist!', status: 406 } 
         let tokenForVerifyEmail, username, profilePictureUrl, token, createdUser
         
         await prisma.$transaction(async(tx) => {
@@ -123,9 +115,9 @@ export const registerUser = async(req: Request, res: Response, next: NextFunctio
         
         const verifyEmailLink = `https://localhost:3000/auth/verify/${tokenForVerifyEmail}`
         
-        const emailBody = fs.readFileSync('./src/public/body.email.html/verify.email.html', 'utf-8')
+        const emailBody = fs.readFileSync('./src/public/body.email/verify.email.html', 'utf-8')
         let compiledEmailBody: any = await compile(emailBody)
-        compiledEmailBody({username, url: verifyEmailLink})
+        compiledEmailBody = compiledEmailBody({url: verifyEmailLink})
 
         await transporter.sendMail({
             to: email,

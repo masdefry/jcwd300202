@@ -11,11 +11,27 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { FaLessThanEqual } from "react-icons/fa6";
+import { useMutation } from "@tanstack/react-query";
+import instance from "@/utils/axiosInstance";
+import { IoMdClose } from "react-icons/io";
+import DropdownCitiesAndCountries, { IDataDropDown } from "./DropdownCitiesAndCountries";
+import { useDebouncedCallback } from "use-debounce";
 
 export default function Header() {
   const [ hamburgerMenuActive, setHamburgerMenuActive ] = useState('')
   const [ showHamburgerNav, setShowHamburgerNav ] = useState('scale-y-0')
   const [ loadingPromotion, setLoadingPromotion ] = useState(true)
+  const [ dataDropdown, setDropdown ] = useState([])
+  const [ 
+    searchValues, 
+    setSearchValues 
+  ] = useState({ 
+    countryId: '', 
+    cityId: '', 
+    countryName: '',
+    cityName: ''
+  })
+  const [ handleSearch, setHandleSearch ] = useState('')
 
   const pathname = usePathname()
 
@@ -51,6 +67,30 @@ export default function Header() {
     }
   }
 
+  const { mutate: mutateShowDropdown } = useMutation({
+    mutationFn: async(value: string) => {
+      const res = await instance.get(`/header/search/dropdown?search=${value}`)
+      return res.data.data.dropdown
+    },
+    onSuccess: (res) => {
+      setDropdown(res)
+    },
+    onError: (err) => {
+      console.log(err)
+    }
+  })
+
+  const mutateShowDropdownDebounce = useDebouncedCallback((value:string) => {
+    mutateShowDropdown(value)
+  }, 500)
+
+  const handleSearchInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setHandleSearch(event.target.value)
+  }
+  const handleClearSearchInput = () => {
+    setHandleSearch('')
+  }
+
   const headerNavMenu = [
     {
       title:'Accomodation Type',
@@ -81,7 +121,7 @@ export default function Header() {
             title: 'Where are you going? (required)',
             name: 'searchLocation',
             icon:  <IoIosSearch size={23}/>,
-            placeholder:"Jakarta / Pan Pacific"
+            placeholder:"Jakarta / Indonesia"
           },
           {
             cssClass: 'border-r',
@@ -186,23 +226,38 @@ export default function Header() {
         </div>
       </section>
       <section className='2xl:hidden flex flex-col gap-3'>
-        <div className="flex flex-col w-full items-start gap-1.5">
+        <div className="flex flex-col w-full items-start relative gap-1.5">
           <Label htmlFor="searchLocation" className="text-base font-semibold text-gray-600"><IoIosSearch size={23} className="inline mr-4 mb-1"/>Where are you going? <span className="text-red-600">*</span></Label>
-          <Input type="text" id="searchLocation" name='searchLocation' placeholder="Jakarta / Pan Pacific" className='placeholder-shown:text-base rounded-full h-[3em] px-8 border border-slate-400 bg-white'/>
+          <Input value={handleSearch} onChange={(e) => {
+            e.target.value.length >= 3 ? mutateShowDropdownDebounce(e.target.value) : setDropdown([])
+            handleSearchInput(e)
+            }} 
+            type="text" id="searchLocation" name='searchLocation' placeholder={searchValues.countryName ? '' : `Jakarta / Indonesia`} className='placeholder-shown:text-sm rounded-full h-[3em] px-8 border border-slate-400 bg-white'/>
+          <div className="absolute top-20 left-0 z-20 w-full">
+            <DropdownCitiesAndCountries handleClearSearchInput={handleClearSearchInput} dataDropdown={dataDropdown} handleSearchInput={handleSearchInput} setDropdown={setDropdown} setSearchValues={setSearchValues}/>
+          </div>
+          {
+            searchValues.countryName && (
+              <div className="absolute top-[41px] left-[11px] flex items-center gap-3 px-5 py-1 text-xs rounded-badge bg-slate-300 border border-slate-400">
+                <p>{searchValues.cityName && searchValues.cityName + ', '}{searchValues.countryName}</p>
+                <IoMdClose size={17} onClick={() => {setSearchValues({countryId: '', cityId: '', countryName: '', cityName: ''})}}/>
+              </div>
+            )
+          }
         </div>
         <div className='flex flex-col md:flex-row md:gap-5 gap-3'>
-          <div className="flex flex-col w-full items-start gap-1.5">
+          <div className="flex flex-col w-full items-start relative gap-1.5">
             <Label htmlFor="checkInDate" className="text-base font-semibold text-gray-600"><CiCalendar size={23} className="inline mr-4 mb-1"/>Check-In</Label>
-            <Input type="text" id="checkInDate" name='checkInDate' placeholder="01/01/2000" className='placeholder-shown:text-base rounded-full h-[3em] px-8 border border-slate-400 bg-white'/>
+            <Input type="text" id="checkInDate" name='checkInDate' placeholder="01/01/2000" className='placeholder-shown:text-sm rounded-full h-[3em] px-8 border border-slate-400 bg-white'/>
           </div>
-          <div className="flex flex-col w-full items-start gap-1.5">
+          <div className="flex flex-col w-full items-start relative gap-1.5">
             <Label htmlFor="checkOutDate" className="text-base font-semibold text-gray-600"><CiCalendar size={23} className="inline mr-4 mb-1"/>Check-Out</Label>
-            <Input type="text" id="checkOutDate" name='checkOutDate' placeholder="02/01/2000" className='placeholder-shown:text-base rounded-full h-[3em] px-8 border border-slate-400 bg-white'/>
+            <Input type="text" id="checkOutDate" name='checkOutDate' placeholder="02/01/2000" className='placeholder-shown:text-sm rounded-full h-[3em] px-8 border border-slate-400 bg-white'/>
           </div>
         </div>
-        <div className="flex flex-col w-full items-start gap-1.5">
+        <div className="flex flex-col w-full items-start relative gap-1.5">
           <Label htmlFor="guestRoom" className="text-base font-semibold text-gray-600"><GoPerson size={23} className="inline mr-4 mb-1"/>Guest Room</Label>
-          <Input type="text" id="guestRoom" name='guestRoom' placeholder="1 Room - 8 Guest" className='placeholder-shown:text-base rounded-full h-[3em] px-8 border border-slate-400 bg-white'/>
+          <Input type="text" id="guestRoom" name='guestRoom' placeholder="1 Room - 8 Guest" className='placeholder-shown:text-sm rounded-full h-[3em] px-8 border border-slate-400 bg-white'/>
         </div>
       </section>
     </section>

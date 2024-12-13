@@ -56,11 +56,12 @@ export const transactionHistory = async(req: Request, res: Response, next: NextF
 
         console.log('transaction:' , result)
 
-        res.status(200).json({
-            message: 'Successfully fetch transactions',
-            error: false,
-            data: result
-        })
+
+         res.status(200).json({
+             message: 'Successfully fetch transactions',
+             error: false,
+             data: result
+         })
     } catch (error) {
         next(error)
     }

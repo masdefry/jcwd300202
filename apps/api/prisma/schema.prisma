@@ -339,9 +339,9 @@ model Transaction {
   qty          Int
   expiryDate   DateTime
 
-  adult Int @default(1)
-  children Int @default(0)
-  nights Int @default(1)
+  adult       Int @default(1)
+  children    Int @default(0)
+  nights      Int @default(1)
 
 
   cityId Int

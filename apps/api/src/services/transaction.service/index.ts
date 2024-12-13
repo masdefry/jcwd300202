@@ -4,6 +4,7 @@ import { decodeToken } from '@/utils/jwt'
 import { Status } from './types'
 import { v4 } from 'uuid'
 import { addHours } from 'date-fns';
+import { differenceInDays } from 'date-fns'
 
 const midtransClient = require("midtrans-client")
 
@@ -13,7 +14,7 @@ const tokenSnap = new midtransClient.Snap({
     clientKey: 'SB-Mid-client-RHLdbA1UmPF_rh8s',
 })
 
-export const createTransactionService = async({ checkInDate, checkOutDate, total, price, qty, userId, tenantId, propertyId, roomId }: ITransaction) => {
+export const createTransactionService = async({ checkInDate, checkOutDate, total, price, qty, adult, children, userId, tenantId, propertyId, roomId }: ITransaction) => {
     const propertyInTransaction = await prisma.property.findUnique({
         where: {
             id: propertyId
@@ -37,6 +38,8 @@ export const createTransactionService = async({ checkInDate, checkOutDate, total
     
     const countryId = propertyInTransaction?.countryId as number
     const cityId = propertyInTransaction?.cityId as number
+    const nights = differenceInDays(new Date(checkOutDate), new Date(checkInDate))
+    console.log(cityId, countryId)
 
     return await prisma.$transaction(async(tx) => {
         const uuid = v4()
@@ -48,9 +51,12 @@ export const createTransactionService = async({ checkInDate, checkOutDate, total
                 id,
                 checkInDate: new Date(checkInDate),
                 checkOutDate: new Date(checkOutDate),
+                nights,
                 total,
                 price,
                 qty,
+                adult,
+                children,
                 expiryDate: addHours(new Date(), 1),
                 userId,
                 tenantId,
@@ -90,12 +96,15 @@ export const createTransactionService = async({ checkInDate, checkOutDate, total
             snapToken,
             checkInDate, 
             checkOutDate,  
+            nights,
             total, 
             price, 
             qty, 
+            adult,
+            children,
             roomName: room?.name,
             propertyName: room?.property.name
-        };
+        }
     })
 }
 

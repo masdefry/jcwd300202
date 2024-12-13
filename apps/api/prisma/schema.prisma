@@ -341,6 +341,7 @@ model Transaction {
 
   adult Int @default(1)
   children Int @default(0)
+  nights Int @default(1)
 
 
   cityId Int

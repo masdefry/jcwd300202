@@ -15,6 +15,7 @@ import { useMutation } from "@tanstack/react-query";
 import instance from "@/utils/axiosInstance";
 import { IoMdClose } from "react-icons/io";
 import DropdownCitiesAndCountries, { IDataDropDown } from "./DropdownCitiesAndCountries";
+import { useDebouncedCallback } from "use-debounce";
 
 export default function Header() {
   const [ hamburgerMenuActive, setHamburgerMenuActive ] = useState('')
@@ -78,6 +79,10 @@ export default function Header() {
       console.log(err)
     }
   })
+
+  const mutateShowDropdownDebounce = useDebouncedCallback((value:string) => {
+    mutateShowDropdown(value)
+  }, 500)
 
   const handleSearchInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setHandleSearch(event.target.value)
@@ -224,7 +229,7 @@ export default function Header() {
         <div className="flex flex-col w-full items-start relative gap-1.5">
           <Label htmlFor="searchLocation" className="text-base font-semibold text-gray-600"><IoIosSearch size={23} className="inline mr-4 mb-1"/>Where are you going? <span className="text-red-600">*</span></Label>
           <Input value={handleSearch} onChange={(e) => {
-            e.target.value.length >= 3 ? mutateShowDropdown(e.target.value) : setDropdown([])
+            e.target.value.length >= 3 ? mutateShowDropdownDebounce(e.target.value) : setDropdown([])
             handleSearchInput(e)
             }} 
             type="text" id="searchLocation" name='searchLocation' placeholder={searchValues.countryName ? '' : `Jakarta / Indonesia`} className='placeholder-shown:text-sm rounded-full h-[3em] px-8 border border-slate-400 bg-white'/>

@@ -4,6 +4,8 @@ export interface ITransaction {
     total: number,
     price: number,
     qty: number,
+    adult: number,
+    children: number,
     userId: string,  
     tenantId: string,  
     propertyId: string,

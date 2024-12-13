@@ -339,6 +339,10 @@ model Transaction {
   qty          Int
   expiryDate   DateTime
 
+  adult Int @default(1)
+  children Int @default(0)
+
+
   cityId Int
   city   City   @relation(fields: [cityId], references: [id])
 

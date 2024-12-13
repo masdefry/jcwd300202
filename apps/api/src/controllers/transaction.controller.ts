@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express' 
-import { createTransactionService, handleExpiredTransaction } from '@/services/transaction.service'
+import { createTransactionService, handleExpiredTransaction, transactionHistoryService } from '@/services/transaction.service'
 import { ITransaction } from '@/services/transaction.service/types'
 
 export const createTransaction = async(req: Request, res: Response, next: NextFunction) => {
@@ -36,14 +36,33 @@ export const transactionHistory = async(req: Request, res: Response, next: NextF
     try {
         const { id } = req.body
 
-        // const result = 
+        if(!id) {
+            return res.status(400).json({
+                message: 'Transaction Id is required',
+                error: true,
+                data: {}
+            })
+        }
 
-        // res.status(200).json({
-        //     message: 'Successfully fetch transactions',
-        //     error: false,
-        //     data: result
-        // })
+        const result = await transactionHistoryService(id)
+
+        if (!result) {
+            return res.status(404).json({
+                message: 'Transaction not found',
+                error: true,
+                data: {}
+            });
+        }
+
+        console.log('transaction:' , result)
+
+
+         res.status(200).json({
+             message: 'Successfully fetch transactions',
+             error: false,
+             data: result
+         })
     } catch (error) {
-        
+        next(error)
     }
 }

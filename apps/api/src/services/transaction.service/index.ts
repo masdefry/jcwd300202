@@ -193,6 +193,5 @@ export const transactionHistoryService = async(id: string) => {
     }
 
     return transactions
-    
 }
 

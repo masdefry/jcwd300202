@@ -118,9 +118,81 @@ export const handleExpiredTransaction = async() => {
         }
     })
 
-    // for (const transaction of expiredTransactions) {
-    //     await prisma.transactionStatus.create({
-            
-    //     })
-    // }
+    for (const transaction of expiredTransactions) {
+        await prisma.transactionStatus.create({
+            data: {
+                transactionId: transaction.id,
+                status: Status.EXPIRED
+            }
+        })
+    }
 }
+
+export const transactionHistoryService = async(id: string) => {
+    let transactions : any= [];
+    await prisma.$transaction((async(tx) => {
+
+        transactions = await tx.transaction.findMany({
+            where: {
+                userId: id
+            },
+            select: {
+                id: true,
+                checkInDate: true,
+                checkOutDate: true,
+                total: true,
+                price: true,
+                qty: true,
+                expiryDate: true,
+                room: {
+                    select: {
+                        id: true,
+                        name: true,
+                        property: {
+                            select: {
+                                id: true,
+                                name: true,
+                                country: {
+                                    select: {
+                                        id: true,
+                                        name: true
+                                    }
+                                },
+                                city: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                transactionStatus: {
+                    select: {
+                        id: true,
+                        status: true,
+                        transactionId: true,
+                        createdAt: true,
+                        updatedAt: true,
+                    }
+                }
+            },
+            orderBy: {
+                checkInDate: 'desc',
+            }    
+        })
+    }), {
+        timeout: 10000
+    })
+
+    console.log(transactions)
+
+    if (!Array.isArray(transactions) || transactions.length <= 0) {
+        return null;
+    }
+
+    return transactions
+    
+}
+

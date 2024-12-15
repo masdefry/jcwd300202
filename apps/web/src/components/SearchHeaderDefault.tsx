@@ -19,6 +19,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import GuestAndRoomCounter from './GuestAndRoomCounter'
 
 interface ISearchHeaderDefaultProps {
   mutateShowDropdownDebounce: any,
@@ -46,6 +47,7 @@ const SearchHeaderDefault = ({
     const [checkOutDate, setCheckOutDate] = useState<Date>(addDays(new Date(), 1))
     // const [checkOutDate, setCheckOutDate] = React.useState<Date>(addDays(new Date(), 1))
 
+    const [ showGuestAndRoomCounter, setShowGuestAndRoomCounter ] = useState(false)
   return (
     <section className='2xl:hidden flex flex-col gap-3'>
         <div className="flex flex-col w-full items-start relative gap-1.5">
@@ -132,7 +134,16 @@ const SearchHeaderDefault = ({
         </div>
         <div className="flex flex-col w-full items-start relative gap-1.5">
           <Label htmlFor="guestRoom" className="text-base font-semibold text-gray-600"><GoPerson size={23} className="inline mr-4 mb-1"/>Guest Room</Label>
-          <Input type="text" id="guestRoom" name='guestRoom' placeholder="1 Room - 8 Guest" className='placeholder-shown:text-sm rounded-full h-[3em] px-8 border border-slate-400 bg-white'/>
+          <button onClick={() => setShowGuestAndRoomCounter(state => !state)} type="button" id="guestRoom" name='guestRoom' className='text-left text-sm text-gray-500 placeholder-shown:text-sm rounded-full h-[3em] px-8 border border-slate-400 bg-white w-full'>1 Room - 8 Guest</button>
+          {
+            showGuestAndRoomCounter && (
+            <div className='absolute top-20 left-0 z-30 w-full'>
+              <GuestAndRoomCounter 
+              setShowGuestAndRoomCounter={setShowGuestAndRoomCounter}
+              />
+            </div>
+            )
+          }
         </div>
       </section>
   )

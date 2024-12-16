@@ -55,7 +55,7 @@ export const transactionHistory = async(req: Request, res: Response, next: NextF
             });
         }
 
-        console.log('transaction:' , result)
+        // console.log('transaction:' , result)
 
 
          res.status(200).json({

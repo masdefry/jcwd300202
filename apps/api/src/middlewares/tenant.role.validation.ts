@@ -7,6 +7,7 @@ export const tenantRoleValidation = async(req: Request, res: Response, next: Nex
         if(role !== 'TENANT') throw { msg: 'Role unauthorized!', status: 406 }
 
         next()
+        
     } catch (error) {
         next(error)
     }

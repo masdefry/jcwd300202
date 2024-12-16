@@ -181,6 +181,10 @@ export const transactionHistoryService = async(id: string) => {
                     }
                 },
                 transactionStatus: {
+                    orderBy: {
+                        updatedAt: 'desc'
+                    },
+                    take: 1,
                     select: {
                         id: true,
                         status: true,
@@ -202,6 +206,7 @@ export const transactionHistoryService = async(id: string) => {
         return null;
     }
 
-    console.log(transactions)
+    
+    return transactions
 }
 

@@ -27,7 +27,7 @@ export default function Header() {
 
   const pathname = usePathname()
 
-  if(pathname.includes('/auth')) {
+  if(pathname.includes('/auth') || pathname.includes('/tenant')) {
     return <></>
   }
 

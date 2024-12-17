@@ -1,0 +1,4 @@
+{
+    "typescript.experimental.updateImportsOnPaste": true,
+    "typescript.enablePromptUseWorkspaceTsdk": true
+}

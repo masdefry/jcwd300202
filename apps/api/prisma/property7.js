@@ -74,6 +74,7 @@ async function Property7 ({ tenantAccounts, countryId, cityId }) {
         const createdProperty7RoomType1 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Garden View Studio',
+                description: 'This cozy Garden View Studio offers a serene escape surrounded by nature. Perfect for individuals or couples, it features a comfortable living space with easy access to lush garden views. Equipped with all modern amenities, this space combines charm and tranquility for a peaceful retreat. Ideal for relaxation and connecting with nature during your stay.',
                 capacity: 2,
                 bathrooms: 1,
                 price: 3800000,
@@ -84,6 +85,7 @@ async function Property7 ({ tenantAccounts, countryId, cityId }) {
         const createdProperty7RoomType2 = await prisma.propertyRoomType.create({
             data: {       
                 name: 'Parkside Two-Bedroom',
+                description: 'The Parkside Two-Bedroom offers spacious living with stunning views of the nearby park. Designed for families or groups, this modern unit includes two bedrooms, a bathroom, and all the comforts of home. Wake up to the soothing sights of nature and enjoy a relaxing lifestyle with nearby green spaces. Perfect for both short and extended stays, combining style with accessibility.',
                 rooms: 2,
                 capacity: 4,
                 bathrooms: 1,
@@ -95,6 +97,7 @@ async function Property7 ({ tenantAccounts, countryId, cityId }) {
         const createdProperty7RoomType3 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Skyline Penthouse',
+                description: 'Experience luxury at its finest with the Skyline Penthouse, offering panoramic city views from its spacious living area. Featuring three bedrooms, two bathrooms, and premium amenities, this penthouse is ideal for families or groups seeking elegance and style. The modern interior design, combined with the breathtaking skyline, provides a truly unforgettable experience. Perfect for special occasions, business trips, or luxurious vacations.',
                 rooms: 3,
                 capacity: 6,
                 bathrooms: 2,

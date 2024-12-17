@@ -3,6 +3,9 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import { prisma } from './connection';
 import router from './routers';
+import cron from 'node-cron'
+// import { handleExpiredTransaction } from '@/services/transaction.service/index'
+
 
 const app: Express = express()
 const port = 5000
@@ -15,6 +18,11 @@ const corsOption = {
 app.use(cors(corsOption))
 app.use('/api', router)
 
+// cron.schedule('0 0 * * *', async () => {
+//   console.log('Running cron job: Handling expired transactions...');
+//   await handleExpiredTransaction()
+// })
+
 interface IError extends Error {
   msg: string,
   status: number
@@ -23,12 +31,12 @@ interface IError extends Error {
 app.use((error: IError, req: Request, res: Response, next: NextFunction) => {
   res.status(error.status || 500).json({
     error: true,
-    message: error.msg || error.message,
+    message: error.message === 'jwt expired' || error.msg || error.message,
     data: {}
   })
 })
 
 app.listen(port, () => {
-  console.log(`Server is running on ${port}`)
+  console.log(`[Server] is running on http://localhost:${port}`)
 })
 

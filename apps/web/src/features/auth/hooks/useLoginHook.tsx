@@ -1,8 +1,11 @@
 'use client'
 
-import { toast } from '@/hooks/use-toast'
+// import { toast } from '@/hooks/use-toast'
+import toast from 'react-hot-toast'
 import useMutateLoginApi from '../api/useMutateLoginApi'
 import { AxiosError, AxiosResponse } from 'axios'
+import authStore from '@/zustand/authStore'
+import { useRouter } from 'next/navigation'
 
 interface IUseLoginHookProps {
     endPoint: string,
@@ -10,6 +13,9 @@ interface IUseLoginHookProps {
 }
 
 const useLoginHook = ({ endPoint, role }: IUseLoginHookProps) => {
+    const setAuth = authStore(state => state.setAuth)
+    const router = useRouter()
+
     interface IValuesLogin {
         email: string,
         password: string
@@ -17,14 +23,27 @@ const useLoginHook = ({ endPoint, role }: IUseLoginHookProps) => {
 
       const { 
         mutateLogin, 
-        isPendingLogin 
+        isPendingLogin
     } = useMutateLoginApi({ 
         endPoint, 
-        onSuccess:(res: AxiosResponse) => {
-            toast({
-                title: `Login ${role} success`,
-                description: 'Enjoy roomify!'
+        onSuccess:(res: any) => {
+            toast.success('Login success!')
+            setAuth({ 
+                isVerified: res?.isVerified,
+                profilePictureUrl: res?.profilePictureUrl,
+                username: res?.username,
+                token: res?.token,
+                role: res?.role,
             })
+            if(role !== 'tenant') {
+                setTimeout(() => {
+                    router.push('/')
+                }, 1500)
+            } else {
+                setTimeout(() => {
+                    router.push('/tenant')
+                }, 1500)
+            }
         }, 
         onError: (err: any) => {
             let description;
@@ -33,11 +52,7 @@ const useLoginHook = ({ endPoint, role }: IUseLoginHookProps) => {
             } else {
                 description = 'Try again'
             }
-            toast({
-                title: `Login ${role} failed!`,
-                description,
-                variant: 'destructive'
-            }) 
+            toast.error(description + '!')
         } })
   
     return {

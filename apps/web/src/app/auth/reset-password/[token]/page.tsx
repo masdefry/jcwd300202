@@ -5,8 +5,20 @@ import AuthButton from '@/features/auth/components/AuthButton'
 import TextInput from '@/features/auth/components/TextInput'
 import { Formik, Form } from 'formik'
 import React from 'react'
+import { useMutation } from '@tanstack/react-query'
+import instance from '@/utils/axiosInstance'
 
-const SetResetPasswordUserPage = () => {
+const SetResetPasswordUserPage = ({ params }) => {
+    useMutation({
+        mutationFn: async(values) => {
+            return await instance.patch('/auth/reset-password', {
+                password: values.password,
+                token: params.token,
+                role: "USER"
+            })
+        }
+    })
+
   return (
     <main className='flex justify-center'>
         <section className='md:w-[768px] w-full flex flex-col gap-8'>

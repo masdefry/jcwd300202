@@ -15,13 +15,13 @@ const useRegisterHook = ({ endPoint, role }: IUseRegisterHookProps) => {
     } = useMutateRegisterApi({ 
         endPoint, 
         onSuccess:(res) => {
+            
             toast({
                 title: `Register ${role} success`,
                 description: 'Please check your email to verify'
             })
         }, 
         onError: (err) => {
-            console.log(err)
             toast({
                 title: `Register ${role} failed!`,
                 description: 'Try again',

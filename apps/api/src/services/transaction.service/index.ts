@@ -181,6 +181,10 @@ export const transactionHistoryService = async(id: string) => {
                     }
                 },
                 transactionStatus: {
+                    orderBy: {
+                        updatedAt: 'desc'
+                    },
+                    take: 1,
                     select: {
                         id: true,
                         status: true,
@@ -198,12 +202,11 @@ export const transactionHistoryService = async(id: string) => {
         timeout: 10000
     })
 
-    console.log(transactions)
-
     if (!Array.isArray(transactions) || transactions.length <= 0) {
         return null;
     }
 
+    
     return transactions
 }
 

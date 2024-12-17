@@ -4,7 +4,8 @@ import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import TanstackProvider from '@/providers/TanstackProvider';
-import { Toaster } from '@/components/ui/toaster';
+// import { Toaster } from '@/components/ui/toaster';
+import { Toaster } from 'react-hot-toast';
 import "primereact/resources/themes/lara-light-cyan/theme.css"; 
 
 const inter = Inter({ subsets: ['latin'] });
@@ -23,6 +24,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <TanstackProvider>
+          <Toaster/>
           <Header />
           {children}
           <Footer />

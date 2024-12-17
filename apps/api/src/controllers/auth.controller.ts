@@ -417,21 +417,34 @@ export const sendEmailResetPassword = async(req: Request, res: Response, next: N
         if(role === 'USER') {
             account = await prisma.user.findUnique({
                 where: {
-                    email
+                    email,
+                    isGoogleRegistered: false
                 }
             })
 
-            if(!account!.id) throw { msg: 'User not found!', status: 406 }
+            if(!account?.id) throw { msg: 'User not found!', status: 406 }
 
             const token = await createTokenExpiresIn1H({ id: account!.id, role: account!.role })
+
+            account = await prisma.user.update({
+                where: {
+                    email
+                },
+                data: {
+                    token
+                }
+            })
+
             const link = `http://localhost:3000/auth/reset-password/${token}`
 
-            // bikin html
+            const emailBody = fs.readFileSync('./src/public/body.email/reset.password.html', 'utf-8')
+            let compiledEmailBody: any = await compile(emailBody)
+            compiledEmailBody = compiledEmailBody({ url: link })
 
             await transporter.sendMail({
                 to: email,
                 subject: 'Reset Password [Roomify]',
-                html: ''
+                html: compiledEmailBody
             })
 
         }else if( role === 'TENANT' ) {
@@ -441,17 +454,29 @@ export const sendEmailResetPassword = async(req: Request, res: Response, next: N
                 }
             })
 
-            if(!account!.id)  throw {msg:'Tenant not found!', status: 406}
+            if(!account?.id)  throw {msg:'Tenant not found!', status: 406}
             
             const token = await createTokenExpiresIn1H({ id: account!.id, role: account!.role })
+            account = await prisma.user.update({
+                where: {
+                    email
+                },
+                data: {
+                    token
+                }
+            })
+
             const link = `http://localhost:3000/auth/reset-password/${token}`
 
-            // bikin html
+            const emailBody = fs.readFileSync('./src/public/body.email/reset.password.html', 'utf-8')
+            let compiledEmailBody: any = await compile(emailBody)
+            compiledEmailBody = compiledEmailBody({ url: link })
+
 
             await transporter.sendMail({
                 to: email,
                 subject: 'Reset Password [Roomify]',
-                html: ''
+                html: compiledEmailBody
             })
 
         } else {
@@ -524,13 +549,30 @@ export const keepAuth = async(req: Request, res: Response, next: NextFunction) =
 
 export const resetPassword = async(req: Request, res: Response, next: NextFunction) => {
     try {   
-        const { password, email, role, token } = req.body
+        const { password, role, token } = req.body
         let account;
 
         if( role === 'USER') {
-            account = await prisma.user.update({
+            const isEmailExist = await prisma.user.findFirst({
                 where: {
-                    email,
+                    token,
+                    isGoogleRegistered: false
+                }
+            })
+            
+            if(!isEmailExist?.id) throw { msg: 'Session expired!', status: 406 }
+            
+            const isPasswordSame = await prisma.user.findFirst({
+                where: {
+                    token,
+                    password
+                }
+            })
+            
+            if(isPasswordSame?.id) throw { msg: 'Password already used!', status: 406 }
+            
+            account = await prisma.user.updateMany({
+                where: {
                     token
                 },
                 data: {
@@ -539,11 +581,27 @@ export const resetPassword = async(req: Request, res: Response, next: NextFuncti
                 }
             })
 
-            if(!account.id) throw { msg: 'User not found!', status: 406 }
         } else if( role === 'TENANT' ) {
-            account = await prisma.tenant.update({
+            
+            const isTokenValid = await prisma.tenant.findFirst({
                 where: {
-                    email,
+                    token
+                }
+            })
+
+            if(!isTokenValid?.id) throw { msg: 'Session expired!', status: 406 }
+
+            const isPasswordSame = await prisma.tenant.findFirst({
+                where: {
+                    token,
+                    password
+                }
+            })
+            
+            if(isPasswordSame?.id) throw { msg: 'Password already used!', status: 406 }
+            
+            account = await prisma.tenant.updateMany({
+                where: {
                     token
                 },
                 data: {
@@ -551,8 +609,6 @@ export const resetPassword = async(req: Request, res: Response, next: NextFuncti
                     token: ''
                 }
             })
-
-            if( !account.id ) throw { msg: 'Tenant not found!', status: 406 }
         } else {
             throw { msg: 'Role unauthorized!', status: 406 }
         }
@@ -560,9 +616,7 @@ export const resetPassword = async(req: Request, res: Response, next: NextFuncti
         res.status(200).json({
             error: false,
             message: 'Update password success',
-            data: {
-                email
-            }
+            data: {}
         })
     } catch (error) {
         next(error)

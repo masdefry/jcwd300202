@@ -11,9 +11,19 @@ import React from 'react'
 
 const ResetPasswordUserPage = () => {
 
-    useMutation({
-        mutationFn: async(values) => {
-            return await instance.post('/auth/')
+    interface IValuesRequestEmailResetPassword {
+        email: string
+    }
+
+    const { 
+        mutate: mutateRequestEmailResetPassword, 
+        isPending: isPendingRequestEmailResetPassword 
+    } = useMutation({
+        mutationFn: async(values: IValuesRequestEmailResetPassword) => {
+            return await instance.patch('/auth/send-email-reset-password', {
+                email: values?.email,
+                role: "USER"
+            })
         }
     })
 
@@ -29,12 +39,12 @@ const ResetPasswordUserPage = () => {
                 email: ''
             }}
             onSubmit={(values) => {
-                
+                mutateRequestEmailResetPassword(values)
             }}
             >
                 <Form className='flex flex-col gap-5'>
                     <TextInput labelName='Email' name='email' placeholder='example123' type='email'/>
-                    <AuthButton text='Continue'/>
+                    <AuthButton isPending={isPendingRequestEmailResetPassword} text='Continue'/>
                 </Form>
             </Formik>
         </section>

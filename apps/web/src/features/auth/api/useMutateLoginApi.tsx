@@ -19,7 +19,7 @@ const useMutateLoginApi = ({ endPoint, onSuccess, onError }: IUserLoginApiProps)
       const { mutate: mutateLogin, isPending: isPendingLogin } = useMutation({
         mutationFn: async(values: IValuesLogin) => {
             const res = await instance.post(endPoint, values)
-            return res
+            return res.data.data
         },
         onSuccess,
         onError
@@ -27,7 +27,7 @@ const useMutateLoginApi = ({ endPoint, onSuccess, onError }: IUserLoginApiProps)
   
     return {
         mutateLogin,
-        isPendingLogin
+        isPendingLogin,
     }
 }
 

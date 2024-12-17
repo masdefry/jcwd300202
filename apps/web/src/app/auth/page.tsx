@@ -11,6 +11,7 @@ import Separator from '@/features/auth/components/Separator'
 import { loginValidationSchema } from '@/features/auth/schemas/loginValidationSchema'
 import useLoginHook from '@/features/auth/hooks/useLoginHook'
 import useLoginWithGoogleHook from '@/features/auth/hooks/useLoginWithGoogleHook'
+import toast from 'react-hot-toast'
 
 const AuthPage = () => {
     const { 
@@ -21,7 +22,7 @@ const AuthPage = () => {
 
   const { 
     mutateLogin, 
-    isPendingLogin 
+    isPendingLogin,
     } = useLoginHook({
     endPoint: '/auth',
     role: 'user'

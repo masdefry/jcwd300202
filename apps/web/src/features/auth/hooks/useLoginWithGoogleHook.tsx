@@ -1,13 +1,15 @@
 'use client'
 
 import React from 'react'
-import { toast } from '@/hooks/use-toast'
+import toast from 'react-hot-toast'
 import useMutateReqOAuthApi from '../api/useMutateReqOAuthApi'
 import useMutateOAuthApi from '../api/useMutateOAuthApi'
 import authStore from '@/zustand/authStore'
 import { AxiosResponse } from 'axios'
+import { useRouter } from 'next/navigation'
 
 const useLoginWithGoogleHook = () => {
+    const router = useRouter()
     const setAuth = authStore(state => state.setAuth)
 
     const onSuccessReqOAuth = (res: AxiosResponse) => {
@@ -17,18 +19,15 @@ const useLoginWithGoogleHook = () => {
             role: res?.data?.data?.role,
             token: res?.data?.data?.token,
             username: res?.data?.data?.username,
+            country: res?.data?.data?.country,
         })
-        toast({
-            title: `Login user success`,
-            description: 'Enjoy roomify!'
-        })
+        toast.success('Login success')
+        setTimeout(() => {
+            router.push('/')
+        }, 1500)
     } 
     const onErrorReqOAuth = (err: any) => {
-        toast({
-            title: `Login user failed!`,
-            description: 'Try again',
-            variant: 'destructive'
-        }) 
+        toast.error(err?.response?.data?.message)
     }
     
     const { mutateReqOAuth, isPendingReqOAuth } = useMutateReqOAuthApi({ onSuccess: onSuccessReqOAuth, onError: onErrorReqOAuth })
@@ -37,11 +36,7 @@ const useLoginWithGoogleHook = () => {
         mutateReqOAuth( res?.user?.email as string )
     }
     const onErrorOAuth = (err: any) => {
-        toast({
-            title: `Login user failed!`,
-            description: 'Authentication  with Google failed',
-            variant: 'destructive'
-        }) 
+        toast.error(err?.response?.data?.message)
     }
     
     const { mutateOAuth, isPendingOAuth } = useMutateOAuthApi({ onSuccess: onSuccessOAuth, onError: onErrorOAuth })

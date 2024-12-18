@@ -11,9 +11,12 @@ import useDropdownSearchHook from "@/hooks/useDropdownSearchHook";
 import SearchHeaderDefault from "./SearchHeaderDefault";
 import HamburgerMenu from "./HamburgerMenu";
 import Promotion from "./Promotion";
+import authStore from "@/zustand/authStore";
 
 export default function Header() {
-  const [ loadingPromotion, setLoadingPromotion ] = useState(true)
+  const role = authStore(state => state.role)
+  const token = authStore(state => state.token)
+  const [ loadingPromotion, setLoadingPromotion ] = useState(false)
   const {
     mutateShowDropdownDebounce,
     handleClearSearchInput,
@@ -31,11 +34,11 @@ export default function Header() {
     return <></>
   }
 
-  useEffect(() => {
-    setTimeout(() => {
-      setLoadingPromotion(false)
-    }, 1000)
-  }, [])
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     setLoadingPromotion(false)
+  //   }, 1000)
+  // }, [])
 
   return (
   <header className="flex flex-col">
@@ -48,8 +51,24 @@ export default function Header() {
         <nav className="text-base font-medium">
           <ul className="flex gap-8 items-center">
             <li><IoNotificationsOutline size={23}/></li>
-            <li className="border-b-2 border-transparent hover:border-black hover:cursor-pointer active:scale-90 transition duration-200">Add your property</li>
-            <li className="rounded-full bg-black text-white px-7 py-3 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200">Sign in or create account</li>
+            {
+              role === 'TENANT' && (
+                <Link href='/tenant/property/create'>
+                  <li className="border-b-2 border-transparent hover:border-black hover:cursor-pointer active:scale-90 transition duration-200">Add your property</li>
+                </Link>
+              )
+            }
+            {
+              token ? (
+                <figure className="rounded-full h-7 w-7 bg-slate-400">
+
+                </figure>
+              ) : (
+              <Link href='/auth'>
+                <li className="rounded-full bg-black text-white px-7 py-3 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200">Sign in or create account</li>
+              </Link>
+              ) 
+            }
           </ul>
         </nav>
       </section>

@@ -9,6 +9,8 @@ import Separator from '@/features/auth/components/Separator'
 import GoogleSignInButton from '@/features/auth/components/GoogleSignInButton'
 import AuthHGroup from '@/features/auth/components/AuthHGroup'
 import useRegisterHook from '@/features/auth/hooks/useRegisterHook'
+import Link from 'next/link'
+import { emailValidationSchema } from '@/features/auth/schemas/emailValidationSchema'
 
 const TenantRegisterPage = () => {
   const { 
@@ -29,7 +31,7 @@ const TenantRegisterPage = () => {
             initialValues={{
                 email: ''
             }}
-        
+            validationSchema={emailValidationSchema}
             onSubmit={(values, { resetForm }) => {
                 mutateRegister(values)
                 resetForm()
@@ -37,10 +39,13 @@ const TenantRegisterPage = () => {
             >
                 <Form className='flex flex-col gap-5'>
                     <TextInput labelName='Email' name='email' placeholder='example@email.com' type='email'/>
+                    <ErrorMessage name='email' component={'div'} className='text-red-600 text-sm mt-[-10px] ml-4'/>
                     <AuthButton isPending={isPendingRegister} text='Continue with email'/>
                     <span className='text-sm font-light mt-[-15px] ml-4'>
                         <span>Have an account?</span>
-                        <span className='ml-1 text-sm font-semibold text-blue-600 border-b-2 border-transparent hover:border-blue-600 active:scale-90 transition duration-200 hover:cursor-pointer w-fit'>Login now</span>
+                        <Link href='/tenant/auth'>
+                        <span className='ml-1 te xt-sm font-semibold text-blue-600 border-b-2 border-transparent hover:border-blue-600 active:scale-90 transition duration-200 hover:cursor-pointer w-fit'>Login now</span>
+                        </Link>
                     </span>
                 </Form>
             </Formik>

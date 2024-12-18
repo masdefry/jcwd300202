@@ -8,9 +8,12 @@ import { useQuery } from '@tanstack/react-query'
 import instance from '@/utils/axiosInstance'
 import Card from '@/components/Card'
 import authStore from '@/zustand/authStore'
+import Link from 'next/link'
+import toast from 'react-hot-toast'
 
 export default function Home() {
   const token = authStore(state => state.token)
+  const isVerified = authStore(state => state.isVerified)
   const { 
     data: dataLandingPage, 
     isPending: isPendingDataLandingPage, 
@@ -154,7 +157,7 @@ export default function Home() {
             <p className='text-gray-300 text-base font-medium'>Explore Roomify and book any properties you want</p>
           </div>
           ):(
-          <div className="carousel rounded-none flex gap-8">
+          <div className="carousel rounded-none flex gap-8 h-fit py-2">
               { 
                 dataLandingPage?.data?.propertyByRecentBooks.map((item: any, index: number) => {
                   return (
@@ -178,27 +181,70 @@ export default function Home() {
           )
         }
       </section>
+      {
+        token && (
+        <section className='flex flex-col gap-5'>
+          <hgroup className='flex flex-col gap-2'>
+            <h1 className='lg:text-4xl font-bold text-3xl'>Best Property in Indonesia</h1>
+            <p className='lg:text-lg text-base font-light'>Stay in the best property in Indonesia</p>
+          </hgroup>
+          {
+            dataLandingPage?.data?.propertyByRecentBooks ? (
+            <div className='flex flex-col gap-1 text-center justify-center w-full'>
+              <h1 className='text-gray-300 text-2xl font-bold'>Oops, Seems you don't have any transactions</h1>
+              <p className='text-gray-300 text-base font-medium'>Explore Roomify and book any properties you want</p>
+            </div>
+            ):(
+            <div className="carousel rounded-none flex gap-8 h-fit py-2">
+                { 
+                  dataLandingPage?.data?.propertyByRecentBooks.map((item: any, index: number) => {
+                    return (
+                    <div className="carousel-item" key={index}>
+                      <Card 
+                      isPending={isPendingDataLandingPage}
+                      level={'template'}
+                      propertyName={item?.name}
+                      city={item?.city?.name}
+                      country={item?.country?.name}
+                      ratingAvg={0}
+                      totalReviews={item?.review?.length}
+                      price={0}
+                      imageUrl={`http://localhost:5000/api/${item.propertyDetail.propertyImage[0].directory}/${item.propertyDetail.propertyImage[0].filename}.jpg`}
+                      />
+                    </div>
+                    )
+                  })
+                }
+            </div>
+            )
+          }
+        </section>
+
+        )
+      }
       <section className='flex flex-col gap-5'>
         <hgroup className='flex flex-col gap-2'>
-          <h1 className='lg:text-4xl font-bold text-3xl'>Recent Property Bookings</h1>
-          <p className='lg:text-lg text-base font-light'>Book back the property you like</p>
+          <h1 className='lg:text-4xl font-bold text-3xl'>Explore Property</h1>
+          <p className='lg:text-lg text-base font-light'>See, book, and stay in our partner properties</p>
         </hgroup>
-        <div className="carousel rounded-none flex gap-8">
+        <div className="carousel rounded-none flex gap-8 h-fit py-2">
         {
           dataLandingPage?.data?.properties.map((item: any, index: number) => {
             return (
-            <div className="carousel-item" key={index}>
-              <Card 
-              isPending={isPendingDataLandingPage}
-              level={'template'}
-              propertyName={item?.name}
-              city={item?.city?.name}
-              country={item?.country?.name}
-              ratingAvg={0}
-              totalReviews={item?.review?.length}
-              price={item?.propertyRoomType[0]?.price}
-              imageUrl={`http://localhost:5000/api/${item.propertyDetail.propertyImage[0].directory}/${item.propertyDetail.propertyImage[0].filename}.jpg`}
-              />
+            <div className="carousel-item hover:cursor-pointer hover:translate-y-2 transition duration-100 active:opacity-75" key={index}>
+              <Link href='#'>
+                <Card 
+                isPending={isPendingDataLandingPage}
+                level={'template'}
+                propertyName={item?.name}
+                city={item?.city?.name}
+                country={item?.country?.name}
+                ratingAvg={0}
+                totalReviews={item?.review?.length}
+                price={item?.propertyRoomType[0]?.price}
+                imageUrl={`http://localhost:5000/api/${item.propertyDetail.propertyImage[0].directory}/${item.propertyDetail.propertyImage[0].filename}.jpg`}
+                />
+              </Link>
             </div>
             )
           })

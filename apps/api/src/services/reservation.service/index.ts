@@ -14,13 +14,13 @@ export const getReservationService = async(tenantId: string) => {
                 id: true,
                 checkInDate: true,
                 checkOutDate: true,
-                nights: true,
+                // nights: true,
                 total: true,
                 price: true,
                 qty: true,
                 expiryDate: true,
-                adult: true,
-                children:true,
+                // adult: true,
+                // children:true,
                 userId: true,
                 room: {
                     select: {

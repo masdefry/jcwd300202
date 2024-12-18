@@ -9,7 +9,7 @@ import AuthHGroup from '@/features/auth/components/AuthHGroup'
 import { loginValidationSchema } from '@/features/auth/schemas/loginValidationSchema'
 import useLoginHook from '@/features/auth/hooks/useLoginHook'
 import Separator from '@/features/auth/components/Separator'
-
+import Link from 'next/link'
 
 const TenantAuthPage = () => {
   const { 
@@ -46,7 +46,9 @@ const TenantAuthPage = () => {
                     <AuthButton isPending={isPendingLogin} text='Continue'/>
                     <span className='text-sm font-light mt-[-15px] ml-4'>
                         <span>Don't have an account?</span>
-                        <span className='ml-1 text-sm font-semibold text-blue-600 border-b-2 border-transparent hover:border-blue-600 active:scale-90 transition duration-200 hover:cursor-pointer w-fit'>Register now</span>
+                        <Link href='/tenant/auth/register'>
+                            <span className='ml-1 text-sm font-semibold text-blue-600 border-b-2 border-transparent hover:border-blue-600 active:scale-90 transition duration-200 hover:cursor-pointer w-fit'>Register now</span>
+                        </Link>
                     </span>
                 </Form>
             </Formik>

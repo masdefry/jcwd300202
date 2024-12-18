@@ -8,9 +8,10 @@ import AuthButton from '@/features/auth/components/AuthButton'
 import Separator from '@/features/auth/components/Separator'
 import GoogleSignInButton from '@/features/auth/components/GoogleSignInButton'
 import AuthHGroup from '@/features/auth/components/AuthHGroup'
-import { registerValidationSchema } from '@/features/auth/schemas/registerValidationSchema'
+import { emailValidationSchema } from '@/features/auth/schemas/emailValidationSchema'
 import useRegisterHook from '@/features/auth/hooks/useRegisterHook'
 import useLoginWithGoogleHook from '@/features/auth/hooks/useLoginWithGoogleHook'
+import Link from 'next/link'
 
 const RegisterPage = () => {
     const { 
@@ -37,7 +38,7 @@ const RegisterPage = () => {
             initialValues={{
                 email: ''
             }}
-            validationSchema={registerValidationSchema}
+            validationSchema={emailValidationSchema}
             onSubmit={(values, { resetForm }) => {
                 mutateRegister(values)
                 resetForm()
@@ -45,10 +46,13 @@ const RegisterPage = () => {
             >
                 <Form className='flex flex-col gap-5'>
                     <TextInput labelName='Email' name='email' placeholder='example@email.com' type='email'/>
+                    <ErrorMessage name='email' component={'div'} className='text-red-600 text-sm mt-[-10px] ml-4'/>
                     <AuthButton isPending={Boolean(isPendingOAuth || isPendingRegister || isPendingReqOAuth)} text='Continue with email'/>
                     <span className='text-sm font-light mt-[-15px] ml-4'>
                         <span>Have an account?</span>
-                        <span className='ml-1 text-sm font-semibold text-blue-600 border-b-2 border-transparent hover:border-blue-600 active:scale-90 transition duration-200 hover:cursor-pointer w-fit'>Login now</span>
+                        <Link href='/auth'>
+                            <span className='ml-1 text-sm font-semibold text-blue-600 border-b-2 border-transparent hover:border-blue-600 active:scale-90 transition duration-200 hover:cursor-pointer w-fit'>Login now</span>
+                        </Link>
                     </span>
                 </Form>
             </Formik>

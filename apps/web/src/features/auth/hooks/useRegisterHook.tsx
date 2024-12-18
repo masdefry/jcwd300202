@@ -1,6 +1,6 @@
 'use client'
 
-import { toast } from '@/hooks/use-toast'
+import toast from 'react-hot-toast'
 import useMutateRegisterApi from '../api/useMutateRegisterApi'
 
 interface IUseRegisterHookProps {
@@ -15,18 +15,18 @@ const useRegisterHook = ({ endPoint, role }: IUseRegisterHookProps) => {
     } = useMutateRegisterApi({ 
         endPoint, 
         onSuccess:(res) => {
-            
-            toast({
-                title: `Register ${role} success`,
-                description: 'Please check your email to verify'
-            })
+            toast((t) => (
+                <span className='flex gap-2 items-center text-sm'>
+                  Check your email to verify!
+                  <button className='bg-gray-900 hover:opacity-75 active:scale-90 text-white rounded-full px-4 py-1' onClick={() => toast.dismiss(t.id)}>
+                    Dismiss
+                  </button>
+                </span>
+              ));
         }, 
-        onError: (err) => {
-            toast({
-                title: `Register ${role} failed!`,
-                description: 'Try again',
-                variant: 'destructive'
-            }) 
+        onError: (err: any) => {
+            console.log(err)
+            toast.error(err?.response?.data?.message)
         } })
   
     return {

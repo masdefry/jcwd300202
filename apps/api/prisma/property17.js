@@ -14,10 +14,8 @@ async function Property17 ({ tenantAccounts, countryId, cityId }) {
     const id = uuid
     const property = {
         name: 'The Grand Manhattan Residences',
-        country: 'USA',
         address: '15 West 53rd Street, Midtown, New York City, NY 10019',
         zipCode: '10019',
-        city: 'New York',
         location: '40.761432, -73.977621',
         checkInStartTime: new Date('2024-12-03T15:00:00Z'),
         checkInEndTime: new Date('2024-12-03T22:00:00Z'),

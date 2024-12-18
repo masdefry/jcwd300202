@@ -14,10 +14,8 @@ async function Property13 ({ tenantAccounts, countryId, cityId }) {
     const id = uuid
     const property = {
             name: 'Serenity Park Residences',
-            country: 'Indonesia',
             address: 'Jl. Rasuna Said No.35, Kuningan, Setiabudi, South Jakarta, Special Capital Region of Jakarta',
             zipCode: '12950',
-            city: 'Jakarta',
             location: '-6.214992, 106.832457',
             checkInStartTime: new Date('2024-12-03T15:00:00Z'),
             checkInEndTime: new Date('2024-12-03T22:00:00Z'),

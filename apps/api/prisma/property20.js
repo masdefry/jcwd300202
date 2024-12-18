@@ -14,10 +14,8 @@ async function Property20 ({ tenantAccounts, countryId, cityId }) {
     const id = uuid
     const property = {
         name: 'Whiz Hotel Cikini Jakarta',
-        country: 'Indonesia',
         address: 'Jl. Cikini Raya No. 06, RT.13/RW.5, Cikini, Menteng District, Central Jakarta City, Special Capital Region of Jakarta',
         zipCode: '10330',
-        city: 'Central Jakarta',
         location: '-6.1883333, 106.8340918',
         checkInStartTime: new Date('2024-12-03T15:00:00Z'),
         checkInEndTime: new Date('2024-12-03T23:59:00Z'),

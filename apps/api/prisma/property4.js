@@ -14,10 +14,8 @@ async function Property4 ({ tenantAccounts, countryId, cityId }) {
     const id = uuid
     const property = {
             name: 'Apartemen Tera Residence',
-            country: 'Indonesia',
             address: 'Jl. Tera No.28, Braga, Sumur Bandung District, Bandung City, West Java',
             zipCode: '40111',
-            city: 'Bandung',
             location: '-6.9159208, 107.6100328',
             checkInStartTime: new Date('2024-12-03T15:00:00Z'),
             checkInEndTime: new Date('2024-12-03T23:59:00Z'),

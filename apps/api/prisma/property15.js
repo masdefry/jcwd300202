@@ -14,10 +14,8 @@ async function Property15 ({ tenantAccounts, countryId, cityId }) {
     const id = uuid
     const property = {
         name: 'Elysian Towers',
-        country: 'USA',
         address: '789 Park Avenue, Upper East Side, New York, NY 10021',
         zipCode: '10021',
-        city: 'New York',
         location: '40.767676, -73.965836',
         checkInStartTime: new Date('2024-12-05T15:00:00Z'),
         checkInEndTime: new Date('2024-12-05T22:00:00Z'),

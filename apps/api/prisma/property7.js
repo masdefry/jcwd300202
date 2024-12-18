@@ -14,10 +14,8 @@ async function Property7 ({ tenantAccounts, countryId, cityId }) {
     const id = uuid
     const property = {
         name: 'Urban Oasis Apartments',
-        country: 'Indonesia',
         address: 'Jl. Kemang Raya No.99, Bangka, Mampang Prapatan, South Jakarta, Special Capital Region of Jakarta',
         zipCode: '12730',
-        city: 'Jakarta',
         location: '-6.260664, 106.813970',
         checkInStartTime: new Date('2024-12-03T14:00:00Z'),
         checkInEndTime: new Date('2024-12-03T21:00:00Z'),

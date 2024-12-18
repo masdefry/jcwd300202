@@ -1,4 +1,4 @@
-import { keepAuth, loginTenant, loginUser, registerTenant, registerUser, resetPassword, sendEmailResetPassword, signInWithGoogle, verifyEmail, verifyEmailRequest } from "@/controllers/auth.controller";
+import { keepAuth, loginTenant, loginUser, registerTenant, registerUser, resetPasswordUser, sendEmailResetPasswordUser, signInWithGoogle, verifyEmailUser, verifyEmailRequestUser, verifyEmailTenant, verifyEmailRequestTenant, resetPasswordTenant } from "@/controllers/auth.controller";
 import { errorHandlingValidator } from "@/middlewares/validator/error.handling.validator";
 import { loginValidator } from "@/middlewares/validator/login.validator";
 import { registerValidator } from "@/middlewares/validator/register.validator";
@@ -17,11 +17,16 @@ authRouter.post('/register', registerValidator,  registerUser)
 authRouter.post('/tenant',loginValidator, loginTenant)
 authRouter.post('/tenant/register', registerValidator, registerTenant)
 
-authRouter.get('/verify-email-request', verifyEmailRequestValidator, verifyEmailRequest)
-authRouter.patch('/verify-email', verifyToken, verifyEmailValidator, verifyEmail)
+authRouter.post('/tenant/verify-email-request', verifyEmailRequestValidator, verifyEmailRequestTenant)
+authRouter.patch('/tenant/verify-email', verifyToken, verifyEmailValidator, verifyEmailTenant)
 
-authRouter.post('/send-email-reset-password', sendEmailResetPasswordValidator, sendEmailResetPassword)
-authRouter.patch('/reset-password', resetPasswordValidator, resetPassword)
+authRouter.post('/verify-email-request', verifyEmailRequestValidator, verifyEmailRequestUser)
+authRouter.patch('/verify-email', verifyToken, verifyEmailValidator, verifyEmailUser)
+
+authRouter.post('/send-email-reset-password', sendEmailResetPasswordValidator, sendEmailResetPasswordUser)
+authRouter.patch('/reset-password', verifyToken, resetPasswordValidator, resetPasswordUser)
+
+authRouter.patch('/tenant/reset-password', verifyToken, resetPasswordValidator, resetPasswordTenant)
 
 authRouter.post('/o-auth', registerValidator, signInWithGoogle)
 

@@ -14,10 +14,8 @@ async function Property5 ({ tenantAccounts, countryId, cityId }) {
     const id = uuid
     const property = {
         name: 'Skyline Residence',
-        country: 'Indonesia',
         address: 'Jl. Setiabudi No.88, Setiabudi, South Jakarta, Special Capital Region of Jakarta',
         zipCode: '12910',
-        city: 'Jakarta',
         location: '-6.207620, 106.821580',
         checkInStartTime: new Date('2024-12-03T15:00:00Z'),
         checkInEndTime: new Date('2024-12-03T22:00:00Z'),

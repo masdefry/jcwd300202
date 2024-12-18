@@ -14,10 +14,8 @@ async function Property10 ({ tenantAccounts, countryId, cityId }) {
     const id = uuid
     const property = {
         name: 'Heaven Villa Ubud',
-        country: 'Indonesia',
         address: 'Jl. Raya Sanggingan, Banjar Lungsiakan, Kedewatan, Ubud, Gianyar Regency, Indonesia',
         zipCode: '80571',
-        city: 'Gianyar Regency',
         location: '-8.4847646,115.2511835',
         checkInStartTime: new Date('2024-12-03T15:00:00Z'),
         checkInEndTime: new Date('2024-12-03T23:59:00Z'),

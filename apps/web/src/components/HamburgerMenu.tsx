@@ -52,7 +52,7 @@ const HamburgerMenu = () => {
           </div>
           <figure>
             <Link href='/auth'>
-              <IoPersonCircleOutline size={50} className="text-gray-600"/>
+              <IoPersonCircleOutline size={50} className="hover:opacity-80 active:scale-90 text-gray-600"/>
             </Link>
           </figure>
         </div>

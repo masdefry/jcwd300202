@@ -6,7 +6,8 @@ interface IAuth {
     role: string,
     username: string,
     isVerified: boolean,
-    profilePictureUrl: string
+    profilePictureUrl: string,
+    country: string
 }
 
 const authStore = create(persist((set) => ({
@@ -15,14 +16,15 @@ const authStore = create(persist((set) => ({
     username: '',
     isVerified: false,
     profilePictureUrl: '',
+    country: '',
     
-    setAuth: ({ token, role, username, isVerified, profilePictureUrl }: IAuth) => {
-        set({ token, role, username, isVerified, profilePictureUrl: profilePictureUrl || '' })
+    setAuth: ({ token, role, username, isVerified, profilePictureUrl, country }: IAuth) => {
+        set({ token, role, username, isVerified, profilePictureUrl: profilePictureUrl || '', country })
     },
-    setKeepAuth: ({ role, username, isVerified, profilePictureUrl }: Pick<IAuth , 'role' | 'username' | 'isVerified' | 'profilePictureUrl' >) => {
-        set({ role, username, isVerified, profilePictureUrl: profilePictureUrl || '' })
+    setKeepAuth: ({ role, username, isVerified, profilePictureUrl, country }: Pick<IAuth , 'role' | 'username' | 'isVerified' | 'profilePictureUrl' | 'country' >) => {
+        set({ role, username, isVerified, profilePictureUrl: profilePictureUrl || '',country })
     },
-    setLogout: () => set({ token: '', role: '', username: '', isVerified: false, profilePictureUrl: '' })
+    setLogout: () => set({ token: '', role: '', username: '', isVerified: false, profilePictureUrl: '', country: '' })
 
 }), {
     name: 'authToken',

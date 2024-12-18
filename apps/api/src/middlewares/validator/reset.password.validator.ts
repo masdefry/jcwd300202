@@ -2,9 +2,9 @@ import { NextFunction, Request, Response } from "express";
 import { body, validationResult } from "express-validator";
 
 export const resetPasswordValidator = [
-    body(['password', 'email', 'role', 'token']).notEmpty().withMessage('Email, Password, Role, and Token field required!'),
-    body('email').isEmail().withMessage('Email address invalid!').isLength({max: 180}).withMessage('Email length maximum 180 characters').escape(),
+    body(['password', 'id', 'role', 'token']).notEmpty().withMessage('Email, Password, Role, and Token field required!'),
     body('password').isString().isLength({min: 8, max: 180}).withMessage('Password length must between 8 and 180 characters!').escape(),
+    body('id').isString().escape(),
     body('role').isString().escape(),
     body('token').isString().escape(),
     (req: Request, res: Response, next: NextFunction) => {

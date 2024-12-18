@@ -14,10 +14,8 @@ async function Property12 ({ tenantAccounts, countryId, cityId }) {
     const id = uuid
     const property = {
         name: 'Juli House by Mahaputra',
-        country: 'Indonesia',
-        address: '27 Jl. Bisma, Downtown, Ubud,',
+        address: '27 Jl. Bisma, Downtown, Ubud',
         zipCode: '80582',
-        city: 'Gianyar Regency',
         location: '-8.5082263,115.2563687',
         checkInStartTime: new Date('2024-12-03T15:00:00Z'),
         checkInEndTime: new Date('2024-12-03T23:59:00Z'),

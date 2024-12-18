@@ -1,6 +1,5 @@
 'use client'
 
-// import { toast } from '@/hooks/use-toast'
 import toast from 'react-hot-toast'
 import useMutateLoginApi from '../api/useMutateLoginApi'
 import { AxiosError, AxiosResponse } from 'axios'
@@ -34,6 +33,7 @@ const useLoginHook = ({ endPoint, role }: IUseLoginHookProps) => {
                 username: res?.username,
                 token: res?.token,
                 role: res?.role,
+                country: res?.country,
             })
             if(role !== 'tenant') {
                 setTimeout(() => {
@@ -41,19 +41,13 @@ const useLoginHook = ({ endPoint, role }: IUseLoginHookProps) => {
                 }, 1500)
             } else {
                 setTimeout(() => {
-                    router.push('/tenant')
+                    router.push('/tenant/profile')
                 }, 1500)
             }
         }, 
         onError: (err: any) => {
-            let description;
-            if(err?.response?.data?.message === 'Please verify email first!') {
-                description = 'Please check your email to verify'
-            } else {
-                description = 'Try again'
-            }
-            toast.error(description + '!')
-        } })
+            toast.error(err?.response?.data?.message)
+        }})
   
     return {
         mutateLogin, 

@@ -14,10 +14,8 @@ async function Property8 ({ tenantAccounts, countryId, cityId }) {
     const id = uuid
     const property = {
             name: 'Pranaya Boutique Hotel',
-            country: 'Indonesia',
             address: 'Lengkong Gudang, Serpong District, South Tangerang City, Banten',
             zipCode: '15321',
-            city: 'South Tangerang City',
             location: '-6.2962567, 106.6651068',
             checkInStartTime: new Date('2024-12-03T15:00:00Z'),
             checkInEndTime: new Date('2024-12-03T23:59:00Z'),

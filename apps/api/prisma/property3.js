@@ -14,10 +14,8 @@ async function Property3 ({ tenantAccounts, countryId, cityId }) {
     const id = uuid
     const property = {
         name: 'Green Haven Apartments',
-        country: 'Indonesia',
         address: 'Jl. Senopati No.45, Kebayoran Baru, South Jakarta, Special Capital Region of Jakarta',
         zipCode: '12190',
-        city: 'Jakarta',
         location: '-6.236845, 106.807230',
         checkInStartTime: new Date('2024-12-03T14:00:00Z'),
         checkInEndTime: new Date('2024-12-03T21:00:00Z'),

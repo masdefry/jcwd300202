@@ -14,10 +14,8 @@ async function Property11 ({ tenantAccounts, countryId, cityId }) {
     const id = uuid
     const property = {
         name: 'Seaside Inn',
-        country: 'Indonesia',
         address: 'Jl. Pantai No.12, Ancol, North Jakarta, Special Capital Region of Jakarta',
         zipCode: '14430',
-        city: 'Jakarta',
         location: '-6.115735, 106.830924',
         checkInStartTime: new Date('2024-12-03T13:00:00Z'),
         checkInEndTime: new Date('2024-12-03T20:00:00Z'),

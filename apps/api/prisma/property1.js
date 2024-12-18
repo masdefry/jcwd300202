@@ -14,10 +14,8 @@ async function Property1 ({ tenantAccounts, countryId, cityId }) {
     const id = uuid
     const property = {
             name: 'Pan Pacific Jakarta',
-            country: 'Indonesia',
             address: 'Thamrin Nine, Luminary Tower Jalan MH Thamrin No 10, Central Jakarta, Jakarta, Special Capital Region of Jakarta',
             zipCode: '10230',
-            city: 'Jakarta',
             location: '-6.1980338, 106.8213679',
             checkInStartTime: new Date('2024-12-03T15:00:00Z'),
             checkInEndTime: new Date('2024-12-03T23:59:00Z'),

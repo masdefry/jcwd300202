@@ -14,32 +14,32 @@ import { useRouter } from 'next/navigation'
 
 const VerifyEmailUserPage = ({params} : {params: { token: string }}) => {
     
-   const router = useRouter() 
+    const router = useRouter() 
 
-  interface IValuesVerifyEmailUser {
-    setPassword: string
-  }  
-
-  const { mutate: mutateVerifyEmail, isPending: isPendingVerifyEmail, isSuccess: isSuccessVerifyEmail } = useMutation({
-    mutationFn: async(values: IValuesVerifyEmailUser) => {
-        return await instance.patch('/auth/verify-email', {
-            password: values?.setPassword
-        },{
-            headers: {
-                authorization: `Bearer ${params.token}`
-            }
-        })
-    },
-    onSuccess: (res) => {
-        toast.success('Verify account success')
-        setTimeout(() => {
-            router.push('/auth')
-        }, 1500)
-    },
-    onError: (err: any) => {
-        toast.error(err?.response?.data?.message)
-    }
-  })  
+    interface IValuesVerifyEmailUser {
+      setPassword: string
+    }  
+  
+    const { mutate: mutateVerifyEmail, isPending: isPendingVerifyEmail, isSuccess: isSuccessVerifyEmail } = useMutation({
+      mutationFn: async(values: IValuesVerifyEmailUser) => {
+          return await instance.patch('/auth/verify-email', {
+              password: values?.setPassword
+          },{
+              headers: {
+                  authorization: `Bearer ${params.token}`
+              }
+          })
+      },
+      onSuccess: (res) => {
+          toast.success('Verify account success')
+          setTimeout(() => {
+              router.push('/auth')
+          }, 1500)
+      },
+      onError: (err: any) => {
+          toast.error(err?.response?.data?.message)
+      }
+    })  
 
   return (
     <main className='flex justify-center'>

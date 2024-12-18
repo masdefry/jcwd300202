@@ -16,12 +16,12 @@ const VerifyEmailTenantPage = ({params} : {params: { token: string }}) => {
     
    const router = useRouter() 
 
-  interface IValuesVerifyEmailUser {
+  interface IValuesVerifyEmailTenant {
     setPassword: string
   }  
 
   const { mutate: mutateVerifyEmail, isPending: isPendingVerifyEmail, isSuccess: isSuccessVerifyEmail } = useMutation({
-    mutationFn: async(values: IValuesVerifyEmailUser) => {
+    mutationFn: async(values: IValuesVerifyEmailTenant) => {
         return await instance.patch('/auth/tenant/verify-email', {
             password: values?.setPassword
         },{
@@ -59,8 +59,8 @@ const VerifyEmailTenantPage = ({params} : {params: { token: string }}) => {
             }}
             >
                 <Form className='flex flex-col gap-5'>
-                    <TextInput labelName='Set Password' name='password' placeholder='example123' type='password'/>
-                    <ErrorMessage name='setPpassword' component={'div'} className='text-red-600 text-sm mt-[-10px] ml-4'/>
+                    <TextInput labelName='Set Password' name='setPassword' placeholder='example123' type='password'/>
+                    <ErrorMessage name='setPassword' component={'div'} className='text-red-600 text-sm mt-[-10px] ml-4'/>
                     <TextInput labelName='Confirm Password' name='confirmPassword' placeholder='example123' type='password'/>
                     <ErrorMessage name='confirmPassword' component={'div'} className='text-red-600 text-sm mt-[-10px] ml-4'/>
                     <AuthButton isPending={Boolean(isPendingVerifyEmail || isSuccessVerifyEmail)} text='Continue'/>

@@ -8,11 +8,12 @@ import { emailValidationSchema } from '@/features/auth/schemas/emailValidationSc
 import instance from '@/utils/axiosInstance'
 import { useMutation } from '@tanstack/react-query'
 import { Formik, Form, ErrorMessage } from 'formik'
+import { useRouter } from 'next/navigation'
 import React from 'react'
 import toast from 'react-hot-toast'
 
 const RequestVerifyEmailPage = () => {
-
+    const router = useRouter()
     interface IValuesRequestEmailResetPassword {
         email: string
     }
@@ -29,6 +30,11 @@ const RequestVerifyEmailPage = () => {
             toast.success('Request email verify success')
         }, onError: (err: any) => {
             toast.error(err?.response?.data?.message)
+            if(err?.response?.data?.message === 'Email already verified!') {
+                setTimeout(() => {
+                    router.push('/auth')
+                }, 1500)
+            }
         }
     })
 

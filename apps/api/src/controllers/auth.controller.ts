@@ -286,7 +286,7 @@ export const verifyEmailRequestTenant = async(req: Request, res: Response, next:
                 }
             })
                 
-            const verifyEmailLink = `http://localhost:3000/auth/verify/${tokenForVerifyEmail}`
+            const verifyEmailLink = `http://localhost:3000/tenant/auth/verify/${tokenForVerifyEmail}`
             
             const emailBody = fs.readFileSync('./src/public/body.email/verify.email.html', 'utf-8')
             let compiledEmailBody: any = await compile(emailBody)

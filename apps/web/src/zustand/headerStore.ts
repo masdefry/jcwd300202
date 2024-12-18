@@ -23,11 +23,16 @@ export const headerStore = create((set) => ({
     cityName: '',
     checkInDate: new Date(),
     checkOutdate: new Date(addDays(new Date(), 1)),
-    totalGuest: 0,
-    adult: 0,
+    totalGuest: 1,
+    adult: 1,
+    setAdult: ({adult}: Pick<IHeaderStore, 'adult'>) => {set((state: any) => ({adult, totalGuest: adult + state.children}))},
+    
     children: 0,
-    totalRooms: 0,
-    roomCapacityReq: 0,
+    setChildren: ({children}: Pick<IHeaderStore, 'children'>) => {set((state: any) => ({children, totalGuest: state.adult + children}))},
+    
+    totalRooms: 1,
+    setTotalRooms: ({totalRooms}: Pick<IHeaderStore, 'totalRooms'>) => {set((state: any) => ({ totalRooms, roomCapacityReq: state.totalGuest / totalRooms }))},
+    roomCapacityReq: 1,
     setCityAndCountrySearch: ({ 
         cityId, 
         countryId, 
@@ -42,18 +47,20 @@ export const headerStore = create((set) => ({
         }: Pick<IHeaderStore, 'checkInDate' | 'checkOutDate'>) => {
         set({ checkInDate, checkOutDate })
     },
-    setTotalGuest: ({ 
-        adult, 
-        children,
-        totalRooms = 1
-        }: Pick<IHeaderStore, 'adult' | 'children' | 'totalRooms'>) => {
-            const totalGuest = adult! + ( children ? children : 0)
-            let roomCapacityReq
-            if(totalRooms > 1) {
-                roomCapacityReq = totalGuest / totalRooms
-            } else {
-                roomCapacityReq = totalGuest
-            }
-        set({ totalGuest, totalRooms, children, adult })
-    },
+    setCheckInDate: ({checkInDate}: Pick<IHeaderStore, 'checkInDate'>) => {set({checkInDate})},
+    setCheckOutDate: ({checkOutDate}: Pick<IHeaderStore, 'checkOutDate'>) => {set({checkOutDate})},
+    // setTotalGuest: ({ 
+    //     adult, 
+    //     children,
+    //     totalRooms = 1
+    //     }: Partial<IHeaderStore, 'adult' | 'children' | 'totalRooms'>) => {
+    //         const totalGuest = adult! + ( children ? children : 0)
+    //         let roomCapacityReq
+    //         if(totalRooms > 1) {
+    //             roomCapacityReq = totalGuest / totalRooms
+    //         } else {
+    //             roomCapacityReq = totalGuest
+    //         }
+    //     set({ totalGuest, totalRooms, children, adult })
+    // },
 }))

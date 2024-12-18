@@ -3,6 +3,7 @@
 import instance from '@/utils/axiosInstance'
 import { useMutation } from '@tanstack/react-query'
 import React from 'react'
+import { headerStore } from '@/zustand/headerStore'
 
 export interface IDataDropDown {
   countryId: number,
@@ -20,7 +21,7 @@ interface IDropdownCitesAndCountry {
 }
 
 const DropdownCitiesAndCountries = ({ dataDropdown, setSearchValues, setDataDropdown, handleSearchInput, handleClearSearchInput }: IDropdownCitesAndCountry) => {
-    
+    const setCityAndCountrySearch = headerStore((state: any) => state.setCityAndCountrySearch)
   
     if(!Array.isArray(dataDropdown) || dataDropdown.length <= 0) {
       return <></>
@@ -34,6 +35,7 @@ const DropdownCitiesAndCountries = ({ dataDropdown, setSearchValues, setDataDrop
             dataDropdown?.map((item: IDataDropDown, index: number) => {
               return (
                 <li onClick={() => {
+                  setCityAndCountrySearch({countryId: item.countryId, cityId: item.cityId, countryName: item.countryName, cityName: item.cityName})
                   setSearchValues({countryId: item.countryId, cityId: item.cityId, countryName: item.countryName, cityName: item.cityName})
                   setDataDropdown((state: any[]) => {
                     state = []

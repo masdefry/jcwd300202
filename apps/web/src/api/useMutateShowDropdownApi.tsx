@@ -13,7 +13,7 @@ interface IUseMutateShowDropdownApiProps {
 const useMutateShowDropdownApi = ({ onSuccess, onError }: IUseMutateShowDropdownApiProps) => {
     const { mutate: mutateShowDropdown } = useMutation({
         mutationFn: async(value: string) => {
-          const res = await instance.get(`/header/search/dropdown?search=${value}`)
+          const res = await instance.get(`/search/dropdown?search=${value}`)
           return res.data.data.dropdown
         },
         onSuccess,

@@ -1,13 +1,13 @@
 import { prisma } from "@/connection"; 
 import { ISearch } from './types'
 
-export const createSearchService = async({propertyTypeId, country, city , checkInDate, checkOutDate, adult, children}: ISearch) => {
+export const createSearchService = async({country, city , checkInDate, checkOutDate, adult, children}: ISearch) => {
 
-    console.log(propertyTypeId)
-    console.log(country)
-    console.log(city)
-    console.log(checkInDate)
-    console.log(checkOutDate)
+    // console.log(propertyTypeId)
+    // console.log(country)
+    // console.log(city)
+    // console.log(checkInDate)
+    // console.log(checkOutDate)
     const totalGuests = adult + children;
     
     let whereCondition;
@@ -20,38 +20,34 @@ export const createSearchService = async({propertyTypeId, country, city , checkI
             {
                 countryId: country
             },
-            {
-                propertyTypeId
-            }
         ]    
     } else {
         whereCondition = [
             {
                 countryId: country
             },
-            {
-                propertyTypeId
-            }
         ]
     }
+
+    console.log("search conditions", whereCondition)
     
 
     const getProperty = await prisma.property.findMany({
         where: {
-            AND : whereCondition
+            AND: whereCondition
         },
-
         select: {
+            id: true,
             name: true,
             city: {
                 select: {
                     name: true,
-                },
+                }
             },
             country: {
                 select: {
                     name: true
-                },
+                }
             },
             propertyRoomType: {
                 where: {
@@ -60,27 +56,25 @@ export const createSearchService = async({propertyTypeId, country, city , checkI
                             capacity: {
                                 gte: totalGuests,
                                 lte: totalGuests + 1
-                            },
+                            }
                         },
                         {
                             transaction: {
                                 none: {
-                                    OR: [
+                                    AND: [
                                         {
-                                            checkInDate: {
-                                                lte: checkInDate,
-                                            },
-                                            checkOutDate: {
-                                                gte: checkOutDate
-                                            }
-                                        },
-                                    ],
-                                },
-                            },
-                        },
-                    ],
+                                            checkInDate: { lte: checkInDate },
+                                            checkOutDate: { gte: checkOutDate }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }, 
+                orderBy: {
+                    price: 'asc'
                 },
-
                 select: {
                     id: true,
                     name: true,
@@ -104,11 +98,17 @@ export const createSearchService = async({propertyTypeId, country, city , checkI
                             },
                         },
                     }
-                }
-            },
-            
-        }
+                },
+
+            }
+        },
     });
+
+    console.log("Input Parameters:", {
+        country, city, checkInDate, checkOutDate, adult, children
+    });
+
+    console.log("property", getProperty)
 
     return getProperty.filter((item) => item.propertyRoomType.length > 0).map((item) => ({
         ...item,
@@ -127,3 +127,4 @@ export const createSearchService = async({propertyTypeId, country, city , checkI
             })
     }));
 }
+

@@ -5,7 +5,7 @@ import prisma from '@/prisma'
 
 export const fetchData = async(req: Request, res: Response, next: NextFunction) => {
     try {
-        const { propertyTypeId, country, city, checkInDate, checkOutDate, adult, children } = req.query
+        const { country, city, checkInDate, checkOutDate, adult, children } = req.query
 
         if (!checkInDate || !checkOutDate) {
             return res.status(400).json({
@@ -14,7 +14,7 @@ export const fetchData = async(req: Request, res: Response, next: NextFunction) 
                 data: {}
             });
         }
-
+        console.log(req.query.country)
         const parsedCheckInDate = new Date(checkInDate as string);
         const parsedCheckOutDate = new Date(checkOutDate as string);
 
@@ -32,7 +32,6 @@ export const fetchData = async(req: Request, res: Response, next: NextFunction) 
         const isoCheckOut = new Date(parsedCheckOutDate.toISOString());
 
         const search = await createSearchService({
-            propertyTypeId: Number(propertyTypeId),
             country: Number(country), 
             city: Number(city), 
             checkInDate: isoCheckIn, 
@@ -41,6 +40,7 @@ export const fetchData = async(req: Request, res: Response, next: NextFunction) 
             children: Number(children)
         })
 
+        console.log('SEARCHHHHH')
         console.log(search)
         
         res.status(200).json({
@@ -50,13 +50,8 @@ export const fetchData = async(req: Request, res: Response, next: NextFunction) 
         })
         
     } catch (error) {
-        console.log(error)
-
-        res.status(500).json({
-            message: 'Failed to fetch properties',
-            error: false,
-            data: {}
-        })
+       // console.log(error)
+        next(error)
     }
 }
 

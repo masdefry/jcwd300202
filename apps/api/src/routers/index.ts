@@ -12,7 +12,7 @@ router.use('/auth', authRouter)
 router.use('/transaction', transactionRouter)
 router.use('/landing-page', landingPageRouter)
 router.use('*/images', express.static('src/public/images'))
-router.use('/header', headerRouter)
+router.use('/search', headerRouter)
 router.use('/reservation', reservationRouter)
 
 

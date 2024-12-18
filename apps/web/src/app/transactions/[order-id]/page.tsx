@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'                                      
 
-const OrderPage = () => {
+const TransactionPage = () => {
   const [isOpen, setIsOpen] = useState(false)
   
   const toggleAccordion = () => {
@@ -160,4 +160,4 @@ const OrderPage = () => {
   )
 }
 
-export default OrderPage
+export default TransactionPage

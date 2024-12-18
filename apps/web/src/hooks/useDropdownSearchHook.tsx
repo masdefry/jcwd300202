@@ -14,6 +14,8 @@ const useDropdownSearchHook = () => {
           state = [...res]
           return state
         })
+        console.log("tes datadropdown")
+        console.log(dataDropdown)
       },
       onError: (err) => {
         console.log(err)

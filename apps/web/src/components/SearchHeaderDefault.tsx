@@ -19,6 +19,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { headerStore } from '@/zustand/headerStore'
 import GuestAndRoomCounter from './GuestAndRoomCounter'
 
 interface ISearchHeaderDefaultProps {
@@ -42,7 +43,6 @@ const SearchHeaderDefault = ({
   dataDropdown,
   setDataDropdown
   }: ISearchHeaderDefaultProps) => {
-    // const [checkInDate, setCheckInDate] = React.useState<Date>(new Date())
     const [checkInDate, setCheckInDate] = useState<Date>(new Date())
     const [checkOutDate, setCheckOutDate] = useState<Date>(addDays(new Date(), 1))
     // const [checkOutDate, setCheckOutDate] = React.useState<Date>(addDays(new Date(), 1))

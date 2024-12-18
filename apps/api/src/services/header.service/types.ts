@@ -5,5 +5,4 @@ export interface ISearch {
     city: number,
     checkInDate: Date,
     checkOutDate: Date,
-    propertyTypeId: number
 }

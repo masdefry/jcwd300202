@@ -5,6 +5,7 @@ import authRouter from "./auth.router";
 import landingPageRouter from "./landing.page.router";
 import headerRouter  from './header.router'
 import reservationRouter from './reservation.router'
+import propertyRouter from "./property.router";
 
 const router = Router()
 
@@ -13,6 +14,7 @@ router.use('/auth', authRouter)
 router.use('/landing-page', landingPageRouter)
 router.use('*/images', express.static('src/public/images'))
 router.use('/search', headerRouter)
+router.use('/property', propertyRouter)
 router.use('/reservation', reservationRouter)
 
 

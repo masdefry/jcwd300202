@@ -1,10 +1,13 @@
 'use client'
 
 import CardSmall from '@/components/CardSmall'
+// import SimpleMap from '@/components/SimpleMap'
 import { Separator } from '@/components/ui/separator'
+import instance from '@/utils/axiosInstance'
+import { useQuery } from '@tanstack/react-query'
 import { LucideBedDouble } from 'lucide-react'
 import Image from 'next/image'
-import React from 'react'
+import React, { useRef } from 'react'
 import { CiLocationOn } from 'react-icons/ci'
 import { FaCheck, FaStar, FaWifi } from 'react-icons/fa'
 import { GoChecklist } from 'react-icons/go'
@@ -13,7 +16,30 @@ import { IoPerson, IoTimeOutline } from 'react-icons/io5'
 import { MdAttachMoney, MdKeyboardArrowDown } from 'react-icons/md'
 import { TbPawOff } from 'react-icons/tb'
 
-const PropertyDetailPage = () => {
+
+const PropertyDetailPage = ({params}:{params : { slug: string }}) => {
+  const { data: dataPropertyDetail, isPending: isPendingPropertyDetail } = useQuery({
+    queryKey: ['getPropertyDetail'],
+    queryFn: async() => {
+        const res = await instance.get(`/property/${params.slug}`)
+        // console.log('property', res?.data?.data?.property)
+        // console.log('propertyDetail', res?.data?.data?.propertyDetail)
+        // console.log('propertyFacilities', res?.data?.data?.propertyFacilities)
+        // console.log('propertyImages', res?.data?.data?.propertyImages)
+        // console.log('propertyRoom', res?.data?.data?.roomTypes)
+        // console.log('propertyReview', res?.data?.data?.reviews)
+        // console.log('propertyTenant', res?.data?.data?.tenant)
+        // property,
+        //         propertyDetail: property.propertyDetail,
+        //         propertyFacilities: property.propertyHasFacility.map(item => {item.propertyFacility}),
+        //         propertyImages: property.propertyDetail?.propertyImage,
+        //         roomTypes: property.propertyRoomType,
+        //         reviews: property.review,
+        //         tenant: property.tenant
+        return res?.data?.data
+    }
+  })  
+
   const review = `The rental experience was excellent from start to finish. 
                 The property was exactly as described—clean, well-maintained, and located in a convenient area. 
                 Communication was smooth, with any questions or concerns addressed promptly. 
@@ -23,7 +49,7 @@ const PropertyDetailPage = () => {
     <main className='p-10 flex flex-col gap-10'>
         <section className='grid grid-cols-5 gap-5 w-full h-[600px]'>
             {
-                Array.from({length: 8}).map((item, index) => {
+                dataPropertyDetail?.propertyImagesPreview?.map((item: any, index: number) => {
                     let className
                     if(index === 0) {
                         className = 'overflow-hidden relative rounded-md bg-slate-300 w-full h-full col-span-3 row-span-6'
@@ -51,7 +77,7 @@ const PropertyDetailPage = () => {
                     return(
                         <figure className={className}>
                             <Image 
-                            src={`http://localhost:5000/api/src/public/images/property_${index + 1}_images_1.jpg`}
+                            src={`http://localhost:5000/api/${item?.directory}/${item?.filename}.${item?.fileExtension}`}
                             width={800}
                             height={800}
                             alt=''
@@ -63,8 +89,8 @@ const PropertyDetailPage = () => {
             }
         </section>
         <hgroup className='flex flex-col leading-3 gap-2'>
-            <h1 className='text-5xl font-bold tracking-wide'>Pan Pacific Jakarta</h1>
-            <p className='text-base font-light text-gray-700 flex items-center gap-2'><CiLocationOn size={23} className='text-red-600' />Jalan M.H. Thamrin, 10230 Jakarta, Indonesia</p>
+            <h1 className='text-5xl font-bold tracking-wide'>{dataPropertyDetail?.property?.name}</h1>
+            <p className='text-base font-light text-gray-700 flex items-center gap-2'><CiLocationOn size={23} className='text-red-600' />{dataPropertyDetail?.property?.address}</p>
         </hgroup>
         <section className='grid grid-cols-3 gap-5 h-[400px] rounded-md bg-white'>
             <section id='review' className='h-[400px] flex flex-col gap-5 col-span-1 row-span-3 rounded-md drop-shadow-md bg-white w-full p-5'>
@@ -73,7 +99,7 @@ const PropertyDetailPage = () => {
                     <div className='flex flex-col gap-1 w-full'>
                         <p className='text-lg font-bold'>Spectacular</p>
                         <div className='flex justify-between items-center w-full'>
-                            <p className='text-sm font-light text-gray-600'>Reviews from <b className='text-blue-600 font-bold hover:underline hover:cursor-pointer'>2.700 verified guests</b></p>
+                            <p className='text-sm font-light text-gray-600'>Reviews from <b className='text-blue-600 font-bold hover:underline hover:cursor-pointer'>{dataPropertyDetail?.reviews?.length} verified guests</b></p>
                             <IoIosArrowForward size={20}/>
                         </div>
                     </div>
@@ -112,8 +138,8 @@ const PropertyDetailPage = () => {
                     </section>
                 </section>
             </section>
-            <section id='map' className='bg-gray-200 col-span-1 rounded-md drop-shadow-md row-span-2 w-full h-full'>
-
+            <section id='map' className=' col-span-1 rounded-md drop-shadow-md row-span-2 w-full h-full overflow-hidden'>
+            {/* <SimpleMap /> */}
             </section>
             <section className='p-5 flex flex-col gap-5 col-span-1 rounded-md drop-shadow-md bg-white row-span-2'>
                 <hgroup className='flex items-center justify-between'>
@@ -126,27 +152,24 @@ const PropertyDetailPage = () => {
                 <Separator/>
                 <section className='grid grid-cols-2 gap-5' >
                     {
-                        Array.from({ length: 8 }).map((_, index) => {
+                        dataPropertyDetail?.propertyFacilites?.map((item: any, index: number) => {
                             return(
-                                <div className='flex text-sm tracking-wide items-center gap-2'><FaWifi  size={18}/>Free wifi</div>
+                                <div key={index} className='flex text-sm tracking-wide items-center gap-2'><FaWifi  size={18}/>{item?.name}</div>
                             )
                         })
                     }
                 </section>
             </section>
-            <article className='text-sm font-light text-justify p-5 flex flex-col justify-between leading-relaxed col-span-2 rounded-md drop-shadow-md bg-white row-span-1'>
+            <article className='text-sm font-light text-justify p-5 flex flex-col pjustify-between leading-relaxed col-span-2 rounded-md drop-shadow-md bg-white row-span-1'>
                 <p>
-                    Berlokasi terbaik di wilayah Menteng di Jakarta, Ashley Tugu Tani Menteng berlokasi kurang dari 1 km dari Stasiun Gambir, 
-                    17 menit jalan kaki dari Monumen Nasional, dan 1,4 km dari Sarinah. 
-                    Selain WiFi gratis, hotel bintang 4 ini menawarkan layanan kamar dan resepsionis 24 jam. 
-                    Terdapat restoran yang menyajikan hidangan Indonesia, dan parkir pribadi tersedia gratis.
+                    {dataPropertyDetail?.propertyDetail?.neighborhoodDescription}
                 </p>
                 <p className='flex items-center gap-2 font-bold text-blue-600 hover:underline hover:cursor-pointer'>Read more<IoIosArrowForward size={20}/></p>
             </article>
         </section>
         <Separator />
         <div className='flex flex-col gap-5'>
-            <p className='text-2xl font-bold'>Room Types Available in Pan Pacific Jakarta</p>
+            <p className='text-2xl font-bold'>Room Types Available in {dataPropertyDetail?.property.name}</p>
             <div className='flex items-center gap-2 bg-black text-sm font-bold p-3 rounded-md text-white'>
                 <div className='bg-green-100 flex items-center rounded-full p-2'>
                     <GoChecklist size={18} className='text-green-600' /> 
@@ -156,14 +179,14 @@ const PropertyDetailPage = () => {
         </div>
         <section className='flex flex-col gap-5'>
             {
-                Array.from({length: 5}).map((item, index) => {
+                dataPropertyDetail?.propertyRoomTypes?.map((item: any, index: number) => {
                     return (
                     <section className='w-full grid grid-cols-3 gap-10 items-center rounded-md bg-white shadow-md p-3'>
                         <div className='w-full h-fit rounded-md flex flex-col gap-2'>
-                            <h1 className='text-2xl font-bold'>Deluxe</h1>
+                            <h1 className='text-2xl font-bold'>{item?.name}</h1>
                             <figure className='bg-gray-500 rounded-3xl w-full h-[150px] overflow-hidden'>
                                 <Image
-                                src={`http://localhost:5000/api/src/public/images/property_${index + 1}_room_${index + 1 + (2 * index)}_images_1.jpg`}
+                                src={`http://localhost:5000/api/${item?.propertyRoomImage[0]?.directory}/${item?.propertyRoomImage[0]?.filename}.${item?.propertyRoomImage[0]?.fileExtension}`}
                                 width={500}
                                 height={500}
                                 alt=''
@@ -204,7 +227,7 @@ const PropertyDetailPage = () => {
                                             </div>
                                         </td>
                                         <td className='text-right '>
-                                            <p className='text-xl mb-1 font-semibold'>Rp2000000</p>
+                                            <p className='text-xl mb-1 font-semibold'>Rp{item?.price}</p>
                                             <p className='text-xs font-semibold text-gray-400'>Include taxes and price</p>
                                         </td>
                                         <td>
@@ -223,24 +246,24 @@ const PropertyDetailPage = () => {
         </section>
         <section id='another-recommendation' className='flex flex-col gap-5'>
             <hgroup>
-                <h1 className='text-2xl font-bold text-gray-900'>Accommodation recommendations in Jakarta</h1>
+                <h1 className='text-2xl font-bold text-gray-900'>Accommodation recommendations in {dataPropertyDetail?.city?.name}</h1>
                 <p className='text-base font-light text-gray-600'>Find the best place to stay</p>
             </hgroup>
             <div className='carousel rounded-none flex gap-4 h-fit py-2'>
                 {
-                    Array.from({length: 10}).map((_, index) => {
+                    dataPropertyDetail?.propertyListByCity?.map((item: any, index: number) => {
                         return(
                         <div key={index} className='carousel-item hover:opacity-65 transition duration-100 hover:cursor-pointer'>
                             <CardSmall
                             isPending={false}
                             level={'template'}
-                            propertyName='Template'
-                            city='Template'
-                            country='Template'
-                            ratingAvg={9.8}
-                            totalReviews={30}
-                            price={20000000}
-                            imageUrl={`http://localhost:5000/api/src/public/images/property_${index + 1}_images_1.jpg`}
+                            propertyName={item?.name}
+                            city={item?.city?.name}
+                            country={item?.country?.name}
+                            ratingAvg={0}
+                            totalReviews={item?.review?.length}
+                            price={900000}
+                            imageUrl={`http://localhost:5000/api/${item?.propertyDetail?.propertyImage[0]?.directory}/${item?.propertyDetail?.propertyImage[0]?.filename}.${item?.propertyDetail?.propertyImage[0]?.fileExtension}`}
                             />
                         </div> 
                         )

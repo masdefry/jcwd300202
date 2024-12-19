@@ -19,7 +19,7 @@ const SearchPage = ({ searchParams }: { searchParams: any }) => {
 //   const checkOutDate = headerStore((state: any) => state.checkOutDate)
 //   const adult = headerStore((state: any) => state.adult)
 //   const children = headerStore((state: any) => state.children)
-  const [totalDays, setTotalDays] = useState(0)
+    const [totalDays, setTotalDays] = useState(0)
     const {
         searchLocation,
         setSearchLocation,
@@ -44,6 +44,7 @@ const SearchPage = ({ searchParams }: { searchParams: any }) => {
             return res
         }
     })
+
 
     if(isError){
         console.log(error.message)
@@ -73,7 +74,7 @@ const SearchPage = ({ searchParams }: { searchParams: any }) => {
             <div className='w-[calc(100% - 27rem)] min-h-min flex flex-col gap-3 p-3'>
                 {dataProperties?.data?.data?.map((item: any, index: any) => {
                     return(
-                        <Link href='' key={index} className='bg-white !w-[50rem] h-[17rem] border rounded-lg flex items-start gap-3 p-3 shadow'>
+                        <div key={index} className='bg-white !w-[50rem] h-[17rem] border rounded-lg flex items-start gap-3 p-3 shadow'>
                             <div className='bg-blue-200 w-[25rem] h-full rounded'>
 
                             </div>
@@ -84,10 +85,10 @@ const SearchPage = ({ searchParams }: { searchParams: any }) => {
                                 <div className='flex flex-col items-end justify-end gap-1 h-full'>
                                     <p className='text-xs'>from <span className='font-bold text-xl pr-1'>{item.propertyRoomType[0].price}</span></p>
                                     <p className='text-sm pr-1'>{totalDays} {nights} | {totalGuest.adult} {adults} {totalGuest.children > 0 && ` | ${totalGuest.children} children`}</p>
-                                    <Link href="" className='rounded-full bg-black text-white px-7 py-3 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200 mt-3'>Book this room</Link>
+                                    <Link href={`/property/${item.name}`} className='rounded-full bg-black text-white px-7 py-3 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200 mt-3'>Book this room</Link>
                                 </div>
                             </div>
-                        </Link>
+                        </div>
                     )
                 })}
             </div>

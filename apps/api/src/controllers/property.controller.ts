@@ -129,6 +129,116 @@ export const createProperty = async(req: Request, res: Response, next: NextFunct
 
     //jika punya facility children maka boleh tambah children
 }
+
+export const getPropertyDetail = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { slug } = req.params
+    
+        const property = await prisma.property.findFirst({
+            where: {
+                slug: slug as string
+            },
+            include: {
+                propertyDetail: true,
+                propertyRoomType: true
+            },
+        })
+    
+        if(!property?.id) throw { msg: 'Property not found!', status: 406 }
+
+        const propertyFacilities = await prisma.propertyHasFacility.findMany({
+            where: {
+                propertyId: property?.id
+            }
+        })
+
+        const propertyImages = await prisma.propertyImage.findMany({
+            where: {
+                propertyDetailId: property.propertyDetail?.id
+            }
+        })
+
+        const propertyRoomImages = await prisma.propertyRoomImage.findMany({
+            where: {
+                propertyRoomTypeId: {
+                    in: property.propertyRoomType.map(item => item.id)
+                }
+            }
+        }) 
+
+        const propertyRoomType = await prisma.propertyRoomType.findMany({
+            where: {
+                propertyId: property?.id
+            }
+        })
+
+        const reviews = await prisma.review.findMany({
+            where: {
+                propertyId: property.id
+            }
+        })
+
+        const city = await prisma.city.findUnique({
+            where: {
+                id: property?.cityId as number
+            }
+        })
+
+        const country = await prisma.city.findUnique({
+            where: {
+                id: property?.countryId as number
+            }
+        })
+
+        const propertyListByCity = await prisma.property.findMany({
+            where: {
+                cityId: property?.cityId,
+                id: {
+                    not: property?.id
+                }
+            },
+            include: {
+                country: true,
+                city: true,
+                review: true,
+                propertyDetail: {
+                    include: {
+                        propertyImage: true
+                    }
+                }
+            },
+            take: 10
+        })
+
+        const tenant = await prisma.tenant.findUnique({
+            where: {
+                id: property?.tenantId as string
+            }
+        })
+
+        res.status(200).json({
+            error: false,
+            message: 'Get property detail success',
+            data: {
+                property,
+                propertyDetail: property.propertyDetail,
+                propertyFacilities,
+                propertyImages: [...propertyImages, ...propertyRoomImages],
+                propertyImagesPreview: [...propertyImages, ...propertyRoomImages].slice(0,8),
+                propertyRoomType,
+                reviews,
+                city,
+                country,
+                propertyListByCity,
+                tenant
+            }
+        })
+    } catch (error) {
+        next(error)
+    }
+
+
+}
 /*
 model PropertyRoomType {
   id         Int    @id @default(autoincrement())

@@ -3,7 +3,7 @@ import { Router } from 'express'
 
 const headerRouter = Router()
 
-headerRouter.post('/', fetchData)
+headerRouter.get('/', fetchData)
 headerRouter.get('/dropdown', getCityAndCountryList)
 
 export default headerRouter

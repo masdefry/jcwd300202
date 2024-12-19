@@ -1,6 +1,67 @@
-// import { create } from 'zustand'
-// import { persist } from 'zustand/middleware'
-// import { addDays } from 'date-fns'
+'use client'
+
+import React, { useState } from 'react'
+import { addDays } from 'date-fns'
+
+const useSearchHook = () => {
+    const [
+        searchLocation, 
+        setSearchLocation
+    ] = useState({
+        cityId: '',
+        countryId: '',
+        countryName: '',
+        cityName: '',
+    })
+
+    const [
+        bookingDays,
+        setBookingDays
+    ] = useState({
+        checkInDate: new Date(),
+        checkOutDate: new Date(addDays(new Date() ,1))
+    })
+
+    const [
+        totalGuest,
+        setTotalGuest
+    ] = useState({
+        adult: 1,
+        children: 0,
+    })
+
+    const [
+        allGuest,
+        setAllGuest
+    ] = useState({
+        totalGuest: totalGuest.adult + totalGuest.children
+    })
+
+    const [
+        searchResults,
+        setSearchResults
+    ] = useState([])
+
+
+    return {
+        searchLocation,
+        setSearchLocation,
+        bookingDays,
+        setBookingDays,
+        totalGuest,
+        setTotalGuest,
+        searchResults,
+        setSearchResults,
+        allGuest,
+        setAllGuest
+    }
+}
+
+export default useSearchHook
+
+
+
+
 
 // interface IHeaderStore {
 //     cityId: number | null,
@@ -49,18 +110,3 @@
 //     },
 //     setCheckInDate: ({checkInDate}: Pick<IHeaderStore, 'checkInDate'>) => {set({checkInDate})},
 //     setCheckOutDate: ({checkOutDate}: Pick<IHeaderStore, 'checkOutDate'>) => {set({checkOutDate})},
-//     // setTotalGuest: ({ 
-//     //     adult, 
-//     //     children,
-//     //     totalRooms = 1
-//     //     }: Partial<IHeaderStore, 'adult' | 'children' | 'totalRooms'>) => {
-//     //         const totalGuest = adult! + ( children ? children : 0)
-//     //         let roomCapacityReq
-//     //         if(totalRooms > 1) {
-//     //             roomCapacityReq = totalGuest / totalRooms
-//     //         } else {
-//     //             roomCapacityReq = totalGuest
-//     //         }
-//     //     set({ totalGuest, totalRooms, children, adult })
-//     // },
-// }))

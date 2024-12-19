@@ -3,25 +3,28 @@
 import instance from '@/utils/axiosInstance'
 import { useMutation } from '@tanstack/react-query'
 import React from 'react'
-import { headerStore } from '@/zustand/headerStore'
+// import { headerStore } from '@/zustand/headerStore'
 
 export interface IDataDropDown {
   countryId: number,
   cityId: number,
   cityName: string,
-  countryName: string,
+  countryName: string
 }
 
 interface IDropdownCitesAndCountry {
+  searchLocation: any,
+  setSearchLocation: any,
   dataDropdown : IDataDropDown[] | [],
   setSearchValues : any,
   setDataDropdown: any,
   handleSearchInput: any
-  handleClearSearchInput: any
+  handleClearSearchInput: any,
+  setFieldValue: any
 }
 
-const DropdownCitiesAndCountries = ({ dataDropdown, setSearchValues, setDataDropdown, handleSearchInput, handleClearSearchInput }: IDropdownCitesAndCountry) => {
-    const setCityAndCountrySearch = headerStore((state: any) => state.setCityAndCountrySearch)
+const DropdownCitiesAndCountries = ({ setFieldValue, searchLocation, setSearchLocation, dataDropdown, setSearchValues, setDataDropdown, handleSearchInput, handleClearSearchInput }: IDropdownCitesAndCountry) => {
+    // const setCityAndCountrySearch = headerStore((state: any) => state.setCityAndCountrySearch)
   
     if(!Array.isArray(dataDropdown) || dataDropdown.length <= 0) {
       return <></>
@@ -35,8 +38,10 @@ const DropdownCitiesAndCountries = ({ dataDropdown, setSearchValues, setDataDrop
             dataDropdown?.map((item: IDataDropDown, index: number) => {
               return (
                 <li onClick={() => {
-                  setCityAndCountrySearch({countryId: item.countryId, cityId: item.cityId, countryName: item.countryName, cityName: item.cityName})
+                  setSearchLocation({countryId: item.countryId, cityId: item.cityId, countryName: item.countryName, cityName: item.cityName})
                   setSearchValues({countryId: item.countryId, cityId: item.cityId, countryName: item.countryName, cityName: item.cityName})
+                  setFieldValue('country', item.countryId)
+                  setFieldValue('city', item.cityId)
                   setDataDropdown((state: any[]) => {
                     state = []
                     return state

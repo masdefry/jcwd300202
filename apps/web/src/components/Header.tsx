@@ -12,6 +12,7 @@ import SearchHeaderDefault from "./SearchHeaderDefault";
 import HamburgerMenu from "./HamburgerMenu";
 import Promotion from "./Promotion";
 import authStore from "@/zustand/authStore";
+import  useSearchHook from '@/hooks/useSearchHook'
 
 export default function Header() {
   const role = authStore(state => state.role)
@@ -28,17 +29,16 @@ export default function Header() {
     setDataDropdown
   } = useDropdownSearchHook()
 
+  const {
+    setSearchResults,
+    searchResults
+  } = useSearchHook()
+
   const pathname = usePathname()
 
   if(pathname.includes('/auth') || pathname.includes('/tenant')) {
     return <></>
   }
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     setLoadingPromotion(false)
-  //   }, 1000)
-  // }, [])
 
   return (
   <header className="flex flex-col">
@@ -78,24 +78,25 @@ export default function Header() {
         </hgroup>
       </section>
       <SearchHeader2XLWidth 
-      mutateShowDropdownDebounce={mutateShowDropdownDebounce}
-      handleClearSearchInput={handleClearSearchInput}
-      handleSearchInput={handleSearchInput}
-      handleSearch={handleSearch}
-      searchValues={searchValues}
-      setSearchValues={setSearchValues}
-      dataDropdown={dataDropdown}
-      setDataDropdown={setDataDropdown}
+        mutateShowDropdownDebounce={mutateShowDropdownDebounce}
+        handleClearSearchInput={handleClearSearchInput}
+        handleSearchInput={handleSearchInput}
+        handleSearch={handleSearch}
+        searchValues={searchValues}
+        setSearchValues={setSearchValues}
+        dataDropdown={dataDropdown}
+        setDataDropdown={setDataDropdown}
+        setSearchResults={setSearchResults}
       />
       <SearchHeaderDefault 
-      mutateShowDropdownDebounce={mutateShowDropdownDebounce}
-      handleClearSearchInput={handleClearSearchInput}
-      handleSearchInput={handleSearchInput}
-      handleSearch={handleSearch}
-      searchValues={searchValues}
-      setSearchValues={setSearchValues}
-      dataDropdown={dataDropdown}
-      setDataDropdown={setDataDropdown}
+        mutateShowDropdownDebounce={mutateShowDropdownDebounce}
+        handleClearSearchInput={handleClearSearchInput}
+        handleSearchInput={handleSearchInput}
+        handleSearch={handleSearch}
+        searchValues={searchValues}
+        setSearchValues={setSearchValues}
+        dataDropdown={dataDropdown}
+        setDataDropdown={setDataDropdown}
       />
     </section>
     {

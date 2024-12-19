@@ -14,7 +14,7 @@ export const fetchData = async(req: Request, res: Response, next: NextFunction) 
                 data: {}
             });
         }
-        console.log(req.query.country)
+
         const parsedCheckInDate = new Date(checkInDate as string);
         const parsedCheckOutDate = new Date(checkOutDate as string);
 

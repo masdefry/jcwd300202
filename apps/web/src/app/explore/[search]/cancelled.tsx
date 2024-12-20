@@ -1,6 +1,7 @@
 'use client'
 
 import TwoHandleSlider from '@/components/TwoHandleSlider'
+import useFilteringPropertyHook from '@/features/property/hooks/useFilteringPropertyHook'
 import instance from '@/utils/axiosInstance'
 import { useQuery } from '@tanstack/react-query'
 import MultiRangeSlider from 'multi-range-slider-react'
@@ -17,15 +18,18 @@ const ExploreLayout = ({ children }: {children: ReactNode}) => {
 	setMinValue(e.minValue);
 	setMaxValue(e.maxValue);
 };
+const {
+    dataForFilteringProperty,
+    setDataForFilteringProperty
+} = useFilteringPropertyHook()
 
-    const { data: dataForFilteringProperty, isPending: isPendingForFilteringProperty} = useQuery({
-        queryKey: ['getDataForFilteringProperty'],
-        queryFn: async() => {
-            const res = await instance.get('/property/nav/filter')
-            console.log(res?.data?.data?.propertyType[0]?._count?.property)
-            return res?.data?.data
-        }
-    })
+    // const { data: dataForFilteringProperty, isPending: isPendingForFilteringProperty} = useQuery({
+    //     queryKey: ['getDataForFilteringProperty'],
+    //     queryFn: async() => {
+    //         const res = await instance.get('/property/nav/filter')
+    //         return res?.data?.data
+    //     }
+    // })
 //   const handleMaxValue = (value: number) => {
 //     if( value <= 50 ) {
 //         setSlider1Value(value)
@@ -41,37 +45,37 @@ const ExploreLayout = ({ children }: {children: ReactNode}) => {
 //         setSlider2Value(51)
 //     }
 //   }  
+{/* <div className='rounded-md w-full shadow-md bg-white p-5' id='price-filter'> */}
+    {/* <div>
+        <input type="range" min={0} value={slider1Value} max={100} maxLength={50} onChange={(e) =>  handleMaxValue(Number(e.target.value))} />
+        <input type="range" min={0} value={slider2Value} max={100} maxLength={100} onChange={(e) =>  handleMinValue(Number(e.target.value))} />
+    </div>
+    {/* <input type="range" min="50"  className="range range-xs" /> */}
+    {/* <p>{slider1Value}</p>
+    <p>{slider2Value}</p>  */}
+    {/* <MultiRangeSlider
+        min={0}
+        max={100}
+        step={1}
+        barInnerColor='gray'
+        thumbLeftColor='white'
+        thumbRightColor='white'
+        style={{
+            boxShadow: 'none',
+            border: 'none',
+            textShadow: 'none',
+        }}
+        minValue={minValue}
+        maxValue={maxValue}
+        onInput={(e) => {
+            handleInput(e);
+        }}
+    /> */}
+{/* </div> */}
   return (
     <main className='w-full min-h-min py-5'>
         <section className='m-auto max-w-screen-xl grid grid-cols-4  gap-5 w-full h-full'>
             <section className='flex flex-col gap-5'>
-                {/* <div className='rounded-md w-full shadow-md bg-white p-5' id='price-filter'> */}
-                    {/* <div>
-                        <input type="range" min={0} value={slider1Value} max={100} maxLength={50} onChange={(e) =>  handleMaxValue(Number(e.target.value))} />
-                        <input type="range" min={0} value={slider2Value} max={100} maxLength={100} onChange={(e) =>  handleMinValue(Number(e.target.value))} />
-                    </div>
-                    {/* <input type="range" min="50"  className="range range-xs" /> */}
-                    {/* <p>{slider1Value}</p>
-                    <p>{slider2Value}</p>  */}
-                    {/* <MultiRangeSlider
-                        min={0}
-                        max={100}
-                        step={1}
-                        barInnerColor='gray'
-                        thumbLeftColor='white'
-                        thumbRightColor='white'
-                        style={{
-                            boxShadow: 'none',
-                            border: 'none',
-                            textShadow: 'none',
-                        }}
-                        minValue={minValue}
-                        maxValue={maxValue}
-                        onInput={(e) => {
-                            handleInput(e);
-                        }}
-                    /> */}
-                {/* </div> */}
                 <div className='rounded-md w-full shadow-md flex flex-col overflow-hidden bg-white' id='price-filter'>
                     <hgroup className='felx flex-col gap-1.5 text-sm font-bold py-3 px-5 bg-gray-800 text-white'>
                         <h1>Price</h1>
@@ -260,7 +264,9 @@ const ExploreLayout = ({ children }: {children: ReactNode}) => {
                     </div>
                 </div>
             </section>
-            <section className='col-span-3'>{children}</section>
+            <section className='col-span-3'>
+                {children}
+            </section>
         </section>
     </main>
   )

@@ -42,7 +42,7 @@ const ExploreLayout = ({ children }: {children: ReactNode}) => {
 //     }
 //   }  
   return (
-    <main className='w-full min-h-min'>
+    <main className='w-full min-h-min py-5'>
         <section className='m-auto max-w-screen-xl grid grid-cols-4  gap-5 w-full h-full'>
             <section className='flex flex-col gap-5'>
                 {/* <div className='rounded-md w-full shadow-md bg-white p-5' id='price-filter'> */}

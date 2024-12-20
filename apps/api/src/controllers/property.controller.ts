@@ -375,6 +375,52 @@ export const getPropertyRoomType = async(req: Request, res: Response, next: Next
         next(error)
     }
 }
+
+export const dataForFilteringProperty = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const propertyType = await prisma.propertyType.findMany({
+            include: {
+                _count: {
+                    select: {
+                        property: true
+                    }
+                }
+            }
+        })
+
+        const propertyFacility = await prisma.propertyFacility.findMany({
+            include: {
+                _count: {
+                    select: {
+                        propertyHasFacility: true
+                    }
+                }
+            }
+        })
+
+        const propertyRoomFacility = await prisma.propertyRoomFacility.findMany({
+            include: {
+                _count: {
+                    select: {
+                        roomHasFacilities: true
+                    }
+                }
+            }
+        })
+
+        res.status(200).json({
+            error: false,
+            message: 'Get data for filtering property success',
+            data: {
+                propertyType,
+                propertyFacility,
+                propertyRoomFacility
+            }
+        })
+    } catch (error) {
+        next(error)
+    }
+}
 /*
 model PropertyRoomType {
   id         Int    @id @default(autoincrement())

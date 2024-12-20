@@ -66,8 +66,8 @@ const SearchPage = ({ searchParams }: { searchParams: any }) => {
 //   console.log(totalDays, 'totalDays')
     
   return (
-    <main className='w-full min-h-min'>
-        <section className='m-auto max-w-screen-xl w-full h-full flex items-start'>
+    <main className='w-full min-h-min bg-blue-200'>
+        <section className='m-auto w-full h-full flex items-start'>
             <div className='bg-blue-200 w-[27rem] h-full'>
 
             </div>

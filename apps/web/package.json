@@ -37,6 +37,7 @@
     "jsonwebtoken": "^9.0.2",
     "leaflet": "^1.7.1",
     "lucide-react": "^0.465.0",
+    "multi-range-slider-react": "^2.0.7",
     "next": "14.0.4",
     "primereact": "^10.8.5",
     "react": "^19.0.0-rc.1",

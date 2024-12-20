@@ -58,33 +58,33 @@ const PropertyDetailPage = ({params}:{params : { slug: string }}) => {
                     } else {
                         className = 'overflow-hidden relative rounded-md bg-slate-300 w-full h-full col-span-1 row-span-2'
                     }
-                    if(index === 7) {
-                        return (
-                            <figure className={className}>
-                                <Image 
-                                src={`http://localhost:5000/api/src/public/images/property_${index + 1}_images_1.jpg`}
-                                width={800}
-                                height={800}
-                                alt=''
-                                className='h-full w-full object-cover'
-                                />
-                                <div className='rounded-md absolute top-0 left-0 w-full h-full hover:bg-opacity-60 bg-black bg-opacity-40 flex items-center justify-center'>
-                                    <p className='text-xl text-white font-bold hover:cursor-pointer hover:underline transition duration-100'>+10 Photos</p>
-                                </div>
-                            </figure>
-                        )
-                    }
-                    return(
-                        <figure className={className}>
-                            <Image 
-                            src={`http://localhost:5000/api/${item?.directory}/${item?.filename}.${item?.fileExtension}`}
-                            width={800}
-                            height={800}
-                            alt=''
-                            className='h-full w-full object-cover'
-                            />
-                        </figure>
-                    )
+                    // if(index === 7) {
+                    //     return (
+                    //         <figure className={className}>
+                    //             <Image 
+                    //             src={`http://localhost:5000/api/src/public/images/property_${index + 1}_images_1.jpg`}
+                    //             width={800}
+                    //             height={800}
+                    //             alt=''
+                    //             className='h-full w-full object-cover'
+                    //             />
+                    //             <div className='rounded-md absolute top-0 left-0 w-full h-full hover:bg-opacity-60 bg-black bg-opacity-40 flex items-center justify-center'>
+                    //                 <p className='text-xl text-white font-bold hover:cursor-pointer hover:underline transition duration-100'>+10 Photos</p>
+                    //             </div>
+                    //         </figure>
+                    //     )
+                    // }
+                    // return(
+                    //     <figure className={className}>
+                    //         <Image 
+                    //         src={`http://localhost:5000/api/${item?.directory}/${item?.filename}.${item?.fileExtension}`}
+                    //         width={800}
+                    //         height={800}
+                    //         alt=''
+                    //         className='h-full w-full object-cover'
+                    //         />
+                    //     </figure>
+                    // )
                 })
             }
         </section>
@@ -181,7 +181,7 @@ const PropertyDetailPage = ({params}:{params : { slug: string }}) => {
             {
                 dataPropertyDetail?.propertyRoomTypes?.map((item: any, index: number) => {
                     return (
-                    <section className='w-full grid grid-cols-3 gap-10 items-center rounded-md bg-white shadow-md p-3'>
+                    <section key={index} className='w-full grid grid-cols-3 gap-10 items-center rounded-md bg-white shadow-md p-3'>
                         <div className='w-full h-fit rounded-md flex flex-col gap-2'>
                             <h1 className='text-2xl font-bold'>{item?.name}</h1>
                             <figure className='bg-gray-500 rounded-3xl w-full h-[150px] overflow-hidden'>

@@ -55,10 +55,10 @@ const SearchPage = ({ searchParams }: { searchParams: any }) => {
 //   }, [bookingDays.checkInDate, bookingDays.checkOutDate])
 
   let nights = totalDays === 1? 'night': 'nights'
-  console.log(nights, 'nightsss')
+//   console.log(nights, 'nightsss')
 
   let adults = totalGuest.adult === 1? 'adult' : 'adults'
-  console.log('Explore:', searchResults)
+//   console.log('Explore:', searchResults)
   
 
 //   console.log(searchResults, 'searchResults')

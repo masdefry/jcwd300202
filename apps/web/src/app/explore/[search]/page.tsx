@@ -5,16 +5,19 @@ import Link from 'next/link'
 // import searchStore  from '@/zustand/searchStore'
 // import { headerStore } from '@/zustand/headerStore'
 import { differenceInDays } from 'date-fns';
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import  useSearchHook from '@/hooks/useSearchHook'
 import instance from '@/utils/axiosInstance'
 import useSearchParams from 'next/navigation'
 import { RiBuilding3Line } from 'react-icons/ri';
 import { FaStar } from 'react-icons/fa';
 import { CiBookmarkPlus, CiLocationOn } from 'react-icons/ci';
+import { indexOf } from 'cypress/types/lodash';
+import useFilteringPropertyHook from '@/features/property/hooks/useFilteringPropertyHook';
+import Image from 'next/image';
 
-const SearchPage = ({ searchParams }: { searchParams: any }) => {
-// const SearchPage = () => {
+const ExplorePage = ({ searchParams }: { searchParams: any }) => {
+// const ExplorePage = () => {
   
     // const searchParams = useSearchParams()
 //   const searchResults = searchStore((state: any) => state.searchResults)
@@ -23,6 +26,10 @@ const SearchPage = ({ searchParams }: { searchParams: any }) => {
 //   const adult = headerStore((state: any) => state.adult)
 //   const children = headerStore((state: any) => state.children)
     const [totalDays, setTotalDays] = useState(0)
+    const [ dataProperties, setDataProperties] = useState<any>()
+    const [ showFilterPropertyFacility, setShowFilterPropertyFacility ] = useState(false)
+    const [ showFilterPropertyRoomFacility, setShowFilterPropertyRoomFacility ] = useState(false)
+    const [ showPropertyType, setShowPropertyType ] = useState(false)
     const {
         searchLocation,
         setSearchLocation,
@@ -35,6 +42,26 @@ const SearchPage = ({ searchParams }: { searchParams: any }) => {
         allGuest,
         setAllGuest
     } = useSearchHook()
+    const {
+        dataForFilteringProperty,
+        setDataForFilteringProperty
+    } = useFilteringPropertyHook()
+        const { isPending: isPendingProperties } = useQuery({
+            queryKey: ['getProperties'],
+            queryFn: async() => {
+                const res = await instance.get(`/property?countryId=${searchParams.country}&cityId=${searchParams.city}&checkInDate=${searchParams["check-in-date"]}&checkOutDate=${searchParams["check-out-date"]}&adult=${searchParams.adult}&children=${searchParams.children}&offset=0&limit=5`)
+                setDataProperties(res?.data?.data)
+                setDataForFilteringProperty(res?.data?.data?.dataForFilteringProperty)
+                return res?.data?.data
+            }
+        })
+        
+        const { mutate: mutateExplorePagination, isPending: isPendingExplorePagination } = useMutation({
+            mutationFn: async({ limit, offset }: { limit: number, offset: number }) => {
+                const res = await instance.get(`/property?countryId=${searchParams.country}&cityId=${searchParams.city}&checkInDate=${searchParams["check-in-date"]}&checkOutDate=${searchParams["check-out-date"]}&adult=${searchParams.adult}&children=${searchParams.children}&offset=${offset}&limit=${limit}`)
+                setDataProperties(res?.data?.data)
+            }
+        })
     // const { data: dataProperties, isPending, isError, error} = useQuery({
     //     queryKey: ['results'],
     //     queryFn: async() => {
@@ -58,23 +85,201 @@ const SearchPage = ({ searchParams }: { searchParams: any }) => {
 //   }, [bookingDays.checkInDate, bookingDays.checkOutDate])
 
   let nights = totalDays === 1? 'night': 'nights'
-//   console.log(nights, 'nightsss')
-
   let adults = totalGuest.adult === 1? 'adult' : 'adults'
-//   console.log('Explore:', searchResults)
-  
-
-//   console.log(searchResults, 'searchResults')
-//   console.log(checkInDate, checkOutDate, 'testt')
-//   console.log(totalDays, 'totalDays')
     
   return (
-    <main className='w-full min-h-min'>
-        <section className='m-auto w-full h-full flex items-start'>
-            {/* <div className='bg-red-600 w-[27rem] h-full'>
-
-            </div> */}
-            <div className='w-full min-h-min flex flex-col gap-3 p-3'>
+    <main className='w-full min-h-min py-5'>
+            <section className='m-auto max-w-screen-xl grid grid-cols-4  gap-5 w-full h-full'>
+                <section className='flex flex-col gap-5'>
+                    <div className='rounded-md w-full shadow-md flex flex-col overflow-hidden bg-white' id='price-filter'>
+                        <hgroup className='felx flex-col gap-1.5 text-sm font-bold py-3 px-5 bg-gray-800 text-white'>
+                            <h1>Price</h1>
+                            <p className='font-light text-gray-300'>Get the best deal</p>
+                        </hgroup>
+                        <div className='flex items-center gap-1 p-5'>
+                            <div className='text-sm font-semibold flex flex-col gap-1'>
+                                <label className='ml-3' htmlFor='lowest-price'>Starts from</label>
+                                <input type="text" id='lowest-price' className='w-full rounded-full border border-slate-300 bg-white text-xs placeholder-shown:text-xs text-gray-800 focus:outline-1 px-3 py-1' placeholder='300.000'/>
+                            </div>
+                            <div className='text-sm font-semibold flex flex-col gap-1'>
+                                <label className='ml-3' htmlFor='highest-price'>to</label>
+                                <input type="text" id='highest-price' className='w-full rounded-full border border-slate-300 bg-white text-xs placeholder-shown:text-xs text-gray-800 focus:outline-1 px-3 py-1' placeholder='3.000.000'/>
+                            </div>
+                        </div>
+                    </div>
+                    <div tabIndex={0} className="rounded-md collapse collapse-arrow shadow-md">
+                        <input type="checkbox" />
+                        <div className="collapse-title text-sm font-bold text-gray-800 bg-white">Accomodation Type</div>
+                        <div className="collapse-content pt-3">
+                            <ul className='flex flex-col gap-4 text-sm font-semibold'>
+                                {
+                                    dataForFilteringProperty?.propertyType.slice(0,4).map((item: any, index: number) => {
+                                        return (
+                                        <li key={index} className="form-control">
+                                            <label className="flex items-center gap-3 cursor-pointer">
+                                                <input type="checkbox" className="checkbox" />
+                                                <span className="text-gray-600 label-text">{item?.name} ({item?._count?.property})</span>
+                                            </label>
+                                        </li>
+                                        )
+                                    })
+                                }
+                                {   !showPropertyType ? (
+                                    <li onClick={() => setShowPropertyType(true)} className={`${dataForFilteringProperty?.propertyType.length <= 4 && 'hidden' } hover:cursor-pointer text-blue-600 hover:underline hover:text-blue-700 transition duration-100`}>Show more...</li>
+                                )  : (
+                                    <ul className='flex flex-col gap-4 text-sm font-semibold'>
+                                        {
+                                            dataForFilteringProperty?.propertyType.slice(4).map((item: any, index: number) => {
+                                                return (
+                                                <li key={index} className="form-control">
+                                                    <label className="flex items-center gap-3 cursor-pointer">
+                                                        <input type="checkbox" className="checkbox" />
+                                                        <span className="text-gray-600 label-text">{item?.name} ({item?._count?.property})</span>
+                                                    </label>
+                                                </li>
+                                                )
+                                            })
+                                        }
+                                        <li onClick={() => setShowPropertyType(false)} className={`${dataForFilteringProperty?.propertyType.length <= 4 && 'hidden' } hover:cursor-pointer text-blue-600 hover:underline hover:text-blue-700 transition duration-100`}>Show less</li>
+                                    </ul>
+                                )
+                                }
+    
+                            </ul>
+                        </div>
+                    </div>
+                    <div tabIndex={0} className="rounded-md collapse collapse-arrow shadow-md">
+                        <input type="checkbox" />
+                        <div className="collapse-title text-sm font-bold text-gray-800 bg-white">General Facility</div>
+                        <div className="collapse-content pt-3">
+                            <ul className='flex flex-col gap-4 text-sm font-semibold'>
+                                {
+                                    dataForFilteringProperty?.propertyFacility.slice(0,5).map((item: any, index: number) => {
+                                        return (
+                                        <li key={index} className="form-control">
+                                            <label className="flex items-center gap-3 cursor-pointer">
+                                                <input type="checkbox" className="checkbox" />
+                                                <span className="text-gray-600 label-text">{item?.name} ({item?._count?.propertyHasFacility})</span>
+                                            </label>
+                                        </li>
+                                        )
+                                    })
+                                }
+                                {   !showFilterPropertyFacility ? (
+                                    <li onClick={() => setShowFilterPropertyFacility(true)} className={`${dataForFilteringProperty?.propertyFacility.length <= 5 && 'hidden' } hover:cursor-pointer text-blue-600 hover:underline hover:text-blue-700 transition duration-100`}>Show more...</li>
+                                )  : (
+                                    <ul className='flex flex-col gap-4 text-sm font-semibold'>
+                                        {
+                                            dataForFilteringProperty?.propertyFacility.slice(5).map((item: any, index: number) => {
+                                                return (
+                                                <li key={index} className="form-control">
+                                                    <label className="flex items-center gap-3 cursor-pointer">
+                                                        <input type="checkbox" className="checkbox" />
+                                                        <span className="text-gray-600 label-text">{item?.name} ({item?._count?.propertyHasFacility})</span>
+                                                    </label>
+                                                </li>
+                                                )
+                                            })
+                                        }
+                                        <li onClick={() => setShowFilterPropertyFacility(false)} className={`${dataForFilteringProperty?.propertyFacility.length <= 5 && 'hidden'} hover:cursor-pointer text-blue-600 hover:underline hover:text-blue-700 transition duration-100`}>Show less</li>
+                                    </ul>
+                                )
+                                }
+    
+                            </ul>
+                        </div>
+                    </div>
+                    <div tabIndex={0} className="rounded-md collapse collapse-arrow shadow-md">
+                        <input type="checkbox" />
+                        <div className="collapse-title text-sm font-bold text-gray-800 bg-white">Room Facility</div>
+                        <div className="collapse-content pt-3">
+                            <ul className='flex flex-col gap-4 text-sm font-semibold'>
+                                {
+                                    dataForFilteringProperty?.propertyRoomFacility.slice(0,5).map((item: any, index: number) => {
+                                        return (
+                                        <li key={index} className="form-control">
+                                            <label className="flex items-center gap-3 cursor-pointer">
+                                                <input type="checkbox" className="checkbox" />
+                                                <span className="text-gray-600 label-text">{item?.name} ({item?._count?.roomHasFacilities})</span>
+                                            </label>
+                                        </li>
+                                        )
+                                    })
+                                }
+                                {   !showFilterPropertyRoomFacility ? (
+                                    <li onClick={() => setShowFilterPropertyRoomFacility(true)} className={`${dataForFilteringProperty?.propertyRoomFacility.length <= 5 && 'hidden'} hover:cursor-pointer text-blue-600 hover:underline hover:text-blue-700 transition duration-100`}>Show more...</li>
+                                )  : (
+                                    <ul className='flex flex-col gap-4 text-sm font-semibold'>
+                                        {
+                                            dataForFilteringProperty?.propertyRoomFacility.slice(5).map((item: any, index: number) => {
+                                                return (
+                                                <li key={index} className="form-control">
+                                                    <label className="flex items-center gap-3 cursor-pointer">
+                                                        <input type="checkbox" className="checkbox" />
+                                                        <span className="text-gray-600 label-text">{item?.name} ({item?._count?.roomHasFacilities})</span>
+                                                    </label>
+                                                </li>
+                                                )
+                                            })
+                                        }
+                                        <li onClick={() => setShowFilterPropertyRoomFacility(false)} className={`${dataForFilteringProperty?.propertyRoomFacility.length <= 5 && 'hidden'} hover:cursor-pointer text-blue-600 hover:underline hover:text-blue-700 transition duration-100`}>Show less</li>
+                                    </ul>
+                                )
+                                }
+    
+                            </ul>
+                        </div>
+                    </div>
+                    <div tabIndex={0} className="rounded-md collapse collapse-arrow shadow-md">
+                        <input type="checkbox" />
+                        <div className="collapse-title text-sm font-bold text-gray-800 bg-white">Stars</div>
+                        <div className="collapse-content pt-3">
+                        <ul className='flex flex-col gap-4 text-sm font-semibold'>
+                                {
+                                    Array.from({length: 4}).map((item, index) => {
+                                        return (
+                                        <li key={index} className="form-control">
+                                            <label className="flex items-center gap-3 cursor-pointer">
+                                                <input type="checkbox" className="checkbox" />
+                                                <span className="text-gray-600 label-text flex items-center gap-1.5">
+                                                    <p>{5 - index}</p>
+                                                    <FaStar key={index} size={18} className='text-yellow-400'/>
+                                                    <p>(1200)</p>
+                                                </span>
+                                            </label>
+                                        </li>
+                                        )
+                                    })
+                                }
+                        </ul>
+                        </div>
+                    </div>
+                    <div tabIndex={0} className="rounded-md collapse collapse-arrow shadow-md">
+                        <input type="checkbox" />
+                        <div className="collapse-title text-sm font-bold text-gray-800 bg-white">Ratings from Guest</div>
+                        <div className="collapse-content pt-3">
+                        <ul className='flex flex-col gap-4 text-sm font-semibold'>
+                                {
+                                    Array.from({length: 4}).map((item, index) => {
+                                        return (
+                                        <li key={index} className="form-control">
+                                            <label className="flex items-center gap-3 cursor-pointer">
+                                                <input type="checkbox" className="checkbox" />
+                                                <span className="text-gray-600 label-text flex items-center gap-1.5">
+                                                    <p>{9 - index}+</p> 
+                                                    <RiBuilding3Line key={index} size={18} className='text-gray-800'/>
+                                                    <p>(1200)</p>
+                                                </span>
+                                            </label>
+                                        </li>
+                                        )
+                                    })
+                                }
+                        </ul>
+                        </div>
+                    </div>
+                </section>
+            <div className='col-span-3 w-full min-h-min flex flex-col gap-3 px-3'>
                 {/* {dataProperties?.data?.data?.map((item: any, index: any) => {
                     return(
                         <div key={index} className='bg-white !w-[50rem] h-[17rem] border rounded-lg flex items-start gap-3 p-3 shadow'>
@@ -95,38 +300,52 @@ const SearchPage = ({ searchParams }: { searchParams: any }) => {
                     )
                 })} */}
                     {
-                        Array.from({length: 1}).map((_, index) => {
+                        dataProperties?.properties.map((item: any, index: number) => {
                             return(
-                                <div className='bg-white w-full h-[17rem] rounded-lg flex items-start gap-3 p-3 shadow-md'>
-                                    <div className='bg-blue-200 w-[55rem] h-full rounded'>
-
-                                    </div>
+                                <div key={index} className='bg-white w-full h-[15rem] rounded-lg flex items-start gap-3 p-3 shadow-md'>
+                                    <figure className='bg-blue-200 w-[55rem] h-full rounded overflow-hidden'>
+                                        <Image
+                                            src={`http://localhost:5000/api/${item?.propertyDetail?.propertyImage[0]?.directory}/${item?.propertyDetail?.propertyImage[0]?.filename}.${item?.propertyDetail?.propertyImage[0]?.fileExtension}`}
+                                            width={500}
+                                            height={500}
+                                            alt=''
+                                            className='w-full h-full object-cover'
+                                        />
+                                    </figure>
                                     <div className='w-[100rem] h-full flex flex-col justify-between'>
                                         <div className='flex justify-between'>
                                             <hgroup className='flex flex-col w-full'>
-                                                <h1 className='text-2xl font-bold text-gray-900'>Ritz Carlton Jakarta</h1>
-                                                <p className='text-base font-light text-gray-600 flex items-center gap-1'><CiLocationOn size={23} className='text-red-600'/>Jakarta, Indonesia</p>
+                                                <h1 className='text-2xl font-bold text-gray-900'>{item?.name}</h1>
+                                                <p className='text-base font-light text-gray-600 flex items-center gap-1'><CiLocationOn size={23} className='text-red-600'/>{item?.city?.name}, {item?.country?.name}</p>
                                                 <div className='flex items-center gap-1 mt-3'>
-                                                    <p className='bg-blue-200 rounded-md px-1 py-1 text-blue-700 font-bold text-xs'>Hotel</p>
-                                                    <div className='flex items-center'>
-                                                        {
-                                                            Array.from({length: 5}).map((_, index) => {
-                                                                return(
-                                                                    <FaStar key={index} size={15} className='text-yellow-400'/>
-                                                                )
-                                                            })
-                                                        }
-                                                    </div>
+                                                    <p className='bg-blue-200 rounded-md px-1 py-1 text-blue-700 font-bold text-xs'>{item?.propertyType?.name}</p>
+                                                    {
+                                                        item?.propertyType?.name.toLowerCase() === 'hotel' && (
+                                                            <div className='flex items-center'>
+                                                                {
+                                                                    Array.from({length: 5}).map((_, index) => {
+                                                                        return(
+                                                                            <FaStar key={index} size={15} className='text-yellow-400'/>
+                                                                        )
+                                                                    })
+                                                                }
+                                                            </div>
+                                                        )
+                                                    }
                                                 </div>
                                                 <div className='flex flex-wrap items-center gap-1 mt-2'>
                                                     {
-                                                        Array.from({length: 3}).map((_, index) => {
+                                                        item?.propertyHasFacility.slice(0, 3).map((propertyHasFacility: any, propertyHasFacilityIndex: number) => {
                                                             return (
-                                                                <p key={index} className='text-gray-800 bg-gray-100 rounded-badge p-1 text-[10.4px] font-semibold'>24 Security</p>
+                                                                <p key={propertyHasFacilityIndex} className='text-gray-800 bg-gray-100 rounded-badge p-1 text-[10.4px] font-semibold'>{propertyHasFacility?.propertyFacility?.name}</p>
                                                             )
                                                         })
                                                     }
-                                                    <p className='text-gray-500 bg-gray-100 rounded-full p-1 text-[10.4px] font-semibold'>2+</p>
+                                                    {
+                                                        item?.propertyHasFacility.length > 3 && (
+                                                            <p className='text-gray-500 bg-gray-100 rounded-full p-1 text-[10.4px] font-semibold'>{item?.propertyHasFacility.length - 3}+</p>
+                                                        )
+                                                    }
                                                 </div>
                                             </hgroup>
                                         </div>
@@ -135,19 +354,23 @@ const SearchPage = ({ searchParams }: { searchParams: any }) => {
                                         </div>
                                     </div>
                                     <div className='w-full border-l border-slate-300 flex flex-col h-full items-end justify-between'>
-                                        <div className='flex flex-col items-end'>
-                                                <span className='flex items-center gap-1 leading-3'>
-                                                    <p className='text-base font-bold text-blue-600 flex items-center gap-1'><RiBuilding3Line size={18} className='text-gray-800'/> 9.0</p>
-                                                    <p className='text-xs font-medium text-gray-800'>(2000 reviews)</p>
-                                                </span>
-                                                <p className='text-sm font-light mt-[-4px] text-gray-600'>Awesome</p>
-                                        </div>
+                                        {
+                                            (item?.review && item?.review.length > 0) && (
+                                            <div className='flex flex-col items-end'>
+                                                    <span className='flex items-center gap-1 leading-3'>
+                                                        <p className='text-base font-bold text-blue-600 flex items-center gap-1'><RiBuilding3Line size={18} className='text-gray-800'/> 9.0</p>
+                                                        <p className='text-xs font-medium text-gray-800'>(2000 reviews)</p>
+                                                    </span>
+                                                    <p className='text-sm font-light mt-[-4px] text-gray-600'>Awesome</p>
+                                            </div>
+                                            ) 
+                                        }
                                         <div className='flex flex-col items-end justify-end gap-1 h-full w-full'>
                                             <div className='flex flex-col items-end'>
-                                                <p className='text-xs text-gray-600'>Starts from <span className='font-bold text-xl pr-1 text-gray-900'>10000000</span></p>
+                                                <p className='text-xs text-gray-600'>Starts from <span className='font-bold text-xl pr-1 text-gray-900'>{item?.propertyRoomType[0]?.price}</span></p>
                                                 <p className='text-xs text-gray-600 font-bold'>Includes tax & price</p>
                                             </div>
-                                            <Link href='' className='rounded-full bg-black text-base font-bold text-white px-6 py-3 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200 mt-3 flex items-center gap-2'><CiBookmarkPlus size={23} />Book this room</Link>
+                                            <Link href={`/property/${item?.slug}`} className='rounded-full bg-black text-base font-bold text-white px-6 py-3 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200 mt-3 flex items-center gap-2'><CiBookmarkPlus size={23} />Book this room</Link>
                                         </div>
 
                                     </div>
@@ -155,7 +378,7 @@ const SearchPage = ({ searchParams }: { searchParams: any }) => {
                             )
                         })
                     }
-                    <div className='bg-white w-full h-[17rem] rounded-lg flex items-start gap-3 p-3 shadow-md'>
+                    <div className='bg-white w-full h-[15rem] rounded-lg flex items-start gap-3 p-3 shadow-md'>
                                     <div className='bg-blue-200 w-[55rem] h-full rounded'>
 
                                     </div>
@@ -211,10 +434,26 @@ const SearchPage = ({ searchParams }: { searchParams: any }) => {
 
                                     </div>
                     </div>
+                    <div id='pagination-button' className='w-full flex justify-center'>
+                    <div className="join">
+                    {
+                        Array.from({ length: dataProperties?.totalPage }).map((_, index) => {
+                            if(index + 1 === dataProperties?.pageInUse) {
+                                return (
+                                    <button key={index} disabled className="join-item btn btn-sm">{index + 1}</button>
+                                )
+                            }
+                            return(
+                                <button key={index} onClick={() => mutateExplorePagination({ limit: 5, offset: index * 5  })} className="join-item btn btn-sm">{index + 1}</button>
+                            )
+                        })
+                    }
+                    </div>
+                </div>
             </div>
         </section>
     </main>
   )
 }
 
-export default SearchPage
+export default ExplorePage

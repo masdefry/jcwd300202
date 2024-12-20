@@ -5,7 +5,22 @@ import prisma from '@/prisma'
 
 export const fetchData = async(req: Request, res: Response, next: NextFunction) => {
     try {
-        const { country, city, checkInDate, checkOutDate, adult, children } = req.query
+        const { country, city, checkInDate, checkOutDate, adult, children, limit = 10, offset = 0 } = req.query
+
+        let getAllProperty ;
+        if(country && city && checkInDate && checkOutDate && adult && children) {
+            getAllProperty = await prisma.property.findMany({
+                take: Number(limit),
+                skip: Number(offset),
+                include: {
+                    propertyHasFacility: {
+                        include: {
+                            propertyFacility: true
+                        }
+                    }
+                }
+            })
+        }
 
         if (!checkInDate || !checkOutDate) {
             return res.status(400).json({
@@ -40,13 +55,11 @@ export const fetchData = async(req: Request, res: Response, next: NextFunction) 
             children: Number(children)
         })
 
-        console.log('SEARCHHHHH')
-        console.log(search)
         
         res.status(200).json({
             message: 'Successfully fetch properties',
             error: false,
-            data: search
+            data: search || getAllProperty
         })
         
     } catch (error) {

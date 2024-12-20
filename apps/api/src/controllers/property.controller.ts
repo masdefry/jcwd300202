@@ -421,6 +421,220 @@ export const dataForFilteringProperty = async(req: Request, res: Response, next:
         next(error)
     }
 }
+
+export const getProperties = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { 
+            countryId, 
+            cityId, 
+            checkInDate, 
+            checkOutDate, 
+            minPrice,
+            maxPrice,
+            adult = 1, 
+            children = 0, 
+            limit = 5, 
+            offset = 0, 
+            sortPrice = 'asc',
+            sortName = 'asc',
+            ratings 
+        } = req.query
+        
+        const { 
+            propertyTypeIdArr = [], 
+            propertyFacilityIdArr = [], 
+            propertyRoomFacilityIdArr = [], 
+        } = req.headers
+
+        let numberedPropertyFacilityIdArr: string[] | number[] = propertyFacilityIdArr as string[]
+        numberedPropertyFacilityIdArr = numberedPropertyFacilityIdArr.map(item => Number(item))
+        
+        let numberedPropertyRoomFacilityIdArr: string[] | number[] = propertyRoomFacilityIdArr as string[]
+        numberedPropertyRoomFacilityIdArr = numberedPropertyRoomFacilityIdArr.map(item => Number(item))
+        
+        let numberedPropertyTypeIdArr: string[] | number[] = propertyTypeIdArr as string[]
+        numberedPropertyTypeIdArr = numberedPropertyTypeIdArr.map(item => Number(item))
+
+        const whereCondition = [
+            countryId ? {
+                countryId: Number(countryId),
+            } : {},
+            cityId ? {
+                cityId: Number(cityId),
+            } : {},
+            minPrice && maxPrice ? {
+                propertyRoomType: {
+                    some: {
+                        price: {
+                            gte: Number(minPrice),
+                            lte: Number(maxPrice)
+                        },
+                    }
+                }
+            } : {},
+            (adult && !isNaN(Number(adult))) ? {
+                propertyRoomType: {
+                    some: {
+                        capacity: {
+                            gte: Number(children) + Number(adult),
+                            lte: Number(children) + Number(adult) + 2,
+                        },
+                    }
+                }
+            } : {},
+            numberedPropertyRoomFacilityIdArr && numberedPropertyRoomFacilityIdArr.length > 0 ? {
+                propertyRoomType: {
+                    some: {
+                        roomHasFacilities: {
+                            some: {
+                                propertyRoomFacilityId: {
+                                    in: numberedPropertyRoomFacilityIdArr
+                                }
+                            }
+                        }
+                    }
+                }
+            } : {},
+            numberedPropertyTypeIdArr && numberedPropertyTypeIdArr.length > 0 ? {
+                propertyType: {
+                    id: {
+                        in: numberedPropertyTypeIdArr
+                    }
+                },
+            } : {},
+            numberedPropertyFacilityIdArr && numberedPropertyFacilityIdArr.length > 0 ? {
+                propertyHasFacility : {
+                    some : {
+                        propertyFacilityId: {
+                            in: numberedPropertyFacilityIdArr
+                        }
+                    }
+                },
+            }: {}
+        ].filter(item => Object.keys(item).length)
+
+        const countProperties = await prisma.property.count({
+            where: {
+                AND: whereCondition
+            }
+        })
+
+        const properties = await prisma.property.findMany({
+            take: Number(limit),
+            skip: Number(offset),
+            where: {
+                AND: whereCondition
+            },
+            include: {
+                propertyRoomType: {
+                    orderBy: {
+                        price: 'asc'
+                    }
+                },
+                propertyType: true,
+                propertyHasFacility: {
+                    include : {
+                        propertyFacility: true
+                    }
+                },
+                city: true,
+                country: true,
+                propertyDetail: {
+                    include: {
+                        propertyImage: true
+                    }
+                },
+                review: true
+                
+            }
+        })
+
+        const propertyAvgRating = await prisma.review.aggregate({
+            _avg: {
+                rating: true
+            },
+            where: {
+                propertyId: {
+                    in: properties.map(item => item.id)
+                }
+            }
+        })
+
+        const propertyType = await prisma.propertyType.findMany({
+            where: {
+                id: {
+                    in: properties.map(item => item.propertyTypeId) as number[]
+                }
+            },
+            include: {
+                _count: {
+                    select: {
+                        property: true
+                    }
+                }
+            }
+        })
+
+        const propertyFacility = await prisma.propertyFacility.findMany({
+            where: {
+                propertyHasFacility: {
+                    some: {
+                        propertyId: {
+                            in: properties.map(item => item.id)
+                        }
+                    }
+                }
+            },
+            include: {
+                _count: {
+                    select: {
+                        propertyHasFacility: true
+                    }
+                }
+            }
+        })
+
+        const propertyRoomTypeId = properties.map(item => item.propertyRoomType.map(itm => itm.id)).flat()
+
+        const propertyRoomFacility = await prisma.propertyRoomFacility.findMany({
+            where: {
+                roomHasFacilities: {
+                    some: {
+                        propertyRoomTypeId: {
+                            in: propertyRoomTypeId
+                        }
+                    }
+                }
+            },
+            include: {
+                _count: {
+                    select: {
+                        roomHasFacilities: true
+                    }
+                }
+            }
+        })
+
+        res.status(200).json({
+            error: false,
+            message: 'Get properties success',
+            data: {
+                properties,
+                propertyAvgRating,
+                totalPage: Math.ceil(countProperties / Number(limit)),
+                pageInUse: Number(offset)/Number(limit) + 1, 
+                dataForFilteringProperty: {
+                    propertyType,
+                    propertyFacility,
+                    propertyRoomFacility
+                }
+            }
+        })
+
+    } catch (error) {
+        next(error)
+    }
+}
 /*
 model PropertyRoomType {
   id         Int    @id @default(autoincrement())

@@ -146,9 +146,17 @@ export const getPropertyDetail = async(req: Request, res: Response, next: NextFu
     
         if(!property?.id) throw { msg: 'Property not found!', status: 406 }
 
-        const propertyFacilities = await prisma.propertyHasFacility.findMany({
+        const propertyHasFacilities = await prisma.propertyHasFacility.findMany({
             where: {
                 propertyId: property?.id
+            }
+        })
+
+        const propertyFacilities = await prisma.propertyFacility.findMany({
+            where: {
+                id: {
+                    in: propertyHasFacilities.map(item => item.propertyFacilityId)
+                }
             }
         })
 
@@ -169,6 +177,17 @@ export const getPropertyDetail = async(req: Request, res: Response, next: NextFu
         const propertyRoomType = await prisma.propertyRoomType.findMany({
             where: {
                 propertyId: property?.id
+            },
+            include: {
+                propertyRoomImage: true,
+                roomHasFacilities: {
+                    include: {
+                        propertyRoomFacility: true
+                    }
+                }
+            },
+            orderBy: {
+                price: 'asc'
             }
         })
 
@@ -205,6 +224,11 @@ export const getPropertyDetail = async(req: Request, res: Response, next: NextFu
                     include: {
                         propertyImage: true
                     }
+                },
+                propertyRoomType: {
+                    orderBy: {
+                        price: 'asc'
+                    }
                 }
             },
             take: 10
@@ -215,6 +239,43 @@ export const getPropertyDetail = async(req: Request, res: Response, next: NextFu
                 id: property?.tenantId as string
             }
         })
+
+        const generalFacilities = await prisma.roomHasFacilities.findMany({
+            where: {
+                propertyRoomFacility : {
+                    
+                }
+            }
+
+        })
+
+        const roomHasBreakfast = await prisma.roomHasFacilities.findMany({
+            where: {
+              propertyRoomTypeId: {
+                in: propertyRoomType.map(item => item.id)
+              },
+              propertyRoomFacility: {
+                name: "Breakfast"
+              }
+            },
+            orderBy: {
+                propertyRoomType: {
+                    price: 'asc'
+                }
+            },
+            include: {
+              propertyRoomFacility: true
+            },
+          });
+        
+        const roomHasBreakfastId = roomHasBreakfast.map(item => item.propertyRoomTypeId) 
+        const isIncludeBreakfast = propertyRoomType.map(item => {
+            if(roomHasBreakfastId.includes(item.id)) {
+                return true
+            } else {
+                return false
+            }
+        }) 
 
         res.status(200).json({
             error: false,
@@ -230,7 +291,8 @@ export const getPropertyDetail = async(req: Request, res: Response, next: NextFu
                 city,
                 country,
                 propertyListByCity,
-                tenant
+                tenant,
+                isIncludeBreakfast
             }
         })
     } catch (error) {
@@ -238,6 +300,80 @@ export const getPropertyDetail = async(req: Request, res: Response, next: NextFu
     }
 
 
+}
+
+export const getPropertyRoomType = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { propertyId } = req.params
+        const { limit = 2, offset = 0 } = req.query
+
+        const propertyRoomType = await prisma.propertyRoomType.findMany({
+            where: {
+                propertyId
+            },
+            include: {
+                propertyRoomImage: true,
+                roomHasFacilities: {
+                    include: {
+                        propertyRoomFacility: true
+                    }
+                }
+            },
+            orderBy: {
+                price: 'asc'
+            },
+            take: Number(limit),
+            skip: Number(offset)
+        })
+
+        const getAllRooms = await prisma.propertyRoomType.findMany({
+            where: {
+                propertyId
+            }
+        })
+
+        const totalPage = Math.ceil(getAllRooms.length / Number(limit))
+
+        const roomHasBreakfast = await prisma.roomHasFacilities.findMany({
+            where: {
+              propertyRoomTypeId: {
+                in: propertyRoomType.map(item => item.id)
+              },
+              propertyRoomFacility: {
+                name: "Breakfast"
+              }
+            },
+            orderBy: {
+                propertyRoomType: {
+                    price: 'asc'
+                }
+            },
+            include: {
+              propertyRoomFacility: true
+            },
+          });
+        
+        const roomHasBreakfastId = roomHasBreakfast.map(item => item.propertyRoomTypeId) 
+        const isIncludeBreakfast = propertyRoomType.map(item => {
+            if(roomHasBreakfastId.includes(item.id)) {
+                return true
+            } else {
+                return false
+            }
+        }) 
+
+        const pageInUse = (Number(offset)/2) + 1
+
+        res.status(200).json({
+            propertyRoomType,
+            isIncludeBreakfast,
+            totalPage,
+            pageInUse
+        })
+
+    } catch (error) {
+        next(error)
+    }
 }
 /*
 model PropertyRoomType {

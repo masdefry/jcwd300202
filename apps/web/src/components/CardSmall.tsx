@@ -50,11 +50,13 @@ const CardSmall = ({isPending, imageUrl = '', level = 'loading', propertyName = 
                     <p className='text-sm'>33 Reviews</p>
                 </section>
                 ) : (
-                <section className='flex items-center gap-2'>
-                    <p className='text-black text-sm font-bold w-fit'>{ratingAvg}</p>
-                    <div className='h-[2px] w-[2px] rounded-full bg-gray-600'></div>
-                    <p className='text-gray-600 text-sm'>{totalReviews} Reviews</p>
-                </section>
+                    totalReviews > 0 && (
+                        <section className='flex items-center gap-2'>
+                            <p className='text-black text-sm font-bold w-fit'>{ratingAvg}</p>
+                            <div className='h-[2px] w-[2px] rounded-full bg-gray-600'></div>
+                            <p className='text-gray-600 text-sm'>{totalReviews} Reviews</p>
+                        </section>
+                    )
                 )
             }
         </div>

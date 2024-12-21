@@ -15,6 +15,16 @@ import { CiBookmarkPlus, CiLocationOn } from 'react-icons/ci';
 import { indexOf } from 'cypress/types/lodash';
 import useFilteringPropertyHook from '@/features/property/hooks/useFilteringPropertyHook';
 import Image from 'next/image';
+import { TbConfetti } from 'react-icons/tb';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+  } from "@/components/ui/select"
+import Separator from '@/features/auth/components/Separator';
+  
 
 const ExplorePage = ({ searchParams }: { searchParams: any }) => {
 // const ExplorePage = () => {
@@ -26,7 +36,35 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
 //   const adult = headerStore((state: any) => state.adult)
 //   const children = headerStore((state: any) => state.children)
     const [totalDays, setTotalDays] = useState(0)
-    const [ dataProperties, setDataProperties] = useState<any>()
+    const [dataProperties, setDataProperties] = useState<any>()
+    const [propertyFacilityIdArr, setPropertyFacilityIdArr] = useState<any[]>([])
+    const [propertyRoomFacilityIdArr, setPropertyRoomFacilityIdArr] = useState<any[]>([])
+    const [propertyTypeIdArr, setPropertyTypeIdArr] = useState<any[]>([])
+
+    const handlePropertyFacilityFilter = (isChecked: boolean, value: string | number) => {
+        if (isChecked){
+            setPropertyFacilityIdArr([...propertyFacilityIdArr, value])
+        } else {
+            setPropertyFacilityIdArr(state => state.filter(item => item !== value))
+        }
+        mutateExplorePagination({})
+    }
+    const handlePropertyRoomFacilityFilter = (isChecked: boolean, value: string | number) => {
+        if (isChecked){
+            setPropertyRoomFacilityIdArr([...propertyRoomFacilityIdArr, value])
+        } else {
+            setPropertyRoomFacilityIdArr(state => state.filter(item => item !== value))
+        }
+        mutateExplorePagination({})
+    }
+    const handlePropertyTypeIdFilter = (isChecked: boolean, value: string | number) => {
+        if (isChecked){
+            setPropertyTypeIdArr([...propertyTypeIdArr, value])
+        } else {
+            setPropertyTypeIdArr(state => state.filter(item => item !== value))
+        }
+        mutateExplorePagination({})
+    }
     const [ showFilterPropertyFacility, setShowFilterPropertyFacility ] = useState(false)
     const [ showFilterPropertyRoomFacility, setShowFilterPropertyRoomFacility ] = useState(false)
     const [ showPropertyType, setShowPropertyType ] = useState(false)
@@ -49,7 +87,13 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
         const { isPending: isPendingProperties } = useQuery({
             queryKey: ['getProperties'],
             queryFn: async() => {
-                const res = await instance.get(`/property?countryId=${searchParams.country}&cityId=${searchParams.city}&checkInDate=${searchParams["check-in-date"]}&checkOutDate=${searchParams["check-out-date"]}&adult=${searchParams.adult}&children=${searchParams.children}&offset=0&limit=5`)
+                const res = await instance.get(`/property?countryId=${searchParams.country}&cityId=${searchParams.city}&checkInDate=${searchParams["check-in-date"]}&checkOutDate=${searchParams["check-out-date"]}&adult=${searchParams.adult}&children=${searchParams.children}&offset=0&limit=5`, {
+                    headers: {
+                        propertyFacilityIdArr: [], 
+                        propertyRoomFacilityIdArr: [],
+                        propertyTypeIdArr: [], 
+                    }
+                })
                 setDataProperties(res?.data?.data)
                 setDataForFilteringProperty(res?.data?.data?.dataForFilteringProperty)
                 return res?.data?.data
@@ -57,8 +101,15 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
         })
         
         const { mutate: mutateExplorePagination, isPending: isPendingExplorePagination } = useMutation({
-            mutationFn: async({ limit, offset }: { limit: number, offset: number }) => {
-                const res = await instance.get(`/property?countryId=${searchParams.country}&cityId=${searchParams.city}&checkInDate=${searchParams["check-in-date"]}&checkOutDate=${searchParams["check-out-date"]}&adult=${searchParams.adult}&children=${searchParams.children}&offset=${offset}&limit=${limit}`)
+            mutationFn: async({ limit = 5, offset = 0 }: { limit?: number, offset?: number }) => {
+                const res = await instance.get(`/property?countryId=${searchParams.country}&cityId=${searchParams.city}&checkInDate=${searchParams["check-in-date"]}&checkOutDate=${searchParams["check-out-date"]}&adult=${searchParams.adult}&children=${searchParams.children}&offset=${offset}&limit=${limit}`, {
+                    headers: {
+                        propertyFacilityIdArr, 
+                        propertyRoomFacilityIdArr,
+                        propertyTypeIdArr, 
+                    }
+                })
+                console.log(res)
                 setDataProperties(res?.data?.data)
             }
         })
@@ -109,7 +160,9 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                     </div>
                     <div tabIndex={0} className="rounded-md collapse collapse-arrow shadow-md">
                         <input type="checkbox" />
-                        <div className="collapse-title text-sm font-bold text-gray-800 bg-white">Accomodation Type</div>
+                        <div className="collapse-title text-sm font-bold text-gray-800 bg-white flex items-center gap-1">Accomodation Type
+                            <span className='rounded-full bg-slate-200 text-slate-700 text-xs h-[1.5em] w-[1.5em] flex items-center justify-center'>{dataForFilteringProperty?.propertyTypeCounter}</span>
+                        </div>
                         <div className="collapse-content pt-3">
                             <ul className='flex flex-col gap-4 text-sm font-semibold'>
                                 {
@@ -117,8 +170,8 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                                         return (
                                         <li key={index} className="form-control">
                                             <label className="flex items-center gap-3 cursor-pointer">
-                                                <input type="checkbox" className="checkbox" />
-                                                <span className="text-gray-600 label-text">{item?.name} ({item?._count?.property})</span>
+                                                <input value={item?.id} onChange={(e) => handlePropertyTypeIdFilter(e.target.checked, e.target.value)} type="checkbox" className="checkbox" />
+                                                <span className="text-gray-600 label-text">{item?.name}</span>
                                             </label>
                                         </li>
                                         )
@@ -133,8 +186,8 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                                                 return (
                                                 <li key={index} className="form-control">
                                                     <label className="flex items-center gap-3 cursor-pointer">
-                                                        <input type="checkbox" className="checkbox" />
-                                                        <span className="text-gray-600 label-text">{item?.name} ({item?._count?.property})</span>
+                                                        <input value={item?.id} onChange={(e) => handlePropertyTypeIdFilter(e.target.checked, e.target.value)} type="checkbox" className="checkbox" />
+                                                        <span className="text-gray-600 label-text">{item?.name}</span>
                                                     </label>
                                                 </li>
                                                 )
@@ -150,7 +203,9 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                     </div>
                     <div tabIndex={0} className="rounded-md collapse collapse-arrow shadow-md">
                         <input type="checkbox" />
-                        <div className="collapse-title text-sm font-bold text-gray-800 bg-white">General Facility</div>
+                        <div className="collapse-title text-sm font-bold text-gray-800 flex items-center gap-1 bg-white">General Facility
+                            <span className='rounded-full bg-slate-200 text-slate-700 text-xs h-[1.5em] w-[1.5em] flex items-center justify-center'>{dataForFilteringProperty?.propertyFacilityCounter}</span>
+                        </div>
                         <div className="collapse-content pt-3">
                             <ul className='flex flex-col gap-4 text-sm font-semibold'>
                                 {
@@ -158,8 +213,8 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                                         return (
                                         <li key={index} className="form-control">
                                             <label className="flex items-center gap-3 cursor-pointer">
-                                                <input type="checkbox" className="checkbox" />
-                                                <span className="text-gray-600 label-text">{item?.name} ({item?._count?.propertyHasFacility})</span>
+                                                <input value={item?.id} onChange={(e) => handlePropertyFacilityFilter(e.target.checked, e.target.value)} type="checkbox" className="checkbox" />
+                                                <span className="text-gray-600 label-text">{item?.name}</span>
                                             </label>
                                         </li>
                                         )
@@ -174,8 +229,8 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                                                 return (
                                                 <li key={index} className="form-control">
                                                     <label className="flex items-center gap-3 cursor-pointer">
-                                                        <input type="checkbox" className="checkbox" />
-                                                        <span className="text-gray-600 label-text">{item?.name} ({item?._count?.propertyHasFacility})</span>
+                                                        <input onChange={(e) => handlePropertyFacilityFilter(e.target.checked, e.target.value)} value={item?.id} type="checkbox" className="checkbox" />
+                                                        <span className="text-gray-600 label-text">{item?.name}</span>
                                                     </label>
                                                 </li>
                                                 )
@@ -191,7 +246,9 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                     </div>
                     <div tabIndex={0} className="rounded-md collapse collapse-arrow shadow-md">
                         <input type="checkbox" />
-                        <div className="collapse-title text-sm font-bold text-gray-800 bg-white">Room Facility</div>
+                        <div className="collapse-title text-sm font-bold text-gray-800 flex items-center gap-1 bg-white">Room Facility
+                        <span className='rounded-full bg-slate-200 text-slate-700 text-xs h-[1.5em] w-[1.5em] flex items-center justify-center'>{dataForFilteringProperty?.propertyRoomFacilityCounter}</span>
+                        </div>
                         <div className="collapse-content pt-3">
                             <ul className='flex flex-col gap-4 text-sm font-semibold'>
                                 {
@@ -199,8 +256,8 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                                         return (
                                         <li key={index} className="form-control">
                                             <label className="flex items-center gap-3 cursor-pointer">
-                                                <input type="checkbox" className="checkbox" />
-                                                <span className="text-gray-600 label-text">{item?.name} ({item?._count?.roomHasFacilities})</span>
+                                                <input onChange={(e) => handlePropertyRoomFacilityFilter(e.target.checked, e.target.value)} value={item?.id} type="checkbox" className="checkbox" />
+                                                <span className="text-gray-600 label-text">{item?.name}</span>
                                             </label>
                                         </li>
                                         )
@@ -215,8 +272,8 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                                                 return (
                                                 <li key={index} className="form-control">
                                                     <label className="flex items-center gap-3 cursor-pointer">
-                                                        <input type="checkbox" className="checkbox" />
-                                                        <span className="text-gray-600 label-text">{item?.name} ({item?._count?.roomHasFacilities})</span>
+                                                        <input value={item?.id} onChange={(e) => handlePropertyRoomFacilityFilter(e.target.checked, e.target.value)} type="checkbox" className="checkbox" />
+                                                        <span className="text-gray-600 label-text">{item?.name}</span>
                                                     </label>
                                                 </li>
                                                 )
@@ -280,6 +337,34 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                     </div>
                 </section>
             <div className='col-span-3 w-full min-h-min flex flex-col gap-3 px-3'>
+                <div className='grid grid-cols-4 gap-5'>
+                    <span className='flex items-center gap-5 col-span-2'>
+                    <div className='w-1/3 text-sm font-bold'>
+                    {
+                        dataProperties?.country?.name && (
+                            <p className='text-gray-800'>{dataProperties?.city?.name && dataProperties?.city?.name + ','} {dataProperties?.country?.name}</p>
+                        )
+                    }
+                        <p className='text-gray-800 font-normal mt-[-3px]'>{dataProperties?.countProperties} property found</p>
+                    </div>
+                    <span className='w-2/3 flex gap-2 items-center'>
+                        <label htmlFor="Sort by:" className='text-xs min-w-max font-bold text-gray-500'>Sort: by</label>
+                        <select defaultValue="asc-price" id="countries" className="bg-gray-50 border border-slate-300 text-gray-800 text-xs font-semibold rounded-full h-[3em] p-1.5 px-2 focus:outline-none focus:ring-slate-400 focus:border-slate-400 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <option value="asc-price">Lowest to Highest Price</option>
+                            <option value="desc-price">Highest to Lowest Price</option>
+                            <option value="rating">Ratings</option>
+                            <option value="asc-name">Ascending by Name</option>
+                            <option value="desc-name">Descending by Name</option>
+                        </select>
+                    </span>
+                    </span>
+                    <span className='col-span-2 bg-blue-900 flex items-center gap-2 p-3 px-5 text-white text-sm font-bold rounded-md'>
+                       <div className='text-green-900 bg-green-200 p-1 rounded-full'>
+                       <TbConfetti size={19}/>
+                       </div>
+                       <p>40% off for accomodation in Medan City region</p> 
+                    </span>
+                </div>
                 {/* {dataProperties?.data?.data?.map((item: any, index: any) => {
                     return(
                         <div key={index} className='bg-white !w-[50rem] h-[17rem] border rounded-lg flex items-start gap-3 p-3 shadow'>

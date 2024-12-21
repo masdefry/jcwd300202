@@ -11,7 +11,7 @@ const ProfileUserLayout = ({  children }: { children: ReactNode }) => {
   return (
     <main className='w-full min-h-min py-5'>
       <section className='m-auto max-w-screen-xl grid grid-cols-4  gap-5 w-full h-full'>
-        <section className='shadow-md rounded-md'>
+        <section className='col-span-1 bg-white shadow-md rounded-md h-fit'>
           <div>
             <section className='border-b border-slate-300 flex flex-col gap-3 p-5'>
               <div className='flex items-center gap-5'>
@@ -55,7 +55,7 @@ const ProfileUserLayout = ({  children }: { children: ReactNode }) => {
             </section>
           </div>
         </section>
-        <section className='col-span-3'>
+        <section className='col-span-3 rounded-md border border-slate-300 p-5'>
           {children}
         </section>
       </section>

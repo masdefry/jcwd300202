@@ -109,7 +109,6 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                         propertyTypeIdArr, 
                     }
                 })
-                console.log(res)
                 setDataProperties(res?.data?.data)
             }
         })

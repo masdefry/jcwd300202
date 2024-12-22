@@ -3,11 +3,6 @@ import { ISearch } from './types'
 
 export const createSearchService = async({country, city , checkInDate, checkOutDate, adult, children}: ISearch) => {
 
-    // console.log(propertyTypeId)
-    // console.log(country)
-    // console.log(city)
-    // console.log(checkInDate)
-    // console.log(checkOutDate)
     const totalGuests = adult + children;
     
     let whereCondition;
@@ -29,9 +24,6 @@ export const createSearchService = async({country, city , checkInDate, checkOutD
         ]
     }
 
-    console.log("search conditions", whereCondition)
-    
-
     const getProperty = await prisma.property.findMany({
         where: {
             AND: whereCondition
@@ -47,6 +39,17 @@ export const createSearchService = async({country, city , checkInDate, checkOutD
             country: {
                 select: {
                     name: true
+                }
+            },
+            propertyDetail: {
+                select: {
+                    propertyImage: {
+                        select: {
+                            directory: true,
+                            fileExtension: true,
+                            filename: true
+                        }
+                    }
                 }
             },
             propertyRoomType: {
@@ -101,14 +104,14 @@ export const createSearchService = async({country, city , checkInDate, checkOutD
                 },
 
             }
-        },
+        }
     });
 
-    console.log("Input Parameters:", {
-        country, city, checkInDate, checkOutDate, adult, children
-    });
+    // console.log("Input Parameters:", {
+    //     country, city, checkInDate, checkOutDate, adult, children
+    // });
 
-    console.log("property", getProperty)
+    // console.log("property", getProperty)
 
     return getProperty.filter((item) => item.propertyRoomType.length > 0).map((item) => ({
         ...item,

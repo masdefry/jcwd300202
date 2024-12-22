@@ -83,7 +83,8 @@ const SearchHeader2XLWidth = ({
         // console.log(checkInDate, checkOutDate, 'TTTTTTTTTTTTTTT')
         setSlug(`?country=${values.country}&city=${values.city}&check-in-date=${values.checkInDate}&check-out-date=${values.checkOutDate }&adult=${values.adult}&children=${values.children}`)
         return await instance.get(
-          `/search?country=${values.country}&city=${values.city}&checkInDate=${values.checkInDate}&checkOutDate=${values.checkOutDate}&adult=${values.adult}&children=${values.children}`, {
+          // `/search?country=${values.country}&city=${values.city}&checkInDate=${values.checkInDate}&checkOutDate=${values.checkOutDate}&adult=${values.adult}&children=${values.children}`, {
+          `/property?countryId=${values.country}&cityId=${values.city}&checkInDate=${values.checkInDate}&checkOutDate=${values.checkOutDate}&adult=${values.adult}&children=${values.children}`, {
           })
         },
         onSuccess: (res: any) => {
@@ -121,7 +122,7 @@ const SearchHeader2XLWidth = ({
           setFieldValue
         }) => (
             <Form className='w-full flex items-center justify-start absolute'>
-              <div className='w-1/4 box-border border-r border-gray-300 relative flex flex-col px-5 gap-1 relative'>
+              <div className='w-1/4 box-border border-r border-gray-300 relative flex flex-col px-5 gap-1'>
                 <label htmlFor='searchLocation' className="min-w-max flex items-center gap-3 text-sm font-semibold"><IoIosSearch size={18}/>Where are you going? (required)</label>
                 <input value={handleSearch} onChange={(e) => {
                   e.target.value.length >= 3 ? mutateShowDropdownDebounce(e.target.value) : setDataDropdown([])

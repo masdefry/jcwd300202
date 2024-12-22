@@ -375,6 +375,356 @@ export const getPropertyRoomType = async(req: Request, res: Response, next: Next
         next(error)
     }
 }
+
+export const dataForFilteringProperty = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const propertyType = await prisma.propertyType.findMany({
+            include: {
+                _count: {
+                    select: {
+                        property: true
+                    }
+                }
+            }
+        })
+
+        const propertyFacility = await prisma.propertyFacility.findMany({
+            include: {
+                _count: {
+                    select: {
+                        propertyHasFacility: true
+                    }
+                }
+            }
+        })
+
+        const propertyRoomFacility = await prisma.propertyRoomFacility.findMany({
+            include: {
+                _count: {
+                    select: {
+                        roomHasFacilities: true
+                    }
+                }
+            }
+        })
+
+        res.status(200).json({
+            error: false,
+            message: 'Get data for filtering property success',
+            data: {
+                propertyType,
+                propertyFacility,
+                propertyRoomFacility
+            }
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const getProperties = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { 
+            countryId, 
+            cityId, 
+            checkInDate, 
+            checkOutDate, 
+            minPrice,
+            maxPrice,
+            adult = 1, 
+            children = 0, 
+            limit = 5, 
+            offset = 0, 
+            sortPrice = 'asc',
+            sortName = 'asc',
+            ratings 
+        } = req.query
+
+        const { 
+            propertytypeidarr = '', 
+            propertyfacilityidarr = '', 
+            propertyroomfacilityidarr = '', 
+        } = req.headers
+
+        let numberedPropertyFacilityIdArr, numberedPropertyRoomFacilityIdArr, numberedPropertyTypeIdArr
+        let propertyFacilityFromPrisma, propertyRoomFacilityFromPrisma
+
+        if(propertyfacilityidarr) {
+            const propertyFacilityIdStr = propertyfacilityidarr as string
+            numberedPropertyFacilityIdArr = propertyFacilityIdStr.split(',')
+            numberedPropertyFacilityIdArr = numberedPropertyFacilityIdArr.map(item => Number(item))
+            propertyFacilityFromPrisma = await prisma.propertyFacility.findMany({
+                where: {
+                    id: {
+                        notIn: numberedPropertyFacilityIdArr
+                    }
+                },
+                select: {
+                    id: true
+                }
+            })
+        }
+        if(propertyroomfacilityidarr) {
+            const propertyRoomFacilityIdStr = propertyroomfacilityidarr as string
+            numberedPropertyRoomFacilityIdArr = propertyRoomFacilityIdStr.split(',')
+            numberedPropertyRoomFacilityIdArr = numberedPropertyRoomFacilityIdArr.map(item => Number(item))
+            propertyRoomFacilityFromPrisma = await prisma.propertyRoomFacility.findMany({
+                where: {
+                    id: {
+                        notIn: numberedPropertyRoomFacilityIdArr
+                    }
+                },
+                select: {
+                    id: true
+                }
+            })
+        }
+        if(propertytypeidarr) {
+            const propertyTypeIdStr = propertytypeidarr as string
+            numberedPropertyTypeIdArr = propertyTypeIdStr.split(',')
+            numberedPropertyTypeIdArr = numberedPropertyTypeIdArr.map(item => Number(item))
+        }
+
+        const city = await prisma.city.findUnique({
+            where: {
+                id: Number(cityId)
+            }
+        })
+
+        const country = await prisma.country.findUnique({
+            where: {
+                id: Number(countryId)
+            }
+        })
+        if(cityId && countryId) {
+        } else if(countryId) {
+        }
+        const whereConditionPropertyRoomFacility = propertyroomfacilityidarr && numberedPropertyRoomFacilityIdArr && numberedPropertyRoomFacilityIdArr.length > 0 ? 
+        numberedPropertyRoomFacilityIdArr.map(item => ({
+            propertyRoomType: {
+                some: {
+                    roomHasFacilities: {
+                        some: {
+                            propertyRoomFacilityId: item
+                        }
+                    }
+                }
+            }
+        }))
+        : []
+
+        const whereConditionPropertyFacility = propertyfacilityidarr && numberedPropertyFacilityIdArr && numberedPropertyFacilityIdArr.length > 0 ? 
+        numberedPropertyFacilityIdArr.map(item => ({
+            propertyHasFacility : {
+                some : {
+                    propertyFacilityId: item
+                }
+            },
+        }))
+        : []
+
+        const whereCondition = [
+            countryId ? {
+                countryId: Number(countryId),
+            } : {},
+            cityId ? {
+                cityId: Number(cityId),
+            } : {},
+            minPrice && maxPrice ? {
+                propertyRoomType: {
+                    some: {
+                        price: {
+                            gte: Number(minPrice),
+                            lte: Number(maxPrice)
+                        },
+                    }
+                }
+            } : {},
+            (adult && !isNaN(Number(adult))) ? {
+                propertyRoomType: {
+                    some: {
+                        capacity: {
+                            gte: Number(children) + Number(adult),
+                            lte: Number(children) + Number(adult) + 2,
+                        },
+                    }
+                }
+            } : {},
+            // propertyroomfacilityidarr && numberedPropertyRoomFacilityIdArr && numberedPropertyRoomFacilityIdArr.length > 0 ? 
+            //     numberedPropertyRoomFacilityIdArr.map(item => ({
+            //         propertyRoomType: {
+            //             some: {
+            //                 roomHasFacilities: {
+            //                     some: {
+            //                         propertyRoomFacilityId: {
+            //                             in: propertyRoomFacilityFromPrisma?.map(item => item.id)
+            //                         }
+            //                     }
+            //                 }
+            //             }
+            //         }
+            //     }))
+            //  : {},
+            propertytypeidarr && numberedPropertyTypeIdArr && numberedPropertyTypeIdArr.length > 0 ? {
+                propertyType: {
+                    id: {
+                        in: numberedPropertyTypeIdArr
+                    }
+                },
+            } : {},
+            // propertyfacilityidarr && numberedPropertyFacilityIdArr && numberedPropertyFacilityIdArr.length > 0 ? {
+            //     propertyHasFacility : {
+            //         every : {
+            //             propertyFacilityId: {
+            //                 in: propertyFacilityFromPrisma?.map(item => item.id)
+            //             }
+            //         }
+            //     },
+            // }: {}
+        ].filter(item => Object.keys(item).length)
+
+        const countProperties = await prisma.property.count({
+            where: {
+                AND: [...whereCondition, ...whereConditionPropertyFacility, ...whereConditionPropertyRoomFacility]
+            }
+        })
+
+        const properties = await prisma.property.findMany({
+            take: Number(limit),
+            skip: Number(offset),
+            where: {
+                AND: [...whereCondition, ...whereConditionPropertyFacility, ...whereConditionPropertyRoomFacility],
+            },
+            include: {
+                propertyRoomType: {
+                    orderBy: {
+                        price: 'asc'
+                    }
+                },
+                propertyType: true,
+                propertyHasFacility: {
+                    include : {
+                        propertyFacility: true
+                    }
+                },
+                city: true,
+                country: true,
+                propertyDetail: {
+                    include: {
+                        propertyImage: true
+                    }
+                },
+                review: true
+                
+            }
+        })
+
+        const propertyAvgRating = await prisma.review.aggregate({
+            _avg: {
+                rating: true
+            },
+            where: {
+                propertyId: {
+                    in: properties.map(item => item.id)
+                }
+            }
+        })
+
+        const propertyType = await prisma.propertyType.findMany({
+            where: {
+                id: {
+                    in: properties.map(item => item.propertyTypeId) as number[]
+                }
+            }
+        })
+
+        const propertyTypeCounter = await prisma.propertyType.count({
+            where: {
+                id: {
+                    in: properties.map(item => item.propertyTypeId) as number[] 
+                }
+            }
+        })
+
+        const propertyFacility = await prisma.propertyFacility.findMany({
+            where: {
+                propertyHasFacility: {
+                    some: {
+                        propertyId: {
+                            in: properties.map(item => item.id)
+                        }
+                    }
+                }
+            }
+        })
+
+        const propertyFacilityCounter = await prisma.propertyFacility.count({
+            where: {
+                propertyHasFacility: {
+                    some: {
+                        propertyId: {
+                            in: properties.map(item => item.id)
+                        }
+                    }
+                }
+            }
+        })
+
+        const propertyRoomTypeId = properties.map(item => item.propertyRoomType.map(itm => itm.id)).flat()
+
+        const propertyRoomFacility = await prisma.propertyRoomFacility.findMany({
+            where: {
+                roomHasFacilities: {
+                    some: {
+                        propertyRoomTypeId: {
+                            in: propertyRoomTypeId
+                        }
+                    }
+                }
+            }
+        })
+
+        const propertyRoomFacilityCounter = await prisma.propertyRoomFacility.count({
+            where: {
+                roomHasFacilities: {
+                    some: {
+                        propertyRoomTypeId: {
+                            in: propertyRoomTypeId
+                        }
+                    }
+                }
+            }
+        })
+
+        res.status(200).json({
+            error: false,
+            message: 'Get properties success',
+            data: {
+                headers: req.headers,
+                numberedPropertyFacilityIdArr,
+                countProperties,
+                properties,
+                propertyAvgRating,
+                totalPage: Math.ceil(countProperties / Number(limit)),
+                pageInUse: Number(offset)/Number(limit) + 1, 
+                propertyTypeCounter,
+                dataForFilteringProperty: {
+                    propertyType,
+                    propertyTypeCounter,
+                    propertyFacility,
+                    propertyFacilityCounter,
+                    propertyRoomFacility,
+                    propertyRoomFacilityCounter,
+                },
+                country,
+                city
+            }
+        })
+
+    } catch (error) {
+        next(error)
+    }
+}
 /*
 model PropertyRoomType {
   id         Int    @id @default(autoincrement())

@@ -1,6 +1,7 @@
 import prisma from "@/prisma";
 import { NextFunction, Request, Response } from "express";
 import { v4 as uuidV4 } from "uuid";
+import { getRoomTypeService } from '@/services/property.service'
 
 export const createProperty = async(req: Request, res: Response, next: NextFunction) => {
     try {
@@ -302,7 +303,7 @@ export const getPropertyDetail = async(req: Request, res: Response, next: NextFu
 
 }
 
-export const getPropertyRoomType = async(req: Request, res: Response, next: NextFunction) => {
+export const getPropertyRoomTypeByProperty = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const { propertyId } = req.params
         const { limit = 2, offset = 0 } = req.query
@@ -365,14 +366,17 @@ export const getPropertyRoomType = async(req: Request, res: Response, next: Next
         const pageInUse = (Number(offset)/2) + 1
 
         res.status(200).json({
-            propertyRoomType,
-            isIncludeBreakfast,
-            totalPage,
-            pageInUse
+            message: 'Successfully fetch room type by property',
+            error: false,
+            data: {
+                propertyRoomType,
+                isIncludeBreakfast,
+                totalPage,
+                pageInUse
+            }
         })
 
     } catch (error) {
-        console.log(error)
         next(error)
     }
 }
@@ -765,7 +769,16 @@ model PropertyRoomType {
 
 export const getRoomType = async(req: Request, res: Response, next: NextFunction) => {
     try {
-        
+        const { propertyRoomTypeId } = req.params
+
+
+        const result = await getRoomTypeService(Number(propertyRoomTypeId))
+
+        res.status(200).json({
+            message: 'Succesfully fetch Room Type',
+            error: false,
+            data: result
+        })
         
     } catch (error) {
         next(error)

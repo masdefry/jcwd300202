@@ -6,6 +6,7 @@ import { GrNotes } from "react-icons/gr";
 import { FaRegListAlt } from 'react-icons/fa';
 import { TbNotification } from 'react-icons/tb';
 import { IoMdLogOut } from 'react-icons/io';
+import { IoSettingsOutline } from 'react-icons/io5';
 
 const ProfileUserLayout = ({  children }: { children: ReactNode }) => {
   return (
@@ -47,6 +48,10 @@ const ProfileUserLayout = ({  children }: { children: ReactNode }) => {
               <div className='text-base font-semibold text-gray-800 transition duration-100 px-5 py-3 flex items-center gap-2 rounded-md hover:cursor-pointer hover:bg-slate-200'>
                 <TbNotification size={20} className='text-blue-400'/>
                 Notification
+              </div>
+              <div className='text-base font-semibold text-gray-800 transition duration-100 px-5 py-3 flex items-center gap-2 rounded-md hover:cursor-pointer hover:bg-slate-200'>
+                <IoSettingsOutline size={20} className='text-blue-400'/>
+                Settings
               </div>
               <div className='text-base font-semibold text-gray-800 transition duration-100 px-5 py-3 flex items-center gap-2 rounded-md hover:cursor-pointer hover:bg-slate-200'>
                 <IoMdLogOut size={20} className='text-red-600'/>

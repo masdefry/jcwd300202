@@ -11,7 +11,7 @@ const UserSettingsPage = () => {
   const [ isSubmitting, setIsSubmitting ] = useState(false)
   const { mutate: mutateDeleteAccount, isPending: isPendingDeleteAccount } = useMutation({
     mutationFn: async() => {
-        const res = await instance.delete('/user')
+        const res = await instance.delete('/tenant')
         return res?.data
     },
     onSuccess: (res) => {

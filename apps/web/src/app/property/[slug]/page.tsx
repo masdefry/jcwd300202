@@ -15,49 +15,35 @@ import { IoIosArrowForward } from 'react-icons/io'
 import { IoPerson, IoTimeOutline } from 'react-icons/io5'
 import { MdAttachMoney, MdKeyboardArrowDown, MdOutlineEmojiFoodBeverage } from 'react-icons/md'
 import { TbPawOff } from 'react-icons/tb'
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-  } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import ImageCarousel from '@/features/property/components/ImageCarousel'
+import Link from 'next/link'
   
 
 const PropertyDetailPage = ({params}:{params : { slug: string }}) => {
     // const [ dataPropertyRoomType, setDataPropertyRoomType ] = useState()
     const { data: dataPropertyDetail, isPending: isPendingPropertyDetail } = useQuery({
-    queryKey: ['getPropertyDetail'],
-    queryFn: async() => {
-       try {
-        const res = await instance.get(`/property/${params.slug}`)
-        const property = res
-
-        mutatePropertyRoomType({ limit: 2, offset: 0, propertyId: res?.data?.data?.property?.id })
-        console.log('propertyDetail', res?.data?.data?.propertyDetail)
-        console.log('propertyFacilities', res?.data?.data?.propertyFacilities)
-        console.log('propertyImages', res?.data?.data?.propertyImages)
-        console.log('propertyRoom', res?.data?.data?.propertyRoomType)
-        console.log('propertyReview', res?.data?.data?.reviews)
-        console.log('propertyTenant', res?.data?.data?.tenant)
-
-        return {
-            property,
-                propertyDetail: property.propertyDetail,
-                propertyFacilities: property.propertyHasFacility.map(item => {item.propertyFacility}),
-                propertyImages: property.propertyDetail?.propertyImage,
-                roomTypes: property.propertyRoomType,
-                reviews: property.review,
-                tenant: property.tenant
+        queryKey: ['getPropertyDetail'],
+        queryFn: async() => {
+            const res = await instance.get(`/property/${params.slug}`)
+            mutatePropertyRoomType({ limit: 2, offset: 0, propertyId: res?.data?.data?.property?.id })
+            console.log('propertyDetail', res?.data?.data?.propertyDetail)
+            // console.log('propertyFacilities', res?.data?.data?.propertyFacilities)
+            // console.log('propertyImages', res?.data?.data?.propertyImages)
+            // console.log('propertyRoom', res?.data?.data?.propertyRoomType)
+            // console.log('propertyReview', res?.data?.data?.reviews)
+            // console.log('propertyTenant', res?.data?.data?.tenant)
+            console.log('property room type', res?.data?.data?.propertyRoomType)
+            // property,
+            //         propertyDetail: property.propertyDetail,
+            //         propertyFacilities: property.propertyHasFacility.map(item => {item.propertyFacility}),
+            //         propertyImages: property.propertyDetail?.propertyImage,
+            //         roomTypes: property.propertyRoomType,
+            //         reviews: property.review,
+            //         tenant: property.tenant
+            return res?.data?.data
         }
-      
-       } catch (error) {
-        
-       }
-    }
-  })
+      })
   
   const { mutate: mutatePropertyRoomType, data: dataPropertyRoomType, isPending: isPendingPropertyRoomType } = useMutation({
     mutationFn: async({ limit, offset, propertyId }: { limit: number, offset: number, propertyId: string }) => {
@@ -71,6 +57,7 @@ const PropertyDetailPage = ({params}:{params : { slug: string }}) => {
         console.log('error:', err)
     }
   })
+
 
   const review = `The rental experience was excellent from start to finish. 
                 The property was exactly as described—clean, well-maintained, and located in a convenient area. 
@@ -108,15 +95,15 @@ const PropertyDetailPage = ({params}:{params : { slug: string }}) => {
                         )
                     }
                     return(
-                                <DialogTrigger key={index} className={className}>
-                                    <Image 
-                                    src={`http://localhost:5000/api/${item?.directory}/${item?.filename}.${item?.fileExtension}`}
-                                    width={1000}
-                                    height={1000}
-                                    alt=''
-                                    className='h-full w-full object-cover '
-                                    />
-                                </DialogTrigger>
+                        <DialogTrigger key={index} className={className}>
+                            <Image 
+                                src={`http://localhost:5000/api/${item?.directory}/${item?.filename}.${item?.fileExtension}`}
+                                width={1000}
+                                height={1000}
+                                alt=''
+                                className='h-full w-full object-cover '
+                            />
+                        </DialogTrigger>
                     )
                 })
             }
@@ -301,7 +288,7 @@ const PropertyDetailPage = ({params}:{params : { slug: string }}) => {
                                             <p className='text-xs font-semibold text-gray-400'>Include taxes and price</p>
                                         </td>
                                         <td>
-                                            <button className='my-auto text-lg font-semibold px-8 py-3 rounded-full bg-blue-600 text-white hover:opacity-75 active:scale-90 transition duration-100'>Book now</button>
+                                            <Link href={`/booking/${item?.id}`} className='my-auto text-lg font-semibold px-8 py-3 rounded-full bg-blue-600 text-white hover:opacity-75 active:scale-90 transition duration-100'>Book now</Link>
                                         </td>
                                     </tr>
                                     </tbody>

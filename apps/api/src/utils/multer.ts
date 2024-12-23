@@ -12,7 +12,7 @@ interface IUploadMulterProps {
         filename: function (req: Request, file: Express.Multer.File, cb:  (error: Error | null, filename: string) => void){
             const splitOriginalName = file.originalname.split('.')
             const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-            cb(null, file.fieldname + '-' + splitOriginalName[splitOriginalName.length-1])
+            cb(null, file.fieldname + '-' + uniqueSuffix + '.' + splitOriginalName[splitOriginalName.length-1])
         }
     })
 

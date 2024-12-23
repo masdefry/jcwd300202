@@ -8,6 +8,9 @@ import reservationRouter from './reservation.router'
 import propertyRouter from "./property.router";
 import roomFacilityRouter from "./room.facility.router";
 import propertyFacilityRouter from "./property.facility.router";
+import userRouter from "./user.router";
+import cityRouter from "./city.router";
+import countryRouter from "./country.router";
 
 const router = Router()
 
@@ -20,6 +23,9 @@ router.use('/property', propertyRouter)
 router.use('/reservation', reservationRouter)
 router.use('/room-facility', roomFacilityRouter)
 router.use('/property-facility', propertyFacilityRouter)
+router.use('/user', userRouter)
+router.use('/city', cityRouter)
+router.use('/country', countryRouter)
 
 
 export default router

@@ -12,28 +12,28 @@ datasource db {
 }
 
 model User {
-  id                 String  @id @default(cuid())
-  email              String  @unique
+  id                 String    @id @default(cuid())
+  email              String    @unique
   password           String?
-  isVerified         Boolean @default(false)
-  role               Role    @default(USER)
-  isGoogleRegistered Boolean @default(false)
-  token              String? @db.Text
-  username          String?    @default("Roomify's friend")
-  phoneNumber       String?
-  birthDate         DateTime?
-  nationality       String?
-  gender            Gender?
-  address           String?
-  directory         String?
-  filename          String?
-  fileExtension     String?
+  isVerified         Boolean   @default(false)
+  role               Role      @default(USER)
+  isGoogleRegistered Boolean   @default(false)
+  token              String?   @db.Text
+  username           String?   @default("Roomify's friend")
+  phoneNumber        String?
+  birthDate          DateTime?
+  nationality        String?
+  gender             Gender?
+  address            String?
+  directory          String?
+  filename           String?
+  fileExtension      String?
 
   countryId Int?
-  country Country? @relation(fields: [countryId], references: [id])
-  
+  country   Country? @relation(fields: [countryId], references: [id])
+
   cityId Int?
-  city City? @relation(fields: [cityId], references: [id])
+  city   City? @relation(fields: [cityId], references: [id])
 
   transaction Transaction[]
   review      Review[]
@@ -46,23 +46,22 @@ model User {
   @@map("users")
 }
 
-
 enum Gender {
   MALE
   FEMALE
 }
 
 model Country {
-  id   Int    @id @default(autoincrement())
-  description String
-  name String
-  filename String
-  directory String
+  id            Int    @id @default(autoincrement())
+  description   String
+  name          String
+  filename      String
+  directory     String
   fileExtension String @default("jpg")
 
-  user User[]
-  cities   City[]
-  property Property[]
+  user        User[]
+  cities      City[]
+  property    Property[]
   transaction Transaction[]
 
   createdAt DateTime  @default(now())
@@ -82,8 +81,8 @@ model City {
   countryId Int
   country   Country @relation(fields: [countryId], references: [id])
 
-  user User[]
-  property Property[]
+  user        User[]
+  property    Property[]
   transaction Transaction[]
 
   createdAt DateTime  @default(now())
@@ -94,17 +93,17 @@ model City {
 }
 
 model Tenant {
-  id         String  @id @default(cuid())
-  email      String  @unique
-  password   String?
-  role       Role    @default(TENANT)
-  isVerified Boolean @default(false)
-  token      String? @db.Text
-  pic        String? @default("Roomify's tenant")
-  phoneNumber       String?
-  address           String?
-  directory String?
-  filename  String?
+  id            String  @id @default(cuid())
+  email         String  @unique
+  password      String?
+  role          Role    @default(TENANT)
+  isVerified    Boolean @default(false)
+  token         String? @db.Text
+  pic           String? @default("Roomify's tenant")
+  phoneNumber   String?
+  address       String?
+  directory     String?
+  filename      String?
   fileExtension String?
 
   property    Property[]
@@ -133,7 +132,7 @@ model Property {
   checkOutStartTime DateTime
   checkOutEndTime   DateTime
   slug              String   @unique
-  
+  star              Int?
 
   propertyTypeId Int?
   propertyType   PropertyType? @relation(fields: [propertyTypeId], references: [id])
@@ -153,6 +152,8 @@ model Property {
   transaction         Transaction[]
   review              Review[]
   historyView         HistoryView[]
+  seasonalPrice       SeasonalPrice[]
+  season              Season[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -182,9 +183,9 @@ model PropertyDetail {
 }
 
 model PropertyImage {
-  id        Int    @id @default(autoincrement())
-  directory String
-  filename  String
+  id            Int    @id @default(autoincrement())
+  directory     String
+  filename      String
   fileExtension String @default("jpg")
 
   propertyDetailId Int
@@ -212,11 +213,11 @@ model PropertyType {
 }
 
 model PropertyFacility {
-  id            Int     @id @default(autoincrement())
-  name          String
-  iconDirectory String?
-  iconFilename  String?
-  iconFileExtension String @default("png")
+  id                Int     @id @default(autoincrement())
+  name              String
+  iconDirectory     String?
+  iconFilename      String?
+  iconFileExtension String  @default("png")
 
   propertyHasFacility PropertyHasFacility[]
 
@@ -243,16 +244,18 @@ model PropertyHasFacility {
 }
 
 model PropertyRoomType {
-  id         Int    @id @default(autoincrement())
-  name       String
+  id          Int    @id @default(autoincrement())
+  name        String
   description String
-  rooms      Int?
-  capacity   Int
-  bathrooms  Int
-  price      Int
-  totalRooms Int
+  rooms       Int?
+  capacity    Int
+  bathrooms   Int
+  price       Int
+  totalRooms  Int
 
   propertyRoomImage PropertyRoomImage[]
+  season            Season[]
+  seasonalPrice     SeasonalPrice[]
 
   propertyId String
   property   Property @relation(fields: [propertyId], references: [id])
@@ -268,11 +271,11 @@ model PropertyRoomType {
 }
 
 model PropertyRoomFacility {
-  id            Int     @id @default(autoincrement())
-  name          String
-  iconDirectory String?
-  iconFilename  String?
-  iconFileExtension String @default("png")
+  id                Int     @id @default(autoincrement())
+  name              String
+  iconDirectory     String?
+  iconFilename      String?
+  iconFileExtension String  @default("png")
 
   roomHasFacilities RoomHasFacilities[]
 
@@ -299,9 +302,9 @@ model RoomHasFacilities {
 }
 
 model PropertyRoomImage {
-  id        Int    @id @default(autoincrement())
-  directory String
-  filename  String
+  id            Int    @id @default(autoincrement())
+  directory     String
+  filename      String
   fileExtension String @default("jpg")
 
   propertyRoomTypeId Int
@@ -339,17 +342,16 @@ model Transaction {
   qty          Int
   expiryDate   DateTime
 
-  adult       Int @default(1)
-  children    Int @default(0)
-  nights      Int @default(1)
-
+  adult    Int @default(1)
+  children Int @default(0)
+  nights   Int @default(1)
 
   cityId Int
-  city   City   @relation(fields: [cityId], references: [id])
+  city   City @relation(fields: [cityId], references: [id])
 
   countryId Int
-  country   Country   @relation(fields: [countryId], references: [id])
-  
+  country   Country @relation(fields: [countryId], references: [id])
+
   userId String
   user   User   @relation(fields: [userId], references: [id])
 
@@ -396,7 +398,7 @@ enum Status {
 
 model Review {
   comment String? @db.Text
-  rating Int?
+  rating  Int?
 
   propertyId String
   property   Property @relation(fields: [propertyId], references: [id])
@@ -415,3 +417,44 @@ model Review {
   @@map("reviews")
 }
 
+model Season {
+  id        Int      @id @default(autoincrement())
+  name      String
+  isPeak    Boolean  @default(false)
+  startDate DateTime
+  endDate   DateTime
+
+  seasonalPrice SeasonalPrice[]
+
+  propertyRoomTypeId Int
+  propertyRoomType   PropertyRoomType @relation(fields: [propertyRoomTypeId], references: [id])
+
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("seasons")
+}
+
+model SeasonalPrice {
+  id    Int   @id @default(autoincrement())
+  price Float
+
+  seasonId Int
+  season   Season @relation(fields: [seasonId], references: [id])
+
+  propertyRoomTypeId Int
+  propertyRoomtType  PropertyRoomType @relation(fields: [propertyRoomTypeId], references: [id])
+
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("seasonal_prices")
+}

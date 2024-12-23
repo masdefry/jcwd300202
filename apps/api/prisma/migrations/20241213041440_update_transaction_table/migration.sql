@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "transactions" ADD COLUMN     "adult" INTEGER NOT NULL DEFAULT 1,
-ADD COLUMN     "children" INTEGER NOT NULL DEFAULT 0;

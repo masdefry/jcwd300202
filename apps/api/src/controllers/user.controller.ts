@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from "express";
 
 export const getUserProfile = async(req: Request, res: Response, next: NextFunction) => {
     try {
-        const { id = 'cm4tm1tsd00012dj3vrih9dzy', role = 'USER' } = req.body
+        const { id, role } = req.body
 
         const isUserExist = await prisma.user.findUnique({
             where: {
@@ -16,6 +16,7 @@ export const getUserProfile = async(req: Request, res: Response, next: NextFunct
             }
         })
 
+        if(!isUserExist?.id || isUserExist?.deletedAt) throw { msg: 'User not found!', status: 406 }
         if(isUserExist?.role !== role) throw { msg: 'Role unauthorized!', status: 406 }
 
         res.status(200).json({
@@ -36,7 +37,7 @@ export const getUserProfile = async(req: Request, res: Response, next: NextFunct
                 countryId: isUserExist?.countryId,
                 cityName: isUserExist?.city?.name,
                 countryName: isUserExist?.country?.name,
-                profilePictureUrl: isUserExist?.directory && `http://localhost:5000/api/${isUserExist?.directory}/${isUserExist?.filename}.${isUserExist.fileExtension}`
+                profilePictureUrl: isUserExist?.directory ? `http://localhost:5000/api/${isUserExist?.directory}/${isUserExist?.filename}.${isUserExist.fileExtension}` : ''
             }
         })
 
@@ -48,8 +49,8 @@ export const getUserProfile = async(req: Request, res: Response, next: NextFunct
 export const updateUserProfile = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const {
-            id = 'cm4tm1tsd00012dj3vrih9dzy', 
-            role = 'USER',
+            id, 
+            role,
             email,
             username,
             gender,
@@ -118,6 +119,7 @@ export const updateUserProfile = async(req: Request, res: Response, next: NextFu
             }
         })
 
+        if(!isUserExist?.id || isUserExist?.deletedAt) throw { msg: 'User not found!', status: 406 }
         if(isUserExist?.role !== role) throw { msg: 'Role unauthorized!', status: 406 }
 
         const updatedUserProfile = await prisma.user.update({
@@ -162,9 +164,22 @@ export const updateUserProfile = async(req: Request, res: Response, next: NextFu
 export const updateUserProfilePicture = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const { 
-            id = 'cm4tm1tsd00012dj3vrih9dzy', 
-            role = 'USER'
+            id, 
+            role
         } = req.body
+
+        const isUserExist = await prisma.user.findUnique({
+            where: {
+                id,
+            },
+            include: {
+                city: true,
+                country: true
+            }
+        })
+
+        if(!isUserExist?.id || isUserExist?.deletedAt) throw { msg: 'User not found!', status: 406 }
+        if(isUserExist?.role !== role) throw { msg: 'Role unauthorized!', status: 406 }
         
         const imagesUploaded: any = req.files
 
@@ -198,6 +213,36 @@ export const updateUserProfilePicture = async(req: Request, res: Response, next:
 }
 
 export const deleteUserProfile = async(req: Request, res: Response, next: NextFunction) => {
-    //apakah harus delete secara harfiah
-    //atau delete secara ux saja
+    try {
+        const { 
+            id, 
+            role
+        } = req.body
+
+        const isUserExist = await prisma.user.findUnique({
+            where: {
+                id
+            }
+        })
+
+        if(!isUserExist?.id || isUserExist?.deletedAt) throw { msg: 'User not found!', status: 406 }
+        if(isUserExist?.role !== role) throw { msg: 'Role unauthorized!', status: 406 }
+
+        await prisma.user.update({
+            where: {
+                id
+            }, 
+            data: {
+                deletedAt: new Date().toISOString()
+            }
+        })
+
+        res.status(200).json({
+            error: false,
+            message: 'Delete account success',
+            data: {}
+        })
+    } catch (error) {
+        next(error)
+    }
 }

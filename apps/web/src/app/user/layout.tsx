@@ -1,14 +1,47 @@
 'use client'
 
-import React, { ReactNode } from 'react'
+import React, { ReactNode, useEffect, useState } from 'react'
 import { MdOutlineManageAccounts, MdVerified } from 'react-icons/md'
 import { GrNotes } from "react-icons/gr";
 import { FaRegListAlt } from 'react-icons/fa';
 import { TbNotification } from 'react-icons/tb';
 import { IoMdLogOut } from 'react-icons/io';
 import { IoSettingsOutline } from 'react-icons/io5';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 const ProfileUserLayout = ({  children }: { children: ReactNode }) => {
+  const router = useRouter()
+  const pathname = usePathname()
+  const [ menus, setMenus] = useState([
+    {
+      link: '/user/profile',
+      title: 'Account',
+      icon: <MdOutlineManageAccounts size={20} className='text-blue-400'/>
+    },
+    {
+      link: '#',
+      title: 'My Order',
+      icon: <GrNotes size={20} className='text-blue-400'/>
+    },
+    {
+      link: '#',
+      title: 'Purchase List',
+      icon: <FaRegListAlt size={20} className='text-blue-400'/>
+    },
+    {
+      link: '#',
+      title: 'Notification',
+      icon: <TbNotification size={20} className='text-blue-400'/>
+    },
+    {
+      link: '/user/settings',
+      title: 'Settings',
+      icon: <IoSettingsOutline size={20} className='text-blue-400'/>
+    }
+  ])
+
   return (
     <main className='w-full min-h-min py-5'>
       <section className='m-auto max-w-screen-xl grid grid-cols-4  gap-5 w-full h-full'>
@@ -33,26 +66,18 @@ const ProfileUserLayout = ({  children }: { children: ReactNode }) => {
               </div>
             </section>
             <section className='border-b border-slate-300 flex flex-col p-5'>
-              <div className='text-base font-semibold text-gray-800 transition duration-100 px-5 py-3 flex items-center gap-2 rounded-md hover:cursor-pointer hover:bg-slate-200'>
-                <MdOutlineManageAccounts size={20} className='text-blue-400'/>
-                Account
-              </div>
-              <div className='text-base font-semibold text-gray-800 transition duration-100 px-5 py-3 flex items-center gap-2 rounded-md hover:cursor-pointer hover:bg-slate-200'>
-                <GrNotes size={20} className='text-blue-400'/>
-                My Order
-              </div>
-              <div className='text-base font-semibold text-gray-800 transition duration-100 px-5 py-3 flex items-center gap-2 rounded-md hover:cursor-pointer hover:bg-slate-200'>
-                <FaRegListAlt size={20} className='text-blue-400'/>
-                Purchase List
-              </div>
-              <div className='text-base font-semibold text-gray-800 transition duration-100 px-5 py-3 flex items-center gap-2 rounded-md hover:cursor-pointer hover:bg-slate-200'>
-                <TbNotification size={20} className='text-blue-400'/>
-                Notification
-              </div>
-              <div className='text-base font-semibold text-gray-800 transition duration-100 px-5 py-3 flex items-center gap-2 rounded-md hover:cursor-pointer hover:bg-slate-200'>
-                <IoSettingsOutline size={20} className='text-blue-400'/>
-                Settings
-              </div>
+            {
+              menus.map((item, index) => {
+                return (
+              <Link key={index} onClick={() => router.refresh()} href={item.link}>
+                <div className='text-base font-semibold text-gray-800 transition duration-100 px-5 py-3 flex items-center gap-2 rounded-md hover:cursor-pointer hover:bg-slate-200'>
+                  {item.icon}
+                  {item.title}
+                </div>
+              </Link>
+                )
+              })
+            }
               <div className='text-base font-semibold text-gray-800 transition duration-100 px-5 py-3 flex items-center gap-2 rounded-md hover:cursor-pointer hover:bg-slate-200'>
                 <IoMdLogOut size={20} className='text-red-600'/>
                 Sign Out

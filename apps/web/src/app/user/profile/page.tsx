@@ -2,21 +2,11 @@
 
 import { Input } from '@/components/ui/input'
 import { Formik, Field, Form, ErrorMessage } from 'formik'
-import Separator from '@/features/auth/components/Separator'
 import React, { useState, useRef } from 'react'
 import { PiCityLight } from "react-icons/pi";
 import { AiOutlinePicture } from 'react-icons/ai'
 import { FaRegSave } from 'react-icons/fa'
 import { MdVerified } from 'react-icons/md'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogClose
-} from "@/components/ui/dialog"
 import { useMutation, useQuery } from '@tanstack/react-query'
 import instance from '@/utils/axiosInstance'
 import toast from 'react-hot-toast'
@@ -24,6 +14,8 @@ import Image from 'next/image'
 import { useDebouncedCallback } from 'use-debounce'
 import { IoIosCloseCircleOutline } from 'react-icons/io'
 import { IoBusinessOutline } from 'react-icons/io5'
+import { RiCloseCircleFill } from 'react-icons/ri'
+import { updateUserProfileValidationSchema } from '@/features/user/profile/schemas/updateUserProfileValidationSchema'
 
 const ProfileUserPage = () => {
   const [ imagePreview, setImagePreview ] = useState('')
@@ -145,10 +137,11 @@ const ProfileUserPage = () => {
         year: dataUserProfile?.year ? dataUserProfile?.year : null,
         address: dataUserProfile?.address || ''
       }}
-
+      validationSchema={updateUserProfileValidationSchema}
       enableReinitialize={true}
       onSubmit={(values) => {
         console.log(values.month)
+        console.log('asa')
         setIsSubmitting(false)
         const fd: any = new FormData()
         fd.append('images', values?.file[0])
@@ -202,6 +195,7 @@ const ProfileUserPage = () => {
                   }
                   }
                   name='file' className='hover:cursor-pointer'/>
+                  <ErrorMessage name='file' component={'div'} className='text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full z-20'/>
                   </div>
                 </hgroup>
               </section>
@@ -209,17 +203,26 @@ const ProfileUserPage = () => {
                 <div className='flex flex-col gap-1 '>
                   <label htmlFor="email" className='text-sm font-bold text-black ml-5 flex items-center gap-1'>
                     Email
-                    <MdVerified className='text-blue-600' size={13}/>
+                    {
+                      dataUserProfile?.isVerified ? (
+                      <MdVerified className='text-blue-600' size={13}/>
+                      ) : (
+                      <RiCloseCircleFill className='text-red-600' size={13}/>
+                      )
+                    }
                   </label>
                   <Field id='email' name='email' type="email" disabled placeholder='mfauzi@gmail.com' className='placeholder-shown:text-sm placeholder-shown:text-slate-300 focus:outline-none text-sm font-medium text-gray-900 focus:ring-slate-600 border border-slate-300 rounded-full px-5 py-2' />
+                  <ErrorMessage name='email' component={'div'} className='text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full'/>
                 </div>
                 <div className='flex flex-col gap-1 '>
                   <label htmlFor="username" className='text-sm font-bold text-black ml-5'>Name</label>
                   <Field id='username' name='username' type="text" placeholder='Roomify' className='placeholder-shown:text-sm placeholder-shown:text-slate-300 focus:outline-none text-sm font-medium text-gray-900 focus:ring-slate-600 border border-slate-300 rounded-full px-5 py-2' />
+                  <ErrorMessage name='username' component={'div'} className='text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full'/>
                 </div>
                 <div className='flex flex-col gap-1 '>
                   <label htmlFor="phoneNumber" className='text-sm font-bold text-black ml-5'>Phone Number</label>
                   <Field id='phoneNumber' name='phoneNumber' type="text" placeholder='08128192xxxxxx ' className='placeholder-shown:text-sm placeholder-shown:text-slate-300 focus:outline-none text-sm font-medium text-gray-900 focus:ring-slate-600 border border-slate-300 rounded-full px-5 py-2' />
+                  <ErrorMessage name='phoneNumber' component={'div'} className='text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full'/>
                 </div>
                 <div className='flex flex-col gap-1 '>
                   <label htmlFor="gender" className='text-sm font-bold text-black ml-5'>Gender</label>
@@ -228,40 +231,50 @@ const ProfileUserPage = () => {
                       <option value='MALE'>Male</option>
                       <option value='FEMALE'>Female</option>
                   </Field>
+                  <ErrorMessage name='gender' component={'div'} className='text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full'/>
                 </div>
                 <div className='flex flex-col gap-1 '>
                   <label htmlFor="country" className='text-sm font-bold text-black ml-5'>Birthdate</label>
                   <div id='birthdate-section' className='flex items-center gap-2'>
-                    <Field as='select' name='date' defaultValue='select-date' className="bg-white hover:cursor-pointer border w-full border-slate-300 text-gray-800 text-sm font-semibold rounded-full  px-5 py-2 focus:outline-none focus:ring-slate-400 focus:border-slate-400 block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                      <option value='select-date'>Date</option>
-                      {
-                        Array.from({length: 31}).map((_, index) => {
-                          return(
-                            <option key={index} value={index + 1}>{index + 1 < 10 ? '0' + (index + 1) : index + 1}</option>
-                          )
-                        })
-                      }      
-                    </Field>
-                    <Field as='select' name='month' defaultValue='select-month' className="bg-white hover:cursor-pointer border w-full border-slate-300 text-gray-800 text-sm font-semibold rounded-full  px-5 py-2 focus:outline-none focus:ring-slate-400 focus:border-slate-400 block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                      <option value='select-month'>Month</option>
-                      {
-                        Array.from({length: 12}).map((_, index) => {
-                          return(
-                            <option key={index} value={index + 1}>{index + 1 < 10 ? '0' + (index + 1) : index + 1}</option>
-                          )
-                        })
-                      }      
-                    </Field>
-                    <Field as='select' name='year' defaultValue='select-year' className="bg-white hover:cursor-pointer border w-full border-slate-300 text-gray-800 text-sm font-semibold rounded-full  px-5 py-2 focus:outline-none focus:ring-slate-400 focus:border-slate-400 block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                      <option value='select-year'>Year</option>
-                      {
-                        Array.from({length: 100}).map((_, index) => {
-                          return(
-                            <option key={index} value={( new Date().getFullYear() - index ) - 1}>{( new Date().getFullYear() - index ) - 1}</option>
-                          )
-                        })
-                      }      
-                    </Field>
+                    <div className='w-full flex flex-col gap-1'>
+                      <Field as='select' name='date' defaultValue='select-date' className="bg-white hover:cursor-pointer border w-full border-slate-300 text-gray-800 text-sm font-semibold rounded-full  px-5 py-2 focus:outline-none focus:ring-slate-400 focus:border-slate-400 block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        <option value='select-date'>Date</option>
+                        {
+                          Array.from({length: 31}).map((_, index) => {
+                            return(
+                              <option key={index} value={index + 1}>{index + 1 < 10 ? '0' + (index + 1) : index + 1}</option>
+                            )
+                          })
+                        }      
+                      </Field>
+                      <ErrorMessage name='date' component={'div'} className='text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full'/>
+                    </div>
+                    <div className='w-full flex flex-col gap-1'>
+                      <Field as='select' name='month' defaultValue='select-month' className="bg-white hover:cursor-pointer border w-full border-slate-300 text-gray-800 text-sm font-semibold rounded-full  px-5 py-2 focus:outline-none focus:ring-slate-400 focus:border-slate-400 block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        <option value='select-month'>Month</option>
+                        {
+                          Array.from({length: 12}).map((_, index) => {
+                            return(
+                              <option key={index} value={index + 1}>{index + 1 < 10 ? '0' + (index + 1) : index + 1}</option>
+                            )
+                          })
+                        }      
+                      </Field>
+                      <ErrorMessage name='month' component={'div'} className='text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full'/>
+                    </div>
+                    <div className='w-full flex flex-col gap-1'>
+                      <Field as='select' name='year' defaultValue='select-year' className="bg-white hover:cursor-pointer border w-full border-slate-300 text-gray-800 text-sm font-semibold rounded-full  px-5 py-2 focus:outline-none focus:ring-slate-400 focus:border-slate-400 block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        <option value='select-year'>Year</option>
+                        {
+                          Array.from({length: 100}).map((_, index) => {
+                            return(
+                              <option key={index} value={( new Date().getFullYear() - index ) - 1}>{( new Date().getFullYear() - index ) - 1}</option>
+                            )
+                          })
+                        }      
+                      </Field>
+                      <ErrorMessage name='year' component={'div'} className='text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full'/>
+                    </div>
                   </div>
                 </div>
                 <div className='flex flex-col gap-1 relative'>
@@ -319,6 +332,7 @@ const ProfileUserPage = () => {
                     </div>
                     )
                    }
+                   <ErrorMessage name='cityName' component={'div'} className='text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full z-20'/>
                 </div>
                 <div className='flex flex-col gap-1 relative'>
                   <label htmlFor="countryId" className='text-sm font-bold text-black ml-5'>Country</label>
@@ -375,14 +389,12 @@ const ProfileUserPage = () => {
                     </div>
                     )
                    }
+                   <ErrorMessage name='countryName' component={'div'} className='text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full z-20'/>
                 </div>
-                {/* <div className='flex flex-col gap-1 '>
-                  <label htmlFor="countryId" className='text-sm font-bold text-black ml-5'>Country</label>
-                  <Field id='countryId' name='countryId' type="text" placeholder='Indonesia' className='placeholder-shown:text-sm placeholder-shown:text-slate-300 focus:outline-none text-sm font-medium text-gray-900 focus:ring-slate-600 border border-slate-300 rounded-full px-5 py-2' />
-                </div> */}
                 <div className='flex flex-col gap-1 '>
                   <label htmlFor="address" className='text-sm font-bold text-black ml-5'>Address</label>
                   <Field as='textarea' id='address' name='address' type="text" placeholder='Jln MH Thamrin No. 8-10' className='placeholder-shown:text-sm placeholder-shown:text-slate-300 focus:outline-none text-sm font-medium text-gray-900 focus:ring-slate-600 border border-slate-300 rounded-3xl px-5 py-2' />
+                  <ErrorMessage name='address' component={'div'} className='text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full'/>
                 </div>
                 <div className={`${!isSubmitting && 'hidden'} backdrop-blur-sm fixed top-0 left-0 w-screen h-screen shadow-sm bg-black bg-opacity-20 z-[51] flex items-center justify-center`}>
                   <div className='bg-white rounded-3xl flex flex-col justify-between gap-3 p-5'>
@@ -400,28 +412,6 @@ const ProfileUserPage = () => {
                   </div>
                 </div>
                 <button type='button' onClick={() => setIsSubmitting(true)} disabled={isPendingUpdateUserProfile} className='transition duration-100 disabled:bg-slate-300 disabled:hover:opacity-100 disabled:active:scale-100 disabled:text-slate-500 flex items-center gap-1.5 rounded-full hover:opacity-75 active:scale-95 bg-blue-600 text-white text-sm font-bold px-5 py-3 shadow-md w-full justify-center'><FaRegSave size={23}/>Save Profile</button>
-                {/* <Dialog>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Are you sure you want to update your profile?</DialogTitle>
-                      <DialogDescription>
-                        <div className='flex flex-col justify-between gap-5'>
-                          <article>
-                            Please review your information before submitting.
-                            Your changes cannot be undone once saved.
-                          </article>
-                          <div className='flex items-center gap-2'>
-                            <DialogClose className='w-full'>
-                              <div className='border border-slate-100 box-border flex items-center gap-1.5 rounded-full hover:opacity-75 hover:bg-slate-200 active:scale-95 bg-white text-gray-800 text-sm font-bold px-5 py-3 shadow-md w-full justify-center'>Cancel</div>
-                            </DialogClose>
-                            <DialogClose type='submit' className='z-20 flex items-center gap-1.5 rounded-full hover:opacity-75 active:scale-95 bg-blue-600 text-white text-sm font-bold px-5 py-3 shadow-md w-full justify-center'>Confirm</DialogClose>
-                            
-                          </div>
-                        </div>
-                      </DialogDescription>
-                    </DialogHeader>
-                  </DialogContent>
-                </Dialog> */}
               </section>
             </Form>
           )

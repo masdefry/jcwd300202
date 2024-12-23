@@ -372,6 +372,7 @@ export const getPropertyRoomType = async(req: Request, res: Response, next: Next
         })
 
     } catch (error) {
+        console.log(error)
         next(error)
     }
 }
@@ -761,3 +762,12 @@ model PropertyRoomType {
 
 //   cityId Int?
 //   city 
+
+export const getRoomType = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        
+        
+    } catch (error) {
+        next(error)
+    }
+}

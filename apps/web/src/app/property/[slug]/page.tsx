@@ -48,7 +48,7 @@ const PropertyDetailPage = ({params}:{params : { slug: string }}) => {
   const { mutate: mutatePropertyRoomType, data: dataPropertyRoomType, isPending: isPendingPropertyRoomType } = useMutation({
     mutationFn: async({ limit, offset, propertyId }: { limit: number, offset: number, propertyId: string }) => {
         const res = await instance.get(`/property/${propertyId}/search?limit=${limit}&offset=${offset}`)
-        return res?.data
+        return res?.data?.data
     },
     onSuccess: (res) => {
         console.log('success:', res)

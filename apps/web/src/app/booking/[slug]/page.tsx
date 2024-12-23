@@ -9,9 +9,9 @@ const BookingPage = ({params}: {params: { slug: string}}) => {
   const { data: dataPropertyRoomType, isPending: isPendingPropertyRoomType } = useQuery({
     queryKey: ['getPropertyRoomType'],
     queryFn: async() => {
-        const res = await instance.get(`/property/${params.slug}/search`)
-        console.log('BOOKING >>>', res?.data)
-        console.log('TESTT')
+        const res = await instance.get(`/room-type/${params.slug}`)
+        console.log('BOOKING >>>', res.data.data.propertyRoomType)
+        return res.data.data.propertyRoomType
     }
   })
 
@@ -23,12 +23,17 @@ const BookingPage = ({params}: {params: { slug: string}}) => {
     
   return (
     <main className='w-full h-screen'>
-      <section className='m-auto max-w-screen-xl w-full h-full flex items-start gap-5 p-5'>
-        {/* <div className="flex flex-col gap-3 relative">
+      <section className='m-auto max-w-screen-xl w-full h-full flex items-start gap-5 p-5 relative'>
+        <div className='flex flex-col gap-3'>
+
+
+        </div>
+        <div className="flex flex-col gap-3 sticky top-0">
           {dataPropertyRoomType?.map((item: any, index: number) => {
             return (
               <div key={index} className='bg-white w-[30rem] min-h-min border rounded sticky top-0 p-3'>
                 <p className='text-sm mt-2'>PAN PACIFIC JAKARTA</p>
+                <p className='text-md uppercase font-bold'>{item.name}</p>
                 <p className='text-xs'>CHECK IN 2.00 PM | CHECK OUT 12.00 PM</p>
                 <hr className='mt-3'/>
                 <p className='text-xs mt-3'>December 9, 2024 - December 10, 2024</p>
@@ -52,7 +57,7 @@ const BookingPage = ({params}: {params: { slug: string}}) => {
                     <div className='flex flex-col gap-5'>
                       <div className='flex items-center justify-between'>
                         <p className='text-xs font-medium'>ROOM</p>
-                        <p className='text-xs font-medium'>RP <span className='font-bold'>4500000</span></p>
+                        <p className='text-xs font-medium'>RP <span className='font-bold'>{item.price}</span></p>
                       </div>
                       <hr/>
                       <div className='flex items-center justify-between'>
@@ -72,8 +77,12 @@ const BookingPage = ({params}: {params: { slug: string}}) => {
                       <div className='flex flex-col'>
                         <p className='text-xs font-medium'>ROOM</p>
                         <div className='flex items-center justify-between mt-2'>
-                          <p className='text-xs'>PREMIERE ROOM</p>
-                          <p className='text-xs font-medium'>RP <span className='font-bold'>4500000</span></p>
+                          <p className='text-xs '>{item.name}</p>
+                          <p className='text-xs font-medium'>RP <span className='font-bold'>{item.price}</span></p>
+                        </div>
+                        <div className='flex items-center justify-between mt-2'>
+                          <p className='text-xs '>Capacity</p>
+                          <p className='text-xs font-medium'><span className='font-bold'>{item.capacity}</span></p>
                         </div>
                       </div>
                       <hr/>
@@ -99,7 +108,7 @@ const BookingPage = ({params}: {params: { slug: string}}) => {
               </div>
             )
           })}
-        </div>  */}
+        </div> 
       </section>
 
     </main>

@@ -11,6 +11,7 @@ import propertyFacilityRouter from "./property.facility.router";
 import userRouter from "./user.router";
 import cityRouter from "./city.router";
 import countryRouter from "./country.router";
+import roomTypeRouter from './property.room.type.router'
 import tenantRouter from "./tenant.router";
 
 
@@ -29,6 +30,8 @@ router.use('/user', userRouter)
 router.use('/tenant', tenantRouter)
 router.use('/city', cityRouter)
 router.use('/country', countryRouter)
+router.use('/room-type', roomTypeRouter)
+
 
 
 export default router

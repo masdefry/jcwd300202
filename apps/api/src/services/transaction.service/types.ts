@@ -6,7 +6,7 @@ export interface ITransaction {
     qty: number,
     adult: number,
     children: number,
-    userId: string,  
+    id: string,  
     tenantId: string,  
     propertyId: string,
     roomId: number,

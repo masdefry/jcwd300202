@@ -11,6 +11,7 @@ const BookingPage = ({params}: {params: { slug: string}}) => {
     queryFn: async() => {
         const res = await instance.get(`/room-type/${params.slug}`)
         console.log('BOOKING >>>', res.data.data.propertyRoomType)
+        console.log('data', res.data.data)
         return res.data.data.propertyRoomType
     }
   })
@@ -20,6 +21,12 @@ const BookingPage = ({params}: {params: { slug: string}}) => {
         <div>Loading ...</div>
     )
   }
+
+  const {mutate: mutateTransaction, isPending: isPendingTransaction} = useMutation({
+    mutationFn: async() => {
+      const res = await instance.post(`/transaction/create`)
+    }
+  })
     
   return (
     <main className='w-full h-screen'>

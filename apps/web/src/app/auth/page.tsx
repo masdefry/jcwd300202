@@ -49,11 +49,9 @@ const AuthPage = () => {
             >
                 <Form className='flex flex-col gap-5'>
                     <TextInput labelName='Email' name='email' placeholder='example@email.com' type='email'/>
-                    <ErrorMessage name='email' component={'div'} className='text-red-600 text-sm mt-[-10px] ml-4'/>
                     <TextInput labelName='Password' name='password' placeholder='example123' type='password'/>
-                    <ErrorMessage name='password' component={'div'} className='text-red-600 text-sm mt-[-10px] ml-4'/>
                     <AuthButton isPending={Boolean(isPendingLogin || isPendingReqOAuth)} text='Continue'/>
-                    <span className='text-sm font-light mt-[-15px] ml-4'>
+                    <span className='text-sm font-light mt-[-15px] ml-5'>
                         <span>Don't have an account?</span>
                         <Link href='/auth/register'>
                             <span className='ml-1 text-sm font-semibold text-blue-600 border-b-2 border-transparent hover:border-blue-600 active:scale-90 transition duration-200 hover:cursor-pointer w-fit'>Register now</span>

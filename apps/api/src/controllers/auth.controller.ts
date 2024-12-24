@@ -17,8 +17,8 @@ export const loginTenant = async(req: Request, res: Response, next: NextFunction
             }
         })
 
-        if( !isEmailExist!.id ) throw { msg: 'Tenant not found!', status: 406 }
-        if( !isEmailExist!.password ) throw { msg: 'Please make request for verify email!', status: 406 }
+        if( !isEmailExist?.id || isEmailExist?.deletedAt ) throw { msg: 'Tenant not found!', status: 406 }
+        if( !isEmailExist?.password ) throw { msg: 'Please make request for verify email!', status: 406 }
 
         const isPasswordValid = await comparePassword( password, isEmailExist!.password )
         if(!isPasswordValid) throw { msg: 'Password invalid!', status: 406 }
@@ -57,7 +57,7 @@ export const loginUser = async(req: Request, res: Response, next: NextFunction) 
             }
         })
 
-        if( !isEmailExist?.id ) throw { msg: 'User not found!', status: 406 }
+        if( !isEmailExist?.id  || isEmailExist.deletedAt) throw { msg: 'User not found!', status: 406 }
         if( !isEmailExist?.password ) throw { msg: 'Please make request for verify email!', status: 406 }
 
         const isPasswordValid = await comparePassword( password, isEmailExist!.password )
@@ -221,7 +221,7 @@ export const verifyEmailRequestUser = async(req: Request, res: Response, next: N
             }
         })
         
-        if( !isUserExist?.id ) throw { msg: 'User not found!', status: 406 }
+        if( !isUserExist?.id || isUserExist?.deletedAt ) throw { msg: 'User not found!', status: 406 }
         if( isUserExist?.isVerified ) throw { msg: 'Email already verified!', status: 406 }
 
         const tokenForVerifyEmail = await createTokenExpiresIn1H({id: isUserExist.id, role: isUserExist.role})
@@ -271,7 +271,7 @@ export const verifyEmailRequestTenant = async(req: Request, res: Response, next:
             }
         })
         
-        if( !isTenantExist?.id ) throw { msg: 'Tenant not found!', status: 406 }
+        if( !isTenantExist?.id || isTenantExist?.deletedAt ) throw { msg: 'Tenant not found!', status: 406 }
         if( isTenantExist?.isVerified ) throw { msg: 'Email already verified!', status: 406 }
 
         const tokenForVerifyEmail = await createTokenExpiresIn1H({id: isTenantExist.id, role: isTenantExist.role})
@@ -321,7 +321,7 @@ export const verifyEmailUser = async(req: Request, res: Response, next: NextFunc
             }
         })
 
-        if(!isUserExist?.id) throw { msg: 'User not found!', status: 406 }
+        if(!isUserExist?.id || isUserExist?.deletedAt ) throw { msg: 'User not found!', status: 406 }
         if(isUserExist?.token !== token) throw { msg: 'Session expired!', status: 406 }
 
         await prisma.user.update({
@@ -355,7 +355,7 @@ export const verifyEmailTenant = async(req: Request, res: Response, next: NextFu
             }
         })
 
-        if(!isTenantExist?.id) throw { msg: 'Tenant not found!', status: 406 }
+        if(!isTenantExist?.id || isTenantExist?.deletedAt ) throw { msg: 'Tenant not found!', status: 406 }
         
         const isTokenValid = await prisma.tenant.findUnique({
             where: {
@@ -422,7 +422,7 @@ export const signInWithGoogle = async(req: Request, res: Response, next: NextFun
                 country: newUser?.country?.name,
                 isVerified: newUser?.isVerified,
                 isGoogleRegistered: newUser?.isGoogleRegistered,
-                profilePictureUrl: newUser?.directory ? `http://localhost:5000/${newUser.directory}/${newUser.filename}/${newUser.fileExtension}` : ''
+                profilePictureUrl: newUser?.directory ? `http://localhost:5000/api/${newUser.directory}/${newUser.filename}/${newUser.fileExtension}` : ''
             }
         
         } else {
@@ -433,7 +433,7 @@ export const signInWithGoogle = async(req: Request, res: Response, next: NextFun
                 country: checkUser?.country?.name,
                 id: checkUser?.id,
                 isGoogleRegistered: checkUser?.isGoogleRegistered,
-                profilePictureUrl: checkUser?.directory ? `http://localhost:5000/${checkUser?.directory}/${checkUser?.filename}/${checkUser?.fileExtension}` : ''
+                profilePictureUrl: checkUser?.directory ? `http://localhost:5000/api/${checkUser?.directory}/${checkUser?.filename}/${checkUser?.fileExtension}` : ''
             }
         }
     
@@ -468,7 +468,7 @@ export const sendEmailResetPasswordUser = async(req: Request, res: Response, nex
             }
         })
 
-        if(!isUserExist?.id) throw { msg: 'User not found!', status: 406 }
+        if(!isUserExist?.id || isUserExist?.deletedAt ) throw { msg: 'User not found!', status: 406 }
         if(!isUserExist?.isVerified) throw { msg: 'Please make request for verify email!', status: 406 }
 
         const token = await createTokenExpiresIn1H({ id: isUserExist!.id, role: isUserExist!.role })
@@ -511,6 +511,58 @@ export const sendEmailResetPasswordUser = async(req: Request, res: Response, nex
     }
 }
 
+export const sendEmailResetPasswordTenant = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { email } = req.body
+        const isTenantExist = await prisma.tenant.findUnique({
+            where: {
+                email
+            }
+        })
+
+        if(!isTenantExist?.id || isTenantExist?.deletedAt ) throw { msg: 'Tenant not found!', status: 406 }
+        if(!isTenantExist?.isVerified) throw { msg: 'Please make request for verify email!', status: 406 }
+
+        const token = await createTokenExpiresIn1H({ id: isTenantExist!.id, role: isTenantExist!.role })
+
+        await prisma.$transaction(async(tx) => {
+            await tx.tenant.update({
+                where: {
+                    email
+                },
+                data: {
+                    token
+                }
+            })
+    
+            const link = `http://localhost:3000/tenant/auth/reset-password/${token}`
+    
+            const emailBody = fs.readFileSync('./src/public/body.email/reset.password.html', 'utf-8')
+            let compiledEmailBody: any = await compile(emailBody)
+            compiledEmailBody = compiledEmailBody({ url: link })
+    
+            await transporter.sendMail({
+                to: email,
+                subject: 'Reset Password [Roomify]',
+                html: compiledEmailBody
+            })
+        }, {
+            timeout: 25000
+        })
+
+        res.status(200).json({
+            error: false,
+            message: 'Send email reset password success',
+            data: {
+                email
+            }
+        })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
 export const resetPasswordUser = async(req: Request, res: Response, next: NextFunction) => {
     try {   
         const { password, token, id } = req.body
@@ -521,7 +573,7 @@ export const resetPasswordUser = async(req: Request, res: Response, next: NextFu
             }
         })
         
-        if(!isUserExist?.id) throw { msg: 'User not found!', status: 406 }
+        if(!isUserExist?.id || isUserExist?.deletedAt ) throw { msg: 'User not found!', status: 406 }
         if(isUserExist?.token !== token) throw { msg: 'Session expired!', status: 406 }
         
         const comparedPassword = await comparePassword(password, isUserExist?.password as string)
@@ -557,7 +609,7 @@ export const resetPasswordTenant = async(req: Request, res: Response, next: Next
             }
         })
         
-        if(!isTenantExist?.id) throw { msg: 'Tenant not found!', status: 406 }
+        if(!isTenantExist?.id || isTenantExist?.deletedAt ) throw { msg: 'Tenant not found!', status: 406 }
         if(isTenantExist?.token !== token) throw { msg: 'Session expired!', status: 406 }
         
         const comparedPassword = await comparePassword(password, isTenantExist?.password as string)
@@ -600,12 +652,12 @@ export const keepAuth = async(req: Request, res: Response, next: NextFunction) =
                 }
             })
 
-            if(!isAccountExist?.id) throw { msg: 'User not found!', status: 406 }
+            if(!isAccountExist?.id  || isAccountExist?.deletedAt ) throw { msg: 'User not found!', status: 406 }
             
             username = isAccountExist?.username
             country = isAccountExist?.country?.name
             isVerified = isAccountExist?.isVerified
-            profilePictureUrl = isAccountExist?.directory ? `http://localhost:5000/${isAccountExist?.directory}/${isAccountExist?.filename}/${isAccountExist?.fileExtension}` : ''             
+            profilePictureUrl = isAccountExist?.directory ? `http://localhost:5000/api/${isAccountExist?.directory}/${isAccountExist?.filename}/${isAccountExist?.fileExtension}` : ''             
         } else if(role === 'TENANT') {
             isAccountExist = await prisma.tenant.findUnique({
                 where: {
@@ -613,12 +665,12 @@ export const keepAuth = async(req: Request, res: Response, next: NextFunction) =
                 }
             })
 
-            if(!isAccountExist?.id) throw { msg: 'User not found!', status: 406 }
+            if(!isAccountExist?.id || isAccountExist?.deletedAt ) throw { msg: 'Tenant not found!', status: 406 }
             
             username = isAccountExist?.pic
             isVerified = isAccountExist?.isVerified
             country = ''
-            profilePictureUrl = isAccountExist?.directory ? `http://localhost:5000/${isAccountExist?.directory}/${isAccountExist?.filename}/${isAccountExist?.fileExtension}` : ''             
+            profilePictureUrl = isAccountExist?.directory ? `http://localhost:5000/api/${isAccountExist?.directory}/${isAccountExist?.filename}.${isAccountExist?.fileExtension}` : ''             
         } else {
             throw {msg: 'Role unauthorized!', status: 406}
         }

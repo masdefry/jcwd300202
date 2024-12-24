@@ -56,7 +56,6 @@ const RequestVerifyEmailPage = () => {
             >
                 <Form className='flex flex-col gap-5'>
                     <TextInput labelName='Email' name='email' placeholder='example123' type='email'/>
-                    <ErrorMessage name='email' component={'div'} className='text-red-600 text-sm mt-[-10px] ml-4'/>
                     <AuthButton isPending={isPendingRequestEmailResetPassword} text='Continue'/>
                 </Form>
             </Formik>

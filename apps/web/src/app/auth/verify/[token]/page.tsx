@@ -60,9 +60,7 @@ const VerifyEmailUserPage = ({params} : {params: { token: string }}) => {
             >
                 <Form className='flex flex-col gap-5'>
                     <TextInput labelName='Set Password' name='setPassword' placeholder='example123' type='password'/>
-                    <ErrorMessage name='setPassword' component={'div'} className='text-red-600 text-sm mt-[-10px] ml-4'/>
                     <TextInput labelName='Confirm Password' name='confirmPassword' placeholder='example123' type='password'/>
-                    <ErrorMessage name='confirmPassword' component={'div'} className='text-red-600 text-sm mt-[-10px] ml-4'/>
                     <AuthButton isPending={Boolean(isPendingVerifyEmail || isSuccessVerifyEmail)} text='Continue'/>
                 </Form>
             </Formik>

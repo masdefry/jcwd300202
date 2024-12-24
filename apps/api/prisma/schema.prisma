@@ -19,7 +19,7 @@ model User {
   role               Role      @default(USER)
   isGoogleRegistered Boolean   @default(false)
   token              String?   @db.Text
-  username           String?   @default("Roomify's friend")
+  username           String?   @default("Roomify friend")
   phoneNumber        String?
   birthDate          DateTime?
   nationality        String?
@@ -98,8 +98,9 @@ model Tenant {
   password      String?
   role          Role    @default(TENANT)
   isVerified    Boolean @default(false)
+  companyName   String?
   token         String? @db.Text
-  pic           String? @default("Roomify's tenant")
+  pic           String? @default("Roomify partner")
   phoneNumber   String?
   address       String?
   directory     String?

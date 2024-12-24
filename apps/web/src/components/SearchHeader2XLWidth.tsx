@@ -20,6 +20,7 @@ import instance from '@/utils/axiosInstance'
 import  useSearchHook from '@/hooks/useSearchHook'
 import { Formik, Form, ErrorMessage } from 'formik'
 import { searchValidationSchema } from '@/features/home/schemas/searchValidationSchema'
+import { FaMapLocationDot } from 'react-icons/fa6';
 
 interface ISearchHeaderDefaultProps {
   mutateShowDropdownDebounce: any,
@@ -97,7 +98,7 @@ const SearchHeader2XLWidth = ({
 
 
   return (
-    <section className="h-[5rem] hidden 2xl:grid grid-cols-4 items-center justify-evenly rounded-full bg-white p-2 relative">
+    <section className="h-[5rem] hidden 2xl:grid grid-cols-4 items-center justify-evenly rounded-full bg-white p-3 relative shadow-sm border-2 border-amber-400">
       <Formik
         initialValues={{
           country: searchLocation.countryId,
@@ -122,26 +123,26 @@ const SearchHeader2XLWidth = ({
           setFieldValue
         }) => (
             <Form className='w-full flex items-center justify-start absolute'>
-              <div className='w-1/4 box-border border-r border-gray-300 relative flex flex-col px-5 gap-1'>
-                <label htmlFor='searchLocation' className="min-w-max flex items-center gap-3 text-sm font-semibold"><IoIosSearch size={18}/>Where are you going? (required)</label>
+              <div className='w-1/4 box-border border-r border-gray-300 relative flex flex-col px-7 gap-1'>
+                <label htmlFor='searchLocation' className="min-w-max flex items-center gap-3 text-gray-600 text-sm font-semibold"><IoIosSearch size={18}/>Where are you going? (required)</label>
                 <input value={handleSearch} onChange={(e) => {
                   e.target.value.length >= 3 ? mutateShowDropdownDebounce(e.target.value) : setDataDropdown([])
                   handleSearchInput(e)
                   }}  
                   id='searchLocation' 
-                  className="pt-2 p-1 box-border transition duration-200 text-sm font-normal border-b-2 border-white bg-white focus:border-blue-600 focus:outline-none" 
+                  className="pt-2 p-1 placeholder-shown:text-sm focus:bg-white active:bg-white box-border transition duration-200 text-sm font-normal border-b-2 border-white bg-white focus:border-blue-600 focus:outline-none focus-visible:bg-white" 
                   name='country' 
                   type="text" 
                   placeholder={searchValues.countryName ? '' : `Jakarta / Indonesia`} 
                   disabled={searchValues.countryName ? true : false}/>
-                   <ErrorMessage name="country" className='text-xs text-red-500 absolute top-[5rem]' component="div" />
+                <ErrorMessage name="country" className='text-xs text-red-600 bg-red-200 font-bold rounded-full px-5 p-1 absolute top-[4rem]' component={'div'} />
                 <div className="absolute top-[80px] left-0 z-20 w-full"> 
                   <DropdownCitiesAndCountries setFieldValue={setFieldValue} handleClearSearchInput={handleClearSearchInput} setSearchLocation={setSearchLocation} searchLocation={searchLocation} dataDropdown={dataDropdown} handleSearchInput={handleSearchInput} setDataDropdown={setDataDropdown} setSearchValues={setSearchValues}/>
                 </div>
                 {
                   searchValues.countryName && (
-                    <div className="absolute shadow-md top-[28px] left-[25px] flex items-center gap-3 px-5 py-2 text-sm rounded-badge bg-blue-600 font-semibold text-white">
-                      <p>{searchValues.cityName && searchValues.cityName + ', '}{searchValues.countryName}</p>
+                    <div className="absolute shadow-sm top-[28px] left-[25px] flex items-center gap-3 px-3 py-1 text-xs rounded-full bg-white-600 font-bold text-gray-900 border-2 border-gray-800">
+                      <p className='flex items-center gap-1.5'><FaMapLocationDot />{searchValues.cityName && searchValues.cityName + ', '}{searchValues.countryName}</p>
                       <IoMdClose className='hover:cursor-pointer' size={17} onClick={() => {setSearchValues({countryId: '', cityId: '', countryName: '', cityName: ''})}}/>
                     </div>
                   )
@@ -149,7 +150,7 @@ const SearchHeader2XLWidth = ({
               </div>
 
               <div className='w-1/4 box-border border-r border-gray-300 relative flex flex-col px-5 gap-1'>
-                <label htmlFor='checkInDate' className="min-w-max flex items-center gap-3 text-sm font-semibold"><CiCalendar size={19}/>Check-In</label>
+                <label htmlFor='checkInDate' className="min-w-max flex items-center gap-3 text-gray-600 text-sm font-semibold"><CiCalendar size={19}/>Check-In</label>
                 <Popover>
                     <PopoverTrigger asChild>
                       <Button
@@ -183,7 +184,7 @@ const SearchHeader2XLWidth = ({
                 {/* <input id='checkInDate' className="pt-2 p-1 box-border transition duration-200 text-base font-normal border-b-2 border-white focus:border-blue-600 focus:outline-none" name='checkInDate' type="text" placeholder="01/01/2000" /> */}
               </div>
               <div className='w-1/4 box-border border-r border-gray-300 relative flex flex-col px-5 gap-1'>
-                <label htmlFor='checkOutDate' className="min-w-max flex items-center gap-3 text-sm font-semibold"><CiCalendar size={19}/>Check-Out</label>
+                <label htmlFor='checkOutDate' className="min-w-max flex items-center gap-3 text-gray-600 text-sm font-semibold"><CiCalendar size={19}/>Check-Out</label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -219,21 +220,21 @@ const SearchHeader2XLWidth = ({
                 {/* <input id='checkOutDate' className="pt-2 p-1 box-border transition duration-200 text-base font-normal border-b-2 border-white focus:border-blue-600 focus:outline-none" name='checkOutDate' type="text" placeholder="02/01/2000" /> */}
               </div>
               <div className='w-1/4 box-border border-gray-300 relative flex flex-col px-5 gap-1'>
-                <label htmlFor='guestRoom' className="min-w-max flex items-center gap-3 text-sm font-semibold"><GoPerson size={19}/>Guest Room</label>
+                <label htmlFor='guestRoom' className="min-w-max flex items-center gap-3 text-gray-600 text-sm font-semibold"><GoPerson size={19}/>Guest Room</label>
                 <button onClick={() => setShowGuestAndRoomCounter(state => !state)} id='guestRoom' className="text-left text-black pt-2 p-1 box-border transition duration-200 text-sm font-normal border-b-2 border-white" name='guestRoom' type="button">
                 1 Room - {allGuest.totalGuest} Guest
                 </button>
                 {
                   showGuestAndRoomCounter && (
-                  <div className="absolute top-24 left-0 z-30 ">
+                  <div className="absolute top-20 left-0 z-30 ">
                     <GuestAndRoomCounter setFieldValue={setFieldValue} allGuest={allGuest} setAllGuest={setAllGuest} setShowGuestAndRoomCounter={setShowGuestAndRoomCounter} />
                   </div>
                   )
                 }
                 <ErrorMessage name="adult" component="div" />
               </div>
-              <div className="w-[10%] flex justify-end absolute right-5">
-                <button className={`${isPendingSearch ? 'opacity-75' : 'hover:opacity-75 active:scale-90 transition duration-200'} py-5 px-12 rounded-full bg-blue-600 font-semibold text-base text-white`} type='submit' disabled={isPendingSearch}>Search</button>
+              <div className="w-[10%] flex justify-end absolute right-2">
+                <button className={`${isPendingSearch ? 'opacity-75' : 'hover:opacity-75 active:scale-90 transition duration-200'} py-5 px-12 rounded-full bg-black font-semibold text-base text-white`} type='submit' disabled={isPendingSearch}>Search</button>
               </div>
           </Form>
         )}

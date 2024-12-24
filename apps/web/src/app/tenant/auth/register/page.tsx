@@ -39,7 +39,6 @@ const TenantRegisterPage = () => {
             >
                 <Form className='flex flex-col gap-5'>
                     <TextInput labelName='Email' name='email' placeholder='example@email.com' type='email'/>
-                    <ErrorMessage name='email' component={'div'} className='text-red-600 text-sm mt-[-10px] ml-4'/>
                     <AuthButton isPending={isPendingRegister} text='Continue with email'/>
                     <span className='text-sm font-light mt-[-15px] ml-4'>
                         <span>Have an account?</span>

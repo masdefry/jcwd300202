@@ -46,7 +46,7 @@ const useLoginHook = ({ endPoint, role }: IUseLoginHookProps) => {
             }
         }, 
         onError: (err: any) => {
-            toast.error(err?.response?.data?.message)
+            toast.error(err?.response?.data?.message || 'Connection error!')
         }})
   
     return {

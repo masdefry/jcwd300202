@@ -18,10 +18,19 @@ import { TbPawOff } from 'react-icons/tb'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import ImageCarousel from '@/features/property/components/ImageCarousel'
 import Link from 'next/link'
-  
+import authStore from '@/zustand/authStore' 
+import { useRouter } from 'next/navigation' 
+import toast from 'react-hot-toast'
 
 const PropertyDetailPage = ({params}:{params : { slug: string }}) => {
-    // const [ dataPropertyRoomType, setDataPropertyRoomType ] = useState()
+    const token = authStore(state => state.token)
+    const router = useRouter()
+    const handleUnauthorizedUser = () => {
+        toast.error('Please login first!')
+        setTimeout(() => {
+            router.push('/auth')
+        }, 1500)
+    }
     const { data: dataPropertyDetail, isPending: isPendingPropertyDetail } = useQuery({
         queryKey: ['getPropertyDetail'],
         queryFn: async() => {
@@ -48,7 +57,7 @@ const PropertyDetailPage = ({params}:{params : { slug: string }}) => {
   const { mutate: mutatePropertyRoomType, data: dataPropertyRoomType, isPending: isPendingPropertyRoomType } = useMutation({
     mutationFn: async({ limit, offset, propertyId }: { limit: number, offset: number, propertyId: string }) => {
         const res = await instance.get(`/property/${propertyId}/search?limit=${limit}&offset=${offset}`)
-        return res?.data
+        return res?.data?.data
     },
     onSuccess: (res) => {
         console.log('success:', res)
@@ -288,7 +297,13 @@ const PropertyDetailPage = ({params}:{params : { slug: string }}) => {
                                             <p className='text-xs font-semibold text-gray-400'>Include taxes and price</p>
                                         </td>
                                         <td>
-                                            <Link href={`/booking/${item?.id}`} className='my-auto text-lg font-semibold px-8 py-3 rounded-full bg-blue-600 text-white hover:opacity-75 active:scale-90 transition duration-100'>Book now</Link>
+                                            {
+                                                token ? (
+                                                    <Link href={`/booking/${item?.id}`} className='my-auto text-lg font-semibold px-8 py-3 rounded-full bg-blue-600 text-white hover:opacity-75 active:scale-90 transition duration-100'>Book now</Link>
+                                                ) : (
+                                                    <Link href='#' onClick={handleUnauthorizedUser} className='my-auto text-lg font-semibold px-8 py-3 rounded-full bg-blue-600 text-white hover:opacity-75 active:scale-90 transition duration-100'>Book now</Link>
+                                                )
+                                            }
                                         </td>
                                     </tr>
                                     </tbody>

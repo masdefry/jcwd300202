@@ -4,9 +4,9 @@ import { verifyToken } from "@/middlewares/verify.token";
 import { Router } from "express";
 const tenantRouter = Router()
 
-tenantRouter.get('/', getTenantProfile)
-tenantRouter.patch('/', updateTenantProfile)
-tenantRouter.patch('/profile-picture', uploader ,updateTenantProfilePicture)
-tenantRouter.delete('/', deleteTenantProfile)
+tenantRouter.get('/', verifyToken, getTenantProfile)
+tenantRouter.patch('/', verifyToken, updateTenantProfile)
+tenantRouter.patch('/profile-picture', verifyToken, uploader ,updateTenantProfilePicture)
+tenantRouter.delete('/', verifyToken, deleteTenantProfile)
 
 export default tenantRouter

@@ -11,7 +11,7 @@ import { Formik, Form, ErrorMessage } from 'formik'
 import React from 'react'
 import toast from 'react-hot-toast'
 
-const ResetPasswordUserPage = () => {
+const ResetPasswordTenantPage = () => {
 
     interface IValuesRequestEmailResetPassword {
         email: string
@@ -22,7 +22,7 @@ const ResetPasswordUserPage = () => {
         isPending: isPendingRequestEmailResetPassword 
     } = useMutation({
         mutationFn: async(values: IValuesRequestEmailResetPassword) => {
-            return await instance.post('/auth/send-email-reset-password', {
+            return await instance.post('/auth/tenant/send-email-reset-password', {
                 email: values?.email
             })
         },
@@ -67,4 +67,4 @@ const ResetPasswordUserPage = () => {
   )
 }
 
-export default ResetPasswordUserPage
+export default ResetPasswordTenantPage

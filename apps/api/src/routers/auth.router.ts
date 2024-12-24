@@ -1,4 +1,4 @@
-import { keepAuth, loginTenant, loginUser, registerTenant, registerUser, resetPasswordUser, sendEmailResetPasswordUser, signInWithGoogle, verifyEmailUser, verifyEmailRequestUser, verifyEmailTenant, verifyEmailRequestTenant, resetPasswordTenant } from "@/controllers/auth.controller";
+import { keepAuth, loginTenant, loginUser, registerTenant, registerUser, resetPasswordUser, sendEmailResetPasswordUser, signInWithGoogle, verifyEmailUser, verifyEmailRequestUser, verifyEmailTenant, verifyEmailRequestTenant, resetPasswordTenant, sendEmailResetPasswordTenant } from "@/controllers/auth.controller";
 import { errorHandlingValidator } from "@/middlewares/validator/error.handling.validator";
 import { loginValidator } from "@/middlewares/validator/login.validator";
 import { registerValidator } from "@/middlewares/validator/register.validator";
@@ -26,8 +26,12 @@ authRouter.patch('/verify-email', verifyToken, verifyEmailValidator, verifyEmail
 authRouter.post('/send-email-reset-password', sendEmailResetPasswordValidator, sendEmailResetPasswordUser)
 authRouter.patch('/reset-password', verifyToken, resetPasswordValidator, resetPasswordUser)
 
+authRouter.post('/tenant/send-email-reset-password', sendEmailResetPasswordValidator, sendEmailResetPasswordTenant)
+authRouter.patch('/tenant/reset-password', verifyToken, resetPasswordValidator, resetPasswordTenant)
+
 authRouter.patch('/tenant/reset-password', verifyToken, resetPasswordValidator, resetPasswordTenant)
 
 authRouter.post('/o-auth', registerValidator, signInWithGoogle)
+authRouter.get('/keep-auth', verifyToken, keepAuth)
 
 export default authRouter

@@ -191,7 +191,7 @@ export default function Home() {
           {
             dataLandingPage?.data?.propertyByRecentBooks ? (
             <div className='flex flex-col gap-1 text-center justify-center w-full'>
-              <h1 className='text-gray-300 text-2xl font-bold'>Oops, Seems you don't have any transactions</h1>
+              <h1 className='text-gray-300 text-2xl font-bold'>Oops, Seems you don't setup your profile account</h1>
               <p className='text-gray-300 text-base font-medium'>Explore Roomify and book any properties you want</p>
             </div>
             ):(
@@ -232,7 +232,7 @@ export default function Home() {
           dataLandingPage?.data?.properties.map((item: any, index: number) => {
             return (
             <div className="carousel-item hover:cursor-pointer hover:translate-y-2 transition duration-100 active:opacity-75" key={index}>
-              <Link href='#'>
+              <Link href={`/property/${item?.slug}`}>
                 <Card 
                 isPending={isPendingDataLandingPage}
                 level={'template'}

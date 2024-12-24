@@ -25,8 +25,7 @@ const useRegisterHook = ({ endPoint, role }: IUseRegisterHookProps) => {
               ));
         }, 
         onError: (err: any) => {
-            console.log(err)
-            toast.error(err?.response?.data?.message)
+            toast.error(err?.response?.data?.message || 'Connection error!')
         } })
   
     return {

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { Field } from 'formik'
+import { Field, ErrorMessage } from 'formik'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import Link from 'next/link'
@@ -27,8 +27,8 @@ const TextInput = ({ labelName, name, placeholder, type }: ITextInputProps) => {
   },[])
 
   return (
-    <div className="grid items-center gap-1.5 w-full relative">
-        <Label htmlFor={name} className='text-base ml-4'>{labelName}</Label>
+    <div className="grid items-center gap-1 w-full relative">
+        <Label htmlFor={name} className='text-base ml-5'>{labelName}</Label>
         {
           name === 'password' && (
             <Link href={forgotPassUrl}>
@@ -37,6 +37,7 @@ const TextInput = ({ labelName, name, placeholder, type }: ITextInputProps) => {
           )
         }
         <Field as={Input} name={name} type={type} id={name} placeholder={placeholder} className="w-full p-6 border border-slate-400 text-base rounded-full"/>
+        <ErrorMessage name={name} component={'div'} className='text-red-600 text-xs font-bold mt-[-15px] bg-red-200 rounded-full p-1 px-5'/>
     </div>
   )
 }

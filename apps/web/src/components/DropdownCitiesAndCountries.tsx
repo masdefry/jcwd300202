@@ -3,6 +3,7 @@
 import instance from '@/utils/axiosInstance'
 import { useMutation } from '@tanstack/react-query'
 import React from 'react'
+import { CiLocationOn } from 'react-icons/ci'
 // import { headerStore } from '@/zustand/headerStore'
 
 export interface IDataDropDown {
@@ -31,7 +32,7 @@ const DropdownCitiesAndCountries = ({ setFieldValue, searchLocation, setSearchLo
     }
 
     return (
-    <section className='bg-white shadow-md rounded-3xl overflow-hidden w-full'>
+    <section className='bg-white shadow-md rounded-md overflow-hidden w-full'>
       <div>
         <ul>
           {
@@ -48,7 +49,7 @@ const DropdownCitiesAndCountries = ({ setFieldValue, searchLocation, setSearchLo
                   })
                   handleClearSearchInput()
                 }} 
-                key={index} className='py-2 hover:bg-slate-300 text-black px-8'>{item?.cityName && item?.cityName + ','} {item?.countryName}</li>
+                key={index} className='text-sm font-bold py-2 flex items-center gap-1.5 hover:bg-gray-800 text-gray-800 hover:text-white px-8'><CiLocationOn size={23} />{item?.cityName && item?.cityName + ','} {item?.countryName}</li>
               )
             })
           }

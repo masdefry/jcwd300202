@@ -22,6 +22,22 @@ export default function AuthProvider({children}: IAuthProviderProps){
             return ""
         }
     })
+
+    useQuery({
+        queryKey: ['keepAuth'],
+        queryFn: async() => {
+            let res = await instance.get('/auth/keep-auth')
+            setKeepAuth({
+                username: res?.data?.data?.username,
+                isVerified: res?.data?.data?.isVerified,
+                profilePictureUrl: res?.data?.data?.profilePictureUrl,
+                role: res?.data?.data?.role,
+                country: res?.data?.data?.country,
+            })
+            console.log(res)
+            return res?.data?.data
+        }
+    })
     // useEffect(() => {
     // }, [])
     // // const fetchKeepAuth = async() => {

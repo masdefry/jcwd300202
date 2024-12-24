@@ -78,7 +78,7 @@ const footerNavMenu = [
     navlist: [
       {
         title:`Login as Tenant`,
-        url:`/auth/tenant`
+        url:`/tenant/auth`
       },  
       {
         title:`Tenant Assistance`,

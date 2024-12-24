@@ -13,8 +13,10 @@ import Image from 'next/image'
 import { RiCloseCircleFill } from 'react-icons/ri'
 import { updateTenantProfileValidationSchema } from '@/features/tenant/profile/schemas/updateTenantProfileValidationSchema'
 import TextInput from '@/features/user/profile/components/TextInput'
+import { useRouter } from 'next/navigation'
 
 const ProfileTenantPage = () => {
+  const router = useRouter()
   const [ imagePreview, setImagePreview ] = useState('')
   const { data: dataTenantProfile, isPending: isPendingTenantProfile } = useQuery({
     queryKey: ['getTenantProfile'],
@@ -55,6 +57,9 @@ const ProfileTenantPage = () => {
     },
     onSuccess: (res: any) => {
       toast.success(res?.message)
+      setTimeout(() => {
+        router.refresh()
+      }, 1500)
     },
     onError: (err: any) => {
       toast.error(err?.response?.data?.message || 'Connection error')
@@ -73,7 +78,8 @@ const ProfileTenantPage = () => {
         email: dataTenantProfile?.email || '',
         pic: dataTenantProfile?.pic || '',
         phoneNumber: dataTenantProfile?.phoneNumber || '',
-        address: dataTenantProfile?.address || ''
+        address: dataTenantProfile?.address || '',
+        companyName: dataTenantProfile?.companyName || ''
       }}
       validationSchema={updateTenantProfileValidationSchema}
       enableReinitialize={true}
@@ -86,7 +92,8 @@ const ProfileTenantPage = () => {
           email: values.email,
           pic: values.pic,
           phoneNumber: values.phoneNumber,
-          address: values.address
+          address: values.address,
+          companyName: values.companyName
         })
       }}
       >
@@ -142,6 +149,7 @@ const ProfileTenantPage = () => {
                   <Field id='email' name='email' type="email" disabled placeholder='mfauzi@gmail.com' className='placeholder-shown:text-sm placeholder-shown:text-slate-300 focus:outline-none text-sm font-medium text-gray-900 focus:ring-slate-600 border border-slate-300 rounded-full px-5 py-2' />
                   <ErrorMessage name='email' component={'div'} className='text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full z-20'/>
                 </div>
+                <TextInput type='text' name='companyName' title='Company Name' placeholder='Roomify Inc'/>
                 <TextInput type='text' name='pic' title='Person In Charge' placeholder='Roomify'/>
                 <TextInput type='text' name='phoneNumber' title='Phone Number' placeholder='08128192xxxxxx'/>
                 <div className='flex flex-col gap-1 '>

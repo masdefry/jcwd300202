@@ -2,7 +2,8 @@
 
 import React from 'react'
 import instance from '@/utils/axiosInstance'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query';
 
 const BookingPage = ({params}: {params: { slug: string}}) => {
 
@@ -16,17 +17,27 @@ const BookingPage = ({params}: {params: { slug: string}}) => {
     }
   })
 
+  const {mutate: mutateTransaction, isPending: isPendingTransaction } = useMutation({
+    mutationFn: async(transactionDetails: any) => {
+      return await instance.post(`/transaction/create`, transactionDetails)
+    },
+    onSuccess: (data: any) => {
+
+    },
+    onError: (error: any) => {
+
+    }
+    
+  })
+
   if(isPendingPropertyRoomType){
     return (
         <div>Loading ...</div>
     )
   }
 
-  const {mutate: mutateTransaction, isPending: isPendingTransaction} = useMutation({
-    mutationFn: async() => {
-      const res = await instance.post(`/transaction/create`)
-    }
-  })
+
+
     
   return (
     <main className='w-full h-screen'>
@@ -111,7 +122,24 @@ const BookingPage = ({params}: {params: { slug: string}}) => {
                   <p className='text-sm font-bold'>TOTAL <span className='text-xs font-normal'>(fees and taxes included)</span></p>
                   <p className='text-xs font-medium'>RP <span className='font-bold text-sm'>460000</span></p>
                 </div>
-                <button className="w-full rounded-full bg-[#e2e8f0] text-black px-7 py-3 mt-10 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200">Continue</button>
+                <button 
+                  onClick={() =>
+                    mutateTransaction({
+                      checkInDate: '',
+                      checkOutDate: '',
+                      total: '',
+                      price: item.price,
+                      qty: 1,
+                      adult: 2,
+                      children: 1,
+                      userId: '',
+                      tenantId: '',
+                      propertyId: item.propertyId,
+                      roomId: item.id
+                    })
+
+                  }
+                  className="w-full rounded-full bg-[#e2e8f0] text-black px-7 py-3 mt-10 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200">Continue</button>
               </div>
             )
           })}

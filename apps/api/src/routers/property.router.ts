@@ -4,8 +4,8 @@ import { Router } from "express";
 const propertyRouter = Router()
 
 propertyRouter.get('/', getProperties)
-propertyRouter.get('/:slug', getPropertyDetail)
-propertyRouter.get('/:propertyId/search', getPropertyRoomTypeByProperty)
+propertyRouter.get('/:slug/search', getPropertyDetail)
+propertyRouter.get('/rooms/:propertyId/search', getPropertyRoomTypeByProperty)
 propertyRouter.get('/nav/filter', dataForFilteringProperty)
 propertyRouter.get('/:propertyRoomTypeId', getRoomType)
 

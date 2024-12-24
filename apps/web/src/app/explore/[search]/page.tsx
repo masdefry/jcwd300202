@@ -27,14 +27,6 @@ import Separator from '@/features/auth/components/Separator';
   
 
 const ExplorePage = ({ searchParams }: { searchParams: any }) => {
-// const ExplorePage = () => {
-  
-    // const searchParams = useSearchParams()
-//   const searchResults = searchStore((state: any) => state.searchResults)
-//   const checkInDate = headerStore((state: any) => state.checkInDate)
-//   const checkOutDate = headerStore((state: any) => state.checkOutDate)
-//   const adult = headerStore((state: any) => state.adult)
-//   const children = headerStore((state: any) => state.children)
     const [totalDays, setTotalDays] = useState(0)
     const [dataProperties, setDataProperties] = useState<any>()
     const [propertyFacilityIdArr, setPropertyFacilityIdArr] = useState<any[]>([])
@@ -454,7 +446,7 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                                                 <p className='text-xs text-gray-600'>Starts from <span className='font-bold text-xl pr-1 text-gray-900'>{item?.propertyRoomType[0]?.price}</span></p>
                                                 <p className='text-xs text-gray-600 font-bold'>Includes tax & price</p>
                                             </div>
-                                            <Link href={`/property/${item?.slug}`} className='rounded-full bg-black text-base font-bold text-white px-6 py-3 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200 mt-3 flex items-center gap-2'><CiBookmarkPlus size={23} />Book this room</Link>
+                                            <Link href={`/property/${item?.slug}/details?check-in-date=${searchParams["check-in-date"]}&check-out-date=${searchParams["check-out-date"]}&adult=${searchParams.adult}&children=${searchParams.children}`} className='rounded-full bg-black text-base font-bold text-white px-6 py-3 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200 mt-3 flex items-center gap-2'><CiBookmarkPlus size={23} />Book this room</Link>
                                         </div>
 
                                     </div>

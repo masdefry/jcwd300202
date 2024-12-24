@@ -12,11 +12,9 @@ import { addDays, format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-// import { headerStore } from '@/zustand/headerStore'
 import { useMutation } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import instance from '@/utils/axiosInstance'
-// import  searchStore  from '@/zustand/searchStore'
 import  useSearchHook from '@/hooks/useSearchHook'
 import { Formik, Form, ErrorMessage } from 'formik'
 import { searchValidationSchema } from '@/features/home/schemas/searchValidationSchema'
@@ -57,34 +55,17 @@ const SearchHeader2XLWidth = ({
       searchResults
     } = useSearchHook()
 
-    // const [checkInDate, setCheckInDate] = useState<Date>(new Date())
-    // const [checkOutDate, setCheckOutDate] = useState<Date>(addDays(new Date(), 1))
-    // const totalRooms = headerStore((state: any) => state.totalRooms)
-    // const totalGuest = headerStore((state: any) => state.totalGuest)
-    // const country = headerStore((state: any) => state.countryId)
-    // const city = headerStore((state: any) => state.cityId)
-    // const adult = headerStore((state: any) => state.adult)
-    // const children = headerStore((state: any) => state.children)
-    // const checkInDate = headerStore((state: any) => state.checkInDate)
-    // const checkOutDate = headerStore((state: any) => state.checkOutDate)
-    // const setCheckInDate = headerStore((state: any) => state.setCheckInDate)
-    // const setCheckOutDate = headerStore((state: any) => state.setCheckOutDate)
     const [ showGuestAndRoomCounter, setShowGuestAndRoomCounter ] = useState(false)
     const [ slug, setSlug ] = useState('')
     const router = useRouter()
-    // const setSearchResults = searchStore((state: any) => state.setSearchResults)
     
     const {
       mutate: mutateSearch,
       isPending: isPendingSearch
     } = useMutation({
       mutationFn: async(values: any) => {
-        // console.log('DISINI')
-        // console.log(country, city, '>>>>>>')
-        // console.log(checkInDate, checkOutDate, 'TTTTTTTTTTTTTTT')
         setSlug(`?country=${values.country}&city=${values.city}&check-in-date=${values.checkInDate}&check-out-date=${values.checkOutDate }&adult=${values.adult}&children=${values.children}`)
         return await instance.get(
-          // `/search?country=${values.country}&city=${values.city}&checkInDate=${values.checkInDate}&checkOutDate=${values.checkOutDate}&adult=${values.adult}&children=${values.children}`, {
           `/property?countryId=${values.country}&cityId=${values.city}&checkInDate=${values.checkInDate}&checkOutDate=${values.checkOutDate}&adult=${values.adult}&children=${values.children}`, {
           })
         },
@@ -181,7 +162,6 @@ const SearchHeader2XLWidth = ({
                     </PopoverContent>
                 </Popover>
                 <ErrorMessage name="checkInDate" component="div" />
-                {/* <input id='checkInDate' className="pt-2 p-1 box-border transition duration-200 text-base font-normal border-b-2 border-white focus:border-blue-600 focus:outline-none" name='checkInDate' type="text" placeholder="01/01/2000" /> */}
               </div>
               <div className='w-1/4 box-border border-r border-gray-300 relative flex flex-col px-5 gap-1'>
                 <label htmlFor='checkOutDate' className="min-w-max flex items-center gap-3 text-gray-600 text-sm font-semibold"><CiCalendar size={19}/>Check-Out</label>
@@ -217,7 +197,6 @@ const SearchHeader2XLWidth = ({
                   </PopoverContent>
                 </Popover>
                 <ErrorMessage name="checkOutDate" component="div" />
-                {/* <input id='checkOutDate' className="pt-2 p-1 box-border transition duration-200 text-base font-normal border-b-2 border-white focus:border-blue-600 focus:outline-none" name='checkOutDate' type="text" placeholder="02/01/2000" /> */}
               </div>
               <div className='w-1/4 box-border border-gray-300 relative flex flex-col px-5 gap-1'>
                 <label htmlFor='guestRoom' className="min-w-max flex items-center gap-3 text-gray-600 text-sm font-semibold"><GoPerson size={19}/>Guest Room</label>

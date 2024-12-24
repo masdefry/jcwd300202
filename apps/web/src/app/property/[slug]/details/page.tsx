@@ -22,7 +22,7 @@ import authStore from '@/zustand/authStore'
 import { useRouter } from 'next/navigation' 
 import toast from 'react-hot-toast'
 
-const PropertyDetailPage = ({params}:{params : { slug: string }}) => {
+const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, searchParams: any}) => {
     const token = authStore(state => state.token)
     const router = useRouter()
     const handleUnauthorizedUser = () => {
@@ -34,29 +34,15 @@ const PropertyDetailPage = ({params}:{params : { slug: string }}) => {
     const { data: dataPropertyDetail, isPending: isPendingPropertyDetail } = useQuery({
         queryKey: ['getPropertyDetail'],
         queryFn: async() => {
-            const res = await instance.get(`/property/${params.slug}`)
+            const res = await instance.get(`/property/${params.slug}/search`)
             mutatePropertyRoomType({ limit: 2, offset: 0, propertyId: res?.data?.data?.property?.id })
-            console.log('propertyDetail', res?.data?.data?.propertyDetail)
-            // console.log('propertyFacilities', res?.data?.data?.propertyFacilities)
-            // console.log('propertyImages', res?.data?.data?.propertyImages)
-            // console.log('propertyRoom', res?.data?.data?.propertyRoomType)
-            // console.log('propertyReview', res?.data?.data?.reviews)
-            // console.log('propertyTenant', res?.data?.data?.tenant)
-            console.log('property room type', res?.data?.data?.propertyRoomType)
-            // property,
-            //         propertyDetail: property.propertyDetail,
-            //         propertyFacilities: property.propertyHasFacility.map(item => {item.propertyFacility}),
-            //         propertyImages: property.propertyDetail?.propertyImage,
-            //         roomTypes: property.propertyRoomType,
-            //         reviews: property.review,
-            //         tenant: property.tenant
             return res?.data?.data
         }
       })
   
   const { mutate: mutatePropertyRoomType, data: dataPropertyRoomType, isPending: isPendingPropertyRoomType } = useMutation({
     mutationFn: async({ limit, offset, propertyId }: { limit: number, offset: number, propertyId: string }) => {
-        const res = await instance.get(`/property/${propertyId}/search?limit=${limit}&offset=${offset}`)
+        const res = await instance.get(`/property/rooms/${propertyId}/search?limit=${limit}&offset=${offset}`)
         return res?.data?.data
     },
     onSuccess: (res) => {

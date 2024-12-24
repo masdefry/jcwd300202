@@ -10,8 +10,13 @@ import { IoSettingsOutline } from 'react-icons/io5';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
+import authStore from '@/zustand/authStore';
+import { RiCloseCircleFill } from 'react-icons/ri';
 
 const ProfileUserLayout = ({  children }: { children: ReactNode }) => {
+  const profilePictureUrl = authStore(state => state.profilePictureUrl)  
+  const username = authStore(state => state.username)  
+  const isVerified = authStore(state => state.isVerified)  
   const router = useRouter()
   const pathname = usePathname()
   const [ menus, setMenus] = useState([
@@ -53,10 +58,21 @@ const ProfileUserLayout = ({  children }: { children: ReactNode }) => {
 
                 </figure>
                 <hgroup className='flex flex-col'>
-                  <h1 className='text-base font-bold text-gray-800'>Muhamad Fauzi Aviawan</h1>
+                  <h1 className='text-base font-bold text-gray-800'>{username}</h1>
                   <div className='flex items-center gap-2 text-xs font-semibold text-gray-400'>
-                    <MdVerified className='text-blue-600' size={13}/>
-                    <p>Verified</p>
+                    {
+                      isVerified ? (
+                        <div className='flex items-center gap-2 text-xs font-semibold text-gray-400'>
+                          <MdVerified className='text-blue-600' size={13}/>
+                          <p>Verified</p>
+                        </div>
+                      ) : (
+                        <div className='flex items-center gap-2 text-xs font-semibold text-gray-400'>
+                          <RiCloseCircleFill className='text-red-600' size={13}/>
+                          <p>Not Verified</p>
+                        </div>
+                      )
+                    }
                   </div>
                   <p className='text-sm font-normal text-gray-400'>Google</p>
                 </hgroup>

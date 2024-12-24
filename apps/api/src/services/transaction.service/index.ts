@@ -14,7 +14,15 @@ const tokenSnap = new midtransClient.Snap({
     clientKey: 'SB-Mid-client-RHLdbA1UmPF_rh8s',
 })
 
-export const createTransactionService = async({ checkInDate, checkOutDate, total, price, qty, adult, children, userId, tenantId, propertyId, roomId }: ITransaction) => {
+export const createTransactionService = async({ checkInDate, checkOutDate, total, price, qty, adult, children, id, tenantId, propertyId, roomId }: ITransaction) => {
+    const isUserExist = await prisma.user.findUnique({
+        where: {
+            id
+        }
+    })
+
+    if(!isUserExist?.id || isUserExist.deletedAt) throw { msg: 'User not found!', status: 406 }
+    
     const propertyInTransaction = await prisma.property.findUnique({
         where: {
             id: propertyId
@@ -58,7 +66,7 @@ export const createTransactionService = async({ checkInDate, checkOutDate, total
                 adult,
                 children,
                 expiryDate: addHours(new Date(), 1),
-                userId,
+                userId: id,
                 tenantId,
                 propertyId,
                 roomId,

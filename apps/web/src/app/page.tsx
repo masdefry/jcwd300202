@@ -232,7 +232,7 @@ export default function Home() {
           dataLandingPage?.data?.properties.map((item: any, index: number) => {
             return (
             <div className="carousel-item hover:cursor-pointer hover:translate-y-2 transition duration-100 active:opacity-75" key={index}>
-              <Link href={`/property/${item?.slug}`}>
+              <Link href={`/property/${item?.slug}/details`}>
                 <Card 
                 isPending={isPendingDataLandingPage}
                 level={'template'}

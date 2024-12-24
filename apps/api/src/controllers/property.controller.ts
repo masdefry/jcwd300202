@@ -134,6 +134,7 @@ export const createProperty = async(req: Request, res: Response, next: NextFunct
 export const getPropertyDetail = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const { slug } = req.params
+        const { checkInDate, checkOutDate, adult, children } = req.query
     
         const property = await prisma.property.findFirst({
             where: {

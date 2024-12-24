@@ -1,7 +1,7 @@
 'use client'
 
 import CardSmall from '@/components/CardSmall'
-import SimpleMap from '@/components/SimpleMap'
+// import SimpleMap from '@/components/SimpleMap'
 import { Separator } from '@/components/ui/separator'
 import instance from '@/utils/axiosInstance'
 import { useQuery } from '@tanstack/react-query'
@@ -126,7 +126,7 @@ const PropertyDetailPage = ({params}:{params : { slug: string }}) => {
                 </section>
             </section>
             <section id='map' className=' col-span-1 rounded-md drop-shadow-md row-span-2 w-full h-full overflow-hidden'>
-            <SimpleMap />
+            {/* <SimpleMap /> */}
             </section>
             <section className='p-5 flex flex-col gap-5 col-span-1 rounded-md drop-shadow-md bg-white row-span-2'>
                 <hgroup className='flex items-center justify-between'>

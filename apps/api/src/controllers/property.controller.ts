@@ -454,6 +454,7 @@ export const getProperties = async(req: Request, res: Response, next: NextFuncti
 
         let numberedPropertyFacilityIdArr, numberedPropertyRoomFacilityIdArr, numberedPropertyTypeIdArr
         let propertyFacilityFromPrisma, propertyRoomFacilityFromPrisma
+        let city, country
 
         if(propertyfacilityidarr) {
             const propertyFacilityIdStr = propertyfacilityidarr as string
@@ -491,20 +492,23 @@ export const getProperties = async(req: Request, res: Response, next: NextFuncti
             numberedPropertyTypeIdArr = numberedPropertyTypeIdArr.map(item => Number(item))
         }
 
-        const city = await prisma.city.findUnique({
-            where: {
-                id: Number(cityId)
-            }
-        })
-
-        const country = await prisma.country.findUnique({
-            where: {
-                id: Number(countryId)
-            }
-        })
-        if(cityId && countryId) {
-        } else if(countryId) {
+        if(typeof cityId === 'number') {
+            city = await prisma.city.findUnique({
+                where: {
+                    id: cityId ? Number(cityId) : undefined
+                }
+            })
         }
+        if(typeof countryId === 'number') {
+            country = await prisma.country.findUnique({
+                where: {
+                    id: countryId ? Number(countryId) : undefined
+                }
+            })
+            
+        }
+
+
         const whereConditionPropertyRoomFacility = propertyroomfacilityidarr && numberedPropertyRoomFacilityIdArr && numberedPropertyRoomFacilityIdArr.length > 0 ? 
         numberedPropertyRoomFacilityIdArr.map(item => ({
             propertyRoomType: {
@@ -589,41 +593,73 @@ export const getProperties = async(req: Request, res: Response, next: NextFuncti
             // }: {}
         ].filter(item => Object.keys(item).length)
 
-        const countProperties = await prisma.property.count({
-            where: {
-                AND: [...whereCondition, ...whereConditionPropertyFacility, ...whereConditionPropertyRoomFacility]
-            }
-        })
+        
+        let properties, countProperties
+        if(whereCondition[0]?.countryId) {
+            countProperties = await prisma.property.count({
+                where: {
+                    AND: [...whereCondition, ...whereConditionPropertyFacility, ...whereConditionPropertyRoomFacility]
+                }
+            })
+            properties = await prisma.property.findMany({
+                take: Number(limit),
+                skip: Number(offset),
+                where: {
+                    AND: [...whereCondition, ...whereConditionPropertyFacility, ...whereConditionPropertyRoomFacility],
+                },
+                include: {
+                    propertyRoomType: {
+                        orderBy: {
+                            price: 'asc'
+                        }
+                    },
+                    propertyType: true,
+                    propertyHasFacility: {
+                        include : {
+                            propertyFacility: true
+                        }
+                    },
+                    city: true,
+                    country: true,
+                    propertyDetail: {
+                        include: {
+                            propertyImage: true
+                        }
+                    },
+                    review: true
+                    
+                }
+            })
+        } else {
+            countProperties = await prisma.property.count({})
+            properties = await prisma.property.findMany({
+                take: Number(limit),
+                skip: Number(offset),
+                include: {
+                    propertyRoomType: {
+                        orderBy: {
+                            price: 'asc'
+                        }
+                    },
+                    propertyType: true,
+                    propertyHasFacility: {
+                        include : {
+                            propertyFacility: true
+                        }
+                    },
+                    city: true,
+                    country: true,
+                    propertyDetail: {
+                        include: {
+                            propertyImage: true
+                        }
+                    },
+                    review: true
+                    
+                }
+            })
 
-        const properties = await prisma.property.findMany({
-            take: Number(limit),
-            skip: Number(offset),
-            where: {
-                AND: [...whereCondition, ...whereConditionPropertyFacility, ...whereConditionPropertyRoomFacility],
-            },
-            include: {
-                propertyRoomType: {
-                    orderBy: {
-                        price: 'asc'
-                    }
-                },
-                propertyType: true,
-                propertyHasFacility: {
-                    include : {
-                        propertyFacility: true
-                    }
-                },
-                city: true,
-                country: true,
-                propertyDetail: {
-                    include: {
-                        propertyImage: true
-                    }
-                },
-                review: true
-                
-            }
-        })
+        }
 
         const propertyAvgRating = await prisma.review.aggregate({
             _avg: {
@@ -706,7 +742,6 @@ export const getProperties = async(req: Request, res: Response, next: NextFuncti
             error: false,
             message: 'Get properties success',
             data: {
-                headers: req.headers,
                 numberedPropertyFacilityIdArr,
                 countProperties,
                 properties,

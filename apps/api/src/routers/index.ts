@@ -13,6 +13,7 @@ import cityRouter from "./city.router";
 import countryRouter from "./country.router";
 import roomTypeRouter from './property.room.type.router'
 import tenantRouter from "./tenant.router";
+import historyViewRouter from "./history.view.router";
 
 
 const router = Router()
@@ -31,6 +32,7 @@ router.use('/tenant', tenantRouter)
 router.use('/city', cityRouter)
 router.use('/country', countryRouter)
 router.use('/room-type', roomTypeRouter)
+router.use('/history', historyViewRouter)
 
 
 

@@ -32,7 +32,7 @@ const ProfileUserLayout = ({  children }: { children: ReactNode }) => {
         icon: <MdOutlineManageAccounts size={20} className='text-blue-400'/>
       },
       {
-        link: '#',
+        link: '/tenant/property/list',
         title: 'Property List',
         icon: <GrNotes size={20} className='text-blue-400'/>
       },

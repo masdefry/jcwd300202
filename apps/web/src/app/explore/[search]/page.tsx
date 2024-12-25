@@ -339,7 +339,7 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                         <p className='text-gray-800 font-normal mt-[-3px]'>{dataProperties?.countProperties} property found</p>
                     </div>
                     <span className='w-2/3 flex gap-2 items-center'>
-                        <label htmlFor="Sort by:" className='text-xs min-w-max font-bold text-gray-500'>Sort: by</label>
+                        <label htmlFor="Sort by:" className='text-xs min-w-max font-bold text-gray-500'>Sort by:</label>
                         <select defaultValue="asc-price" id="countries" className="bg-gray-50 border border-slate-300 text-gray-800 text-xs font-semibold rounded-full h-[3em] p-1.5 px-2 focus:outline-none focus:ring-slate-400 focus:border-slate-400 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <option value="asc-price">Lowest to Highest Price</option>
                             <option value="desc-price">Highest to Lowest Price</option>

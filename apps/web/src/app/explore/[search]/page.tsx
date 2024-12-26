@@ -79,7 +79,7 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
         const { isPending: isPendingProperties } = useQuery({
             queryKey: ['getProperties'],
             queryFn: async() => {
-                const res = await instance.get(`/property?countryId=${searchParams.country}&cityId=${searchParams.city}&checkInDate=${searchParams["check-in-date"]}&checkOutDate=${searchParams["check-out-date"]}&adult=${searchParams.adult}&children=${searchParams.children}&offset=0&limit=5`, {
+                const res = await instance.get(`/property?countryId=${searchParams.country}&cityId=${searchParams.city}&checkInDate=${searchParams["check-in-date"]}&checkOutDate=${searchParams["check-out-date"]}&adult=${searchParams['adult']}&children=${searchParams['children']}&offset=0&limit=5`, {
                     headers: {
                         propertyFacilityIdArr: [], 
                         propertyRoomFacilityIdArr: [],
@@ -94,7 +94,7 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
         
         const { mutate: mutateExplorePagination, isPending: isPendingExplorePagination } = useMutation({
             mutationFn: async({ limit = 5, offset = 0 }: { limit?: number, offset?: number }) => {
-                const res = await instance.get(`/property?countryId=${searchParams.country}&cityId=${searchParams.city}&checkInDate=${searchParams["check-in-date"]}&checkOutDate=${searchParams["check-out-date"]}&adult=${searchParams.adult}&children=${searchParams.children}&offset=${offset}&limit=${limit}`, {
+                const res = await instance.get(`/property?countryId=${searchParams.country}&cityId=${searchParams.city}&checkInDate=${searchParams["check-in-date"]}&checkOutDate=${searchParams["check-out-date"]}&adult=${searchParams['adult']}&children=${searchParams['children']}&offset=${offset}&limit=${limit}`, {
                     headers: {
                         propertyFacilityIdArr, 
                         propertyRoomFacilityIdArr,

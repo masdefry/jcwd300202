@@ -86,6 +86,7 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
             queryKey: ['getProperties'],
             queryFn: async() => {
                 const res = await instance.get(`/property?countryId=${searchParams.country}&cityId=${searchParams.city}&checkInDate=${searchParams["check-in-date"]}&checkOutDate=${searchParams["check-out-date"]}&adult=${searchParams.adult}&children=${searchParams.children}&offset=0&limit=5&order=asc&sortBy=price`, {
+
                     headers: {
                         propertyFacilityIdArr: [], 
                         propertyRoomFacilityIdArr: [],
@@ -104,6 +105,7 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
             mutationFn: async({ limit = 5, offset = 0, sortBy, order }: { limit?: number, offset?: number, sortBy?: string, order?: string }) => {
                 
                 const res = await instance.get(`/property?countryId=${searchParams.country}&cityId=${searchParams.city}&checkInDate=${searchParams["check-in-date"]}&checkOutDate=${searchParams["check-out-date"]}&adult=${searchParams.adult}&children=${searchParams.children}&offset=${offset || 0}&limit=${limit || 5}&order=${searchParams.order || 'asc'}&sortBy=${sortBy || 'price'}`, {
+
                     headers: {
                         propertyFacilityIdArr, 
                         propertyRoomFacilityIdArr,

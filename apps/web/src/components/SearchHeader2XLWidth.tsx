@@ -98,6 +98,8 @@ const SearchHeader2XLWidth = ({
           values.adult = totalGuest.adult
           values.children = totalGuest.children
           mutateSearch(values)
+          console.log(values.adult, 'adultt'); 
+          console.log(values.children, 'childrennn');
         }}
       >
         {({

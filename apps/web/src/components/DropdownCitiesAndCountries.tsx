@@ -49,7 +49,7 @@ const DropdownCitiesAndCountries = ({ setFieldValue, searchLocation, setSearchLo
                   })
                   handleClearSearchInput()
                 }} 
-                key={index} className='text-sm font-bold py-2 flex items-center gap-1.5 hover:bg-gray-800 text-gray-800 hover:text-white px-8'><CiLocationOn size={23} />{item?.cityName && item?.cityName + ','} {item?.countryName}</li>
+                key={index} className='text-sm font-bold py-2 flex items-center gap-1.5 hover:cursor-pointer hover:bg-gray-800 text-gray-800 hover:text-white px-8'><CiLocationOn size={23} />{item?.cityName && item?.cityName + ','} {item?.countryName}</li>
               )
             })
           }

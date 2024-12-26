@@ -424,6 +424,7 @@ model Season {
   isPeak    Boolean  @default(false)
   startDate DateTime
   endDate   DateTime
+  roomAvailability Boolean @default(true)
 
   seasonalPrice SeasonalPrice[]
 

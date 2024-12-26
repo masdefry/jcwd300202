@@ -16,6 +16,7 @@ import { indexOf } from 'cypress/types/lodash';
 import useFilteringPropertyHook from '@/features/property/hooks/useFilteringPropertyHook';
 import Image from 'next/image';
 import { TbConfetti } from 'react-icons/tb';
+import { CgSearchFound } from "react-icons/cg";
 import {
     Select,
     SelectContent,
@@ -24,15 +25,20 @@ import {
     SelectValue,
   } from "@/components/ui/select"
 import Separator from '@/features/auth/components/Separator';
-  
+import { useRouter } from 'next/navigation';  
+import { usePathname } from 'next/navigation';
 
 const ExplorePage = ({ searchParams }: { searchParams: any }) => {
+    const pathname = usePathname()
+    const router = useRouter()
     const [totalDays, setTotalDays] = useState(0)
     const [dataProperties, setDataProperties] = useState<any>()
     const [propertyFacilityIdArr, setPropertyFacilityIdArr] = useState<any[]>([])
     const [propertyRoomFacilityIdArr, setPropertyRoomFacilityIdArr] = useState<any[]>([])
     const [propertyTypeIdArr, setPropertyTypeIdArr] = useState<any[]>([])
+    const urlParams = new URLSearchParams({
 
+    })
     const handlePropertyFacilityFilter = (isChecked: boolean, value: string | number) => {
         if (isChecked){
             setPropertyFacilityIdArr([...propertyFacilityIdArr, value])
@@ -79,29 +85,39 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
         const { isPending: isPendingProperties } = useQuery({
             queryKey: ['getProperties'],
             queryFn: async() => {
-                const res = await instance.get(`/property?countryId=${searchParams.country}&cityId=${searchParams.city}&checkInDate=${searchParams["check-in-date"]}&checkOutDate=${searchParams["check-out-date"]}&adult=${searchParams['adult']}&children=${searchParams['children']}&offset=0&limit=5`, {
+                const res = await instance.get(`/property?countryId=${searchParams.country}&cityId=${searchParams.city}&checkInDate=${searchParams["check-in-date"]}&checkOutDate=${searchParams["check-out-date"]}&adult=${searchParams.adult}&children=${searchParams.children}&offset=0&limit=5&order=asc&sortBy=price`, {
+
                     headers: {
                         propertyFacilityIdArr: [], 
                         propertyRoomFacilityIdArr: [],
                         propertyTypeIdArr: [], 
                     }
                 })
+                
                 setDataProperties(res?.data?.data)
                 setDataForFilteringProperty(res?.data?.data?.dataForFilteringProperty)
+                console.log(res)
                 return res?.data?.data
             }
         })
         
         const { mutate: mutateExplorePagination, isPending: isPendingExplorePagination } = useMutation({
-            mutationFn: async({ limit = 5, offset = 0 }: { limit?: number, offset?: number }) => {
-                const res = await instance.get(`/property?countryId=${searchParams.country}&cityId=${searchParams.city}&checkInDate=${searchParams["check-in-date"]}&checkOutDate=${searchParams["check-out-date"]}&adult=${searchParams['adult']}&children=${searchParams['children']}&offset=${offset}&limit=${limit}`, {
+            mutationFn: async({ limit = 5, offset = 0, sortBy, order }: { limit?: number, offset?: number, sortBy?: string, order?: string }) => {
+                
+                const res = await instance.get(`/property?countryId=${searchParams.country}&cityId=${searchParams.city}&checkInDate=${searchParams["check-in-date"]}&checkOutDate=${searchParams["check-out-date"]}&adult=${searchParams.adult}&children=${searchParams.children}&offset=${offset || 0}&limit=${limit || 5}&order=${searchParams.order || 'asc'}&sortBy=${sortBy || 'price'}`, {
+
                     headers: {
                         propertyFacilityIdArr, 
                         propertyRoomFacilityIdArr,
                         propertyTypeIdArr, 
                     }
                 })
+
+                console.log(res)
                 setDataProperties(res?.data?.data)
+            },
+            onError: (err) => {
+                console.log(err)
             }
         })
     // const { data: dataProperties, isPending, isError, error} = useQuery({
@@ -328,7 +344,7 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                     </div>
                 </section>
             <div className='col-span-3 w-full min-h-min flex flex-col gap-3 px-3'>
-                <div className='grid grid-cols-4 gap-5'>
+                <div className='grid grid-cols-4 gap-4'>
                     <span className='flex items-center gap-5 col-span-2'>
                     <div className='w-1/3 text-sm font-bold'>
                     {
@@ -336,14 +352,20 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                             <p className='text-gray-800'>{dataProperties?.city?.name && dataProperties?.city?.name + ','} {dataProperties?.country?.name}</p>
                         )
                     }
-                        <p className='text-gray-800 font-normal mt-[-3px]'>{dataProperties?.countProperties} property found</p>
+                        <p className='text-gray-800 font-normal mt-[-3px] flex items-center'>{dataProperties?.countProperties} property found<CgSearchFound className='ml-2 text-green-600'/></p>
                     </div>
                     <span className='w-2/3 flex gap-2 items-center'>
-                        <label htmlFor="Sort by:" className='text-xs min-w-max font-bold text-gray-500'>Sort by:</label>
-                        <select defaultValue="asc-price" id="countries" className="bg-gray-50 border border-slate-300 text-gray-800 text-xs font-semibold rounded-full h-[3em] p-1.5 px-2 focus:outline-none focus:ring-slate-400 focus:border-slate-400 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        <label htmlFor="sort" className='text-xs min-w-max font-bold text-gray-500'>Sort by:</label>
+                        <select name='sort' 
+                        onChange={(e) =>{
+                            searchParams['sort-by'] = e.target.value.split('-')[1]
+                            searchParams.order = e.target.value.split('-')[0]
+                            // router.push(`?sort-by=${e.target.value.split('-')[1]}&order=${e.target.value.split('-')[0]}`)                            
+                            mutateExplorePagination({ sortBy: e.target.value.split('-')[1], order: e.target.value.split('-')[0] })
+                            }} defaultValue={`${searchParams?.order || 'asc'}-${searchParams['sort-by'] || 'price'}`} id="sort" className="bg-gray-50 border border-slate-300 text-gray-800 text-xs font-semibold rounded-full h-[3em] p-1.5 px-2 focus:outline-none focus:ring-slate-400 focus:border-slate-400 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <option value="asc-price">Lowest to Highest Price</option>
                             <option value="desc-price">Highest to Lowest Price</option>
-                            <option value="rating">Ratings</option>
+                            {/* <option value="rating">Ratings</option> */}
                             <option value="asc-name">Ascending by Name</option>
                             <option value="desc-name">Descending by Name</option>
                         </select>

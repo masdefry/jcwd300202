@@ -441,8 +441,8 @@ export const getProperties = async(req: Request, res: Response, next: NextFuncti
             children = 0, 
             limit = 5, 
             offset = 0, 
-            sortPrice = 'asc',
-            sortName = 'asc',
+            sortBy = 'price',
+            order = 'asc',
             ratings 
         } = req.query
 
@@ -455,7 +455,7 @@ export const getProperties = async(req: Request, res: Response, next: NextFuncti
         let numberedPropertyFacilityIdArr, numberedPropertyRoomFacilityIdArr, numberedPropertyTypeIdArr
         let propertyFacilityFromPrisma, propertyRoomFacilityFromPrisma
         let city, country
-
+        if(!sortBy) throw { msg: 'Sort parameter not found!', status: 406 }
         if(propertyfacilityidarr) {
             const propertyFacilityIdStr = propertyfacilityidarr as string
             numberedPropertyFacilityIdArr = propertyFacilityIdStr.split(',')
@@ -492,23 +492,22 @@ export const getProperties = async(req: Request, res: Response, next: NextFuncti
             numberedPropertyTypeIdArr = numberedPropertyTypeIdArr.map(item => Number(item))
         }
 
-        if(typeof cityId === 'number') {
-            city = await prisma.city.findUnique({
-                where: {
-                    id: cityId ? Number(cityId) : undefined
-                }
-            })
-        }
-        if(typeof countryId === 'number') {
-            country = await prisma.country.findUnique({
-                where: {
-                    id: countryId ? Number(countryId) : undefined
-                }
-            })
-            
-        }
-
-
+        // cityId && (
+        //     city = await prisma.city.findUnique({
+        //         where: {
+        //             id: Number(cityId)
+        //         }
+        //     })
+        // ) 
+        
+        // countryId && (
+        //     country = await prisma.country.findUnique({
+        //         where: {
+        //             id: Number(countryId)
+        //         }
+        //     })
+        // )
+        
         const whereConditionPropertyRoomFacility = propertyroomfacilityidarr && numberedPropertyRoomFacilityIdArr && numberedPropertyRoomFacilityIdArr.length > 0 ? 
         numberedPropertyRoomFacilityIdArr.map(item => ({
             propertyRoomType: {
@@ -533,13 +532,17 @@ export const getProperties = async(req: Request, res: Response, next: NextFuncti
         }))
         : []
 
-        const whereCondition = [
+        // const whereConditionLocation = [
+            
+        // ].filter(item => Object.keys(item).length)
+
+        const whereConditionGeneral: any = [
             countryId ? {
                 countryId: Number(countryId),
-            } : {},
+            } : null,
             cityId ? {
                 cityId: Number(cityId),
-            } : {},
+            } : null,
             minPrice && maxPrice ? {
                 propertyRoomType: {
                     some: {
@@ -549,7 +552,7 @@ export const getProperties = async(req: Request, res: Response, next: NextFuncti
                         },
                     }
                 }
-            } : {},
+            } : null,
             (adult && !isNaN(Number(adult))) ? {
                 propertyRoomType: {
                     some: {
@@ -559,53 +562,152 @@ export const getProperties = async(req: Request, res: Response, next: NextFuncti
                         },
                     }
                 }
-            } : {},
-            // propertyroomfacilityidarr && numberedPropertyRoomFacilityIdArr && numberedPropertyRoomFacilityIdArr.length > 0 ? 
-            //     numberedPropertyRoomFacilityIdArr.map(item => ({
-            //         propertyRoomType: {
-            //             some: {
-            //                 roomHasFacilities: {
-            //                     some: {
-            //                         propertyRoomFacilityId: {
-            //                             in: propertyRoomFacilityFromPrisma?.map(item => item.id)
-            //                         }
-            //                     }
-            //                 }
-            //             }
-            //         }
-            //     }))
-            //  : {},
+            } : null,
             propertytypeidarr && numberedPropertyTypeIdArr && numberedPropertyTypeIdArr.length > 0 ? {
                 propertyType: {
                     id: {
                         in: numberedPropertyTypeIdArr
                     }
                 },
-            } : {},
-            // propertyfacilityidarr && numberedPropertyFacilityIdArr && numberedPropertyFacilityIdArr.length > 0 ? {
-            //     propertyHasFacility : {
-            //         every : {
-            //             propertyFacilityId: {
-            //                 in: propertyFacilityFromPrisma?.map(item => item.id)
-            //             }
-            //         }
-            //     },
-            // }: {}
-        ].filter(item => Object.keys(item).length)
-
+            } : null,
+        ].filter(Boolean).filter(item => item?.countryId !== null).filter(item => item?.cityId !== null)
+        console.log('>>>')
+        console.log(Number(countryId))
         
-        let properties, countProperties
-        if(whereCondition[0]?.countryId) {
-            countProperties = await prisma.property.count({
-                where: {
-                    AND: [...whereCondition, ...whereConditionPropertyFacility, ...whereConditionPropertyRoomFacility]
+        const whereCondition = [...whereConditionGeneral, ...whereConditionPropertyFacility, ...whereConditionPropertyRoomFacility].length > 0 ? {
+            AND: [...whereConditionGeneral, ...whereConditionPropertyFacility, ...whereConditionPropertyRoomFacility].filter(Boolean)
+        } : {}
+        let properties, propertiesWithoutLimit, sortedProperties, sortedPropertiesId
+        
+        if(( countryId && checkInDate && checkOutDate ) || propertytypeidarr || propertyfacilityidarr || propertyroomfacilityidarr) {
+            propertiesWithoutLimit = await prisma.property.findMany({
+                // where: {
+                //     AND: [...whereConditionGeneral, ...whereConditionPropertyFacility, ...whereConditionPropertyRoomFacility].filter(Boolean),
+                //     OR: [
+                //         cityId: Number(cityId)
+                //     ]
+                // },
+                where: whereCondition,
+                include: {
+                    propertyRoomType : true
                 }
             })
+            if( sortBy === 'name' ) {
+                sortedProperties = await prisma.property.findMany({
+                    where: {
+                        id: {
+                            in: propertiesWithoutLimit.map(item => item?.id)
+                        }
+                    },
+                    select: {
+                        id: true
+                    },
+                    orderBy: {
+                        name: order === 'desc' ? 'desc' : 'asc'
+                    },
+                    take: Number(limit),
+                    skip: Number(offset)
+                })
+                sortedPropertiesId = sortedProperties?.map(item => item.id)
+            } else {
+                const getPropertiesId = await prisma.property.findMany({
+                    where: {
+                        id: {
+                            in: propertiesWithoutLimit.map(item => item?.id)
+                        }
+                    },
+                    select: {
+                        id: true
+                    }
+                })
+                sortedProperties = await prisma.propertyRoomType.groupBy({
+                    where: {
+                        propertyId: {
+                            in: getPropertiesId.map(item => item?.id)
+                        }
+                    },
+                    by: ['propertyId'],
+                    orderBy: {
+                        _min: {
+                            price: order === 'desc' ? 'desc' : 'asc'
+                        },
+                    },
+                    take: Number(limit),
+                    skip: Number(offset)
+                })
+                sortedPropertiesId = sortedProperties?.map(item => item.propertyId)
+            }
+            
             properties = await prisma.property.findMany({
-                take: Number(limit),
-                skip: Number(offset),
                 where: {
-                    AND: [...whereCondition, ...whereConditionPropertyFacility, ...whereConditionPropertyRoomFacility],
+                    // AND: [...whereCondition, ...whereConditionPropertyFacility, ...whereConditionPropertyRoomFacility],
+                    id: {
+                        in: sortedPropertiesId
+                    }
+                },
+                include: {
+                    propertyRoomType: {
+                        orderBy: {
+                            price: 'asc'
+                        }
+                    },
+                    propertyType: true,
+                    propertyHasFacility: {
+                        include : {
+                            propertyFacility: true
+                        }
+                    },
+                    city: true,
+                    country: true,
+                    propertyDetail: {
+                        include: {
+                            propertyImage: true
+                        }
+                    },
+                    review: true,
+                    
+                },
+                orderBy: {
+                    name: order === 'desc' ? 'desc' : 'asc'
+                }
+            })
+        } else {
+            propertiesWithoutLimit = await prisma.property.findMany({
+                include: {
+                    propertyRoomType: true
+                }
+            })
+            if( sortBy === 'name' ) {
+                sortedProperties = await prisma.property.findMany({
+                    select: {
+                        id: true
+                    },
+                    orderBy: {
+                        name: order === 'desc' ? 'desc' : 'asc'
+                    },
+                    take: Number(limit),
+                    skip: Number(offset)
+                })
+                sortedPropertiesId = sortedProperties?.map(item => item.id)
+            } else {
+                sortedProperties = await prisma.propertyRoomType.groupBy({
+                    by: ['propertyId'],
+                    orderBy: {
+                        _min: {
+                            price: order === 'desc' ? 'desc' : 'asc'
+                        },
+                    },
+                    take: Number(limit),
+                    skip: Number(offset)
+                })
+                sortedPropertiesId = sortedProperties?.map(item => item.propertyId)
+            }
+            
+            properties = await prisma.property.findMany({
+                where: {
+                    id: {
+                        in: sortedPropertiesId
+                    }
                 },
                 include: {
                     propertyRoomType: {
@@ -628,38 +730,22 @@ export const getProperties = async(req: Request, res: Response, next: NextFuncti
                     },
                     review: true
                     
+                },
+                orderBy: {
+                    name: order === 'desc' ? 'desc' : 'asc'
                 }
             })
-        } else {
-            countProperties = await prisma.property.count({})
-            properties = await prisma.property.findMany({
-                take: Number(limit),
-                skip: Number(offset),
-                include: {
-                    propertyRoomType: {
-                        orderBy: {
-                            price: 'asc'
-                        }
-                    },
-                    propertyType: true,
-                    propertyHasFacility: {
-                        include : {
-                            propertyFacility: true
-                        }
-                    },
-                    city: true,
-                    country: true,
-                    propertyDetail: {
-                        include: {
-                            propertyImage: true
-                        }
-                    },
-                    review: true
-                    
-                }
-            })
-
         }
+        
+        if(sortBy !== 'price') {
+        } else {
+            if(order === 'desc') {
+                properties = properties.sort((a,b) => b.propertyRoomType[0].price - a.propertyRoomType[0].price)
+            } else {
+                properties = properties.sort((a,b) => a.propertyRoomType[0].price - b.propertyRoomType[0].price)
+            }
+        }
+
 
         const propertyAvgRating = await prisma.review.aggregate({
             _avg: {
@@ -675,7 +761,7 @@ export const getProperties = async(req: Request, res: Response, next: NextFuncti
         const propertyType = await prisma.propertyType.findMany({
             where: {
                 id: {
-                    in: properties.map(item => item.propertyTypeId) as number[]
+                    in: propertiesWithoutLimit.map(item => item.propertyTypeId) as number[]
                 }
             }
         })
@@ -683,7 +769,7 @@ export const getProperties = async(req: Request, res: Response, next: NextFuncti
         const propertyTypeCounter = await prisma.propertyType.count({
             where: {
                 id: {
-                    in: properties.map(item => item.propertyTypeId) as number[] 
+                    in: propertiesWithoutLimit.map(item => item.propertyTypeId) as number[] 
                 }
             }
         })
@@ -693,7 +779,7 @@ export const getProperties = async(req: Request, res: Response, next: NextFuncti
                 propertyHasFacility: {
                     some: {
                         propertyId: {
-                            in: properties.map(item => item.id)
+                            in: propertiesWithoutLimit.map(item => item.id)
                         }
                     }
                 }
@@ -705,14 +791,14 @@ export const getProperties = async(req: Request, res: Response, next: NextFuncti
                 propertyHasFacility: {
                     some: {
                         propertyId: {
-                            in: properties.map(item => item.id)
+                            in: propertiesWithoutLimit.map(item => item.id)
                         }
                     }
                 }
             }
         })
 
-        const propertyRoomTypeId = properties.map(item => item.propertyRoomType.map(itm => itm.id)).flat()
+        const propertyRoomTypeId = propertiesWithoutLimit.map(item => item.propertyRoomType.map(itm => itm.id)).flat()
 
         const propertyRoomFacility = await prisma.propertyRoomFacility.findMany({
             where: {
@@ -742,11 +828,12 @@ export const getProperties = async(req: Request, res: Response, next: NextFuncti
             error: false,
             message: 'Get properties success',
             data: {
+                whereConditionGeneral,
                 numberedPropertyFacilityIdArr,
-                countProperties,
+                countProperties: propertiesWithoutLimit.length,
                 properties,
                 propertyAvgRating,
-                totalPage: Math.ceil(countProperties / Number(limit)),
+                totalPage: Math.ceil(propertiesWithoutLimit.length / Number(limit)),
                 pageInUse: Number(offset)/Number(limit) + 1, 
                 propertyTypeCounter,
                 dataForFilteringProperty: {
@@ -758,11 +845,17 @@ export const getProperties = async(req: Request, res: Response, next: NextFuncti
                     propertyRoomFacilityCounter,
                 },
                 country,
-                city
+                city,
+                countryId,
+                cityId
             }
         })
 
-    } catch (error) {
+    } catch (error: any) {
+        // res.status(500).json({
+        //     error: true,
+        //     message: error.message
+        // })
         next(error)
     }
 }

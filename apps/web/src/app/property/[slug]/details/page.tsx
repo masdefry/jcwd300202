@@ -285,7 +285,7 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                                         <td>
                                             {
                                                 token ? (
-                                                    <Link href={`/booking/${item?.id}`} className='my-auto text-lg font-semibold px-8 py-3 rounded-full bg-blue-600 text-white hover:opacity-75 active:scale-90 transition duration-100'>Book now</Link>
+                                                    <Link href={`/booking/${item?.id}/details?check-in-date=${searchParams['check-in-date']}&check-out-date=${searchParams['check-out-date']}&adult=${searchParams.adult}&children=${searchParams.children}`} className='my-auto text-lg font-semibold px-8 py-3 rounded-full bg-blue-600 text-white hover:opacity-75 active:scale-90 transition duration-100'>Book now</Link>
                                                 ) : (
                                                     <Link href='#' onClick={handleUnauthorizedUser} className='my-auto text-lg font-semibold px-8 py-3 rounded-full bg-blue-600 text-white hover:opacity-75 active:scale-90 transition duration-100'>Book now</Link>
                                                 )

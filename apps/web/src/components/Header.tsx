@@ -5,7 +5,7 @@ import { IoPersonCircleOutline } from "react-icons/io5";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import SearchHeader2XLWidth from "./SearchHeader2XLWidth";
+import SearchHeader from "./SearchHeader";
 import useDropdownSearchHook from "@/hooks/useDropdownSearchHook";
 import SearchHeaderDefault from "./SearchHeaderDefault";
 import HamburgerMenu from "./HamburgerMenu";
@@ -103,7 +103,7 @@ export default function Header() {
         </hgroup>
       </section>
       <section className="py-5 pb-16 lg:px-16 md:px-12 sm:px-8 px-4">
-        <SearchHeader2XLWidth 
+        <SearchHeader 
           mutateShowDropdownDebounce={mutateShowDropdownDebounce}
           handleClearSearchInput={handleClearSearchInput}
           handleSearchInput={handleSearchInput}
@@ -113,16 +113,6 @@ export default function Header() {
           dataDropdown={dataDropdown}
           setDataDropdown={setDataDropdown}
           setSearchResults={setSearchResults}
-        />
-        <SearchHeaderDefault 
-          mutateShowDropdownDebounce={mutateShowDropdownDebounce}
-          handleClearSearchInput={handleClearSearchInput}
-          handleSearchInput={handleSearchInput}
-          handleSearch={handleSearch}
-          searchValues={searchValues}
-          setSearchValues={setSearchValues}
-          dataDropdown={dataDropdown}
-          setDataDropdown={setDataDropdown}
         />
       </section>
     </section>

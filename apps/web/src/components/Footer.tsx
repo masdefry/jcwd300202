@@ -137,7 +137,7 @@ const Footer = () => {
         <div className='h-[0.5px] w-full bg-slate-400 bg-opacity-60'></div>
       </div>
 
-      <section className='text-center text-sm sm:text-base font-light flex flex-col justify-center items-center gap-1'>
+      <section className='text-center text-xs sm:text-sm md:text-base font-light flex flex-col justify-center items-center gap-1'>
         <p>Roomify is part of Roomify Inc., Indonesian's leading provider of online travel and related services.</p>
         <p>Copyright © 2024 Roomify™. All rights reserved.</p>
       </section>

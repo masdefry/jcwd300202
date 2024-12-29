@@ -62,7 +62,7 @@ const CreatePropertyPage = () => {
           { name: 'Paris', code: 'PRS' }
       ];        
   return (
-    <main className="w-full">
+    <main className="w-full p-5">
       <section className="mx-auto max-w-screen-2xl w-full h-full flex items-start gap-5 px-5 py-5">
         <div className='w-full'>
           <Formik
@@ -238,7 +238,7 @@ const CreatePropertyPage = () => {
                             } 
                             <div onClick={() => {
                               push({ name: ''})
-                              setRoomFacilities([...roomFacilities, []])
+                              // s 
                             }} 
                             className='flex gap-5 items-center px-7 py-3 rounded-full bg-blue-600 text-white hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-100'>
                               <h1 className='text-base font-semibold'>Add Room Type</h1>

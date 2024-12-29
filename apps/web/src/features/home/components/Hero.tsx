@@ -26,19 +26,19 @@ const Hero = ({ isPending }: IHeroProps) => {
 
   if(isPending) {
     return (
-      <section className='w-screen h-[300px] overflow-hidden relative skeleton rounded-none'></section>
+      <section className='w-screen h-[190px] md:h-[250px] lg:h-[300px] overflow-hidden relative skeleton rounded-none'></section>
     )
   }
 
 
   return (
-        <section id='hero-section-carousel' className='w-screen h-[300px] overflow-hidden relative'>
+        <section id='hero-section-carousel' className='w-screen h-[190px] md:h-[250px] lg:h-[300px] overflow-hidden relative'>
           <div className='flex transition-transform ease-in-out duration-1000 min-w-max' style={{transform: `translateX(-${currSlide/heroSlider.length * 100}%)`}}>
               {
                 heroSlider.map((item, index) => {
                   return(
-                    <section key={index} id={`carousel-${index + 1}`} className="relative rounded-none h-[300px] w-screen my-bg-lin-1">
-                      <figure className='absolute bottom-0 h-[300px] w-screen -z-10'>
+                    <section key={index} id={`carousel-${index + 1}`} className="relative rounded-none h-[190px] md:h-[250px] lg:h-[300px] w-screen my-bg-lin-1">
+                      <figure className='absolute bottom-0 h-[190px] md:h-[250px] lg:h-[300px] w-screen -z-10'>
                         <Image
                           loading='lazy'
                           src={item.img}
@@ -51,7 +51,7 @@ const Hero = ({ isPending }: IHeroProps) => {
                       <div className='bg-black opacity-30 absolute top-0 left-0 w-full h-full'></div>
                       <article className='bg-black bg-opacity-25 h-full z-20 p-16 flex flex-col justify-center items-center md:gap-3 lg:gap-5'>
                         <h1 className='lg:text-4xl md:text-3xl text-xl font-semibold text-left text-white drop-shadow-sm w-full'>{item.name}</h1>
-                        <p className='text-base md:text-lg lg:text-xl font-light text-white text-left w-full drop-shadow-sm'>{item.description}</p>
+                        <p className='text-sm md:text-lg lg:text-xl font-light text-white text-left w-full drop-shadow-sm'>{item.description}</p>
                       </article>
                     </section>
                   )

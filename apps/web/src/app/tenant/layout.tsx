@@ -111,7 +111,7 @@ const ProfileUserLayout = ({  children }: { children: ReactNode }) => {
             </section>
           </div>
         </section>
-        <section className='col-span-3 rounded-md border border-slate-300 p-5'>
+        <section className='col-span-3 rounded-md border border-slate-300 overflow-hidden'>
           {children}
         </section>
       </section>

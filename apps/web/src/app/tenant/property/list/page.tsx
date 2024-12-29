@@ -10,7 +10,7 @@ import { IoSearchSharp } from 'react-icons/io5'
 
 const PropertyListPage = () => {
   return (
-    <main className='flex flex-col gap-5'>
+    <main className='flex flex-col gap-5 p-5'>
       <hgroup className='flex flex-col pb-5 border-b-4 border-slate-700'>
         <h1 className='text-2xl font-bold text-gray-800'>Property List</h1>
         <p className='text-sm font-medium text-gray-500'>Effortlessly Manage and Monitor Your Active Properties</p>

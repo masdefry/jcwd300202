@@ -32,7 +32,7 @@ interface ISearchHeaderDefaultProps {
   setSearchResults: (results: any) => void
 }
 
-const SearchHeader2XLWidth = ({
+const SearchHeader = ({
   mutateShowDropdownDebounce,
   handleClearSearchInput,
   handleSearchInput,
@@ -79,7 +79,7 @@ const SearchHeader2XLWidth = ({
 
 
   return (
-    <section className="h-[5rem] hidden 2xl:grid grid-cols-4 items-center justify-evenly rounded-full bg-white p-3 relative shadow-sm border-2 border-amber-400">
+    <section className="h-full 2xl:h-[5rem] flex flex-col 2xl:grid grid-cols-4 items-center justify-evenly 2xl:rounded-full 2xl:bg-white p-3 relative 2xl:shadow-sm 2xl:border-2 border-amber-400 overflow-hidden">
       <Formik
         initialValues={{
           country: searchLocation.countryId,
@@ -98,27 +98,27 @@ const SearchHeader2XLWidth = ({
           values.adult = totalGuest.adult
           values.children = totalGuest.children
           mutateSearch(values)
-          console.log(values.adult, 'adultt'); 
-          console.log(values.children, 'childrennn');
+          // console.log(values.adult, 'adultt'); 
+          // console.log(values.children, 'childrennn');
         }}
       >
         {({
           setFieldValue
         }) => (
-            <Form className='w-full flex items-center justify-start absolute'>
-              <div className='w-1/4 box-border border-r border-gray-300 relative flex flex-col px-7 gap-1'>
-                <label htmlFor='searchLocation' className="min-w-max flex items-center gap-3 text-gray-600 text-sm font-semibold"><IoIosSearch size={18}/>Where are you going? (required)</label>
+            <Form className='w-full flex 2xl:flex-row flex-col items-center justify-start 2xl:absolute 2xl:rounded-none rounded-lg 2xl:bg-transparent bg-amber-400 2xl:border-0 border-4 border-amber-400 overflow-hidden'>
+              <div className='w-full 2xl:w-1/4 border-b-4 border-amber-400 2xl:border-b-0 2xl:rounded-none rounded-md box-border 2xl:border-r bg-white p-1.5 2xl:py-0 2xl:border-gray-300 relative flex flex-col 2xl:px-7 gap-1'>
+                <label htmlFor='searchLocation' className="min-w-max flex items-center 2xl:gap-3 gap-1.5 text-gray-600 text-xs md:text-sm font-semibold"><IoIosSearch size={18}/>Where are you going? (required)</label>
                 <input value={handleSearch} onChange={(e) => {
                   e.target.value.length >= 3 ? mutateShowDropdownDebounce(e.target.value) : setDataDropdown([])
                   handleSearchInput(e)
                   }}  
                   id='searchLocation' 
-                  className="pt-2 p-1 placeholder-shown:text-sm focus:bg-white active:bg-white box-border transition duration-200 text-sm font-normal border-b-2 border-white bg-white focus:border-blue-600 focus:outline-none focus-visible:bg-white" 
+                  className="pt-2 p-1 md:placeholder-shown:text-sm placeholder-shown:text-xs focus:bg-white active:bg-white box-border transition duration-200 text-xs md:text-sm font-normal border-b-2 border-white bg-white focus:border-blue-600 focus:outline-none focus-visible:bg-white" 
                   name='country' 
                   type="text" 
                   placeholder={searchValues.countryName ? '' : `Jakarta / Indonesia`} 
                   disabled={searchValues.countryName ? true : false}/>
-                <ErrorMessage name="country" className='text-xs text-red-600 bg-red-200 font-bold rounded-full px-5 p-1 absolute top-[4rem]' component={'div'} />
+                <ErrorMessage name="country" className='text-xs text-red-600 bg-red-200 font-bold rounded-full px-5 p-1 absolute top-[2rem] 2xl:top-[4rem] z-10' component={'div'} />
                 <div className="absolute top-[80px] left-0 z-20 w-full"> 
                   <DropdownCitiesAndCountries setFieldValue={setFieldValue} handleClearSearchInput={handleClearSearchInput} setSearchLocation={setSearchLocation} searchLocation={searchLocation} dataDropdown={dataDropdown} handleSearchInput={handleSearchInput} setDataDropdown={setDataDropdown} setSearchValues={setSearchValues}/>
                 </div>
@@ -131,15 +131,14 @@ const SearchHeader2XLWidth = ({
                   )
                 }
               </div>
-
-              <div className='w-1/4 box-border border-r border-gray-300 relative flex flex-col px-5 gap-1'>
-                <label htmlFor='checkInDate' className="min-w-max flex items-center gap-3 text-gray-600 text-sm font-semibold"><CiCalendar size={19}/>Check-In</label>
+              <div className='w-full 2xl:w-1/4 border-b-4 border-amber-400 2xl:border-b-0 2xl:rounded-none rounded-md box-border 2xl:border-r bg-white p-1.5 2xl:py-0 2xl:border-gray-300 relative flex flex-col 2xl:px-5 gap-1'>
+                <label htmlFor='checkInDate' className="min-w-max flex items-center 2xl:gap-3 gap-1.5 text-gray-600 text-xs md:text-sm font-semibold"><CiCalendar size={19}/>Check-In</label>
                 <Popover>
                     <PopoverTrigger asChild>
                       <Button
                         variant={"outline"}
                         className={cn(
-                          "w-full justify-start border-none text-sm font-normal text-left h-[3em] focus-within:border-none hover:bg-white shadow-none !p-0",
+                          "w-full justify-start border-none text-xs md:text-sm font-normal text-left h-[3em] focus-within:border-none hover:bg-white shadow-none !p-0",
                           !bookingDays.checkInDate && "text-muted-foreground"
                         )}
                       >
@@ -165,14 +164,14 @@ const SearchHeader2XLWidth = ({
                 </Popover>
                 <ErrorMessage name="checkInDate" component="div" />
               </div>
-              <div className='w-1/4 box-border border-r border-gray-300 relative flex flex-col px-5 gap-1'>
-                <label htmlFor='checkOutDate' className="min-w-max flex items-center gap-3 text-gray-600 text-sm font-semibold"><CiCalendar size={19}/>Check-Out</label>
+              <div className='w-full 2xl:w-1/4 border-b-4 border-amber-400 2xl:border-b-0 2xl:rounded-none rounded-md box-border 2xl:border-r bg-white p-1.5 2xl:py-0 2xl:border-gray-300 relative flex flex-col 2xl:px-5 gap-1'>
+                <label htmlFor='checkOutDate' className="min-w-max flex items-center 2xl:gap-3 gap-1.5 text-gray-600 text-xs md:text-sm font-semibold"><CiCalendar size={19}/>Check-Out</label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant={"outline"}
                       className={cn(
-                        "w-full justify-start border-none font-normal text-sm text-left h-[3em] focus-within:border-none hover:bg-white shadow-none !p-0",
+                        "w-full justify-start border-none font-normal text-xs md:text-sm text-left h-[3em] focus-within:border-none hover:bg-white shadow-none !p-0",
                         !bookingDays.checkOutDate && "text-muted-foreground"
                       )}
                     >
@@ -200,9 +199,9 @@ const SearchHeader2XLWidth = ({
                 </Popover>
                 <ErrorMessage name="checkOutDate" component="div" />
               </div>
-              <div className='w-1/4 box-border border-gray-300 relative flex flex-col px-5 gap-1'>
-                <label htmlFor='guestRoom' className="min-w-max flex items-center gap-3 text-gray-600 text-sm font-semibold"><GoPerson size={19}/>Guest Room</label>
-                <button onClick={() => setShowGuestAndRoomCounter(state => !state)} id='guestRoom' className="text-left text-black pt-2 p-1 box-border transition duration-200 text-sm font-normal border-b-2 border-white" name='guestRoom' type="button">
+              <div className='w-full 2xl:w-1/4 border-b-4 border-amber-400 2xl:border-b-0 2xl:rounded-none rounded-md box-border bg-white p-1.5 2xl:py-0 2xl:border-gray-300 relative flex flex-col 2xl:px-5 gap-1'>
+                <label htmlFor='guestRoom' className="min-w-max flex items-center 2xl:gap-3 gap-1.5 text-gray-600 text-xs md:text-sm font-semibold"><GoPerson size={19}/>Guest Room</label>
+                <button onClick={() => setShowGuestAndRoomCounter(state => !state)} id='guestRoom' className="text-left text-black pt-2 p-1 box-border transition duration-200 text-xs md:text-sm font-normal border-b-2 border-white" name='guestRoom' type="button">
                 1 Room - {allGuest.totalGuest} Guest
                 </button>
                 {
@@ -214,8 +213,8 @@ const SearchHeader2XLWidth = ({
                 }
                 <ErrorMessage name="adult" component="div" />
               </div>
-              <div className="w-[10%] flex justify-end absolute right-2">
-                <button className={`${isPendingSearch ? 'opacity-75' : 'hover:opacity-75 active:scale-90 transition duration-200'} py-5 px-12 rounded-full bg-black font-semibold text-base text-white`} type='submit' disabled={isPendingSearch}>Search</button>
+              <div className="2xl:w-[10%] w-full flex 2xl:justify-end 2xl:absolute right-2">
+                <button className={`${isPendingSearch ? 'opacity-75' : 'hover:bg-gray-600 active:scale-90 transition duration-200'} py-3 md:py-5 px-12 rounded-md 2xl:rounded-full bg-black font-semibold text-sm md:text-base text-white w-full`} type='submit' disabled={isPendingSearch}>Search</button>
               </div>
           </Form>
         )}
@@ -224,4 +223,4 @@ const SearchHeader2XLWidth = ({
   )
 }
 
-export default SearchHeader2XLWidth
+export default SearchHeader

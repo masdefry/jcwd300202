@@ -193,8 +193,8 @@ export default function Home() {
           {
             dataLandingPage?.data?.propertyByRecentBooks ? (
             <div className='flex flex-col gap-1 text-center justify-center w-full'>
-              <h1 className='text-gray-300 lg:text-2xl md:text-xl text-lg font-bold'>Oops, Seems you don't setup your profile account</h1>
-              <p className='text-gray-300 md:text-base text-sm font-medium'>Explore Roomify and book any properties you want</p>
+              <h1 className='text-gray-300 lg:text-2xl md:text-xl text-base font-bold'>Oops, Seems you don't setup your profile account</h1>
+              <p className='text-gray-300 md:text-base text-xs font-medium'>Explore Roomify and book any properties you want</p>
             </div>
             ):(
             <div className="carousel rounded-none flex gap-8 h-fit py-2">

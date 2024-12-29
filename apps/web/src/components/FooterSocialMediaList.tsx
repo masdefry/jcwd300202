@@ -11,27 +11,27 @@ import { FaLinkedinIn } from "react-icons/fa";
 
 const socialMediaList = [
   {
-    icon:<FaFacebookF size={26}/>,
+    icon:<FaFacebookF/>,
     url: '#'
   },
   {
-    icon:<FaInstagram size={26}/>,
+    icon:<FaInstagram/>,
     url: '#'
   },
   {
-    icon:<FaXTwitter size={26}/>,
+    icon:<FaXTwitter/>,
     url: '#'
   },
   {
-    icon:<FaPinterestP size={26}/>,
+    icon:<FaPinterestP/>,
     url: '#'
   },
   {
-    icon:<AiOutlineYoutube size={26}/>,
+    icon:<AiOutlineYoutube/>,
     url: '#'
   },
   {
-    icon:<FaLinkedinIn size={26}/>,
+    icon:<FaLinkedinIn/>,
     url: '#'
   }
 ]
@@ -40,12 +40,12 @@ const socialMediaList = [
 const FooterSocialMediaList = () => {
   return (
     <section className='flex justify-center items-center mt-[-30px]'>
-        <ul className='flex flex-wrap justify-center gap-2'>
+        <ul className='flex flex-wrap justify-center md:gap-2'>
           {
             socialMediaList.map((item, index) => {
               return (
                 <Link key={index} href={item.url}>
-                  <li className='p-7 text-slate-400 transition duration-150 active:scale-110 hover:scale-150 hover:text-black'>{item.icon}</li>
+                  <li className='p-4 md:p-7 text-slate-400 text-base md:text-xl transition duration-150 active:scale-110 hover:scale-150 hover:text-black'>{item.icon}</li>
                 </Link>
               )
             })

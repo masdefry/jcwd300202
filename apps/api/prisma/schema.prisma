@@ -421,10 +421,8 @@ model Review {
 model Season {
   id        Int      @id @default(autoincrement())
   name      String
-  isPeak    Boolean  @default(false)
   startDate DateTime
   endDate   DateTime
-  roomAvailability Boolean @default(true)
 
   seasonalPrice SeasonalPrice[]
 
@@ -444,6 +442,10 @@ model Season {
 model SeasonalPrice {
   id    Int   @id @default(autoincrement())
   price Float
+  date  DateTime
+  roomAvailability Boolean @default(true)
+  roomToRent Int
+  isPeak    Boolean  @default(false)
 
   seasonId Int
   season   Season @relation(fields: [seasonId], references: [id])

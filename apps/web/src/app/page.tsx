@@ -101,32 +101,13 @@ export default function Home() {
 
   return (
 
-    <main className='flex flex-col gap-12 lg:gap-16 lg:p-16 md:p-12 sm:p-8 p-4'>
-      <section className='grid grid-cols-1 lg:grid-cols-2 h-fit gap-10'>
-        {
-          dataLandingPage?.data?.cities?.map((item: any, index: number) => {
-            if(index < 2) {
-              return(
-              <div key={index}>
-                <CityRecommendationCard
-                isPending={isPendingDataLandingPage} 
-                imgSrc={`http://localhost:5000/api/${item?.directory}/${item?.filename}.jpg`}
-                alt={item?.name.toLowerCase().split(' ').join('-')}
-                city={item?.name}
-                country={item?.country?.name}
-                h1Size='lg:text-5xl text-3xl'
-                />
-              </div>
-            )
-            }
-          })
-        }
-      </section>
-      <section className='grid grid-cols-1 lg:grid-cols-3 h-fit gap-10'>
-        {
-          dataLandingPage?.data?.cities?.map((item: any, index: number) => {
-            if(index >= 2) {
-              return(
+    <main className='flex flex-col gap-5 md:gap-12 lg:gap-16 lg:p-16 md:p-12 sm:p-8 p-4'>
+      <section className='flex flex-col gap-3 md:gap-12 lg:gap-16 lg:p-16 md:p-12 sm:p-8 p-4'>
+        <section className='grid grid-cols-1 lg:grid-cols-2 h-fit gap-3 md:gap-7 lg:gap-10'>
+          {
+            dataLandingPage?.data?.cities?.map((item: any, index: number) => {
+              if(index < 2) {
+                return(
                 <div key={index}>
                   <CityRecommendationCard
                   isPending={isPendingDataLandingPage} 
@@ -134,27 +115,48 @@ export default function Home() {
                   alt={item?.name.toLowerCase().split(' ').join('-')}
                   city={item?.name}
                   country={item?.country?.name}
-                  h1Size='text-3xl'
+                  h1Size='lg:text-5xl text-3xl'
                   />
                 </div>
-            )
-            }
-          })
-        }
+              )
+              }
+            })
+          }
+        </section>
+        <section className='grid grid-cols-1 lg:grid-cols-3 h-fit gap-3 md:gap-7 lg:gap-10'>
+          {
+            dataLandingPage?.data?.cities?.map((item: any, index: number) => {
+              if(index >= 2) {
+                return(
+                  <div key={index}>
+                    <CityRecommendationCard
+                    isPending={isPendingDataLandingPage} 
+                    imgSrc={`http://localhost:5000/api/${item?.directory}/${item?.filename}.jpg`}
+                    alt={item?.name.toLowerCase().split(' ').join('-')}
+                    city={item?.name}
+                    country={item?.country?.name}
+                    h1Size='text-3xl'
+                    />
+                  </div>
+              )
+              }
+            })
+          }
+        </section>
       </section>
       <section className='relative right-4 sm:right-8 md:right-12 lg:right-16'>
           <Hero isPending={isPendingDataLandingPage}/>
       </section>
       <section className='flex flex-col gap-5'>
-        <hgroup className='flex flex-col gap-2'>
-          <h1 className='lg:text-4xl font-bold text-3xl'>Recent Property Bookings</h1>
-          <p className='lg:text-lg text-base font-light'>Book back the property you like</p>
+        <hgroup className='flex flex-col lg:gap-2 md:gap-1'>
+          <h1 className='lg:text-4xl font-bold text-lg md:text-3xl'>Recent Property Bookings</h1>
+          <p className='lg:text-lg md:text-base text-sm font-light'>Book back the property you like</p>
         </hgroup>
         {
           dataLandingPage?.data?.propertyByRecentBooks ? (
           <div className='flex flex-col gap-1 text-center justify-center w-full'>
-            <h1 className='text-gray-300 text-2xl font-bold'>Oops, Seems you don't have any transactions</h1>
-            <p className='text-gray-300 text-base font-medium'>Explore Roomify and book any properties you want</p>
+            <h1 className='text-gray-300 lg:text-2xl md:text-xl text-base font-bold'>Oops, Seems you don't have any transactions</h1>
+            <p className='text-gray-300 md:text-base text-xs font-medium'>Explore Roomify and book any properties you want</p>
           </div>
           ):(
           <div className="carousel rounded-none flex gap-8 h-fit py-2">
@@ -184,15 +186,15 @@ export default function Home() {
       {
         token && (
         <section className='flex flex-col gap-5'>
-          <hgroup className='flex flex-col gap-2'>
-            <h1 className='lg:text-4xl font-bold text-3xl'>Best Property in Indonesia</h1>
-            <p className='lg:text-lg text-base font-light'>Stay in the best property in Indonesia</p>
+          <hgroup className='flex flex-col lg:gap-2 md:gap-1'>
+            <h1 className='lg:text-4xl font-bold text-lg md:text-3xl'>Best Property in Indonesia</h1>
+            <p className='lg:text-lg md:text-base text-sm font-light'>Stay in the best property in Indonesia</p>
           </hgroup>
           {
             dataLandingPage?.data?.propertyByRecentBooks ? (
             <div className='flex flex-col gap-1 text-center justify-center w-full'>
-              <h1 className='text-gray-300 text-2xl font-bold'>Oops, Seems you don't setup your profile account</h1>
-              <p className='text-gray-300 text-base font-medium'>Explore Roomify and book any properties you want</p>
+              <h1 className='text-gray-300 lg:text-2xl md:text-xl text-lg font-bold'>Oops, Seems you don't setup your profile account</h1>
+              <p className='text-gray-300 md:text-base text-sm font-medium'>Explore Roomify and book any properties you want</p>
             </div>
             ):(
             <div className="carousel rounded-none flex gap-8 h-fit py-2">
@@ -223,15 +225,15 @@ export default function Home() {
         )
       }
       <section className='flex flex-col gap-5'>
-        <hgroup className='flex flex-col gap-2'>
-          <h1 className='lg:text-4xl font-bold text-3xl'>Explore Property</h1>
-          <p className='lg:text-lg text-base font-light'>See, book, and stay in our partner properties</p>
+        <hgroup className='flex flex-col lg:gap-2 md:gap-1'>
+          <h1 className='lg:text-4xl font-bold text-lg md:text-3xl'>Explore Property</h1>
+          <p className='lg:text-lg md:text-base text-sm font-light'>See, book, and stay in our partner properties</p>
         </hgroup>
-        <div className="carousel rounded-none flex gap-8 h-fit py-2">
+        <div className="carousel rounded-none flex gap-3 md:gap-8 h-fit py-2">
         {
           dataLandingPage?.data?.properties.map((item: any, index: number) => {
             return (
-            <div className="carousel-item hover:cursor-pointer hover:translate-y-2 transition duration-100 active:opacity-75" key={index}>
+            <div className="carousel-item hover:cursor-pointer md:hover:translate-y-2 transition duration-100 active:opacity-75" key={index}>
               <Link href={`/property/${item?.slug}/details`}>
                 <Card 
                 isPending={isPendingDataLandingPage}

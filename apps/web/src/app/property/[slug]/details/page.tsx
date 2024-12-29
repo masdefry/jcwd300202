@@ -34,7 +34,7 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
     const { data: dataPropertyDetail, isPending: isPendingPropertyDetail } = useQuery({
         queryKey: ['getPropertyDetail'],
         queryFn: async() => {
-            const res = await instance.get(`/property/${params.slug}/search`)
+            const res = await instance.get(`/room-type/property/${params?.slug}/search`)
             mutatePropertyRoomType({ limit: 2, offset: 0, propertyId: res?.data?.data?.property?.id })
             return res?.data?.data
         }
@@ -42,7 +42,7 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
   
   const { mutate: mutatePropertyRoomType, data: dataPropertyRoomType, isPending: isPendingPropertyRoomType } = useMutation({
     mutationFn: async({ limit, offset, propertyId }: { limit: number, offset: number, propertyId: string }) => {
-        const res = await instance.get(`/property/rooms/${propertyId}/search?limit=${limit}&offset=${offset}`)
+        const res = await instance.get(`/room-type/property/${params?.slug}/search?limit=${limit}&offset=${offset}`)
         return res?.data?.data
     },
     onSuccess: (res) => {

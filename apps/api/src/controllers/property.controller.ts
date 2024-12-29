@@ -537,10 +537,10 @@ export const getProperties = async(req: Request, res: Response, next: NextFuncti
         // ].filter(item => Object.keys(item).length)
 
         const whereConditionGeneral: any = [
-            countryId ? {
+            (countryId && !isNaN(Number(adult)))? {
                 countryId: Number(countryId),
             } : null,
-            cityId ? {
+            (cityId && !isNaN(Number(adult))) ? {
                 cityId: Number(cityId),
             } : null,
             minPrice && maxPrice ? {
@@ -571,7 +571,7 @@ export const getProperties = async(req: Request, res: Response, next: NextFuncti
                 },
             } : null,
         ].filter(Boolean).filter(item => item?.countryId !== null).filter(item => item?.cityId !== null)
-        console.log('>>>')
+        
         console.log(Number(countryId))
         
         const whereCondition = [...whereConditionGeneral, ...whereConditionPropertyFacility, ...whereConditionPropertyRoomFacility].length > 0 ? {
@@ -823,7 +823,10 @@ export const getProperties = async(req: Request, res: Response, next: NextFuncti
                 }
             }
         })
-
+        console.log(whereConditionGeneral)
+        console.log('>>>')
+        console.log('countryId',countryId)
+        console.log(req.query)
         res.status(200).json({
             error: false,
             message: 'Get properties success',

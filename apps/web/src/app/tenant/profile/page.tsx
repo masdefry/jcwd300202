@@ -67,7 +67,7 @@ const ProfileTenantPage = () => {
   })
 
   return (
-    <main className='flex flex-col gap-5'>
+    <main className='flex flex-col gap-5 p-5'>
       <hgroup className='flex flex-col pb-5 border-b-4 border-slate-700'>
         <h1 className='text-2xl font-bold text-gray-800'>Account</h1>
         <p className='text-sm font-medium text-gray-500'>Change your profile</p>

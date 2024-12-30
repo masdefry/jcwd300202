@@ -10,7 +10,7 @@ import  useSearchHook from '@/hooks/useSearchHook'
 import instance from '@/utils/axiosInstance'
 import useSearchParams from 'next/navigation'
 import { RiBuilding3Line } from 'react-icons/ri';
-import { FaStar } from 'react-icons/fa';
+import { FaSortAmountDownAlt, FaStar } from 'react-icons/fa';
 import { CiBookmarkPlus, CiLocationOn } from 'react-icons/ci';
 import { indexOf } from 'cypress/types/lodash';
 import useFilteringPropertyHook from '@/features/property/hooks/useFilteringPropertyHook';
@@ -27,6 +27,8 @@ import {
 import Separator from '@/features/auth/components/Separator';
 import { useRouter } from 'next/navigation';  
 import { usePathname } from 'next/navigation';
+import { BsBuildings } from 'react-icons/bs';
+import { IoFilter } from 'react-icons/io5';
 
 const ExplorePage = ({ searchParams }: { searchParams: any }) => {
     const pathname = usePathname()
@@ -36,6 +38,8 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
     const [propertyFacilityIdArr, setPropertyFacilityIdArr] = useState<any[]>([])
     const [propertyRoomFacilityIdArr, setPropertyRoomFacilityIdArr] = useState<any[]>([])
     const [propertyTypeIdArr, setPropertyTypeIdArr] = useState<any[]>([])
+    const [filterMobileMode, setFilterMobileMode] = useState(false)
+    const [sortMobileMode, setSortMobileMode] = useState(false)
     const urlParams = new URLSearchParams({
 
     })
@@ -147,10 +151,67 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
     
   return (
     <main className='w-full min-h-min py-5'>
-            <section className='m-auto max-w-screen-xl grid grid-cols-4  gap-5 w-full h-full'>
-                <section className='flex flex-col gap-5'>
-                    <div className='rounded-md w-full shadow-md flex flex-col overflow-hidden bg-white' id='price-filter'>
-                        <hgroup className='felx flex-col gap-1.5 text-sm font-bold py-3 px-5 bg-gray-800 text-white'>
+            <section className='m-auto max-w-screen-xl flex flex-col 2xl:grid grid-cols-4  gap-5 w-full h-full'>
+                <div className='2xl:hidden text-sm rounded-md w-full flex items-center gap-2 p-3'>
+                    <div onClick={() => setFilterMobileMode(true)} className='hover:bg-slate-200 active:scale-90 transition duration-100 flex items-center border border-slate-100 flex-col rounded-md bg-white text-gray-800 shadow-md h-12 min-w-12 justify-center w-12'><IoFilter /><span className='text-xs font-bold'>Filter</span></div>
+                    <div onClick={() => setSortMobileMode(true)} className='hover:bg-slate-200 active:scale-90 transition duration-100 flex items-center border border-slate-100 flex-col rounded-md bg-white text-gray-800 shadow-md h-12 min-w-12 justify-center w-12'><FaSortAmountDownAlt /><span className='text-xs font-bold'>Sort</span></div>
+                    <section className={`${sortMobileMode ? 'fixed' : 'hidden'} top-0 left-0 bg-black w-full h-full bg-opacity-30 backdrop-blur-sm  z-[90]`}>
+                        <div id='sort-mobile' className={`${sortMobileMode ? 'scale-y-100' : 'scale-y-0'} absolute bottom-0 flex flex-col bg-white shadow-md w-full left-0 rounded-t-md transition duration-300`}>
+                            <div className='flex justify-center w-full p-2'>
+                                <span className='bg-slate-500 rounded-full h-1.5 w-[90px]' onClick={() => setSortMobileMode(false)}></span>
+                            </div>
+                            <div className='p-5 hover:bg-slate-300 text-gray-800 text-sm font-bold'>
+                                Sort by:
+                            </div>
+                            <div className='p-5 hover:bg-slate-300 text-gray-800 text-sm font-medium border-t border-slate-500'>
+                                Ascending by Name
+                            </div>
+                            <div className='p-5 hover:bg-slate-300 text-gray-800 text-sm font-medium border-t border-slate-300'>
+                                Descending by Name
+                            </div>
+                            <div className='p-5 hover:bg-slate-300 text-gray-800 text-sm font-medium border-t border-slate-300'>
+                                Ascending by Price
+                            </div>
+                            <div className='p-5 hover:bg-slate-300 text-gray-800 text-sm font-medium border-t border-slate-300'>
+                                Ascending by Price
+                            </div>
+                        </div>
+                    </section>
+                    <div className='min-w-max text-sm font-bold'>
+                    {
+                        dataProperties?.country?.name ? (
+                            <p className='text-gray-800'>{dataProperties?.city?.name && dataProperties?.city?.name + ','} {dataProperties?.country?.name}</p>
+                        ) : (
+                            <p className='text-gray-800'>All properties</p>
+                        )
+                    }
+                        <p className='text-gray-800 font-normal mt-[-3px] flex items-center'>{dataProperties?.countProperties} property found<CgSearchFound className='ml-2 text-green-600'/></p>
+                    </div>
+                    <div className='carousel w-fit gap-3'>
+                        <div className='carousel-item flex items-center gap-1.5 p-1 rounded-md'>
+                            <span className='col-span-2 bg-slate-800 flex  min-w-max items-center gap-2 p-2 text-white text-sm font-bold rounded-md'>
+                            <div className='text-green-900 bg-green-200 p-1 rounded-full'>
+                            <TbConfetti size={19}/>
+                            </div>
+                            <p className='text-white min-w-max'>40% off for accomodation in Medan City region</p> 
+                            </span> 
+                        </div>
+                        <div className='carousel-item flex items-center gap-2'>
+                            <span className='col-span-2 bg-slate-200 flex  min-w-max items-center gap-2 p-2 text-white text-sm font-bold rounded-md'>
+                            <div className='text-red-800 bg-red-200 p-1 rounded-full'>
+                            <TbConfetti size={19}/>
+                            </div>
+                            <p className='text-gray-900 min-w-max'>Up to 10% off for the first booking</p> 
+                            </span> 
+                        </div>
+                    </div>
+                </div>
+                <section className={`${filterMobileMode ? 'flex' : 'hidden'} 2xl:relative fixed bottom-0 col-span-1 w-full 2xl:flex flex-col 2xl:gap-5 bg-white rounded-t-md z-[54]`}>
+                    <div className='2xl:hidden bg-gray-800 text-white p-2 flex items-center justify-center w-full rounded-t-md'>
+                        <span className='bg-slate-300 rounded-full h-1.5 w-[90px]' onClick={() => setFilterMobileMode(false)}></span>
+                    </div>
+                    <div className='2xl:rounded-md w-full 2xl:shadow-md flex flex-col overflow-hidden bg-white' id='price-filter'>
+                        <hgroup className='flex flex-col gap-1.5 text-sm font-bold py-3 px-5 bg-gray-800 text-white'>
                             <h1>Price</h1>
                             <p className='font-light text-gray-300'>Get the best deal</p>
                         </hgroup>
@@ -165,13 +226,14 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                             </div>
                         </div>
                     </div>
-                    <div tabIndex={0} className="rounded-md collapse collapse-arrow shadow-md">
+                    <div tabIndex={0} className="2xl:rounded-md rounded-none collapse collapse-arrow 2xl:shadow-md 2xl:border-t-0 border-t border-slate-300">
                         <input type="checkbox" />
                         <div className="collapse-title text-sm font-bold text-gray-800 bg-white flex items-center gap-1">Accomodation Type
                             <span className='rounded-full bg-slate-200 text-slate-700 text-xs h-[1.5em] w-[1.5em] flex items-center justify-center'>{dataForFilteringProperty?.propertyTypeCounter}</span>
                         </div>
                         <div className="collapse-content pt-3">
-                            <ul className='flex flex-col gap-4 text-sm font-semibold'>
+                            <div className=' 2xl:overflow-y-visible overflow-y-scroll max-h-[250px]'>
+                            <ul className='flex flex-col gap-4 text-sm font-semibold 2xl:overflow-y-visible overflow-y-scroll'>
                                 {
                                     dataForFilteringProperty?.propertyType.slice(0,4).map((item: any, index: number) => {
                                         return (
@@ -206,14 +268,16 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                                 }
     
                             </ul>
+                            </div>
                         </div>
                     </div>
-                    <div tabIndex={0} className="rounded-md collapse collapse-arrow shadow-md">
+                    <div tabIndex={0} className="2xl:rounded-md rounded-none collapse collapse-arrow 2xl:shadow-md 2xl:border-t-0 border-t border-slate-300">
                         <input type="checkbox" />
-                        <div className="collapse-title text-sm font-bold text-gray-800 flex items-center gap-1 bg-white">General Facility
+                        <div className="collapse-title text-sm font-bold text-gray-800 flex items-center gap-1 bg-white">Public Facility
                             <span className='rounded-full bg-slate-200 text-slate-700 text-xs h-[1.5em] w-[1.5em] flex items-center justify-center'>{dataForFilteringProperty?.propertyFacilityCounter}</span>
                         </div>
                         <div className="collapse-content pt-3">
+                            <div className=' 2xl:overflow-y-visible overflow-y-scroll max-h-[250px]'>
                             <ul className='flex flex-col gap-4 text-sm font-semibold'>
                                 {
                                     dataForFilteringProperty?.propertyFacility.slice(0,5).map((item: any, index: number) => {
@@ -249,14 +313,16 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                                 }
     
                             </ul>
+                            </div>
                         </div>
                     </div>
-                    <div tabIndex={0} className="rounded-md collapse collapse-arrow shadow-md">
+                    <div tabIndex={0} className="2xl:rounded-md rounded-none collapse collapse-arrow 2xl:shadow-md 2xl:border-t-0 border-t border-slate-300">
                         <input type="checkbox" />
                         <div className="collapse-title text-sm font-bold text-gray-800 flex items-center gap-1 bg-white">Room Facility
                         <span className='rounded-full bg-slate-200 text-slate-700 text-xs h-[1.5em] w-[1.5em] flex items-center justify-center'>{dataForFilteringProperty?.propertyRoomFacilityCounter}</span>
                         </div>
                         <div className="collapse-content pt-3">
+                        <div className=' 2xl:overflow-y-visible overflow-y-scroll max-h-[250px]'>
                             <ul className='flex flex-col gap-4 text-sm font-semibold'>
                                 {
                                     dataForFilteringProperty?.propertyRoomFacility.slice(0,5).map((item: any, index: number) => {
@@ -292,9 +358,10 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                                 }
     
                             </ul>
+                            </div>
                         </div>
                     </div>
-                    <div tabIndex={0} className="rounded-md collapse collapse-arrow shadow-md">
+                    <div tabIndex={0} className="2xl:rounded-md rounded-none collapse collapse-arrow 2xl:shadow-md 2xl:border-t-0 border-t border-slate-300">
                         <input type="checkbox" />
                         <div className="collapse-title text-sm font-bold text-gray-800 bg-white">Stars</div>
                         <div className="collapse-content pt-3">
@@ -318,7 +385,7 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                         </ul>
                         </div>
                     </div>
-                    <div tabIndex={0} className="rounded-md collapse collapse-arrow shadow-md">
+                    <div tabIndex={0} className="2xl:rounded-md rounded-none collapse collapse-arrow 2xl:shadow-md 2xl:border-t-0 border-t border-slate-300">
                         <input type="checkbox" />
                         <div className="collapse-title text-sm font-bold text-gray-800 bg-white">Ratings from Guest</div>
                         <div className="collapse-content pt-3">
@@ -343,13 +410,15 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                         </div>
                     </div>
                 </section>
-            <div className='col-span-3 w-full min-h-min flex flex-col gap-3 px-3'>
-                <div className='grid grid-cols-4 gap-4'>
+                <div className='2xl:col-span-3 w-full min-h-min flex flex-col gap-3 px-3'>
+                <div className='hidden grid-cols-4 gap-4 2xl:grid'>
                     <span className='flex items-center gap-5 col-span-2'>
                     <div className='w-1/3 text-sm font-bold'>
                     {
-                        dataProperties?.country?.name && (
+                        dataProperties?.country?.name ? (
                             <p className='text-gray-800'>{dataProperties?.city?.name && dataProperties?.city?.name + ','} {dataProperties?.country?.name}</p>
+                        ) : (
+                            <p className='text-gray-800'>All properties</p>
                         )
                     }
                         <p className='text-gray-800 font-normal mt-[-3px] flex items-center'>{dataProperties?.countProperties} property found<CgSearchFound className='ml-2 text-green-600'/></p>
@@ -400,36 +469,43 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                     {
                         dataProperties?.properties.map((item: any, index: number) => {
                             return(
-                                <div key={index} className='bg-white w-full h-[15rem] rounded-lg flex items-start gap-3 p-3 shadow-md'>
-                                    <figure className='bg-blue-200 w-[55rem] h-full rounded overflow-hidden'>
+                                <div key={index} className='bg-white w-full h-fit 2xl:h-[15rem] rounded-lg flex 2xl:flex-row flex-col items-start gap-3 shadow-md border border-slate-200'>
+                                    <figure className=' 2xl:w-[55rem] w-full 2xl:h-full h-[15rem] rounded-t-md overflow-hidden 2xl:p-3'>
                                         <Image
                                             src={`http://localhost:5000/api/${item?.propertyDetail?.propertyImage[0]?.directory}/${item?.propertyDetail?.propertyImage[0]?.filename}.${item?.propertyDetail?.propertyImage[0]?.fileExtension}`}
                                             width={500}
                                             height={500}
                                             alt=''
-                                            className='w-full h-full object-cover'
+                                            className='w-full h-full object-cover rounded-sm'
                                         />
                                     </figure>
-                                    <div className='w-[100rem] h-full flex flex-col justify-between'>
+                                    <div className='2xl:w-[100rem] w-full h-fit flex flex-col gap-2 2xl:justify-between 2xl:h-full p-3'>
                                         <div className='flex justify-between'>
                                             <hgroup className='flex flex-col w-full'>
-                                                <h1 className='text-2xl font-bold text-gray-900'>{item?.name}</h1>
-                                                <p className='text-base font-light text-gray-600 flex items-center gap-1'><CiLocationOn size={23} className='text-red-600'/>{item?.city?.name}, {item?.country?.name}</p>
+                                                <h1 className='2xl:text-2xl lg:text-xl md:text-lg text-base font-bold text-gray-900'>{item?.name}</h1>
+                                                <p className='lg:text-base text-sm font-light text-gray-600 flex items-center gap-1'><CiLocationOn className='text-red-600 lg:text-lg text-base'/>{item?.city?.name}, {item?.country?.name}</p>
                                                 <div className='flex items-center gap-1 mt-3'>
-                                                    <p className='bg-blue-200 rounded-md px-1 py-1 text-blue-700 font-bold text-xs'>{item?.propertyType?.name}</p>
+                                                    <p className='bg-blue-200 rounded-md px-1 py-1 text-blue-700 font-bold text-xs flex items-center gap-1.5'><BsBuildings />{item?.propertyType?.name}</p>
                                                     {
                                                         item?.propertyType?.name.toLowerCase() === 'hotel' && (
                                                             <div className='flex items-center'>
                                                                 {
                                                                     Array.from({length: 5}).map((_, index) => {
                                                                         return(
-                                                                            <FaStar key={index} size={15} className='text-yellow-400'/>
+                                                                            <FaStar key={index} className='text-yellow-400 md:text-base text-sm'/>
                                                                         )
                                                                     })
                                                                 }
                                                             </div>
                                                         )
                                                     }
+                                                </div>
+                                                <div className='2xl:hidden flex flex-col gap-1 items-start'>
+                                                    <span className='flex items-center gap-1 leading-3'>
+                                                        <p className='text-sm font-bold text-gray-800 flex items-center gap-1'><RiBuilding3Line className='text-blue-800 text-base'/> 9.0</p>
+                                                        <p className='text-xs font-medium text-gray-800'>(2000 reviews)</p>
+                                                    </span>
+                                                    <p className='text-xs font-bold rounded-full text-green-800 bg-green-200 p-1'>Awesome</p>
                                                 </div>
                                                 <div className='flex flex-wrap items-center gap-1 mt-2'>
                                                     {
@@ -447,12 +523,25 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                                                 </div>
                                             </hgroup>
                                         </div>
-                                        <div className='flex justify-end w-full'>
-                                            <p className='text-sm pr-1 font-bold text-gray-400'>2 Nights | 2 Adults | 2 children</p>
+                                        <div className='2xl:hidden'>
+                                            <Separator />
+                                        </div>
+                                        <div className='flex justify-end  w-full'>
+                                            <div className='2xl:hidden flex flex-col items-start gap-1 h-full w-full'>
+                                                <div className='flex justify-between items-start w-full'>
+                                                    <div className='flex flex-col items-start w-full'>
+                                                        <p className='text-xs text-gray-600'>Starts from <span className='font-bold text-lg pr-1 text-orange-600'>Rp{item?.propertyRoomType[0]?.price}</span></p>
+                                                        <p className='text-xs text-gray-600 font-bold'>Includes tax & price</p>
+                                                    </div>
+                                                    <p className='w-full text-xs pr-1 font-semibold text-gray-400 text-right sm:flex 2xl:hidden justify-end hidden'>2 Nights | 2 Adults | 2 children</p>
+                                                </div>
+                                                <Link href={`/property/${item?.slug}/details?check-in-date=${searchParams["check-in-date"]}&check-out-date=${searchParams["check-out-date"]}&adult=${searchParams.adult}&children=${searchParams.children}`} className='rounded-md bg-black text-sm font-bold text-white px-6 w-full py-3 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200 mt-3 flex items-center justify-center gap-2'><CiBookmarkPlus size={23} />Book this room</Link>
+                                            </div>
+                                            <p className='w-full text-xs pr-1 font-semibold text-gray-400 text-right 2xl:flex justify-end items-end hidden'>2 Nights | 2 Adults | 2 children</p>
                                         </div>
                                     </div>
-                                    <div className='w-full border-l border-slate-300 flex flex-col h-full items-end justify-between'>
-                                        {
+                                    <div className='w-full border-l border-slate-300 hidden 2xl:flex flex-col h-full items-end justify-between p-3'>
+                                        {/* {
                                             (item?.review && item?.review.length > 0) && (
                                             <div className='flex flex-col items-end'>
                                                     <span className='flex items-center gap-1 leading-3'>
@@ -462,76 +551,26 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                                                     <p className='text-sm font-light mt-[-4px] text-gray-600'>Awesome</p>
                                             </div>
                                             ) 
-                                        }
+                                        } */}
+                                        <div className='hidden 2xl:flex flex-col gap-1 items-end'>
+                                            <span className='flex items-center gap-1 leading-3'>
+                                                <p className='text-sm font-bold text-gray-800 flex items-center gap-1'><RiBuilding3Line className='text-blue-800 text-base'/> 9.0</p>
+                                                <p className='text-xs font-medium text-gray-800'>(2000 reviews)</p>
+                                            </span>
+                                            <p className='text-xs font-bold rounded-full text-green-800 bg-green-200 p-1'>Awesome</p>
+                                        </div>
                                         <div className='flex flex-col items-end justify-end gap-1 h-full w-full'>
                                             <div className='flex flex-col items-end'>
-                                                <p className='text-xs text-gray-600'>Starts from <span className='font-bold text-xl pr-1 text-gray-900'>{item?.propertyRoomType[0]?.price}</span></p>
+                                                <p className='text-xs text-gray-600'>Starts from <span className='font-bold text-xl pr-1 text-orange-500'>Rp{item?.propertyRoomType[0]?.price}</span></p>
                                                 <p className='text-xs text-gray-600 font-bold'>Includes tax & price</p>
                                             </div>
-                                            <Link href={`/property/${item?.slug}/details?check-in-date=${searchParams["check-in-date"]}&check-out-date=${searchParams["check-out-date"]}&adult=${searchParams.adult}&children=${searchParams.children}`} className='rounded-full bg-black text-base font-bold text-white px-6 py-3 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200 mt-3 flex items-center gap-2'><CiBookmarkPlus size={23} />Book this room</Link>
+                                            <Link href={`/property/${item?.slug}/details?check-in-date=${searchParams["check-in-date"]}&check-out-date=${searchParams["check-out-date"]}&adult=${searchParams.adult}&children=${searchParams.children}`} className='min-w-max rounded-full bg-black text-base font-bold text-white px-6 py-3 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200 mt-3 flex items-center gap-2'><CiBookmarkPlus size={23} />Book this room</Link>
                                         </div>
-
                                     </div>
                                 </div>
                             )
                         })
                     }
-                    <div className='bg-white w-full h-[15rem] rounded-lg flex items-start gap-3 p-3 shadow-md'>
-                                    <div className='bg-blue-200 w-[55rem] h-full rounded'>
-
-                                    </div>
-                                    <div className='w-[100rem] h-full flex flex-col justify-between'>
-                                        <div className='flex justify-between'>
-                                            <hgroup className='flex flex-col w-full'>
-                                                <h1 className='text-2xl font-bold text-gray-900'>Pan Pacific Jakarta</h1>
-                                                <p className='text-base font-light text-gray-600 flex items-center gap-1'><CiLocationOn size={23} className='text-red-600'/>Jakarta, Indonesia</p>
-                                                <div className='flex items-center gap-1 mt-3'>
-                                                    <p className='bg-blue-200 rounded-md px-1 py-1 text-blue-700 font-bold text-xs'>Hotel</p>
-                                                    <div className='flex items-center'>
-                                                        {
-                                                            Array.from({length: 5}).map((_, index) => {
-                                                                return(
-                                                                    <FaStar key={index} size={15} className='text-yellow-400'/>
-                                                                )
-                                                            })
-                                                        }
-                                                    </div>
-                                                </div>
-                                                <div className='flex flex-wrap items-center gap-1 mt-2'>
-                                                    {
-                                                        Array.from({length: 3}).map((_, index) => {
-                                                            return (
-                                                                <p key={index} className='text-gray-800 bg-gray-100 rounded-badge p-1 text-[10.4px] font-semibold'>24 Security</p>
-                                                            )
-                                                        })
-                                                    }
-                                                    <p className='text-gray-500 bg-gray-100 rounded-full p-1 text-[10.4px] font-semibold'>2+</p>
-                                                </div>
-                                            </hgroup>
-                                        </div>
-                                        <div className='flex justify-end w-full'>
-                                            <p className='text-sm pr-1 font-bold text-gray-400'>2 Nights | 4 Adults | 2 children</p>
-                                        </div>
-                                    </div>
-                                    <div className='w-full border-l border-slate-300 flex flex-col h-full items-end justify-between'>
-                                        <div className='flex flex-col items-end'>
-                                                <span className='flex items-center gap-1 leading-3'>
-                                                    <p className='text-base font-bold text-blue-600 flex items-center gap-1'><RiBuilding3Line size={18} className='text-gray-800'/> 9.8</p>
-                                                    <p className='text-xs font-medium text-gray-800'>(2000 reviews)</p>
-                                                </span>
-                                                <p className='text-sm font-light mt-[-4px] text-gray-600'>Awesome</p>
-                                        </div>
-                                        <div className='flex flex-col items-end justify-end gap-1 h-full w-full'>
-                                            <div className='flex flex-col items-end'>
-                                                <p className='text-xs text-gray-600'><span className='font-bold text-sm pr-1 text-gray-500 line-through'>23000000</span></p>
-                                                <p className='text-xs text-gray-600'>Starts from <span className='font-bold text-xl pr-1 text-gray-900'>18000000</span></p>
-                                                <p className='text-xs text-gray-600 font-bold'>Includes tax & price</p>
-                                            </div>
-                                            <Link href='' className='rounded-full bg-black text-base font-bold text-white px-6 py-3 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200 mt-3 flex items-center gap-2'><CiBookmarkPlus size={23} />Book this room</Link>
-                                        </div>
-
-                                    </div>
-                    </div>
                     <div id='pagination-button' className='w-full flex justify-center'>
                     <div className="join">
                     {

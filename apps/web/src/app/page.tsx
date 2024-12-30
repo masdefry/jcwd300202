@@ -102,7 +102,8 @@ export default function Home() {
   return (
 
     <main className='flex flex-col gap-5 md:gap-12 lg:gap-16 lg:p-16 md:p-12 sm:p-8 p-4'>
-      <section className='flex flex-col gap-3 md:gap-12 lg:gap-16 lg:p-16 md:p-12 sm:p-8 p-4'>
+      <section className='m-auto max-w-screen-xl w-full h-full'>
+      <section className='flex flex-col gap-3 md:gap-12 lg:gap-16'>
         <section className='grid grid-cols-1 lg:grid-cols-2 h-fit gap-3 md:gap-7 lg:gap-10'>
           {
             dataLandingPage?.data?.cities?.map((item: any, index: number) => {
@@ -144,9 +145,11 @@ export default function Home() {
           }
         </section>
       </section>
+      </section>
       <section className='relative right-4 sm:right-8 md:right-12 lg:right-16'>
           <Hero isPending={isPendingDataLandingPage}/>
       </section>
+      <section className='m-auto max-w-screen-xl w-full h-full'>
       <section className='flex flex-col gap-5'>
         <hgroup className='flex flex-col lg:gap-2 md:gap-1'>
           <h1 className='lg:text-4xl font-bold text-lg md:text-3xl'>Recent Property Bookings</h1>
@@ -159,14 +162,14 @@ export default function Home() {
             <p className='text-gray-300 md:text-base text-xs font-medium'>Explore Roomify and book any properties you want</p>
           </div>
           ):(
-          <div className="carousel rounded-none flex gap-8 h-fit py-2">
+          <div className="carousel rounded-none flex gap-5 h-fit py-2">
               { 
                 dataLandingPage?.data?.propertyByRecentBooks.map((item: any, index: number) => {
                   return (
                   <div className="carousel-item" key={index}>
                     <Card 
                     isPending={isPendingDataLandingPage}
-                    level={'template'}
+                    propertyType={item?.propertyType?.name}
                     propertyName={item?.name}
                     city={item?.city?.name}
                     country={item?.country?.name}
@@ -183,8 +186,10 @@ export default function Home() {
           )
         }
       </section>
+      </section>
       {
         token && (
+        <section className='m-auto max-w-screen-xl w-full h-full'>
         <section className='flex flex-col gap-5'>
           <hgroup className='flex flex-col lg:gap-2 md:gap-1'>
             <h1 className='lg:text-4xl font-bold text-lg md:text-3xl'>Best Property in Indonesia</h1>
@@ -197,14 +202,14 @@ export default function Home() {
               <p className='text-gray-300 md:text-base text-xs font-medium'>Explore Roomify and book any properties you want</p>
             </div>
             ):(
-            <div className="carousel rounded-none flex gap-8 h-fit py-2">
+            <div className="carousel rounded-none flex gap-5 h-fit py-2">
                 { 
                   dataLandingPage?.data?.propertyByRecentBooks.map((item: any, index: number) => {
                     return (
                     <div className="carousel-item" key={index}>
                       <Card 
                       isPending={isPendingDataLandingPage}
-                      level={'template'}
+                      propertyType={item?.propertyType?.name}
                       propertyName={item?.name}
                       city={item?.city?.name}
                       country={item?.country?.name}
@@ -221,15 +226,17 @@ export default function Home() {
             )
           }
         </section>
+        </section>
 
         )
       }
+      <section className='m-auto max-w-screen-xl w-full h-full'>
       <section className='flex flex-col gap-5'>
         <hgroup className='flex flex-col lg:gap-2 md:gap-1'>
           <h1 className='lg:text-4xl font-bold text-lg md:text-3xl'>Explore Property</h1>
           <p className='lg:text-lg md:text-base text-sm font-light'>See, book, and stay in our partner properties</p>
         </hgroup>
-        <div className="carousel rounded-none flex gap-3 md:gap-8 h-fit py-2">
+        <div className="carousel rounded-none flex gap-3 md:gap-5 h-fit py-2">
         {
           dataLandingPage?.data?.properties.map((item: any, index: number) => {
             return (
@@ -237,7 +244,7 @@ export default function Home() {
               <Link href={`/property/${item?.slug}/details`}>
                 <Card 
                 isPending={isPendingDataLandingPage}
-                level={'template'}
+                propertyType={item?.propertyType?.name}
                 propertyName={item?.name}
                 city={item?.city?.name}
                 country={item?.country?.name}
@@ -252,6 +259,7 @@ export default function Home() {
           })
         }
         </div>
+      </section>
       </section>
 
 

@@ -20,9 +20,13 @@ const ProfileUserLayout = ({  children }: { children: ReactNode }) => {
   const isVerified = authStore(state => state.isVerified)  
   const companyName = authStore(state => state.companyName)  
   
-    if(pathname.includes('/auth')) {
+    if(pathname.includes('/auth') || pathname.includes('/tenant/property/create')) {
       return (
-        <>{children}</>
+        <main className='w-full min-h-min py-5'>
+          <section className='m-auto max-w-screen-xl w-full h-full'>
+            {children}
+          </section>
+        </main>
       )
     }
   const [ menus, setMenus] = useState([

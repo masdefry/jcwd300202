@@ -12,6 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { FiPlus } from "react-icons/fi";
 import { CiTrash } from "react-icons/ci";
 import { IoCloudUploadOutline } from "react-icons/io5";
+import Image from 'next/image'
 import {
   Card,
   CardContent,
@@ -33,6 +34,8 @@ import { useQuery } from '@tanstack/react-query'
 import instance from '@/utils/axiosInstance'
 import toast from 'react-hot-toast'
 import { AnyARecord } from 'dns'
+import { url } from 'inspector'
+import { FaRegTrashCan } from 'react-icons/fa6'
 
 
 const CreatePropertyPage = () => {
@@ -82,7 +85,7 @@ const CreatePropertyPage = () => {
             checkOutStartTime: '',
             checkOutEndTime: '', 
             propertyTypeId: null,
-            propertyFacilitiesId: null,
+            propertyFacilitiesId: [],
             propertyFacilitiesName: '',
             propertyImages: [] as File[],
             propertyDescription: '',
@@ -91,7 +94,14 @@ const CreatePropertyPage = () => {
             url: '', 
             totalRooms: 0,
             propertyRoomType: [{
-              roomFacilities: []
+              name: '',
+              capacity: 1,
+              totalRooms: 1,
+              rooms: 1,
+              bathrooms: 1,
+              description: '',
+              roomFacilities: [],
+              roomImages: []
             }],
           }}
 
@@ -180,25 +190,166 @@ const CreatePropertyPage = () => {
                       <h1 className='text-3xl font-bold'>Property Facilities</h1>
                       <p className='text-lg font-light'>Property facilities will explain to customers what they will get while staying in this property</p>
                     </hgroup>
-                    <section className='flex flex-col gap-2 w-full'>
-                      <section className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full gap-6'>
+                    <FieldArray name='propertyFacilitesId'>
+                    {
+                      ({ push: pushPropertyFacility }) => (
+                        <div className='flex flex-col gap-2 w-full'>
+                        <section className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full gap-6'>
+                        {
+                          dataPropertyFacilities?.map((item: any, index: number) => {
+                            return(
+                              <div key={index} className="flex items-center space-x-2">
+                                <Checkbox id="terms" value={item?.id} name='propertyFacilitesId' 
+                                onCheckedChange={(e) => {
+                                  if(e) {
+                                    pushPropertyFacility(item?.id)
+                                  } else {
+                                    const findIdx = values.propertyFacilitiesId.findIndex(value => value === item?.id)
+                                    values.propertyFacilitiesId.splice(findIdx, 1) 
+                                  }
+                                }}/>
+                                <label
+                                  htmlFor="terms"
+                                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                >
+                                  {item?.name}
+                                </label>
+                              </div>
+                            )
+                          })
+                        }
+                        </section>
+                      </div>
+                      )
+                    }
+                    </FieldArray>
+                  </section>
+                  <section className="flex flex-col gap-5">
+                    <hgroup className='mb-5'>
+                      <h1 className='text-3xl font-bold'>Property Images</h1>
+                      <p className='text-lg font-light'>Showcase Your Space: Stunning Property Images for Renters </p>
+                    </hgroup>
+                    <FieldArray name='propertyImages'>
                       {
-                        dataPropertyFacilities?.map((item: any, index: number) => {
-                          return(
-                            <div key={index} className="flex items-center space-x-2">
-                              <Checkbox id="terms" value={item?.id} name='propertyFacilitesId'/>
-                              <label
-                                htmlFor="terms"
-                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                              >
-                                {item?.name}
-                              </label>
-                            </div>
-                          )
-                        })
+                        ({ insert: insertFile, remove: removeFile }) => (
+                        <section className='grid grid-cols-4 gap-5'>
+                          <div className="flex items-center justify-center md:col-span-2 2xl:col-[1/4] 2xl:row-[1/3] col-span-4 w-full 2xl:h-[420px] overflow-hidden border-2 border-gray-300 border-dashed rounded-lg">
+                                                          {
+                                                            Boolean(values?.propertyImages[0]?.['name']) ? (
+                                                              <figure className='w-full h-full relative'>
+                                                                <Image  
+                                                                  src={URL.createObjectURL(values.propertyImages[0])}
+                                                                  width={1000}
+                                                                  height={1000}
+                                                                  alt=''
+                                                                  className='object-cover w-full h-full' 
+                                                                  />
+                                                                <div className='text-lg absolute right-4 bottom-4 bg-white shadow-md text-red-600 hover:text-opacity-75 active:scale-90 transition duration-100 h-10 w-10 flex items-center justify-center rounded-2xl'>
+                                                                  <FaRegTrashCan onClick={() => removeFile(0)}/>
+                                                                </div>
+                                                              </figure>
+                                                            ) : (
+                                                              <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-full cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                                                    <IoCloudUploadOutline size={28} />
+                                                                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                                                                    <p className="text-xs text-gray-500 dark:text-gray-400">JPG, PNG or JPEG (MAX. 2MB)</p>
+                                                                </div>
+                                                                <input id="dropzone-file" type="file" className="hidden" 
+                                                                onChange={(e: any) => {
+                                                                  if(e.currentTarget.files[0]) {
+                                                                    insertFile(0, e.currentTarget.files[0])
+                                                                  }
+                                                                }}/>
+                                                              </label>
+                                                            )
+                                                          }
+                                                          
+                                                        </div>
+                        {
+                                                      Array.from({length:2}).map((_, imageIdx: number) => {
+                                                        return(
+                                                        <div key={imageIdx} className="flex items-center justify-center md:col-span-2 2xl:col-span-1 col-span-4 w-full h-[150px] lg:h-[200px] overflow-hidden border-2 border-gray-300 border-dashed rounded-lg">
+                                                          {
+                                                            Boolean(values?.propertyImages[imageIdx + 1]?.['name']) ? (
+                                                              <figure className='w-full h-full relative'>
+                                                                <Image  
+                                                                  src={URL.createObjectURL(values.propertyImages[imageIdx + 1])}
+                                                                  width={1000}
+                                                                  height={1000}
+                                                                  alt=''
+                                                                  className='object-cover w-full h-full' 
+                                                                  />
+                                                                <div className='text-lg absolute right-4 bottom-4 bg-white shadow-md text-red-600 hover:text-opacity-75 active:scale-90 transition duration-100 h-10 w-10 flex items-center justify-center rounded-2xl'>
+                                                                  <FaRegTrashCan onClick={() => removeFile(imageIdx + 1)}/>
+                                                                </div>
+                                                              </figure>
+                                                            ) : (
+                                                              <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-full cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                                                    <IoCloudUploadOutline size={28} />
+                                                                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                                                                    <p className="text-xs text-gray-500 dark:text-gray-400">JPG, PNG or JPEG (MAX. 2MB)</p>
+                                                                </div>
+                                                                <input id="dropzone-file" type="file" className="hidden" 
+                                                                onChange={(e: any) => {
+                                                                  if(e.currentTarget.files[0]) {
+                                                                    insertFile(imageIdx + 1, e.currentTarget.files[0])
+                                                                  }
+                                                                }}/>
+                                                              </label>
+                                                            )
+                                                          }
+                                                          
+                                                        </div>
+                                                        )
+        
+                                                      })
+                                                    }
+                                                    {
+                                                      Array.from({length:4}).map((_, imageIdx: number) => {
+                                                        return(
+                                                        <div key={imageIdx} className="flex items-center justify-center md:col-span-2 2xl:col-span-1 col-span-4 w-full h-[150px] lg:h-[200px] overflow-hidden border-2 border-gray-300 border-dashed rounded-lg">
+                                                          {
+                                                            Boolean(values?.propertyImages[imageIdx + 3]?.['name']) ? (
+                                                              <figure className='w-full h-full relative'>
+                                                                <Image  
+                                                                  src={URL.createObjectURL(values.propertyImages[imageIdx + 3])}
+                                                                  width={1000}
+                                                                  height={1000}
+                                                                  alt=''
+                                                                  className='object-cover w-full h-full' 
+                                                                  />
+                                                                <div className='text-lg absolute right-4 bottom-4 bg-white shadow-md text-red-600 hover:text-opacity-75 active:scale-90 transition duration-100 h-10 w-10 flex items-center justify-center rounded-2xl'>
+                                                                  <FaRegTrashCan onClick={() => removeFile(imageIdx + 3)}/>
+                                                                </div>
+                                                              </figure>
+                                                            ) : (
+                                                              <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-full cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                                                    <IoCloudUploadOutline size={28} />
+                                                                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                                                                    <p className="text-xs text-gray-500 dark:text-gray-400">JPG, PNG or JPEG (MAX. 2MB)</p>
+                                                                </div>
+                                                                <input id="dropzone-file" type="file" className="hidden" 
+                                                                onChange={(e: any) => {
+                                                                  if(e.currentTarget.files[0]) {
+                                                                    insertFile(imageIdx + 3, e.currentTarget.files[0])
+                                                                  }
+                                                                }}/>
+                                                              </label>
+                                                            )
+                                                          }
+                                                          
+                                                        </div>
+                                                        )
+        
+                                                      })
+                                                    }
+                        </section> 
+                        )
                       }
-                      </section>
-                    </section>
+                    </FieldArray>
                   </section>
                   <section className="flex flex-col gap-10">
                     <hgroup>
@@ -237,8 +388,16 @@ const CreatePropertyPage = () => {
                               })
                             } 
                             <div onClick={() => {
-                              push({ name: ''})
-                              // s 
+                              push({ 
+                                name: '',
+                                capacity: 1,
+                                totalRooms: 1,
+                                rooms: 1,
+                                bathrooms: 1,
+                                description: '',
+                                roomFacilities: [],
+                                roomImages: []
+                              })
                             }} 
                             className='flex gap-5 items-center px-7 py-3 rounded-full bg-blue-600 text-white hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-100'>
                               <h1 className='text-base font-semibold'>Add Room Type</h1>
@@ -285,6 +444,12 @@ const CreatePropertyPage = () => {
                                             name={`propertyRoomType.${index}.totalRooms`}
                                             type='number'
                                             placeholder='Minimum is 1'
+                                            />
+                                            <TextInputForTabs 
+                                            labelName='Room price'
+                                            name={`propertyRoomType.${index}.price`}
+                                            type='number'
+                                            placeholder='Rp500000'
                                             />
                                           </CardContent>
                                           <CardFooter>
@@ -335,7 +500,7 @@ const CreatePropertyPage = () => {
                                           <CardContent className="space-y-2">
                                             <FieldArray name={`propertyRoomType.${index}.roomFacilities`}>
                                               {
-                                                ({ push: pushRoomFacility, remove: removeRoomFacility, insert: insertRoomFacillity, replace: replaceRoomFacility }) => (
+                                                ({ push: pushRoomFacility }) => (
 
                                                 <section className='flex flex-col gap-10 w-full'>
                                                   <section className='grid grid-cols-3 w-full gap-6'>
@@ -343,58 +508,20 @@ const CreatePropertyPage = () => {
                                                     dataRoomFacilities?.map((roomFacility: any, indexRoomFacility: number) => {
                                                       return(
                                                         <div key={indexRoomFacility} className="flex items-center space-x-2">
-                                                          <Checkbox id={roomFacility?.id} value={index} name={`propertyRoomType.${index}.roomFacilities.${indexRoomFacility}`}
-                                                          // onCheckedChange={(e: any) => {
-                                                          //   if(e) {
-                                                          //     insertRoomFacillity(roomFacility?.id, roomFacility?.id)
-                                                          //   } else {
-                                                          //     removeRoomFacility(roomFacility?.id)
-                                                          //   }
-                                                          // }}
-                                                          onCheckedChange={(e: any) => {
-                                                            values.propertyRoomType.forEach((itm, idx) => {
-                                                              if(e) {
-                                                                //  setRoomFacilities([[...roomFacilities[index], roomFacility?.id]])
-                                                                 pushRoomFacility(roomFacility?.id)
-                                                                } else {
-                                                                removeRoomFacility(idx)
-                                                                // setRoomFacilities((state: any) => {
-                                                                //     const changedRoomFacilities = state[index].filter((item: any) => (item.id !== roomFacility?.id))
-                                                                //     state[index] = changedRoomFacilities
-                                                                //     return state
-                                                                //   })
-                                                                // }
-                                                            // })
-                                                             console.log(roomFacilities)
-                                                             console.log(values.propertyRoomType.map((item) => item))
-                                                          }})}}
-                                                          //   // values.propertyRoomType[index].roomFacilities.forEach((itm, idx) => {
-                                                            //   if(!e) { 
-                                                            //     setFieldValue(`propertyRoomType.${index}.roomFacilities.${indexRoomFacility}`, roomFacilities )
-                                                            //     insertRoomFacillity(indexRoomFacility, roomFacility?.id)
-                                                            //     setRoomFacilities((state: any) => {
-                                                            //         // if(index)
-                                                            //         const changedRoomFacilities = state[index].filter((item: any) => item !== roomFacility?.id)
-                                                            //         state[index] = changedRoomFacilities
-                                                            //         return state
-                                                            //       })
-                                                            //     } else {
-                                                            //     removeRoomFacility(indexRoomFacility)
-                                                            //     setRoomFacilities([[...roomFacilities[index], roomFacility?.id]])
-                                                            //     setRoomFacilities(state => {
-                                                            //       state[index].push(roomFacility?.id)
-                                                            //       return state
-                                                            //     })
-                                                            //   }
-                                                            // })
-                                                            // console.log(roomFacilities)
-                                                            // }}
+                                                          <Checkbox id={roomFacility?.id} value={roomFacility?.id} name={`propertyRoomType.${index}.roomFacilities.${indexRoomFacility}`}
+                                                          onCheckedChange={(e: boolean) => {
+                                                            if(e) {
+                                                             pushRoomFacility(roomFacility?.id)
+                                                            } else {
+                                                              const findIdx = values.propertyRoomType[index].roomFacilities.findIndex((value: any) => value === roomFacility?.id)
+                                                              values.propertyRoomType[index].roomFacilities.splice(findIdx, 1)
+                                                            }
+                                                          }}
                                                             />
                                                           <label
-                                                            htmlFor={roomFacility?.id}
                                                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                                           >
-                                                            {roomFacility?.name} {roomFacility?.id} {index}
+                                                            {roomFacility?.name}
                                                           </label>
                                                         </div>
                                                       )
@@ -402,11 +529,6 @@ const CreatePropertyPage = () => {
                                                   }
                                                   </section>
                                                   <section>
-
-                                                    <div className='p-1 px-2 w-fit text-xs font-bold text-gray-700 bg-gray-200 rounded-full flex items-center gap-3'>
-                                                      Amnenities
-                                                      <CiTrash size={17} className='text-red-600 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-100'/>
-                                                    </div>
                                                   </section>
                                                 </section>
                                                 )
@@ -429,33 +551,79 @@ const CreatePropertyPage = () => {
                                           <CardContent>
                                           <FieldArray name={`propertyRoomType.${index}.roomImages`}>
                                             {
-                                              ({push, remove}) => (
+                                              ({insert: insertFile, remove: removeFile}) => (
                                             <section className='flex flex-col gap-5 mb-8 mt-3'>
-                                              <div className="flex items-center justify-center w-full h-[150px] lg:h-[200px]">
-                                                <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                              
+                                              <div className="flex items-center justify-center w-full h-[150px] lg:h-[420px] overflow-hidden border-2 border-gray-300 border-dashed rounded-lg">
+                                              {
+                                                Boolean(values?.propertyRoomType[index]?.roomImages[0]?.['name']) ? (
+                                                  <figure className='w-full h-full relative'>
+                                                    <Image  
+                                                      src={URL.createObjectURL(values.propertyRoomType[index].roomImages[0])}
+                                                      width={1000}
+                                                      height={1000}
+                                                      alt=''
+                                                      className='object-cover w-full h-full' 
+                                                      />
+                                                    <div className='text-lg absolute right-4 bottom-4 bg-white shadow-md text-red-600 hover:text-opacity-75 active:scale-90 transition duration-100 h-10 w-10 flex items-center justify-center rounded-2xl'>
+                                                      <FaRegTrashCan onClick={() => removeFile(0)}/>
+                                                    </div>
+                                                  </figure>
+                                                ) : (
+                                                  <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-full  cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
                                                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                                         <IoCloudUploadOutline size={28} />
                                                         <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>
                                                         <p className="text-xs text-gray-500 dark:text-gray-400">JPG, PNG or JPEG (MAX. 2MB)</p>
                                                     </div>
                                                     <input id="dropzone-file" type="file" className="hidden" 
-                                                    onChange={(e: any) => e.currentTarget.files[0] ? push(e.currentTarget.files[0]) : remove(0)}
+                                                    onChange={(e: any) => {
+                                                      if(e.currentTarget.files[0]) {
+                                                        insertFile(0, e.currentTarget.files[0])
+                                                      }
+                                                      console.log(values)
+                                                    }}
                                                     />
                                                 </label>
+                                                )
+                                              } 
                                               </div>
                                               <section className='grid grid-cols-4 gap-5'>
                                                 {
-                                                  Array.from({length:4}).map((_, index) => {
+                                                  Array.from({length:4}).map((_, imageIdx: number) => {
                                                     return(
-                                                    <div key={index} className="flex items-center justify-center md:col-span-2 2xl:col-span-1 col-span-4 w-full h-[150px] lg:h-[200px]">
-                                                      <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                                                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                                              <IoCloudUploadOutline size={28} />
-                                                              <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                                                              <p className="text-xs text-gray-500 dark:text-gray-400">JPG, PNG or JPEG (MAX. 2MB)</p>
-                                                          </div>
-                                                          <input id="dropzone-file" type="file" className="hidden" onChange={(e: any) => e.currentTarget.files[0] ? push(e.currentTarget.files[0]) : remove(index + 1)}/>
-                                                      </label>
+                                                    <div key={imageIdx} className="flex items-center justify-center md:col-span-2 2xl:col-span-1 col-span-4 w-full h-[150px] lg:h-[200px] overflow-hidden border-2 border-gray-300 border-dashed rounded-lg">
+                                                      {
+                                                        Boolean(values?.propertyRoomType[index]?.roomImages[imageIdx + 1]?.['name']) ? (
+                                                          <figure className='w-full h-full relative'>
+                                                            <Image  
+                                                              src={URL.createObjectURL(values.propertyRoomType[index].roomImages[imageIdx + 1])}
+                                                              width={1000}
+                                                              height={1000}
+                                                              alt=''
+                                                              className='object-cover w-full h-full' 
+                                                              />
+                                                            <div className='text-lg absolute right-4 bottom-4 bg-white shadow-md text-red-600 hover:text-opacity-75 active:scale-90 transition duration-100 h-10 w-10 flex items-center justify-center rounded-2xl'>
+                                                              <FaRegTrashCan onClick={() => removeFile(imageIdx + 1)}/>
+                                                            </div>
+                                                          </figure>
+                                                        ) : (
+                                                          <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-full cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                                                <IoCloudUploadOutline size={28} />
+                                                                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                                                                <p className="text-xs text-gray-500 dark:text-gray-400">JPG, PNG or JPEG (MAX. 2MB)</p>
+                                                            </div>
+                                                            <input id="dropzone-file" type="file" className="hidden" 
+                                                            onChange={(e: any) => {
+                                                              if(e.currentTarget.files[0]) {
+                                                                insertFile(imageIdx + 1, e.currentTarget.files[0])
+                                                              }
+                                                            }}/>
+                                                          </label>
+                                                        )
+                                                      }
+                                                      
                                                     </div>
                                                     )
     

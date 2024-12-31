@@ -3,10 +3,13 @@
 import React from 'react'
 import Image from 'next/image'
 import { CiBookmarkPlus } from "react-icons/ci";
+import { BsBuildings } from 'react-icons/bs';
+import { RiBuilding3Fill } from 'react-icons/ri';
+import { IoLocationOutline } from 'react-icons/io5';
 
 interface ICardProps {
     isPending: boolean,
-    level?: string,
+    propertyType?: string,
     propertyName?: string,
     city?: string,
     country?: string,
@@ -16,11 +19,11 @@ interface ICardProps {
     imageUrl?: string
 }
 
-const Card = ({isPending, imageUrl = '', level = 'loading', propertyName = 'loading', city = 'loading', country = 'loading', ratingAvg = 0, totalReviews = 0, price = 1000000}: ICardProps) => {
+const Card = ({isPending, imageUrl = '', propertyType = 'Hotek', propertyName = 'loading', city = 'loading', country = 'loading', ratingAvg = 0, totalReviews = 0, price = 1000000}: ICardProps) => {
   return (
-    <div className='w-[135px] h-[240px]  md:w-[300px] md:h-[440px] rounded-md overflow-hidden border border-slate-200 bg-white relative shadow-md'>
+    <div className='w-[135px] h-[240px]  md:w-[285px] md:h-[370px] rounded-md overflow-hidden border border-slate-200 bg-white relative shadow-md'>
         <div className='flex flex-col'>
-            <figure className={`${isPending ? 'skeleton' : 'bg-slate-200' } md:h-[220px] h-[100px] rounded-none overflow-hidden`}>
+            <figure className={`${isPending ? 'skeleton' : 'bg-slate-200' } md:h-[200px] h-[100px] rounded-none overflow-hidden`}>
                 {
                     !isPending && (
                         <Image 
@@ -40,12 +43,12 @@ const Card = ({isPending, imageUrl = '', level = 'loading', propertyName = 'load
         </div>
         <div className='flex flex-col md:gap-2 p-1.5 md:p-3'>
             <div className='hidden md:flex items-center gap-2'>
-                <div className={`${isPending ? 'skeleton text-transparent' : 'bg-black text-white'} text-xs font-semibold py-1 px-3 rounded-full w-fit`}>Roomify</div>
-                <div className={`${isPending ? 'skeleton text-transparent' : 'bg-blue-600 text-white'} text-xs font-semibold py-1 px-3 rounded-full w-fit`}>{level}</div>
+                <div className={`${isPending ? 'skeleton text-transparent' : 'bg-blue-700 text-white'} text-xs font-semibold py-1 px-3 rounded-full w-fit flex items-center gap-1.5`}><BsBuildings className='text-sm' />{propertyType}</div>
+                <div className={`${isPending ? 'skeleton text-transparent' : 'bg-white text-gray-900'} text-xs font-semibold py-1 px-3 rounded-full w-fit flex items-center gap-1.5`}><RiBuilding3Fill />Roomify</div>
             </div>
-            <hgroup className='hidden md:flex flex-col gap-1 '>
-                <h1 className={`text-lg font-bold ${isPending ? 'text-transparent skeleton w-fit' : 'text-black' } h-fit`}>{propertyName.length > 50 ? propertyName.slice(0 ,50) + '...' : propertyName}</h1>
-                <h6 className={`text-base font-light ${isPending ? 'text-transparent skeleton w-fit' : 'text-black' } h-fit`}>{city}, {country}</h6>
+            <hgroup className='hidden md:flex flex-col '>
+                <h1 className={`text-lg font-bold ${isPending ? 'text-transparent skeleton w-fit' : 'text-gray-800' } h-fit`}>{propertyName.length > 20 ? propertyName.slice(0 ,20) + '...' : propertyName}</h1>
+                <h6 className={`text-sm font-light ${isPending ? 'text-transparent skeleton w-fit' : 'text-gray-600' } h-fit flex items-center gap-1.5`}><IoLocationOutline className='text-red-600 text-base' />{city}, {country}</h6>
             </hgroup>
             <hgroup className='flex md:hidden flex-col '>
                 <h1 className={`text-sm font-bold ${isPending ? 'text-transparent skeleton w-fit' : 'text-gray-900' } h-fit`}>{propertyName.length > 11 ? propertyName.slice(0 ,11) + '...' : propertyName}</h1>
@@ -58,12 +61,14 @@ const Card = ({isPending, imageUrl = '', level = 'loading', propertyName = 'load
                     <div className='h-[2px] w-[2px] rounded-full'></div>
                     <p className=''>33 Reviews</p>
                 </section>
-                ) : (
+                ) : totalReviews > 0 ? (
                 <section className='flex text-xs md:text-lg items-center gap-2 font-medium'>
                     <p className='text-gray-900 font-bold w-fit'>{ratingAvg}</p>
                     <div className='h-[2px] w-[2px] rounded-full bg-gray-600'></div>
                     <p className='text-gray-600'>{totalReviews} Reviews</p>
                 </section>
+                ) : (
+                    <></>
                 )
             }
             <section className='w-full flex md:hidden justify-start gap-2 mt-1'>
@@ -75,7 +80,7 @@ const Card = ({isPending, imageUrl = '', level = 'loading', propertyName = 'load
         </div>
         <section className='absolute bottom-3 w-full right-3 hidden md:flex justify-end items-center gap-2 mt-14'>
             <p className={`font-normal text-sm h-[1em] ${isPending ? 'skeleton text-transparent' : 'text-gray-700'}`}>Starts from</p>
-            <p className={`font-bold text-xl h-[1em] ${isPending && 'skeleton text-transparent'}`}>Rp{price}</p>
+            <p className={`text-orange-600 font-bold text-xl h-[1em] ${isPending && 'skeleton text-transparent'}`}>Rp{price}</p>
         </section>
     </div>
   )

@@ -118,7 +118,7 @@ const SearchHeader = ({
                   type="text" 
                   placeholder={searchValues.countryName ? '' : `Jakarta / Indonesia`} 
                   disabled={searchValues.countryName ? true : false}/>
-                <ErrorMessage name="country" className='text-xs text-red-600 bg-red-200 font-bold rounded-full px-5 p-1 absolute top-[2rem] 2xl:top-[4rem] z-10' component={'div'} />
+                <ErrorMessage name="country" className='text-xs text-red-600 bg-red-200 opacity-25 2xl:opacity-100 font-bold rounded-full px-5 p-1 absolute bottom-[10px] 2xl:top-[4rem] z-10' component={'div'} />
                 <div className="absolute top-[80px] left-0 z-20 w-full"> 
                   <DropdownCitiesAndCountries setFieldValue={setFieldValue} handleClearSearchInput={handleClearSearchInput} setSearchLocation={setSearchLocation} searchLocation={searchLocation} dataDropdown={dataDropdown} handleSearchInput={handleSearchInput} setDataDropdown={setDataDropdown} setSearchValues={setSearchValues}/>
                 </div>

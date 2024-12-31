@@ -35,6 +35,7 @@ export const getLandingPageData = async(req: Request, res: Response, next: NextF
                                         propertyImage: true
                                     }
                                 },
+                                propertyType: true,
                                 review: true
                             }
                         }
@@ -64,6 +65,7 @@ export const getLandingPageData = async(req: Request, res: Response, next: NextF
                                         propertyImage: true
                                     }
                                 },
+                                propertyType: true,
                                 review: true
                             }
                         }
@@ -94,6 +96,7 @@ export const getLandingPageData = async(req: Request, res: Response, next: NextF
                                     propertyImage: true
                                 }
                             },
+                            propertyType: true,
                             review: true
                         }
                     })
@@ -151,6 +154,7 @@ export const getLandingPageData = async(req: Request, res: Response, next: NextF
                         propertyImage: true
                     }
                 },
+                propertyType: true,
                 review: true
             }
         })

@@ -30,7 +30,7 @@ export default function Home() {
   if(isPendingDataLandingPage) {
     return (
       <main className='flex flex-col gap-12 lg:gap-16 lg:p-16 md:p-12 sm:p-8 p-4'>
-      <section className='grid grid-cols-1 lg:grid-cols-2 h-fit gap-10'>
+      <section className='grid grid-cols-1 lg:grid-cols-2 h-fit gap-6'>
         {
           Array.from({length: 2}).map((item, index) => {
             return(
@@ -48,7 +48,7 @@ export default function Home() {
           })
         }
       </section>
-      <section className='grid grid-cols-1 lg:grid-cols-3 h-fit gap-10'>
+      <section className='grid grid-cols-1 lg:grid-cols-3 h-fit gap-6 mt-[-20px]'>
         {
           Array.from({length: 3}).map((item, index) => {
             return(
@@ -104,7 +104,7 @@ export default function Home() {
     <main className='flex flex-col gap-5 md:gap-12 lg:gap-16 lg:p-16 md:p-12 sm:p-8 p-4'>
       <section className='m-auto max-w-screen-xl w-full h-full'>
       <section className='flex flex-col gap-3 md:gap-12 lg:gap-16'>
-        <section className='grid grid-cols-1 lg:grid-cols-2 h-fit gap-3 md:gap-7 lg:gap-10'>
+        <section className='grid grid-cols-1 lg:grid-cols-2 h-fit gap-3 md:gap-6'>
           {
             dataLandingPage?.data?.cities?.map((item: any, index: number) => {
               if(index < 2) {
@@ -116,7 +116,7 @@ export default function Home() {
                   alt={item?.name.toLowerCase().split(' ').join('-')}
                   city={item?.name}
                   country={item?.country?.name}
-                  h1Size='lg:text-5xl text-3xl'
+                  h1Size='text-3xl'
                   />
                 </div>
               )
@@ -124,7 +124,7 @@ export default function Home() {
             })
           }
         </section>
-        <section className='grid grid-cols-1 lg:grid-cols-3 h-fit gap-3 md:gap-7 lg:gap-10'>
+        <section className='grid grid-cols-1 lg:grid-cols-3 h-fit gap-3 md:gap-6'>
           {
             dataLandingPage?.data?.cities?.map((item: any, index: number) => {
               if(index >= 2) {
@@ -151,9 +151,9 @@ export default function Home() {
       </section>
       <section className='m-auto max-w-screen-xl w-full h-full'>
       <section className='flex flex-col gap-5'>
-        <hgroup className='flex flex-col lg:gap-2 md:gap-1'>
-          <h1 className='lg:text-4xl font-bold text-lg md:text-3xl'>Recent Property Bookings</h1>
-          <p className='lg:text-lg md:text-base text-sm font-light'>Book back the property you like</p>
+        <hgroup className='flex flex-col'>
+          <h1 className='lg:text-3xl font-bold text-lg md:text-3xl text-gray-900'>Recent Property Bookings</h1>
+          <p className='md:text-base text-sm font-medium text-gray-600'>Book back the property you like</p>
         </hgroup>
         {
           dataLandingPage?.data?.propertyByRecentBooks ? (
@@ -191,9 +191,9 @@ export default function Home() {
         token && (
         <section className='m-auto max-w-screen-xl w-full h-full'>
         <section className='flex flex-col gap-5'>
-          <hgroup className='flex flex-col lg:gap-2 md:gap-1'>
-            <h1 className='lg:text-4xl font-bold text-lg md:text-3xl'>Best Property in Indonesia</h1>
-            <p className='lg:text-lg md:text-base text-sm font-light'>Stay in the best property in Indonesia</p>
+          <hgroup className='flex flex-col'>
+            <h1 className='lg:text-3xl font-bold text-lg md:text-3xl text-gray-900'>Best Property in Indonesia</h1>
+            <p className='md:text-base text-sm font-medium text-gray-600'>Stay in the best property in Indonesia</p>
           </hgroup>
           {
             dataLandingPage?.data?.propertyByRecentBooks ? (
@@ -232,9 +232,9 @@ export default function Home() {
       }
       <section className='m-auto max-w-screen-xl w-full h-full'>
       <section className='flex flex-col gap-5'>
-        <hgroup className='flex flex-col lg:gap-2 md:gap-1'>
-          <h1 className='lg:text-4xl font-bold text-lg md:text-3xl'>Explore Property</h1>
-          <p className='lg:text-lg md:text-base text-sm font-light'>See, book, and stay in our partner properties</p>
+        <hgroup className='flex flex-col'>
+          <h1 className='lg:text-3xl font-bold text-lg md:text-3xl text-gray-900'>Explore Property</h1>
+          <p className='md:text-base text-sm font-medium text-gray-600'>See, book, and stay in our partner properties</p>
         </hgroup>
         <div className="carousel rounded-none flex gap-3 md:gap-5 h-fit py-2">
         {

@@ -85,7 +85,7 @@ const CreatePropertyPage = () => {
             checkOutStartTime: '',
             checkOutEndTime: '', 
             propertyTypeId: null,
-            propertyFacilitiesId: null,
+            propertyFacilitiesId: [],
             propertyFacilitiesName: '',
             propertyImages: [] as File[],
             propertyDescription: '',
@@ -190,25 +190,166 @@ const CreatePropertyPage = () => {
                       <h1 className='text-3xl font-bold'>Property Facilities</h1>
                       <p className='text-lg font-light'>Property facilities will explain to customers what they will get while staying in this property</p>
                     </hgroup>
-                    <section className='flex flex-col gap-2 w-full'>
-                      <section className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full gap-6'>
+                    <FieldArray name='propertyFacilitesId'>
+                    {
+                      ({ push: pushPropertyFacility }) => (
+                        <div className='flex flex-col gap-2 w-full'>
+                        <section className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full gap-6'>
+                        {
+                          dataPropertyFacilities?.map((item: any, index: number) => {
+                            return(
+                              <div key={index} className="flex items-center space-x-2">
+                                <Checkbox id="terms" value={item?.id} name='propertyFacilitesId' 
+                                onCheckedChange={(e) => {
+                                  if(e) {
+                                    pushPropertyFacility(item?.id)
+                                  } else {
+                                    const findIdx = values.propertyFacilitiesId.findIndex(value => value === item?.id)
+                                    values.propertyFacilitiesId.splice(findIdx, 1) 
+                                  }
+                                }}/>
+                                <label
+                                  htmlFor="terms"
+                                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                >
+                                  {item?.name}
+                                </label>
+                              </div>
+                            )
+                          })
+                        }
+                        </section>
+                      </div>
+                      )
+                    }
+                    </FieldArray>
+                  </section>
+                  <section className="flex flex-col gap-5">
+                    <hgroup className='mb-5'>
+                      <h1 className='text-3xl font-bold'>Property Images</h1>
+                      <p className='text-lg font-light'>Showcase Your Space: Stunning Property Images for Renters </p>
+                    </hgroup>
+                    <FieldArray name='propertyImages'>
                       {
-                        dataPropertyFacilities?.map((item: any, index: number) => {
-                          return(
-                            <div key={index} className="flex items-center space-x-2">
-                              <Checkbox id="terms" value={item?.id} name='propertyFacilitesId'/>
-                              <label
-                                htmlFor="terms"
-                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                              >
-                                {item?.name}
-                              </label>
-                            </div>
-                          )
-                        })
+                        ({ insert: insertFile, remove: removeFile }) => (
+                        <section className='grid grid-cols-4 gap-5'>
+                          <div className="flex items-center justify-center md:col-span-2 2xl:col-[1/4] 2xl:row-[1/3] col-span-4 w-full 2xl:h-[420px] overflow-hidden border-2 border-gray-300 border-dashed rounded-lg">
+                                                          {
+                                                            Boolean(values?.propertyImages[0]?.['name']) ? (
+                                                              <figure className='w-full h-full relative'>
+                                                                <Image  
+                                                                  src={URL.createObjectURL(values.propertyImages[0])}
+                                                                  width={1000}
+                                                                  height={1000}
+                                                                  alt=''
+                                                                  className='object-cover w-full h-full' 
+                                                                  />
+                                                                <div className='text-lg absolute right-4 bottom-4 bg-white shadow-md text-red-600 hover:text-opacity-75 active:scale-90 transition duration-100 h-10 w-10 flex items-center justify-center rounded-2xl'>
+                                                                  <FaRegTrashCan onClick={() => removeFile(0)}/>
+                                                                </div>
+                                                              </figure>
+                                                            ) : (
+                                                              <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-full cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                                                    <IoCloudUploadOutline size={28} />
+                                                                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                                                                    <p className="text-xs text-gray-500 dark:text-gray-400">JPG, PNG or JPEG (MAX. 2MB)</p>
+                                                                </div>
+                                                                <input id="dropzone-file" type="file" className="hidden" 
+                                                                onChange={(e: any) => {
+                                                                  if(e.currentTarget.files[0]) {
+                                                                    insertFile(0, e.currentTarget.files[0])
+                                                                  }
+                                                                }}/>
+                                                              </label>
+                                                            )
+                                                          }
+                                                          
+                                                        </div>
+                        {
+                                                      Array.from({length:2}).map((_, imageIdx: number) => {
+                                                        return(
+                                                        <div key={imageIdx} className="flex items-center justify-center md:col-span-2 2xl:col-span-1 col-span-4 w-full h-[150px] lg:h-[200px] overflow-hidden border-2 border-gray-300 border-dashed rounded-lg">
+                                                          {
+                                                            Boolean(values?.propertyImages[imageIdx + 1]?.['name']) ? (
+                                                              <figure className='w-full h-full relative'>
+                                                                <Image  
+                                                                  src={URL.createObjectURL(values.propertyImages[imageIdx + 1])}
+                                                                  width={1000}
+                                                                  height={1000}
+                                                                  alt=''
+                                                                  className='object-cover w-full h-full' 
+                                                                  />
+                                                                <div className='text-lg absolute right-4 bottom-4 bg-white shadow-md text-red-600 hover:text-opacity-75 active:scale-90 transition duration-100 h-10 w-10 flex items-center justify-center rounded-2xl'>
+                                                                  <FaRegTrashCan onClick={() => removeFile(imageIdx + 1)}/>
+                                                                </div>
+                                                              </figure>
+                                                            ) : (
+                                                              <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-full cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                                                    <IoCloudUploadOutline size={28} />
+                                                                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                                                                    <p className="text-xs text-gray-500 dark:text-gray-400">JPG, PNG or JPEG (MAX. 2MB)</p>
+                                                                </div>
+                                                                <input id="dropzone-file" type="file" className="hidden" 
+                                                                onChange={(e: any) => {
+                                                                  if(e.currentTarget.files[0]) {
+                                                                    insertFile(imageIdx + 1, e.currentTarget.files[0])
+                                                                  }
+                                                                }}/>
+                                                              </label>
+                                                            )
+                                                          }
+                                                          
+                                                        </div>
+                                                        )
+        
+                                                      })
+                                                    }
+                                                    {
+                                                      Array.from({length:4}).map((_, imageIdx: number) => {
+                                                        return(
+                                                        <div key={imageIdx} className="flex items-center justify-center md:col-span-2 2xl:col-span-1 col-span-4 w-full h-[150px] lg:h-[200px] overflow-hidden border-2 border-gray-300 border-dashed rounded-lg">
+                                                          {
+                                                            Boolean(values?.propertyImages[imageIdx + 3]?.['name']) ? (
+                                                              <figure className='w-full h-full relative'>
+                                                                <Image  
+                                                                  src={URL.createObjectURL(values.propertyImages[imageIdx + 3])}
+                                                                  width={1000}
+                                                                  height={1000}
+                                                                  alt=''
+                                                                  className='object-cover w-full h-full' 
+                                                                  />
+                                                                <div className='text-lg absolute right-4 bottom-4 bg-white shadow-md text-red-600 hover:text-opacity-75 active:scale-90 transition duration-100 h-10 w-10 flex items-center justify-center rounded-2xl'>
+                                                                  <FaRegTrashCan onClick={() => removeFile(imageIdx + 3)}/>
+                                                                </div>
+                                                              </figure>
+                                                            ) : (
+                                                              <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-full cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                                                    <IoCloudUploadOutline size={28} />
+                                                                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                                                                    <p className="text-xs text-gray-500 dark:text-gray-400">JPG, PNG or JPEG (MAX. 2MB)</p>
+                                                                </div>
+                                                                <input id="dropzone-file" type="file" className="hidden" 
+                                                                onChange={(e: any) => {
+                                                                  if(e.currentTarget.files[0]) {
+                                                                    insertFile(imageIdx + 3, e.currentTarget.files[0])
+                                                                  }
+                                                                }}/>
+                                                              </label>
+                                                            )
+                                                          }
+                                                          
+                                                        </div>
+                                                        )
+        
+                                                      })
+                                                    }
+                        </section> 
+                        )
                       }
-                      </section>
-                    </section>
+                    </FieldArray>
                   </section>
                   <section className="flex flex-col gap-10">
                     <hgroup>
@@ -413,7 +554,7 @@ const CreatePropertyPage = () => {
                                               ({insert: insertFile, remove: removeFile}) => (
                                             <section className='flex flex-col gap-5 mb-8 mt-3'>
                                               
-                                              <div className="flex items-center justify-center w-full h-[150px] lg:h-[200px] overflow-hidden border-2 border-gray-300 border-dashed rounded-lg">
+                                              <div className="flex items-center justify-center w-full h-[150px] lg:h-[420px] overflow-hidden border-2 border-gray-300 border-dashed rounded-lg">
                                               {
                                                 Boolean(values?.propertyRoomType[index]?.roomImages[0]?.['name']) ? (
                                                   <figure className='w-full h-full relative'>
@@ -445,24 +586,7 @@ const CreatePropertyPage = () => {
                                                     />
                                                 </label>
                                                 )
-                                              }
-                                                {/* <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                                        <IoCloudUploadOutline size={28} />
-                                                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                                                        <p className="text-xs text-gray-500 dark:text-gray-400">JPG, PNG or JPEG (MAX. 2MB)</p>
-                                                    </div>
-                                                    <input id="dropzone-file" type="file" className="hidden" 
-                                                    onChange={(e: any) => {
-                                                      if(e.currentTarget.files[0]) {
-                                                        insertFile(0, e.currentTarget.files[0])
-                                                      } else {
-                                                        removeFile(0)
-                                                      }
-                                                      console.log(values)
-                                                    }}
-                                                    />
-                                                </label> */}
+                                              } 
                                               </div>
                                               <section className='grid grid-cols-4 gap-5'>
                                                 {

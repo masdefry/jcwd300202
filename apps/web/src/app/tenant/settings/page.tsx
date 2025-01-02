@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query'
 import React, { useState } from 'react'
 import { RiDeleteBin6Line } from 'react-icons/ri'
 import toast from 'react-hot-toast'
+import { IoIosSend } from "react-icons/io";
 
 const UserSettingsPage = () => {
     
@@ -23,7 +24,7 @@ const UserSettingsPage = () => {
   })  
 
   return (
-      <main className='flex flex-col gap-5'>
+      <main className='flex flex-col gap-5 p-5'>
       <hgroup className='flex flex-col pb-5 border-b-4 border-slate-700'>
         <h1 className='text-2xl font-bold text-gray-800'>Settings</h1>
         <p className='text-sm font-medium text-gray-500'>Manage your account</p>
@@ -31,14 +32,24 @@ const UserSettingsPage = () => {
       <section className='flex flex-col gap-4 py-4'>
         <div className='bg-white px-5 pb-4 border-b border-slate-300 flex items-center justify-between'>   
             <hgroup className='flex flex-col'>
+                <h1 className='text-gray-800 text-medium font-bold'>Verify Email</h1>
+                <p className='text-gray-400 text-xs font-semibold'>Check your inbox and verify your email to get started</p>
+            </hgroup>
+            <button disabled={isPendingDeleteAccount} onClick={() => setIsSubmitting(true)} className='disabled:bg-slate-300 disabled:hover:opacity-100 disabled:active:scale-100 disabled:text-white transition duration-100 flex items-center gap-1.5 text-sm font-bold text-white bg-slate-900 rounded-full px-5 py-3 shadow-sm hover:opacity-75 active:scale-90'>
+                <IoIosSend size={18}/>
+                Send Email
+            </button>
+        </div>
+        <div className='bg-white px-5 pb-4 border-b border-slate-300 flex items-center justify-between'>   
+            <hgroup className='flex flex-col'>
                 <h1 className='text-gray-800 text-medium font-bold'>Delete Account</h1>
                 <p className='text-gray-400 text-xs font-semibold'>Deleting your account will result in you not being able to get notifications from Roomify</p>
             </hgroup>
-            <button disabled={isPendingDeleteAccount} onClick={() => setIsSubmitting(true)} className='disabled:bg-slate-300 disabled:hover:opacity-100 disabled:active:scale-100 disabled:text-slate-500 transition duration-100 flex items-center gap-1.5 text-sm font-bold text-white bg-red-600 rounded-full px-5 py-3 shadow-sm hover:opacity-75 active:scale-90'>
+            <button disabled={isPendingDeleteAccount} onClick={() => setIsSubmitting(true)} className='disabled:bg-slate-300 disabled:hover:opacity-100 disabled:active:scale-100 disabled:text-white transition duration-100 flex items-center gap-1.5 text-sm font-bold text-white bg-red-600 rounded-full px-5 py-3 shadow-sm hover:opacity-75 active:scale-90'>
                 <RiDeleteBin6Line size={18}/>
                 Delete
             </button>
-            <div className={`${!isSubmitting && 'hidden'} backdrop-blur-sm fixed top-0 left-0 w-screen h-screen shadow-sm bg-black bg-opacity-20 z-[51] flex items-center justify-center`}>
+            <div className={`${!isSubmitting && 'hidden'} backdrop-blur-sm fixed top-0 left-0 w-screen h-screen shadow-sm bg-black bg-opacity-25 z-[51] flex items-center justify-center`}>
                   <div className='bg-white rounded-3xl flex flex-col justify-between gap-3 p-5'>
                     <h1 className='text-lg font-bold text-gray-800 pb-2 border-b border-b-slate-300'>
                     Are you sure you want to delete your account?

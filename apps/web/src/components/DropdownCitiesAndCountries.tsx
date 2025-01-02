@@ -32,7 +32,7 @@ const DropdownCitiesAndCountries = ({ setFieldValue, searchLocation, setSearchLo
     }
 
     return (
-    <section className='bg-white shadow-md rounded-md overflow-hidden w-full'>
+    <section className='bg-white shadow-md rounded-md border-2 border-slate-800 2xl:border-none overflow-hidden w-full'>
       <div>
         <ul>
           {
@@ -49,7 +49,7 @@ const DropdownCitiesAndCountries = ({ setFieldValue, searchLocation, setSearchLo
                   })
                   handleClearSearchInput()
                 }} 
-                key={index} className='text-sm font-bold py-2 flex items-center gap-1.5 hover:cursor-pointer hover:bg-gray-800 text-gray-800 hover:text-white px-8'><CiLocationOn size={23} />{item?.cityName && item?.cityName + ','} {item?.countryName}</li>
+                key={index} className='text-sm font-bold py-2 flex justify-start items-center gap-1.5 hover:cursor-pointer hover:bg-gray-800 text-gray-800 hover:text-white px-2 2xl:px-8'><CiLocationOn size={23} />{item?.cityName && item?.cityName + ','} {item?.countryName}</li>
               )
             })
           }

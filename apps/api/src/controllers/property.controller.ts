@@ -341,18 +341,18 @@ export const getPropertyDetail = async(req: Request, res: Response, next: NextFu
             error: false,
             message: 'Get property detail success',
             data: {
-                // property,
-                // propertyDetail: property.propertyDetail,
-                // propertyFacilities,
-                // propertyImages: [...propertyImages, ...propertyRoomImages],
-                // propertyImagesPreview: [...propertyImages, ...propertyRoomImages].slice(0,8),
-                // propertyRoomType,
-                // reviews,
-                // city,
-                // country,
-                // propertyListByCity,
-                // tenant,
-                // isIncludeBreakfast
+                property,
+                propertyDetail: property.propertyDetail,
+                propertyFacilities,
+                propertyImages: [...propertyImages, ...propertyRoomImages],
+                propertyImagesPreview: [...propertyImages, ...propertyRoomImages].slice(0,8),
+                propertyRoomType,
+                reviews,
+                city,
+                country,
+                propertyListByCity,
+                tenant,
+                isIncludeBreakfast
             }
         })
     } catch (error) {
@@ -595,13 +595,13 @@ export const getProperties = async(req: Request, res: Response, next: NextFuncti
         // ].filter(item => Object.keys(item).length)
 
         const whereConditionGeneral: any = [
-            (countryId && !isNaN(Number(adult)))? {
+            (countryId && !isNaN(Number(countryId)))? {
                 countryId: Number(countryId),
             } : null,
-            (cityId && !isNaN(Number(adult))) ? {
+            (cityId && !isNaN(Number(cityId))) ? {
                 cityId: Number(cityId),
             } : null,
-            minPrice && maxPrice ? {
+            (minPrice && !isNaN(Number(minPrice))) && (maxPrice && !isNaN(Number(maxPrice))) ? {
                 propertyRoomType: {
                     some: {
                         price: {

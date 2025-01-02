@@ -8,7 +8,7 @@ import { FaRegListAlt } from 'react-icons/fa';
 import { TbNotification } from 'react-icons/tb';
 import { IoMdLogOut } from 'react-icons/io';
 import { IoSettingsOutline } from 'react-icons/io5';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import authStore from '@/zustand/authStore';
 import { RiCloseCircleFill } from 'react-icons/ri';
@@ -19,7 +19,9 @@ const ProfileUserLayout = ({  children }: { children: ReactNode }) => {
   const username = authStore(state => state.username)  
   const isVerified = authStore(state => state.isVerified)  
   const companyName = authStore(state => state.companyName)  
-  
+  const setLogout = authStore(state => state.setLogout)
+  const router = useRouter()
+
     if(pathname.includes('/auth') || pathname.includes('/tenant/property/create')) {
       return (
         <main className='w-full min-h-min py-5'>
@@ -64,7 +66,7 @@ const ProfileUserLayout = ({  children }: { children: ReactNode }) => {
           <div>
             <section className='border-b border-slate-300 flex flex-col gap-3 p-5'>
               <div className='flex items-center gap-5'>
-                <figure className='rounded-full h-16 w-16 bg-blue-300 border-2 border-slate-200 shadow-md overflow-hidden'>
+                <figure className='rounded-full h-16 w-16 bg-blue-300 border-2 border-green-500 shadow-md overflow-hidden'>
                 <Image 
                 src={profilePictureUrl}
                 width={100}
@@ -74,7 +76,7 @@ const ProfileUserLayout = ({  children }: { children: ReactNode }) => {
                 />
                 </figure>
                 <hgroup className='flex flex-col'>
-                  <h1 className='text-base font-bold text-gray-800'>{companyName}</h1>
+                  <h1 className='text-base font-bold text-gray-800'>{companyName || 'Roomify`s partner'}</h1>
                     {
                       isVerified ? (
                         <div className='flex items-center gap-2 text-xs font-semibold text-gray-400'>
@@ -108,7 +110,10 @@ const ProfileUserLayout = ({  children }: { children: ReactNode }) => {
                 )
               })
             }
-              <div className='text-base font-semibold text-gray-800 transition duration-100 px-5 py-3 flex items-center gap-2 rounded-md hover:cursor-pointer hover:bg-slate-200'>
+              <div onClick={() => {
+                setLogout()
+                router.push('/')
+                }} className='text-base font-semibold text-gray-800 transition duration-100 px-5 py-3 flex items-center gap-2 rounded-md hover:cursor-pointer hover:bg-slate-200'>
                 <IoMdLogOut size={20} className='text-red-600'/>
                 Sign Out
               </div>

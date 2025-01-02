@@ -33,6 +33,7 @@ export default function AuthProvider({children}: IAuthProviderProps){
                 profilePictureUrl: res?.data?.data?.profilePictureUrl,
                 role: res?.data?.data?.role,
                 country: res?.data?.data?.country,
+                companyName: res?.data?.data?.companyName
             })
             console.log(res)
             return res?.data?.data

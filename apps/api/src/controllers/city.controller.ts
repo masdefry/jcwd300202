@@ -8,10 +8,14 @@ export const getCities = async(req: Request, res: Response, next: NextFunction) 
         const cities = await prisma.city.findMany({
             where: {
                 name: {
-                    startsWith: cityName as string,
+                    contains: cityName as string,
                     mode: 'insensitive'
                 }
-            }
+            },
+            orderBy: {
+                name: 'asc'
+            },
+            take: Number(limit)
         })
 
         res.status(200).json({

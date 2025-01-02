@@ -102,10 +102,7 @@ const ProfileUserPage = () => {
 
   const { mutate: mutateCountryList } = useMutation({
     mutationFn: async(value: string) => {
-      console.log('MUTATECOUNTRY')
-      console.log(value)
       const res = await instance.get(`/country?countryName=${value}`)
-      console.log(res)
       setDataCountryList(res?.data?.data?.countries)
       return res?.data
     }
@@ -294,6 +291,7 @@ const ProfileUserPage = () => {
                     <input value={updatedCityInput} onChange={(e) => {
                       setUpdatedCityInput(e.target.value)
                       debounceCityList(e.target.value)
+                      setDataCountryList([])
                       }} 
                       disabled={cityChip && dataUserProfile?.cityName} id='cityId' name='cityId' type="text" placeholder={cityChip ? '' : 'Jakarta'} className='placeholder-shown:text-sm w-full placeholder-shown:text-slate-300 focus:outline-none text-sm font-medium text-gray-900 focus:ring-slate-600 border border-slate-300 rounded-l-full px-5 py-2' />
                     <button onClick={() => {
@@ -309,7 +307,7 @@ const ProfileUserPage = () => {
                   </div>
                   {
                     (dataCityList && dataCityList.length > 0) && (
-                    <div className='absolute top-16 w-full rounded-md hover:cursor-pointer bg-white shadow-md border border-slate-100 flex flex-col overflow-hidden'>
+                    <div className='absolute top-16 w-full rounded-md hover:cursor-pointer bg-white shadow-md border border-slate-100 flex flex-col overflow-hidden z-30'>
                       {
                         dataCityList?.map((item: any, index: number) => {
                           return(
@@ -351,6 +349,7 @@ const ProfileUserPage = () => {
                     <input value={updatedCountryInput} onChange={(e) => {
                       setUpdatedCountryInput(e.target.value)
                       debounceCountryList(e.target.value)
+                      setDataCityList([])
                       }} 
                       disabled={countryChip && dataUserProfile?.countryName} id='countryId' name='countryId' type="text" placeholder={countryChip ? '' : 'Jakarta'} className='placeholder-shown:text-sm w-full placeholder-shown:text-slate-300 focus:outline-none text-sm font-medium text-gray-900 focus:ring-slate-600 border border-slate-300 rounded-l-full px-5 py-2' />
                     <button onClick={() => {
@@ -366,7 +365,7 @@ const ProfileUserPage = () => {
                   </div>
                   {
                     (dataCountryList && dataCountryList.length > 0) && (
-                    <div className='absolute top-16 w-full rounded-md hover:cursor-pointer bg-white shadow-md border border-slate-100 flex flex-col overflow-hidden'>
+                    <div className='absolute top-16 w-full rounded-md hover:cursor-pointer bg-white shadow-md border border-slate-100 flex flex-col overflow-hidden z-30'>
                       {
                         dataCountryList?.map((item: any, index: number) => {
                           return(

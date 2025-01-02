@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import fs from 'fs'
 
 export const uploader = async(req: Request, res: Response, next: NextFunction) => {
-    const uploaded = uploadMulter.fields([{name: 'images', maxCount: 7}])
+    const uploaded = uploadMulter.fields([{name: 'images'}])
     const { id, role } = req.body
     
     uploaded(req, res, (err) => {

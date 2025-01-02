@@ -15,6 +15,7 @@ import roomTypeRouter from './property.room.type.router'
 import tenantRouter from "./tenant.router";
 import historyViewRouter from "./history.view.router";
 import seasonRouter from "./season.router";
+import propertyTypeRouter from "./property.type.router";
 
 
 const router = Router()
@@ -35,6 +36,7 @@ router.use('/country', countryRouter)
 router.use('/room-type', roomTypeRouter)
 router.use('/history', historyViewRouter)
 router.use('/season', seasonRouter)
+router.use('/property-type', propertyTypeRouter)
 
 
 

@@ -129,8 +129,8 @@ model Property {
   zipCode           String
   location          String
   checkInStartTime  DateTime
-  checkInEndTime    DateTime
-  checkOutStartTime DateTime
+  checkInEndTime    DateTime?
+  checkOutStartTime DateTime?
   checkOutEndTime   DateTime
   slug              String   @unique
   star              Int?
@@ -168,7 +168,7 @@ model PropertyDetail {
   propertyDescription     String @db.Text
   neighborhoodDescription String @db.Text
   phoneNumber             String
-  url                     String
+  url                     String?
   totalRooms              Int
 
   propertyImage PropertyImage[]

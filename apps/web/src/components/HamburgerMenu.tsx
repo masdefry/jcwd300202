@@ -16,26 +16,31 @@ const HamburgerMenu = () => {
 
     const headerNavMenu = [
         {
-          title:'Accomodation Type',
+          title:'Explore',
           navlist: [
             {
-              title:`Hotel`,
-              url:`#`
-            },
-            {
-              title:`Apartment`,
-              url:`#`
-            },
-            {
-              title:`Villa`,
-              url:`#`
-            },
-            {
-              title:`Guesthouse`,
-              url:`#`
+              title:`All Properties`,
+              url:`/explore/search?`
             }
           ]
-        }
+        },
+        {
+          title:'Our Tenants',
+          navlist: [
+            {
+              title:`Our Tenants`,
+              url:`#`
+            },
+            {
+              title:`Join us`,
+              url:`/tenant/auth/register`
+            },
+            {
+              title:`Sign in as Tenant`,
+              url:`/tenant/auth`
+            },
+          ]
+        },
       ]
 
   return (
@@ -80,7 +85,7 @@ const HamburgerMenu = () => {
                     item.navlist.map((itm, idx) => {
                       return (
                         <Link key={idx} href={itm.url}>
-                          <li className='transition duration-150 py-2 w-full origin-left hover:bg-slate-200 px-3 active:opacity-75 rounded-md hover:cursor-pointer font-medium text-xs md:text-sm'>{itm.title}</li>
+                          <li onClick={toggleHamburger} className='transition duration-150 py-2 w-full origin-left hover:bg-slate-200 px-3 active:opacity-75 rounded-md hover:cursor-pointer font-medium text-xs md:text-sm'>{itm.title}</li>
                         </Link>
                       )
                     })

@@ -40,6 +40,25 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
     const [propertyTypeIdArr, setPropertyTypeIdArr] = useState<any[]>([])
     const [filterMobileMode, setFilterMobileMode] = useState(false)
     const [sortMobileMode, setSortMobileMode] = useState(false)
+    const [ priceRange, setPriceRange ] = useState({ minPrice: 0, maxPrice: 3000000 })
+    const [ minPrice, setMinPrice ] = useState(0)
+    const [ maxPrice, setMaxPrice ] = useState(1000000)
+
+    const handlePrice = (priceType: string, event: React.ChangeEvent<HTMLInputElement>) => {
+        if(priceType === 'minPrice') {
+            if(Number(event.target.value) < maxPrice && Number(event.target.value) >= 0) {
+                setMinPrice(Number(event.target.value))
+            } else {
+                setMinPrice(minPrice)
+            }
+        } else if(priceType === 'maxPrice') {
+            if(Number(event.target.value) > minPrice && Number(event.target.value) > 0) {
+                setMaxPrice(Number(event.target.value))
+            } else {
+                setMaxPrice(maxPrice)
+            }
+        }
+    }
     const urlParams = new URLSearchParams({
 
     })
@@ -108,7 +127,7 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
         const { mutate: mutateExplorePagination, isPending: isPendingExplorePagination } = useMutation({
             mutationFn: async({ limit = 5, offset = 0, sortBy, order }: { limit?: number, offset?: number, sortBy?: string, order?: string }) => {
                 
-                const res = await instance.get(`/property?countryId=${searchParams.country}&cityId=${searchParams.city}&checkInDate=${searchParams["check-in-date"]}&checkOutDate=${searchParams["check-out-date"]}&adult=${searchParams.adult}&children=${searchParams.children}&offset=${offset || 0}&limit=${limit || 5}&order=${searchParams.order || 'asc'}&sortBy=${sortBy || 'price'}`, {
+                const res = await instance.get(`/property?countryId=${searchParams.country}&cityId=${searchParams.city}&checkInDate=${searchParams["check-in-date"]}&checkOutDate=${searchParams["check-out-date"]}&adult=${searchParams.adult}&children=${searchParams.children}&offset=${offset || 0}&limit=${limit || 5}&order=${searchParams.order || 'asc'}&sortBy=${sortBy || 'price'}&minPrice=${searchParams.minPrice || 0}&maxPrice=${searchParams.maxPrice || null}`, {
 
                     headers: {
                         propertyFacilityIdArr, 
@@ -217,13 +236,24 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                         </hgroup>
                         <div className='flex items-center gap-1 p-5'>
                             <div className='text-sm font-semibold flex flex-col gap-1'>
-                                <label className='ml-3' htmlFor='lowest-price'>Starts from</label>
-                                <input type="text" id='lowest-price' className='w-full rounded-full border border-slate-300 bg-white text-xs placeholder-shown:text-xs text-gray-800 focus:outline-1 px-3 py-1' placeholder='300.000'/>
+                                <label className='ml-3' htmlFor='minPrice'>Starts from</label>
+                                <input type="number" 
+                                onChange={(e: any) => handlePrice('minPrice', e)} 
+                                value={minPrice} name='minPrice' id='minPrice' className='w-full rounded-full border border-slate-300 bg-white text-xs placeholder-shown:text-xs text-gray-800 focus:outline-1 px-3 py-1' placeholder='300.000'/>
                             </div>
                             <div className='text-sm font-semibold flex flex-col gap-1'>
-                                <label className='ml-3' htmlFor='highest-price'>to</label>
-                                <input type="text" id='highest-price' className='w-full rounded-full border border-slate-300 bg-white text-xs placeholder-shown:text-xs text-gray-800 focus:outline-1 px-3 py-1' placeholder='3.000.000'/>
+                                <label className='ml-3' htmlFor='maxPrice'>to</label>
+                                <input type="number" 
+                                onChange={(e: any) => handlePrice('maxPrice', e)}
+                                value={maxPrice} name='maxPrice' id='maxPrice' className='w-full rounded-full border border-slate-300 bg-white text-xs placeholder-shown:text-xs text-gray-800 focus:outline-1 px-3 py-1' placeholder='3.000.000'/>
                             </div>
+                        </div>
+                        <div className='flex items-center gap-1 px-5 pb-5'>
+                            <button onClick={() => {
+                                searchParams.minPrice = minPrice
+                                searchParams.maxPrice = maxPrice
+                                mutateExplorePagination({})
+                            }} className='w-full text-xs font-bold hover:opacity-75 transition duration-100 active:scale-90 text-white bg-gray-900 rounded-md py-2 px-3 shadow-md' type='button'>Set price</button>
                         </div>
                     </div>
                     <div tabIndex={0} className="2xl:rounded-md rounded-none collapse collapse-arrow 2xl:shadow-md 2xl:border-t-0 border-t border-slate-300">
@@ -434,7 +464,6 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                             }} defaultValue={`${searchParams?.order || 'asc'}-${searchParams['sort-by'] || 'price'}`} id="sort" className="bg-gray-50 border border-slate-300 text-gray-800 text-xs font-semibold rounded-full h-[3em] p-1.5 px-2 focus:outline-none focus:ring-slate-400 focus:border-slate-400 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <option value="asc-price">Lowest to Highest Price</option>
                             <option value="desc-price">Highest to Lowest Price</option>
-                            {/* <option value="rating">Ratings</option> */}
                             <option value="asc-name">Ascending by Name</option>
                             <option value="desc-name">Descending by Name</option>
                         </select>

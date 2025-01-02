@@ -79,7 +79,7 @@ const SearchHeader = ({
 
 
   return (
-    <section className="h-full 2xl:h-[5rem] flex flex-col 2xl:grid grid-cols-4 items-center justify-evenly 2xl:rounded-full 2xl:bg-white p-3 relative 2xl:shadow-sm 2xl:border-2 border-amber-400 overflow-hidden">
+    <section className="h-full 2xl:h-[5rem] flex flex-col 2xl:grid grid-cols-4 items-center justify-evenly 2xl:rounded-full 2xl:bg-white p-3 relative 2xl:shadow-sm 2xl:border-2 border-amber-400">
       <Formik
         initialValues={{
           country: searchLocation.countryId,
@@ -105,8 +105,8 @@ const SearchHeader = ({
         {({
           setFieldValue
         }) => (
-            <Form className='w-full flex 2xl:flex-row flex-col items-center justify-start 2xl:absolute 2xl:rounded-none rounded-lg 2xl:bg-transparent bg-amber-400 2xl:border-0 border-4 border-amber-400 overflow-hidden'>
-              <div className='w-full 2xl:w-1/4 border-b-4 border-amber-400 2xl:border-b-0 2xl:rounded-none rounded-md box-border 2xl:border-r bg-white p-1.5 2xl:py-0 2xl:border-gray-300 relative flex flex-col 2xl:px-7 gap-1'>
+            <Form className='w-full flex 2xl:flex-row flex-col items-center justify-start 2xl:absolute 2xl:rounded-none rounded-lg 2xl:bg-transparent bg-amber-400 2xl:border-0 border-4 border-amber-400'>
+              <div className='w-full 2xl:w-1/4 border-b-4 border-amber-400 2xl:border-b-0 2xl:rounded-l-full rounded-md box-border 2xl:border-r bg-white p-1.5 2xl:py-0 2xl:border-gray-300 relative flex flex-col 2xl:px-7 gap-1'>
                 <label htmlFor='searchLocation' className="min-w-max flex items-center 2xl:gap-3 gap-1.5 text-gray-600 text-xs md:text-sm font-semibold"><IoIosSearch size={18}/>Where are you going? (required)</label>
                 <input value={handleSearch} onChange={(e) => {
                   e.target.value.length >= 3 ? mutateShowDropdownDebounce(e.target.value) : setDataDropdown([])
@@ -119,12 +119,12 @@ const SearchHeader = ({
                   placeholder={searchValues.countryName ? '' : `Jakarta / Indonesia`} 
                   disabled={searchValues.countryName ? true : false}/>
                 <ErrorMessage name="country" className='text-xs text-red-600 bg-red-200 opacity-25 2xl:opacity-100 font-bold rounded-full px-5 p-1 absolute bottom-[10px] 2xl:top-[4rem] z-10' component={'div'} />
-                <div className="absolute top-[80px] left-0 z-20 w-full"> 
+                <div className="absolute top-[65px] 2xl:top-[75px] left-0 z-50 w-full"> 
                   <DropdownCitiesAndCountries setFieldValue={setFieldValue} handleClearSearchInput={handleClearSearchInput} setSearchLocation={setSearchLocation} searchLocation={searchLocation} dataDropdown={dataDropdown} handleSearchInput={handleSearchInput} setDataDropdown={setDataDropdown} setSearchValues={setSearchValues}/>
                 </div>
                 {
                   searchValues.countryName && (
-                    <div className="absolute shadow-sm top-[28px] left-[25px] flex items-center gap-3 px-3 py-1 text-xs rounded-full bg-white-600 font-bold text-gray-900 border-2 border-gray-800">
+                    <div className="absolute shadow-sm top-[28px] left-[15px] 2xl:left-[25px] flex items-center gap-3 px-3 py-1 text-xs rounded-full bg-white-600 font-bold text-gray-900 border-2 border-gray-800">
                       <p className='flex items-center gap-1.5'><FaMapLocationDot />{searchValues.cityName && searchValues.cityName + ', '}{searchValues.countryName}</p>
                       <IoMdClose className='hover:cursor-pointer' size={17} onClick={() => {setSearchValues({countryId: '', cityId: '', countryName: '', cityName: ''})}}/>
                     </div>
@@ -199,14 +199,14 @@ const SearchHeader = ({
                 </Popover>
                 <ErrorMessage name="checkOutDate" component="div" />
               </div>
-              <div className='w-full 2xl:w-1/4 border-b-4 border-amber-400 2xl:border-b-0 2xl:rounded-none rounded-md box-border bg-white p-1.5 2xl:py-0 2xl:border-gray-300 relative flex flex-col 2xl:px-5 gap-1'>
+              <div className='w-full 2xl:w-1/4 border-b-4 border-amber-400 2xl:border-b-0 2xl:rounded-r-full rounded-md box-border bg-white p-1.5 2xl:py-0 2xl:border-gray-300 relative flex flex-col 2xl:px-5 gap-1'>
                 <label htmlFor='guestRoom' className="min-w-max flex items-center 2xl:gap-3 gap-1.5 text-gray-600 text-xs md:text-sm font-semibold"><GoPerson size={19}/>Guest Room</label>
                 <button onClick={() => setShowGuestAndRoomCounter(state => !state)} id='guestRoom' className="text-left text-black pt-2 p-1 box-border transition duration-200 text-xs md:text-sm font-normal border-b-2 border-white" name='guestRoom' type="button">
                 1 Room - {allGuest.totalGuest} Guest
                 </button>
                 {
                   showGuestAndRoomCounter && (
-                  <div className="absolute top-20 left-0 z-30 ">
+                  <div className="absolute top-[75px] left-0 z-[50] w-full">
                     <GuestAndRoomCounter setFieldValue={setFieldValue} allGuest={allGuest} setAllGuest={setAllGuest} setShowGuestAndRoomCounter={setShowGuestAndRoomCounter} />
                   </div>
                   )

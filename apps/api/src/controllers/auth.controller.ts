@@ -31,7 +31,8 @@ export const loginTenant = async(req: Request, res: Response, next: NextFunction
             data: {
                 username: isEmailExist?.pic,
                 country: '',
-                profilePictureUrl: '',
+                profilePictureUrl: isEmailExist?.directory ? `http://localhost:5000/api/${isEmailExist?.directory}/${isEmailExist?.filename}.${isEmailExist.fileExtension}` : '',
+                companyName: isEmailExist?.companyName,
                 role: isEmailExist?.role,
                 isVerified: isEmailExist?.isVerified,
                 token
@@ -71,7 +72,7 @@ export const loginUser = async(req: Request, res: Response, next: NextFunction) 
             data: {
                 username: isEmailExist?.username,
                 country: isEmailExist?.country?.name,
-                profilePictureUrl: `${isEmailExist?.directory}/${isEmailExist?.filename}`,
+                profilePictureUrl: `http://localhost:5000/api/${isEmailExist?.directory}/${isEmailExist?.filename}.${isEmailExist?.fileExtension}`,
                 role: isEmailExist?.role,
                 isVerified: isEmailExist?.isVerified,
                 token
@@ -422,7 +423,7 @@ export const signInWithGoogle = async(req: Request, res: Response, next: NextFun
                 country: newUser?.country?.name,
                 isVerified: newUser?.isVerified,
                 isGoogleRegistered: newUser?.isGoogleRegistered,
-                profilePictureUrl: newUser?.directory ? `http://localhost:5000/api/${newUser.directory}/${newUser.filename}/${newUser.fileExtension}` : ''
+                profilePictureUrl: newUser?.directory ? `http://localhost:5000/api/${newUser.directory}/${newUser.filename}.${newUser.fileExtension}` : ''
             }
         
         } else {
@@ -640,7 +641,7 @@ export const keepAuth = async(req: Request, res: Response, next: NextFunction) =
     try {
         const { id, role, token } = req.body
 
-        let isAccountExist, username, profilePictureUrl, isVerified, country;
+        let isAccountExist, username, profilePictureUrl, isVerified, country, companyName;
         
         if(role === 'USER') {
             isAccountExist = await prisma.user.findUnique({
@@ -657,7 +658,7 @@ export const keepAuth = async(req: Request, res: Response, next: NextFunction) =
             username = isAccountExist?.username
             country = isAccountExist?.country?.name
             isVerified = isAccountExist?.isVerified
-            profilePictureUrl = isAccountExist?.directory ? `http://localhost:5000/api/${isAccountExist?.directory}/${isAccountExist?.filename}/${isAccountExist?.fileExtension}` : ''             
+            profilePictureUrl = isAccountExist?.directory ? `http://localhost:5000/api/${isAccountExist?.directory}/${isAccountExist?.filename}.${isAccountExist?.fileExtension}` : ''             
         } else if(role === 'TENANT') {
             isAccountExist = await prisma.tenant.findUnique({
                 where: {
@@ -669,6 +670,7 @@ export const keepAuth = async(req: Request, res: Response, next: NextFunction) =
             
             username = isAccountExist?.pic
             isVerified = isAccountExist?.isVerified
+            companyName = isAccountExist?.companyName
             country = ''
             profilePictureUrl = isAccountExist?.directory ? `http://localhost:5000/api/${isAccountExist?.directory}/${isAccountExist?.filename}.${isAccountExist?.fileExtension}` : ''             
         } else {
@@ -684,10 +686,44 @@ export const keepAuth = async(req: Request, res: Response, next: NextFunction) =
                 role,
                 profilePictureUrl,
                 country,
-                token
+                token,
+                companyName
             }
         })
 
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const verifyChangeEmailTenant = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id, role, token } = req.body
+
+        const isTenantExist = await prisma.tenant.findUnique({
+            where: {
+                id
+            }
+        })
+        
+        if(!isTenantExist?.id || isTenantExist?.deletedAt ) throw { msg: 'Tenant not found!', status: 406 }
+        if(isTenantExist?.token !== token) throw { msg: 'Session expired!', status: 406 }
+
+        await prisma.tenant.update({
+            where: {
+                id
+            },
+            data: {
+                isVerified: true,
+                token: ''
+            }
+        })
+
+        res.status(200).json({
+            error: false,
+            message: 'Verify new email success',
+            data: {}
+        })
     } catch (error) {
         next(error)
     }

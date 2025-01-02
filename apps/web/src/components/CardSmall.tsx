@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Image from 'next/image'
+import { CiLocationOn } from 'react-icons/ci'
 
 interface ICardSmallProps {
     isPending: boolean,
@@ -36,11 +37,10 @@ const CardSmall = ({isPending, imageUrl = '', level = 'loading', propertyName = 
         <div className='flex flex-col gap-2 p-3'>
             <div className='flex items-center gap-2'>
                 <div className={`${isPending ? 'skeleton text-transparent' : 'bg-black text-white'} text-[10px] font-semibold py-[2px] px-2 rounded-full w-fit`}>Roomify</div>
-                <div className={`${isPending ? 'skeleton text-transparent' : 'bg-blue-600 text-white'} text-[10px] font-semibold py-[2px] px-2 rounded-full w-fit`}>{level}</div>
             </div>
             <hgroup className='flex flex-col gap-1 '>
-                <h1 className={`text-base font-bold ${isPending ? 'text-transparent skeleton w-fit' : 'text-black' } h-fit`}>{propertyName.length > 50 ? propertyName.slice(0 ,50) + '...' : propertyName}</h1>
-                <h6 className={`text-sm font-light ${isPending ? 'text-transparent skeleton w-fit' : 'text-black' } h-fit`}>{city}, {country}</h6>
+                <h1 className={`text-base font-bold ${isPending ? 'text-transparent skeleton w-fit' : 'text-gray-900' } h-fit`}>{propertyName.length > 50 ? propertyName.slice(0 ,50) + '...' : propertyName}</h1>
+                <h6 className={`text-sm flex items-center gap-1.5 font-medium ${isPending ? 'text-transparent skeleton w-fit' : 'text-gray-600' } h-fit`}><CiLocationOn size={18} />{city}, {country}</h6>
             </hgroup>
             {
                 isPending ? (

@@ -1,6 +1,6 @@
 'use client'
 
-import { IoNotificationsOutline, IoPersonOutline } from "react-icons/io5";
+import { IoEarth, IoNotificationsOutline, IoPersonOutline } from "react-icons/io5";
 import { IoPersonCircleOutline } from "react-icons/io5";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -47,14 +47,26 @@ export default function Header() {
   <header className="flex flex-col">
     <section className="bg-slate-200 flex flex-col relative">
       <HamburgerMenu />
-      <section className="hidden lg:flex justify-between items-center bg-white shadow-md w-full h-full py-5 lg:px-16 md:px-12 sm:px-8 px-4">
-        <div className="flex items-center gap-5">
-          <div className="flex items-center gap-1.5 rounded-full p-1 px-2 text-white bg-gray-800">
-            <RiBuilding3Fill className="text-white" size={30}/>
-            <p className="text-xs font-bold text-white">Roomify Inc.</p>
+      <section className="hidden lg:flex justify-between items-center bg-white shadow-md w-full h-full lg:px-16 md:px-12 sm:px-8 px-4">
+        <div className="flex items-center">
+          <div className="p-5">
+            <div className="flex items-center gap-1.5 rounded-full p-1 px-2 text-white bg-gray-800">
+              <RiBuilding3Fill className="text-white" size={30}/>
+              <p className="text-xs font-bold text-white">Roomify Inc.</p>
+            </div>
           </div>
+          <Link href='/explore/search?'>
+            <div className='border-b-4 border-transparent hover:border-blue-800 p-5 h-full text-base font-bold text-gray-800 hover:cursor-pointer active:bg-slate-200 transition duration-100'> 
+              <p>Explore</p>
+            </div>
+          </Link>
+          <Link href='#'>
+            <div className='border-b-4 border-transparent hover:border-blue-800 p-5 h-full text-base font-bold text-gray-800 hover:cursor-pointer active:bg-slate-200 transition duration-100'> 
+              <p>Our Tenant</p>
+            </div>
+          </Link>
         </div>
-        <nav className="text-base font-medium">
+        <nav className="text-base font-medium py-5">
           <ul className="flex gap-8 items-center">
             {
               token && (
@@ -89,7 +101,7 @@ export default function Header() {
                 </Link>
               ) : (
               <Link href='/auth'>
-                <li className="rounded-full bg-black text-white px-7 py-3 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200">Sign in or create account</li>
+                <li className="text-sm font-bold rounded-full bg-black text-white px-7 py-3 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200">Sign in or create account</li>
               </Link>
               ) 
             }

@@ -2,6 +2,7 @@ import prisma from "@/prisma";
 import { NextFunction, Request, Response } from "express";
 import { v4 as uuidV4 } from "uuid";
 import { getRoomTypeService } from '@/services/property.service'
+import { deleteFiles } from "@/utils/deleteFiles";
 
 export const createProperty = async(req: Request, res: Response, next: NextFunction) => {
     try {
@@ -20,6 +21,7 @@ export const createProperty = async(req: Request, res: Response, next: NextFunct
             checkInEndTime,
             checkOutStartTime,
             checkOutEndTime, 
+            countPropertyImages,
             propertyTypeId,
             propertyFacilitiesId,
             propertyFacilitiesName,
@@ -29,6 +31,7 @@ export const createProperty = async(req: Request, res: Response, next: NextFunct
             phoneNumber,
             url, //property website
             totalRooms, //total room in this property
+            propertyRoomTypes,
             propertyRoomNames, //arr
             propertyRoomDescriptions, //arr
             propertyRoomCapacities, //arr
@@ -36,96 +39,151 @@ export const createProperty = async(req: Request, res: Response, next: NextFunct
             propertyRoomPrices, //arr
             propertyRoomTotalRooms, //arr
             propertyRoomImages, //arr of obj
-    
         } = req.body
         
+        console.log(req.body)
+
+        if(Array.isArray(req.files)) throw { msg: 'Images not found!', status: 406 }
+        const imagesUploaded: any = req?.files?.images
+
         const uuid = uuidV4()
         const propertyId = uuid
-        const slug = name.toLowerCase().split(' ').join('-')
+        const slug = `${name.toLowerCase().split(' ').join('-')}-${propertyId}`
 
 
-        let createdCity, createdCountry
-    
-        const isCountryExist = await prisma.city.findFirst({
-            where: {
-                name: {
-                    contains: countryName,
-                    mode: 'insensitive'
-                }
-            }
-        })
-    
-        if(!isCountryExist?.id) {
-            createdCountry = await prisma.country.create({
-                data: {
-                    name: countryName,
-                    directory: '',
-                    filename: '',
-                    fileExtension: '',
-                    description: ''
-                }
-            })
-        }
+        let createdProperty: any, createdPropertyHasFacilities, createdPropertyDetail: any, createdPropertyRoomTypes: any, createdRoomHasFacilities
+        await prisma.$transaction(async(tx) => {
         
-        const isCityExist = await prisma.city.findFirst({
-            where: {
-                name: {
-                    contains: cityName,
-                    mode: 'insensitive'
-                }
-            }
-        })
-    
-        if(!isCityExist?.id) {
-            createdCity = await prisma.city.create({
-                data: {
-                    name: cityName,
-                    directory: '',
-                    filename: '',
-                    fileExtension: '',
-                    countryId: (countryId as number || createdCountry?.id as number)
-                }
-            })
-        }
-    
-        const createdProperty = await prisma.property.create({
+        createdProperty = await tx.property.create({
             data: {
                 id: propertyId,
                 name,
-                countryId: (countryId as number || createdCountry?.id as number),
-                cityId: (cityId as number || createdCity?.id as number),
+                countryId: (Number(countryId)),
+                cityId: (Number(cityId)),
                 tenantId: id,
-                propertyTypeId,
-                checkInStartTime,
-                checkInEndTime,
-                checkOutStartTime,
-                checkOutEndTime,
+                propertyTypeId: Number(propertyTypeId),
+                checkInStartTime: new Date(new Date().toISOString().split('T')[0] + 'T' + checkInStartTime + ':00') ,
+                checkInEndTime: checkInEndTime ? new Date(new Date().toISOString().split('T')[0] + 'T' + checkInEndTime + ':00') : null,
+                checkOutStartTime: checkOutStartTime ? new Date(new Date().toISOString().split('T')[0] + 'T' + checkOutStartTime + ':00') : null,
+                checkOutEndTime: new Date(new Date().toISOString().split('T')[0] + 'T' + checkOutEndTime + ':00') ,
                 slug,
                 location,
                 zipCode,
-                address
+                address,
             }
         })
 
-        const createdPropertyHasFacilities = await prisma.propertyHasFacility.createMany({
-            data: propertyFacilitiesId.map((item: number) => {
+        createdPropertyHasFacilities = await tx.propertyHasFacility.createMany({
+            data: JSON.parse(propertyFacilitiesId).map((item: { id: string | number }) => {
                 return {
                     propertyId,
-                    propertyFacilityId: item
+                    propertyFacilityId: Number(item?.id)
                 }
             })
         })
 
-        //kalo facility ga ada harus create facilitynya
+        createdPropertyDetail = await tx.propertyDetail.create({
+            data: {
+                propertyId: createdProperty?.id,
+                propertyDescription,
+                neighborhoodDescription,
+                phoneNumber,
+                url,
+                totalRooms: Number(totalRooms),
+            }
+        })
 
-        // const createdPropertyRooms = await prisma.propertyRoomType.createMany({
-            
-        // }) buat room
-        // const createdPropertyRooms = await prisma.roomHasFacilities.createMany({
-            
-        // }) buat fasilitas kamar
-    } catch (error) {
+        const copiedImagesUploaded = [...imagesUploaded]
+        const imagesForProperty: any = []
+        for(let i = 0; i < countPropertyImages; i++) {
+            imagesForProperty.push({
+                propertyDetailId: createdPropertyDetail?.id,
+                filename: copiedImagesUploaded[i]?.filename.split('.')[0],
+                fileExtension: copiedImagesUploaded[i]?.filename.split('.')[1],
+                directory: copiedImagesUploaded[i]?.destination
+            })
+        }
+        copiedImagesUploaded.splice(0, countPropertyImages)
         
+        createdPropertyRoomTypes = await tx.propertyRoomType.createManyAndReturn({
+            data: JSON.parse(propertyRoomTypes).map((item: any) => {
+                return {
+                    propertyId: createdProperty?.id,
+                    name: item?.name,        
+                    description: item?.description, 
+                    rooms: item?.rooms,    
+                    capacity: item?.capacity,    
+                    bathrooms: item?.bathrooms,   
+                    price: item?.price, 
+                    totalRooms: item?.totalRooms 
+                }
+            })
+        })
+        
+        createdRoomHasFacilities = await tx.roomHasFacilities.createMany({
+            data: JSON.parse(propertyRoomTypes).map((item: any, index: number) => {
+                const roomFacilities = item?.roomFacilities.map((itm: any) => {
+                    return {
+                        propertyRoomTypeId: createdPropertyRoomTypes[index].id,
+                        propertyRoomFacilityId: itm
+                    }
+                })
+                return roomFacilities
+            }).flat() 
+        })
+
+        // const findCreatedPropertyDetailId = await prisma.propertyDetail.findUnique({
+        //     where: {
+        //         id: createdPropertyDetail?.id
+        //     },
+        //     select: {
+        //         id: true
+        //     }
+        // })
+
+        console.log('imagesForProperty')
+        console.log(imagesForProperty)
+        const createdPropertyImages = await prisma.propertyImage.createMany({
+            data: imagesForProperty
+        })
+        const imagesForRooms: any = []
+        JSON.parse(propertyRoomTypes).forEach((item: any, index: number) => {
+            for(let i = 0; i < item?.countRoomImage; i++) {
+                imagesForRooms.push({
+                    propertyRoomTypeId: createdPropertyRoomTypes[index].id,
+                    filename: copiedImagesUploaded[i].filename.split('.')[0],
+                    fileExtension: copiedImagesUploaded[i].filename.split('.')[1],
+                    directory: copiedImagesUploaded[i].destination
+                })
+            }
+            copiedImagesUploaded.splice(0, item?.countRoomImage)
+        })
+       
+        const createdRoomImages = await prisma.propertyRoomImage.createMany({
+            data: imagesForRooms
+        })
+
+        }, {
+            timeout: 50000
+        })
+
+        res.status(201).json({
+            error: false,
+            message: 'Create property success',
+            data: {
+                tes: req.files,
+                tes2: req.body,
+                // createdProperty,
+                // createdRoomHasFacilities,
+                // createdPropertyDetail,
+                // createdPropertyRoomTypes,
+                // createdPropertyHasFacilities,
+            }
+        })
+    } catch (error) {
+        console.log(error)
+        deleteFiles({imagesUploaded: req.files})
+        next(error)
     }
 
     //jika punya facility children maka boleh tambah children
@@ -283,18 +341,18 @@ export const getPropertyDetail = async(req: Request, res: Response, next: NextFu
             error: false,
             message: 'Get property detail success',
             data: {
-                property,
-                propertyDetail: property.propertyDetail,
-                propertyFacilities,
-                propertyImages: [...propertyImages, ...propertyRoomImages],
-                propertyImagesPreview: [...propertyImages, ...propertyRoomImages].slice(0,8),
-                propertyRoomType,
-                reviews,
-                city,
-                country,
-                propertyListByCity,
-                tenant,
-                isIncludeBreakfast
+                // property,
+                // propertyDetail: property.propertyDetail,
+                // propertyFacilities,
+                // propertyImages: [...propertyImages, ...propertyRoomImages],
+                // propertyImagesPreview: [...propertyImages, ...propertyRoomImages].slice(0,8),
+                // propertyRoomType,
+                // reviews,
+                // city,
+                // country,
+                // propertyListByCity,
+                // tenant,
+                // isIncludeBreakfast
             }
         })
     } catch (error) {

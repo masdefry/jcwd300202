@@ -29,7 +29,7 @@ const ProfileUserLayout = ({  children }: { children: ReactNode }) => {
         </main>
       )
     }
-  const [ menus, setMenus] = useState([
+  const menus = [
       {
         link: '/tenant/profile',
         title: 'Account',
@@ -55,7 +55,7 @@ const ProfileUserLayout = ({  children }: { children: ReactNode }) => {
         title: 'Settings',
         icon: <IoSettingsOutline size={20} className='text-blue-400'/>
       }
-    ])
+    ]
 
   return (
     <main className='w-full min-h-min py-5'>

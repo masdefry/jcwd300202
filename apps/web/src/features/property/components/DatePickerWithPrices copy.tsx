@@ -10,7 +10,7 @@ interface IDate {
   day: any
 }
 
-const DatePickerPage = () => {
+const DatePickerWithPrices = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [checkInDate, setCheckInDate] = useState(new Date());
   const [checkOutDate, setCheckOutDate] = useState(addDays(new Date(), 1));
@@ -146,11 +146,11 @@ const DatePickerPage = () => {
         minDate={new Date()} // Prevent selecting past dates
         inline
         renderDayContents={renderDayContents}
-        // renderMonthContent={}
         renderMonthContent={renderMonthContents} // Custom render for each day
         dateFormat="yy-MM-dd"
         className="min-w-max"
         monthsShown={2}
+        withPortal
       />
 {/* 
       {price > 0 && (
@@ -163,5 +163,5 @@ const DatePickerPage = () => {
   );
 };
 
-export default DatePickerPage;
+export default DatePickerWithPrices;
 

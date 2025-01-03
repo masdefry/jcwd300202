@@ -21,7 +21,7 @@ export const createSeasonalPriceAndAvailabilty = async(req: Request, res: Respon
             where: {
                 propertyRoomType: {
                     some: {
-                        id: propertyRoomTypeId
+                        id: Number(propertyRoomTypeId)
                     }
                 }
             },
@@ -55,7 +55,7 @@ export const createSeasonalPriceAndAvailabilty = async(req: Request, res: Respon
 
             if(!createdSeason?.id) throw { msg: 'Create season failed!', status: 500 }
             
-            const dataToCreateSeasonalPrices = Array.from({ length: differenceInDays(new Date(startDate), new Date(endDate)) + 1}).map((_, index) => {
+            const dataToCreateSeasonalPrices = Array.from({ length: differenceInDays(new Date(endDate), new Date(startDate)) + 1}).map((_, index) => {
                 return {
                     price: roomPrices,
                     propertyId: isPropertyExist?.id,

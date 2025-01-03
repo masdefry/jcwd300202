@@ -8,11 +8,11 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { LucideBedDouble, LucideShowerHead } from 'lucide-react'
 import Image from 'next/image'
 import React, { useRef, useState } from 'react'
-import { CiLocationOn } from 'react-icons/ci'
+import { CiLocationOn, CiSignpostR1 } from 'react-icons/ci'
 import { FaCheck, FaStar, FaWifi } from 'react-icons/fa'
 import { GoChecklist } from 'react-icons/go'
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io'
-import { IoPerson, IoTimeOutline } from 'react-icons/io5'
+import { IoPerson, IoPersonOutline, IoTimeOutline } from 'react-icons/io5'
 import { MdAttachMoney, MdKeyboardArrowDown, MdOutlineEmojiFoodBeverage, MdOutlineMeetingRoom } from 'react-icons/md'
 import { TbPawOff } from 'react-icons/tb'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -26,6 +26,7 @@ import { MdPeopleOutline } from "react-icons/md";
 
 const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, searchParams: any}) => {
     const [ showMoreDescription, setShowMoreDescription ] = useState(false)
+    const [ showPropertyImages, setShowPropertyImages ] = useState(false)
     const [ showDataRoom, setShowDataRoom ] = useState({
         roomImages: [],
         roomHasFacilities: [],
@@ -84,22 +85,22 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                 The move-in process was seamless, and I felt comfortable and at ease during my entire stay. 
                 Overall, it was a hassle-free and enjoyable rental experience that I would highly recommend to others.`  
   return (
-    <main className='p-10 flex flex-col gap-10'>
-        <Dialog>
-        <section className='grid grid-cols-5 gap-5 w-full h-[600px]'>
+    <main className='w-full min-h-min 2xl:py-5 pb-5'>
+        <section className='m-auto max-w-screen-xl flex flex-col gap-7'>
+        <section className='hidden 2xl:grid grid-cols-5 gap-5 w-full h-[700px]'>
             {
                 dataPropertyDetail?.propertyImagesPreview?.map((item: any, index: number) => {
                     let className
                     if(index === 0) {
-                        className = 'overflow-hidden relative rounded-md w-full h-full col-span-3 row-span-6'
+                        className = 'overflow-hidden relative rounded-md w-full h-full col-span-3 hover:cursor-pointer row-span-6'
                     } else if(index === 1 || index === 2) {
-                        className = 'overflow-hidden relative rounded-md w-full h-full col-span-2 row-span-3'
+                        className = 'overflow-hidden relative rounded-md w-full h-full col-span-2 hover:cursor-pointer row-span-3'
                     } else {
-                        className = 'overflow-hidden relative rounded-md w-full h-full col-span-1 row-span-2'
+                        className = 'overflow-hidden relative rounded-md w-full h-full col-span-1 hover:cursor-pointer row-span-2'
                     }
                     if(index === 7) {
                         return (
-                        <DialogTrigger key={index} className={className}>
+                        <div onClick={() => setShowPropertyImages(true)} key={index} className={className}>
                             {
                                 item?.directory ? (
                                     <Image 
@@ -117,11 +118,11 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                             <div className='rounded-md absolute top-0 left-0 w-full h-full hover:bg-opacity-60 bg-black bg-opacity-40 flex items-center justify-center'>
                                 <p className='text-xl text-white font-bold hover:cursor-pointer hover:underline transition duration-100'>+{dataPropertyDetail?.propertyImages.length - dataPropertyDetail?.propertyImagesPreview.length} Photos</p>
                             </div>
-                        </DialogTrigger>
+                        </div>
                         )
                     }
                     return(
-                        <DialogTrigger key={index} className={className}>
+                        <div onClick={() => setShowPropertyImages(true)} key={index} className={className}>
                             {
                                 item?.directory ? (
                                     <Image 
@@ -136,20 +137,40 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                                     </div>
                                 )
                             }
-                        </DialogTrigger>
+                        </div>
                     )
                 })
             }
         </section>
-            <DialogContent className='w-[800px] h-[600px] flex items-center justify-center'>
-                <ImageCarousel imagesArr={dataPropertyDetail?.propertyImages}/>
-            </DialogContent>
-        </Dialog>
-        <hgroup className='flex flex-col leading-3 gap-2'>
-            <h1 className='text-5xl font-bold tracking-wide'>{dataPropertyDetail?.property?.name}</h1>
-            <p className='text-base font-light text-gray-700 flex items-center gap-2'><CiLocationOn size={23} className='text-red-600' />{dataPropertyDetail?.property?.address}</p>
+        {
+            showPropertyImages && (
+            <section className='bg-black bg-opacity-25 backdrop-blur-sm z-[52] fixed top-0 left-0 w-full h-full flex items-center justify-center p-5'>
+                <div className='w-full max-w-[800px] h-[500px] p-1 flex flex-col gap-3 bg-white rounded-md shadow-md'>
+                    <div className='text-gray-950 text-lg w-full flex justify-end'>
+                        <RiCloseFill onClick={() => setShowPropertyImages(false)} className='hover:opacity-60 transition duration-100 hover:cursor-pointer'/>
+                    </div>
+                    <ImageCarousel imagesArr={dataPropertyDetail?.propertyImages}/>
+                </div>
+            </section>
+            )
+        }
+        <section className='px-5 pt-8 2xl:hidden'>
+            <div onClick={() => setShowPropertyImages(true)} className='bg-blue-200 w-full md:h-[300px] h-[200px] rounded-xl shadow-md overflow-hidden'>
+                <Image
+                src={`http://localhost:5000/api/${dataPropertyDetail?.propertyImages[0]?.directory}/${dataPropertyDetail?.propertyImages[0]?.filename}.${dataPropertyDetail?.propertyImages[0]?.fileExtension}`}
+                width={1000}
+                height={1000}
+                alt=''
+                className='h-full w-full object-cover '
+                />
+            </div>
+        </section>
+        <hgroup className='flex flex-col leading-3 2xl:gap-2 2xl:p-0 px-5 '>
+            <h1 className='text-lg lg:text-xl 2xl:text-4xl font-bold tracking-wide text-gray-900'>{dataPropertyDetail?.property?.name}</h1>
+            <p className='text-sm 2xl:text-base font-medium text-gray-700 flex items-center gap-2'><CiLocationOn size={23} className='text-red-600 md:flex hidden' />{dataPropertyDetail?.property?.address}</p>
+            <p className='text-xs 2xl:text-sm font-medium 2xl:font-light text-gray-600 flex items-center gap-2'><CiSignpostR1 size={23} className='text-gray-600 md:flex hidden' />Zip Code: {dataPropertyDetail?.property?.zipCode}</p>
         </hgroup>
-        <section className={`${(dataPropertyDetail?.reviews && dataPropertyDetail?.reviews.length > 0 )? 'grid grid-cols-3 h-[400px]' : 'flex flex-col'} gap-5 rounded-md bg-white`}>
+        <section className={`${(dataPropertyDetail?.reviews && dataPropertyDetail?.reviews.length > 0 )? 'grid grid-cols-3 h-[400px]' : 'flex flex-col'} 2xl:p-0 px-5 gap-5 rounded-md bg-white`}>
             {
                 (dataPropertyDetail?.reviews && dataPropertyDetail?.reviews.length > 0) && (
                     <section id='review' className='h-[400px] flex flex-col gap-5 col-span-1 row-span-3 rounded-md drop-shadow-md bg-white w-full p-5'>
@@ -239,23 +260,27 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
             </article>
         </section>
         <Separator />
-        <div className='flex flex-col gap-5'>
-            <p className='text-2xl font-bold'>Room Types Available in {dataPropertyDetail?.property?.name}</p>
-            <div className='flex items-center gap-2 bg-black text-sm font-bold p-3 rounded-md text-white'>
+        <div className='flex flex-col gap-5 2xl:p-0 px-5'>
+            <p className='text-lg md:text-xl 2xl:text-2xl font-bold'>Room Availability in {dataPropertyDetail?.property?.name}</p>
+            <div className='flex items-center gap-2 bg-gray-900 text-sm font-medium md:font-bold p-3 rounded-md text-white'>
                 <div className='bg-green-100 flex items-center rounded-full p-2'>
                     <GoChecklist size={18} className='text-green-600' /> 
                 </div>
-                <p>Choose the room type according to your needs</p>
+                <p className='md:text-sm text-xs font-bold'>Choose the room type according to your needs</p>
+            </div>
+            <div className='flex items-center gap-2 bg-gray-900 text-sm font-medium md:font-bold p-3 rounded-md text-white'>
+                <input/>
+                <button className='bg-white text-sm text-gray-800 px-2 py-2 pr-5 flex items-center gap-3 rounded-md border-2 border-blue-800 '><IoPersonOutline size={23} />2 Adult . 1 Children . 1 Room</button>
             </div>
         </div>
-        <section className='flex flex-col gap-5'>
+        <section className='flex flex-col gap-5 2xl:p-0 px-5'>
             { 
-                dataPropertyRoomType?.propertyRoomType?.map((item: any, index: number) => {
+                dataPropertyRoomType?.propertyRoomTypeWithSeasonalPrice?.map((item: any, index: number) => {
                     return (
-                    <section key={index} className='w-full grid grid-cols-3 gap-10 items-center rounded-md bg-white shadow-md p-3'>
-                        <div className='w-full h-fit rounded-md flex flex-col gap-2'>
-                            <h1 className='text-2xl font-bold'>{item?.name}</h1>
-                            <figure className='bg-gray-500 rounded-3xl w-full h-[150px] overflow-hidden'>
+                    <section key={index} className='w-full grid grid-cols-3 gap-5 2xl:gap-10 items-center rounded-md bg-white shadow-md p-3'>
+                        <div className='w-full rounded-md flex flex-col gap-2 2xl:col-span-1 col-span-3'>
+                            <h1 className='text-base sm:text-lg text-gray-900 font-bold'>{item?.name}</h1>
+                            <figure className='bg-blue-200 rounded-lg 2xl:rounded-3xl w-full h-[150px] overflow-hidden 2xl:shadow-none shadow-md'>
                                 <Image
                                 src={`http://localhost:5000/api/${item?.propertyRoomImage[0]?.directory}/${item?.propertyRoomImage[0]?.filename}.${item?.propertyRoomImage[0]?.fileExtension}`}
                                 width={500}
@@ -275,31 +300,29 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                                     bathrooms: item?.bathrooms,
                                     capacity: item?.capacity
                                 })
-                            }} className='ml-5 text-left text-blue-800 text-sm font-bold hover:underline active:opacity-60 transition duration-100'>Room details</button>
+                            }} className='ml-5 text-left text-blue-800 text-xs md:text-sm font-bold hover:underline active:opacity-60 transition duration-100'>Room details</button>
                         </div>
-                        <div className='col-span-2'>
-                            <div className="overflow-x-auto">
-                            <table className="table">
-                                    {/* head */}
+                        <div className='2xl:col-span-2 col-span-3'>
+                            <div className="overflow-x-auto 2xl:border-none border-2 border-amber-400 rounded-md">
+                            <table className="table min-w-max">
                                     <thead>
-                                    <tr className='text-lg font-bold text-gray-800'>
+                                    <tr className='text-base font-bold text-gray-800'>
                                         <th>Room Choice</th>
                                         <th className='text-center'>Guest</th>
                                         <th className='text-right'>Price/Room/Night</th>
-                                        <th className='text-center'></th>
+                                        <th className='text-center w-[200px]'></th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {/* row 1 */}
                                     <tr>
-                                        <td className='flex flex-col gap-2 w-[400px]'>
-                                            <p className='text-sm font-light text-gray-500'>{item?.name} Room</p>
-                                            <p className='text-base font-semibold text-gray-800'>{dataPropertyRoomType?.isIncludeBreakfast[index] ? `With breakfast for ${item?.capacity} people` : 'Without breakfast'}</p>
+                                        <td className='flex flex-col gap-2 w-[300px]'>
+                                            <p className='sm:flex hidden text-sm font-light text-gray-500'>{item?.name} Room</p>
+                                            <p className='lg:text-base text-sm font-semibold text-gray-800'>{dataPropertyRoomType?.isIncludeBreakfast[index] ? `With breakfast for ${item?.capacity} people` : 'Without breakfast'}</p>
                                             <section className='grid grid-cols-2 justify-between' >
                                                 {
                                                     item?.roomHasFacilities.slice(0,4).map((itm: any, idx: number) => {
                                                         return(
-                                                            <div key={index} className='flex text-sm tracking-wide items-center gap-2'>
+                                                            <div key={index} className='flex sm:text-sm font-bold text-xs tracking-wide items-center gap-2'>
                                                                 <figure>
                                                                     <Image
                                                                     src={`http://localhost:5000/api/${itm?.propertyRoomFacility?.iconDirectory}/${itm?.propertyRoomFacility?.iconFilename}.${itm?.propertyRoomFacility?.iconFileExtension}`}
@@ -327,16 +350,21 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                                                 }
                                             </div>
                                         </td>
-                                        <td className='text-right '>
-                                            <p className='text-xl mb-1 font-semibold'>Rp{item?.price}</p>
+                                        <td className='text-right'>
+                                            {
+                                                item?.normalTotalPrice > item?.totalPrice && (
+                                                    <p className='text-sm font-bold line-through text-gray-600'>Rp{item?.normalTotalPrice}</p>
+                                                )
+                                            }
+                                            <p className='text-lg mb-1 font-bold text-orange-500'>Rp{item?.totalPrice}</p>
                                             <p className='text-xs font-semibold text-gray-400'>Include taxes and price</p>
                                         </td>
-                                        <td>
+                                        <td className='w-[200px]'>
                                             {
                                                 token ? (
-                                                    <Link href={`/booking/${item?.id}/details?check-in-date=${searchParams['check-in-date']}&check-out-date=${searchParams['check-out-date']}&adult=${searchParams.adult}&children=${searchParams.children}`} className='my-auto text-lg font-semibold px-8 py-3 rounded-full bg-blue-600 text-white hover:opacity-75 active:scale-90 transition duration-100'>Book now</Link>
+                                                    <Link href={`/booking/${item?.id}/details?check-in-date=${searchParams['check-in-date']}&check-out-date=${searchParams['check-out-date']}&adult=${searchParams.adult}&children=${searchParams.children}`} className='my-auto italic text-sm font-bold min-w-max px-8 py-3 rounded-full bg-blue-800 text-white hover:opacity-75 active:scale-95 transition duration-100'>Book now</Link>
                                                 ) : (
-                                                    <Link href='#' onClick={handleUnauthorizedUser} className='my-auto text-lg font-semibold px-8 py-3 rounded-full bg-blue-600 text-white hover:opacity-75 active:scale-90 transition duration-100'>Book now</Link>
+                                                    <Link href='#' onClick={handleUnauthorizedUser} className='my-auto italic text-sm font-bold min-w-max px-8 py-3 rounded-full bg-blue-800 text-white hover:opacity-75 active:scale-95 transition duration-100'>Book now</Link>
                                                 )
                                             }
                                         </td>
@@ -368,8 +396,8 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
         </section>
         {
             showDataRoom.name && (
-            <section className='fixed top-0 left-0 bg-black bg-opacity-25 backdrop-blur-sm w-full h-full z-[53] flex items-center justify-center'>
-                <div className='bg-white rounded-lg shadow-md p-5 h-[600px] max-w-[600px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent'>
+            <section className='fixed top-0 left-0 bg-black bg-opacity-25 backdrop-blur-sm w-full h-full z-[53] flex items-center justify-center px-5'>
+                <div className='bg-white rounded-lg shadow-md p-5 h-[600px] max-w-[600px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 my-5 scrollbar-track-transparent'>
                     <div className='flex flex-col gap-5'>
                         <div className='text-gray-950 text-lg w-full flex justify-end'>
                             <RiCloseFill 
@@ -388,7 +416,7 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                                 {
                                     showDataRoom?.roomImages.map((itm: any, idx: number) => {
                                         return (
-                                            <figure className='w-[100%]' key={idx}>
+                                            <figure className='w-[100%] h-full' key={idx}>
                                                 <Image
                                                 src={`http://localhost:5000/api/${itm?.directory}/${itm?.filename}.${itm?.fileExtension}`}
                                                 width={500}
@@ -408,7 +436,7 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                             </div>
                         </div>
                         <div className='text-gray-600 text-lg absolute top-0 h-full flex items-center left-3'>
-                            <div  onClick={() => prevRoomImage({ roomImagesLength: showDataRoom?.roomImages.length })}className='rounded-full bg-white p-2 hover:opacity-60 transition duration-100 hover:cursor-pointer active:scale-90'>
+                            <div  onClick={() => prevRoomImage({ roomImagesLength: showDataRoom?.roomImages.length })} className='rounded-full bg-white p-2 hover:opacity-60 transition duration-100 hover:cursor-pointer active:scale-90'>
                                 <IoIosArrowBack /> 
                             </div>
                         </div>
@@ -425,7 +453,7 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                                 {
                                     showDataRoom?.roomHasFacilities?.map((itm: any, idx: number) => {
                                         return(
-                                            <div key={idx} className='flex text-sm tracking-wide items-center gap-2'>
+                                            <div key={idx} className='flex sm:text-sm font-bold text-xs tracking-wide items-center gap-2'>
                                                 <figure>
                                                     <Image
                                                     src={`http://localhost:5000/api/${itm?.propertyRoomFacility?.iconDirectory}/${itm?.propertyRoomFacility?.iconFilename}.${itm?.propertyRoomFacility?.iconFileExtension}`}
@@ -468,16 +496,17 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
         }
         {
             dataPropertyDetail?.propertyListByCity.length > 0 && (
-            <section id='another-recommendation' className='flex flex-col gap-5'>
+            <section id='another-recommendation' className='flex flex-col gap-5 2xl:p-0 px-5'>
                 <hgroup>
-                    <h1 className='text-2xl font-bold text-gray-900'>Accommodation recommendations in {dataPropertyDetail?.city?.name}</h1>
-                    <p className='text-base font-light text-gray-600'>Find the best place to stay</p>
+                    <h1 className='text-lg md:text-xl 2xl:text-2xl font-bold text-gray-900'>Accommodation recommendations in {dataPropertyDetail?.city?.name}</h1>
+                    <p className='text-sm md:text-base font-medium md:font-light  text-gray-600'>Find the best place to stay</p>
                 </hgroup>
                 <div className='carousel rounded-none flex gap-4 h-fit py-2'>
                     {
                         dataPropertyDetail?.propertyListByCity?.map((item: any, index: number) => {
                             return(
-                            <div key={index} className='carousel-item hover:opacity-65 transition duration-100 hover:cursor-pointer'>
+                            <Link key={index} href={`/property/${item?.slug}/details`}>
+                            <div className='carousel-item hover:opacity-65 transition duration-100 hover:cursor-pointer'>
                                 <CardSmall
                                 isPending={false}
                                 level={'template'}
@@ -490,6 +519,7 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                                 imageUrl={`http://localhost:5000/api/${item?.propertyDetail?.propertyImage[0]?.directory}/${item?.propertyDetail?.propertyImage[0]?.filename}.${item?.propertyDetail?.propertyImage[0]?.fileExtension}`}
                                 />
                             </div> 
+                            </Link>
                             )
                         })
                     }
@@ -497,16 +527,16 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
             </section>
             )
         }
-        <section id='property-facilities' className='rounded-3xl flex flex-col gap-5 bg-white shadow-md p-5'>
+        <section id='property-facilities' className='rounded-3xl flex flex-col gap-5 bg-white shadow-md p-5 mx-5 2xl:mx-0'>
             <hgroup>
-                <h1 className='text-2xl font-bold text-gray-900'>Property Facility</h1>
-                <p className='text-base font-light text-gray-600'>Get all these facilities from this property</p>
+                <h1 className='text-lg md:text-xl 2xl:text-2xl font-bold'>Property Facility</h1>
+                <p className='text-sm md:text-base font-medium md:font-light  text-gray-600'>Get all these facilities from this property</p>
             </hgroup>
-            <section className='grid grid-cols-4 gap-5'>
+            <section className='grid md:grid-cols-3 grid-cols-2 lg:grid-cols-4 gap-5'>
                     {
                         dataPropertyDetail?.propertyFacilities?.map((item: any, index: number) => {
                             return(
-                                <div key={index} className='flex text-sm tracking-wide items-center gap-2'>
+                                <div key={index} className='flex sm:text-sm font-bold text-xs tracking-wide items-center gap-2'>
                                     <figure>
                                         <Image
                                         src={`http://localhost:5000/api/${item?.iconDirectory}/${item?.iconFilename}.${item?.iconFileExtension}`}
@@ -523,8 +553,8 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                     }
             </section>
         </section>
-        <section className='grid grid-cols-3 gap-5'>
-            <div className='overflow-hidden rounded-l-3xl relative h-[210px]'>
+        <section className='grid grid-cols-3 gap-5 2xl:p-0 px-5'>
+            <div className='overflow-hidden col-span-3 2xl:col-span-1 rounded-t-3xl 2xl:rounded-l-3xl relative h-[150px] 2xl:h-[210px]'>
                 <figure className='w-full h-full object-cover overflow-hidden'>
                     {
                         Array.isArray(dataPropertyDetail?.propertyImages) && (
@@ -538,9 +568,9 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                         )
                     }
                 </figure>
-                <h1 className='absolute left-0 top-0 p-5 w-full h-full bg-black bg-opacity-45 text-2xl font-bold text-white text-left'>Accommodation Policy & General Information at {dataPropertyDetail?.property?.name}</h1>
+                <h1 className='absolute left-0 top-0 p-5 w-full h-full bg-black bg-opacity-45 text-lg md:text-xl font-bold text-white text-left'>Accommodation Policy & General Information at {dataPropertyDetail?.property?.name}</h1>
             </div>
-            <div className='col-span-2 flex flex-col w-full'>
+            <div className='col-span-3 2xl:col-span-2 flex flex-col w-full'>
                 <div id='ci-co-time' className='flex items-center gap-3 border-b border-slate-300 w-full py-3'>
                     <div><IoTimeOutline size={30} className='text-gray-400'/></div>
                     <article className='flex flex-col gap-1 text-sm'>
@@ -566,6 +596,7 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                     </article>
                 </div>
             </div>
+        </section>
         </section>
     </main>
   )

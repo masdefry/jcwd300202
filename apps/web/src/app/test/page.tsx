@@ -116,15 +116,15 @@ const DatePickerPage = () => {
   // Function to display the price tag under each date
   const renderDayContents = (day: number, date: Date) => {
     const dateString = format(date, "yyyy-MM-dd");
-    const dailyPrice = formattedDailyPrices[dateString] || null;
+    const dailyPrice = formattedDailyPrices[dateString] || '2.0M';
     // console.log(JSON.stringify(date))
     // const dateString = format(date, "yyyy-MM-dd");
     // const price = dailyPrices[dateString] || 100; // Default price if no specific price exists
     return (
     //   <div className="date-price-container">
-    <div className="flex flex-col items-center">
-        <span>{day}</span>
-        {dailyPrice && <div className="text-sm text-gray-500">{dailyPrice}</div>}
+    <div className="flex flex-col items-center mx-1">
+        <span className="text-sm font-bold px-2">{day}</span>
+        {dailyPrice && <div className="text-xs font-semibold text-gray-300 focus:text-white">{dailyPrice}</div>}
       </div>
       // <div className="flex flex-col items-center">
       //   <span>{day}</span>

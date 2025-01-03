@@ -123,7 +123,7 @@ enum Role {
 }
 
 model Property {
-  id                String   @id @unique
+  id                String    @id @unique
   name              String
   address           String
   zipCode           String
@@ -132,7 +132,7 @@ model Property {
   checkInEndTime    DateTime?
   checkOutStartTime DateTime?
   checkOutEndTime   DateTime
-  slug              String   @unique
+  slug              String    @unique
   star              Int?
 
   propertyTypeId Int?
@@ -155,6 +155,7 @@ model Property {
   historyView         HistoryView[]
   seasonalPrice       SeasonalPrice[]
   season              Season[]
+  roomFilled          RoomFilled[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -164,9 +165,9 @@ model Property {
 }
 
 model PropertyDetail {
-  id                      Int    @id @default(autoincrement())
-  propertyDescription     String @db.Text
-  neighborhoodDescription String @db.Text
+  id                      Int     @id @default(autoincrement())
+  propertyDescription     String  @db.Text
+  neighborhoodDescription String  @db.Text
   phoneNumber             String
   url                     String?
   totalRooms              Int
@@ -263,6 +264,7 @@ model PropertyRoomType {
 
   transaction       Transaction[]
   roomHasFacilities RoomHasFacilities[]
+  roomFilled        RoomFilled[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -334,6 +336,30 @@ model HistoryView {
   @@map("history_view")
 }
 
+model RoomFilled {
+  id         Int      @id @default(autoincrement())
+  date       DateTime
+  totalRooms Int
+
+  propertyRoomTypeId Int
+  propertyRoomType   PropertyRoomType @relation(fields: [propertyRoomTypeId], references: [id])
+
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id])
+
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+
+  transactionStatusId Int
+  transactionStatus   TransactionStatus @relation(fields: [transactionStatusId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("rooms_filled")
+}
+
 model Transaction {
   id           String   @id @unique
   checkInDate  DateTime
@@ -367,6 +393,7 @@ model Transaction {
 
   transactionStatus TransactionStatus[]
   review            Review?
+  roomFilled        RoomFilled[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -381,6 +408,8 @@ model TransactionStatus {
 
   transactionId String
   transaction   Transaction @relation(fields: [transactionId], references: [id])
+
+  roomFilled RoomFilled[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -440,12 +469,12 @@ model Season {
 }
 
 model SeasonalPrice {
-  id    Int   @id @default(autoincrement())
-  price Float
-  date  DateTime
-  roomAvailability Boolean @default(true)
-  roomToRent Int
-  isPeak    Boolean  @default(false)
+  id               Int      @id @default(autoincrement())
+  price            Float
+  date             DateTime
+  roomAvailability Boolean  @default(true)
+  roomToRent       Int
+  isPeak           Boolean  @default(false)
 
   seasonId Int
   season   Season @relation(fields: [seasonId], references: [id])

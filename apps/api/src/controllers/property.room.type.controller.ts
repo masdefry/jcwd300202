@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from "@/connection"; 
+import { addDays, differenceInDays } from 'date-fns';
 
 export const getPropertyRoomType = async(req: Request, res: Response, next: NextFunction) => {
     try {
@@ -39,7 +40,8 @@ export const getPropertyRoomTypeByProperty = async(req: Request, res: Response, 
     try {
             const { slug } = req.params
             const { limit = 2, offset = 0, 
-                // date, month, year 
+                checkInDate,
+                checkOutDate 
             } = req.query
 
             const isPropertyExist = await prisma.property.findFirst({
@@ -199,16 +201,87 @@ export const getPropertyRoomTypeByProperty = async(req: Request, res: Response, 
                     console.log('tesFind:', tesfind)
                 }
             })
+
+            const seasonalPrice = await prisma.seasonalPrice.findMany({
+                        where: {
+                            propertyId: isPropertyExist?.id,
+                            date: {
+                                gte: checkInDate ? new Date(checkInDate as string).toISOString() : new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()).toISOString(),
+                                lt: checkOutDate ? new Date(checkOutDate as string).toISOString() : addDays(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()), 1).toISOString(),
+                            }
+                        }
+                    })
+            
+
+                    let dateForFiltering = [new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()).toISOString()]
+                    if(checkInDate && checkOutDate) {
+                        dateForFiltering = Array.from({length: differenceInDays(new Date(checkOutDate as string), new Date(checkInDate as string))}).map((_, index ) => {
+                        return addDays(new Date(checkInDate as string), index).toISOString()
+                        })
+                    }
+
+                    const transactions = await prisma.transactionStatus.findMany({
+                        where: {
+                            AND: [
+                                {
+                                    transaction: {
+                                        propertyId: isPropertyExist?.id
+                                    }
+                                },
+                                {
+                                    status: {
+                                        in: ['PAID', 'WAITING_FOR_CONFIRMATION_PAYMENT']
+                                    },
+                                },
+                            ],
+                            roomFilled: {
+                                some: {
+                                    date: {
+                                        gte: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()).toISOString(),
+                                        lte: addDays(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()), 1).toISOString()
+                                    }
+                                } 
+                            }
+                            
+                        },
+                        include: {
+                            transaction: {
+                                include: {
+                                    room: true
+                                }
+                            }
+                        }
+                        
+                    })
+
+                    const propertyRoomTypeWithSeasonalPrice = propertyRoomType.map((item, index) => {
+                        let totalPrice = 0
+                        const seasonalPriceByPropertyRoomTypeLength = seasonalPrice.filter(itm => itm?.propertyRoomTypeId === item?.id).length
+                        let seasonalPriceByPropertyRoomType = 0
+                        if(seasonalPriceByPropertyRoomTypeLength > 0) {
+                            seasonalPriceByPropertyRoomType = seasonalPrice.filter(itm => itm?.propertyRoomTypeId === item?.id).map(itm => itm.price).reduce((acc, curr) => acc + curr)
+                        }
+                        const transactionsByPropertyRoomTypeLength = transactions.filter(itm => itm?.transaction?.roomId === item?.id).length
+                        const totalRoomsLeft = item?.totalRooms - transactionsByPropertyRoomTypeLength
+                        let totalDays = 1
+                        if(checkInDate && checkOutDate) {
+                            totalDays = Math.abs(differenceInDays(checkInDate as string, checkOutDate as string))
+                        }
+                        const normalTotalPrice = totalDays * item?.price
+                        totalPrice = ((totalDays - seasonalPriceByPropertyRoomTypeLength) * item.price) + seasonalPriceByPropertyRoomType
+                        return {
+                            ...item, totalPrice, totalDays, seasonalPriceByPropertyRoomType, normalTotalPrice, totalRoomsLeft
+                        }
+                    })
             res.status(200).json({
                 message: 'Successfully fetch room type by property',
                 error: false,
                 data: {
+                    propertyRoomTypeWithSeasonalPrice,
                     propertyRoomType,
                     isIncludeBreakfast,
                     totalPage,
                     pageInUse,
-                    tes,
-                    tesfind
                 }
             })
     

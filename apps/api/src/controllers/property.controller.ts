@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { v4 as uuidV4 } from "uuid";
 import { getRoomTypeService } from '@/services/property.service'
 import { deleteFiles } from "@/utils/deleteFiles";
+import { addDays, differenceInDays } from "date-fns";
 
 export const createProperty = async(req: Request, res: Response, next: NextFunction) => {
     try {
@@ -336,6 +337,35 @@ export const getPropertyDetail = async(req: Request, res: Response, next: NextFu
                 return false
             }
         }) 
+        
+        const seasonalPrice = await prisma.seasonalPrice.findMany({
+            where: {
+                propertyId: property?.id,
+                date: {
+                    gte: checkInDate ? new Date(checkInDate as string).toISOString() : new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()).toISOString(),
+                    lt: checkOutDate ? new Date(checkOutDate as string).toISOString() : addDays(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()), 1).toISOString(),
+                }
+            }
+        })
+
+        const propertyRoomTypeWithSeasonalPrice = propertyRoomType.map((item, index) => {
+            let totalPrice = 0
+            const seasonalPriceByPropertyRoomTypeLength = seasonalPrice.filter(itm => itm?.propertyRoomTypeId === item?.id).length
+            let seasonalPriceByPropertyRoomType = 0
+            if(seasonalPriceByPropertyRoomTypeLength > 0) {
+                seasonalPriceByPropertyRoomType = seasonalPrice.filter(itm => itm?.propertyRoomTypeId === item?.id).map(itm => itm.price).reduce((acc, curr) => acc + curr)
+            }
+            let totalDays = 1
+            if(checkInDate && checkOutDate) {
+                totalDays = Math.abs(differenceInDays(checkInDate as string, checkOutDate as string))
+            }
+            totalPrice = ((totalDays - seasonalPriceByPropertyRoomTypeLength) * item.price) + seasonalPriceByPropertyRoomType
+            return {
+                ...item, totalPrice, totalDays, seasonalPriceByPropertyRoomType
+            }
+        })
+
+        
 
         res.status(200).json({
             error: false,
@@ -352,10 +382,12 @@ export const getPropertyDetail = async(req: Request, res: Response, next: NextFu
                 country,
                 propertyListByCity,
                 tenant,
-                isIncludeBreakfast
+                isIncludeBreakfast,
+                seasonalPrice
             }
         })
     } catch (error) {
+        console.log(error)
         next(error)
     }
 

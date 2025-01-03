@@ -3,7 +3,7 @@
 import React from 'react'
 import Image from 'next/image'
 import { useEffect } from 'react'
-import { IoMdArrowDropright } from "react-icons/io";
+import { IoIosArrowBack, IoIosArrowForward, IoMdArrowDropright } from "react-icons/io";
 import { IoMdArrowDropleft } from "react-icons/io";
 import useImageCarouselHook from '../hooks/useImageCarouselHook'
 
@@ -22,44 +22,38 @@ const ImageCarousel = ({ isPending = false, imagesArr }: IHeroProps) => {
 
   if(isPending) {
     return (
-      <section className='w-fit h-[300px] overflow-hidden relative skeleton rounded-none'></section>
+      <section className='w-full h-full overflow-hidden relative skeleton rounded-none'></section>
     )
   }
 
 
   return (
-        <section id='hero-section-carousel' className='w-[600px] h-[300px] overflow-hidden relative'>
-          <div className='flex transition-transform ease-in-out duration-1000 min-w-max' style={{transform: `translateX(-${currSlide/imagesArr.length * 100}%)`}}>
+        <section id='hero-section-carousel' className='w-full h-full overflow-hidden relative'>
+          <div className={`flex transition-transform ease-in-out duration-1000 h-full min-w-max max-w-max min-w-[${(imagesArr?.length) * 100}%] bg-red-300`} style={{transform: `translateX(-${currSlide/(imagesArr?.length || 1) * 100}%)`}}>
               {
-                imagesArr.map((item: any, index: number) => {
+                imagesArr?.map((item: any, index: number) => {
                   return(
-                    <section key={index} id={`carousel-${index + 1}`} className="relative rounded-none h-[300px] w-[600px] my-bg-lin-1">
-                      <figure className='absolute bottom-0 h-[300px] w-[600px] -z-10'>
+                    <section key={index} id={`carousel-${index + 1}`} className="relative rounded-none h-full w-full my-bg-lin-1">
+                      <figure className='w-full h-full'>
                         <Image
-                          loading='lazy'
                           src={`http://localhost:5000/api/${item?.directory}/${item?.filename}.${item?.fileExtension}`}
                           width={1500}
                           height={1500}
                           alt='' 
-                          className="origin-bottom object-cover w-full h-full"
+                          className="h-full object-cover w-full"
                         />
                       </figure>
-                      {/* <div className='bg-black opacity-30 absolute top-0 left-0 w-full h-full'></div>
-                      <article className='bg-black bg-opacity-25 h-full z-20 p-16 flex flex-col justify-center items-center md:gap-3 lg:gap-5'>
-                        <h1 className='lg:text-4xl md:text-3xl text-xl font-semibold text-left text-white drop-shadow-sm w-full'>{item.name}</h1>
-                        <p className='text-base md:text-lg lg:text-xl font-light text-white text-left w-full drop-shadow-sm'>{item.description}</p>
-                      </article> */}
                     </section>
                   )
                 })
               }
           </div>
-          <div id='carousel-buttons' className='w-full absolute inset-0 flex items-center justify-between z-20'>
-              <div onClick={prev} className='hover:cursor-pointer bg-transparent transition duration-150 hover:bg-black active:bg-opacity-50 hover:bg-opacity-25 h-full flex items-center px-3'>
-                <IoMdArrowDropleft size={28} className='text-white'/>
+          <div id='carousel-buttons' className='w-full absolute inset-0 flex items-center justify-between z-20 p-3'>
+              <div onClick={prev} className='rounded-full bg-white p-2 hover:opacity-60 transition duration-100 hover:cursor-pointer active:scale-90'>
+                <IoIosArrowBack /> 
               </div>
-              <div onClick={next} className='hover:cursor-pointer bg-transparent transition duration-150 hover:bg-black active:bg-opacity-50 hover:bg-opacity-25 h-full flex items-center px-3'>
-                <IoMdArrowDropright size={28} className='text-white'/>
+              <div onClick={next} className='rounded-full bg-white p-2 hover:opacity-60 transition duration-100 hover:cursor-pointer active:scale-90'>
+                <IoIosArrowForward /> 
               </div>
           </div>
         </section>

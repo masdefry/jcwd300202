@@ -12,7 +12,7 @@ import { CiLocationOn, CiSignpostR1 } from 'react-icons/ci'
 import { FaCheck, FaStar, FaWifi } from 'react-icons/fa'
 import { GoChecklist } from 'react-icons/go'
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io'
-import { IoPerson, IoPersonOutline, IoTimeOutline } from 'react-icons/io5'
+import { IoPerson, IoPersonOutline, IoSearchOutline, IoTimeOutline } from 'react-icons/io5'
 import { MdAttachMoney, MdKeyboardArrowDown, MdOutlineEmojiFoodBeverage, MdOutlineMeetingRoom } from 'react-icons/md'
 import { TbPawOff } from 'react-icons/tb'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -23,10 +23,33 @@ import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { RiCloseFill } from 'react-icons/ri'
 import { MdPeopleOutline } from "react-icons/md";
+import DatePickerWithPrices from '@/features/property/components/DatePickerWithPrices'
 
 const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, searchParams: any}) => {
     const [ showMoreDescription, setShowMoreDescription ] = useState(false)
     const [ showPropertyImages, setShowPropertyImages ] = useState(false)
+    const [ dataPropertyRoomType, setDataPropertyRoomType ] = useState<any>([])
+    const [dateRange, setDateRange] = useState<any>([null, null]);
+    const [ showGuestCounter, setShowGuestCounter ] = useState(false)
+    const [ children, setChildren ] = useState(0)
+    const [ adult, setAdult ] = useState(1)
+
+    const handleGuest = (type: string, operation: string) => {
+        if(type === 'children') {
+            if(operation === 'plus') {
+                setChildren(state => state + 1)
+            } else if(operation === 'minus' && children > 0) {
+                setChildren(state => state - 1)
+            }
+        } else if(type === 'adult') {
+            if(operation === 'plus') {
+                setAdult(state => state + 1)
+            } else if(operation === 'minus' && adult > 1) {
+                setAdult(state => state - 1)
+            }
+        }
+    }
+    const [startDate, endDate] = dateRange;
     const [ showDataRoom, setShowDataRoom ] = useState({
         roomImages: [],
         roomHasFacilities: [],
@@ -65,13 +88,14 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
         }
       })
   
-  const { mutate: mutatePropertyRoomType, data: dataPropertyRoomType, isPending: isPendingPropertyRoomType } = useMutation({
+  const { mutate: mutatePropertyRoomType, isPending: isPendingPropertyRoomType } = useMutation({
     mutationFn: async({ limit, offset, propertyId }: { limit: number, offset: number, propertyId: string }) => {
         const res = await instance.get(`/room-type/property/${params?.slug}/search?limit=${limit}&offset=${offset}`)
-        return res?.data?.data
+        return res?.data
     },
     onSuccess: (res) => {
-        console.log('success:', res)
+        setDataPropertyRoomType(res?.data)
+        console.log('success:', res?.message)
     },
     onError: (err) => {
         console.log('error:', err)
@@ -268,10 +292,65 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                 </div>
                 <p className='md:text-sm text-xs font-bold'>Choose the room type according to your needs</p>
             </div>
-            <div className='flex items-center gap-2 bg-gray-900 text-sm font-medium md:font-bold p-3 rounded-md text-white'>
-                <input/>
-                <button className='bg-white text-sm text-gray-800 px-2 py-2 pr-5 flex items-center gap-3 rounded-md border-2 border-blue-800 '><IoPersonOutline size={23} />2 Adult . 1 Children . 1 Room</button>
+            <div className='relative flex items-center justify-center w-full rounded-md  bg-white shadow-md border border-slate-200'>
+                <div className='p-4 overflow-x-auto'>
+                    <div className=' flex items-center justify-center bg-amber-400 rounded-md p-[1px]'>
+                        <div>
+                            <DatePickerWithPrices basePrice={dataPropertyDetail?.basePrice} dateAndPrice={dataPropertyDetail?.dateAndPrice} />
+                        </div>
+                        <button onClick={() => setShowGuestCounter(true)} className='min-w-max bg-white text-xs font-semibold text-gray-800 px-2 py-2 pr-5 flex items-center gap-3 border-2 border-amber-400 '><IoPersonOutline />{adult} Adult . {children} Children . 1 Room</button>
+                        <button className='bg-blue-800 hover:opacity-75 transition duration-100 text-xs font-semibold text-white px-2 py-2 pr-5 flex items-center gap-3 rounded-r-md border-2 border-amber-400 '><IoSearchOutline />Search</button>
+                    </div>
+                </div>
+                {
+                    showGuestCounter && (
+                    <div className='sm:w-fit w-full absolute top-[55px] border-2 border-gray-900 2xl:left-[47%] lg:left-[45%] left-0 sm:left-[43%] z-30 bg-white rounded-md text-sm font-bold flex flex-col gap-4 p-3 shadow-md'>
+                        <div className='text-gray-950 text-lg w-full flex justify-end'>
+                            <RiCloseFill onClick={() => setShowGuestCounter(false)} className='hover:opacity-60 transition duration-100 hover:cursor-pointer z-10'/>
+                        </div>
+                        <h1 className='text-base font-gray-800 pb-2 border-b border-slate-300 mt-[-20px]'>Total Guest</h1>
+                        <div className='flex items-center gap-5 justify-between'>
+                            <p className='text-gray-900'>Adult:</p>
+                            <span className='flex items-center gap-1.5'>
+                            <span onClick={() => handleGuest('adult', 'minus')} className='flex items-center gap-1.5 rounded-full justify-center bg-slate-700 hover:opacity-60 transition duration-100 hover:cursor-pointer active:scale-90 text-white h-7 w-7'>-</span>
+                                {adult}
+                            <span onClick={() => handleGuest('adult', 'plus')} className='flex items-center gap-1.5 rounded-full justify-center bg-slate-700 hover:opacity-60 transition duration-100 hover:cursor-pointer active:scale-90 text-white h-7 w-7'>+</span>
+                            </span>
+                        </div>
+                        <div className='flex items-center gap-5 justify-between'>
+                            <p className='text-gray-900'>Children:</p>
+                            <span className='flex items-center gap-1.5'>
+                            <span onClick={() => handleGuest('children', 'minus')} className='flex items-center gap-1.5 rounded-full justify-center bg-slate-700 hover:opacity-60 transition duration-100 hover:cursor-pointer active:scale-90 text-white h-7 w-7'>-</span>
+                                {children}
+                            <span onClick={() => handleGuest('children', 'plus')} className='flex items-center gap-1.5 rounded-full justify-center bg-slate-700 hover:opacity-60 transition duration-100 hover:cursor-pointer active:scale-90 text-white h-7 w-7'>+</span>
+                            </span>
+                        </div>
+                    </div>
+                    )
+                }
             </div>
+            {/* <div className='fixed top-0 left-0 bg-black bg-opacity-25 backdrop-blur-sm flex items-center justify-center w-full h-full'>
+                <div className='bg-white rounded-md text-sm font-bold flex flex-col gap-4 p-5 shadow-md'>
+                    <h1 className='text-base font-gray-800 pb-2 border-b border-slate-300'>Total Guest</h1>
+                    <div className='flex items-center gap-5 justify-between'>
+                        <p className='text-gray-900'>Adult:</p>
+                        <span className='flex items-center gap-1.5'>
+                        <span className='flex items-center gap-1.5 rounded-full justify-center bg-slate-700 hover:opacity-60 transition duration-100 hover:cursor-pointer active:scale-90 text-white h-7 w-7'>-</span>
+                        1
+                        <span className='flex items-center gap-1.5 rounded-full justify-center bg-slate-700 hover:opacity-60 transition duration-100 hover:cursor-pointer active:scale-90 text-white h-7 w-7'>+</span>
+                        </span>
+                    </div>
+                    <div className='flex items-center gap-5 justify-between'>
+                        <p className='text-gray-900'>Children:</p>
+                        <span className='flex items-center gap-1.5'>
+                        <span className='flex items-center gap-1.5 rounded-full justify-center bg-slate-700 hover:opacity-60 transition duration-100 hover:cursor-pointer active:scale-90 text-white h-7 w-7'>-</span>
+                        1
+                        <span className='flex items-center gap-1.5 rounded-full justify-center bg-slate-700 hover:opacity-60 transition duration-100 hover:cursor-pointer active:scale-90 text-white h-7 w-7'>+</span>
+                        </span>
+                    </div>
+                </div>
+                
+            </div> */}
         </div>
         <section className='flex flex-col gap-5 2xl:p-0 px-5'>
             { 
@@ -322,7 +401,7 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                                                 {
                                                     item?.roomHasFacilities.slice(0,4).map((itm: any, idx: number) => {
                                                         return(
-                                                            <div key={index} className='flex sm:text-sm font-bold text-xs tracking-wide items-center gap-2'>
+                                                            <div key={index} className='flex sm:text-sm font-medium text-slate-800 text-xs tracking-wide items-center gap-2'>
                                                                 <figure>
                                                                     <Image
                                                                     src={`http://localhost:5000/api/${itm?.propertyRoomFacility?.iconDirectory}/${itm?.propertyRoomFacility?.iconFilename}.${itm?.propertyRoomFacility?.iconFileExtension}`}
@@ -362,9 +441,13 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                                         <td className='w-[200px]'>
                                             {
                                                 token ? (
-                                                    <Link href={`/booking/${item?.id}/details?check-in-date=${searchParams['check-in-date']}&check-out-date=${searchParams['check-out-date']}&adult=${searchParams.adult}&children=${searchParams.children}`} className='my-auto italic text-sm font-bold min-w-max px-8 py-3 rounded-full bg-blue-800 text-white hover:opacity-75 active:scale-95 transition duration-100'>Book now</Link>
+                                                    <Link href={`/booking/${item?.id}/details?check-in-date=${searchParams['check-in-date']}&check-out-date=${searchParams['check-out-date']}&adult=${searchParams.adult}&children=${searchParams.children}`}>
+                                                        <button disabled={item?.totalRoomsLeft <= 0} className='disabled:bg-slate-300 disabled:opacity-100 disabled:text-white disabled:scale-100 my-auto italic text-sm font-bold min-w-max px-8 py-3 rounded-full bg-blue-800 text-white hover:opacity-75 active:scale-95 transition duration-100' type='button'>{item?.totalRoomsLeft <= 0 ? 'Not available' : 'Book now'}</button>
+                                                    </Link>
                                                 ) : (
-                                                    <Link href='#' onClick={handleUnauthorizedUser} className='my-auto italic text-sm font-bold min-w-max px-8 py-3 rounded-full bg-blue-800 text-white hover:opacity-75 active:scale-95 transition duration-100'>Book now</Link>
+                                                    <Link href='#'>
+                                                        <button onClick={handleUnauthorizedUser} disabled={item?.totalRoomsLeft <= 0} className='disabled:bg-slate-300 disabled:opacity-100 disabled:text-white disabled:scale-100 my-auto italic text-sm font-bold min-w-max px-8 py-3 rounded-full bg-blue-800 text-white hover:opacity-75 active:scale-95 transition duration-100' type='button'>{item?.totalRoomsLeft <= 0 ? 'Not available' : 'Book now'}</button>
+                                                    </Link>
                                                 )
                                             }
                                         </td>
@@ -453,7 +536,7 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                                 {
                                     showDataRoom?.roomHasFacilities?.map((itm: any, idx: number) => {
                                         return(
-                                            <div key={idx} className='flex sm:text-sm font-bold text-xs tracking-wide items-center gap-2'>
+                                            <div key={idx} className='flex sm:text-sm font-medium text-slate-800 text-xs tracking-wide items-center gap-2'>
                                                 <figure>
                                                     <Image
                                                     src={`http://localhost:5000/api/${itm?.propertyRoomFacility?.iconDirectory}/${itm?.propertyRoomFacility?.iconFilename}.${itm?.propertyRoomFacility?.iconFileExtension}`}
@@ -503,9 +586,9 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                 </hgroup>
                 <div className='carousel rounded-none flex gap-4 h-fit py-2'>
                     {
-                        dataPropertyDetail?.propertyListByCity?.map((item: any, index: number) => {
+                        dataPropertyDetail?.propertyListByCity?.map((item: any, idx: number) => {
                             return(
-                            <Link key={index} href={`/property/${item?.slug}/details`}>
+                            <Link key={idx} href={`/property/${item?.slug}/details`}>
                             <div className='carousel-item hover:opacity-65 transition duration-100 hover:cursor-pointer'>
                                 <CardSmall
                                 isPending={false}
@@ -536,7 +619,7 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                     {
                         dataPropertyDetail?.propertyFacilities?.map((item: any, index: number) => {
                             return(
-                                <div key={index} className='flex sm:text-sm font-bold text-xs tracking-wide items-center gap-2'>
+                                <div key={index} className='flex sm:text-sm font-medium text-slate-800 text-xs tracking-wide items-center gap-2'>
                                     <figure>
                                         <Image
                                         src={`http://localhost:5000/api/${item?.iconDirectory}/${item?.iconFilename}.${item?.iconFileExtension}`}

@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { v4 as uuidV4 } from "uuid";
 import { getRoomTypeService } from '@/services/property.service'
 import { deleteFiles } from "@/utils/deleteFiles";
-import { addDays, differenceInDays } from "date-fns";
+import { addDays, differenceInDays, format } from "date-fns";
 
 export const createProperty = async(req: Request, res: Response, next: NextFunction) => {
     try {
@@ -348,6 +348,17 @@ export const getPropertyDetail = async(req: Request, res: Response, next: NextFu
             }
         })
 
+        const getAllSeasonalPriceByCheapestRoomType = await prisma.seasonalPrice.findMany({
+            where: {
+                propertyRoomTypeId: propertyRoomType[0]?.id
+            }
+        })
+
+        const dateAndPrice = getAllSeasonalPriceByCheapestRoomType.map(item => {
+            return [format(new Date(item?.date), 'yyyy-MM-dd'), item?.price]
+        })
+
+
         const propertyRoomTypeWithSeasonalPrice = propertyRoomType.map((item, index) => {
             let totalPrice = 0
             const seasonalPriceByPropertyRoomTypeLength = seasonalPrice.filter(itm => itm?.propertyRoomTypeId === item?.id).length
@@ -377,6 +388,8 @@ export const getPropertyDetail = async(req: Request, res: Response, next: NextFu
                 propertyImages: [...propertyImages, ...propertyRoomImages],
                 propertyImagesPreview: [...propertyImages, ...propertyRoomImages].slice(0,8),
                 propertyRoomType,
+                dateAndPrice: Object.fromEntries(dateAndPrice),
+                basePrice: propertyRoomType[0]?.price,
                 reviews,
                 city,
                 country,

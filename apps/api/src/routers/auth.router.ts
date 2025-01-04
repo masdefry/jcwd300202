@@ -1,4 +1,4 @@
-import { keepAuth, loginTenant, loginUser, registerTenant, registerUser, resetPasswordUser, sendEmailResetPasswordUser, signInWithGoogle, verifyEmailUser, verifyEmailRequestUser, verifyEmailTenant, verifyEmailRequestTenant, resetPasswordTenant, sendEmailResetPasswordTenant, verifyChangeEmailTenant } from "@/controllers/auth.controller";
+import { keepAuth, loginTenant, loginUser, registerTenant, registerUser, resetPasswordUser, sendEmailResetPasswordUser, signInWithGoogle, verifyEmailUser, verifyEmailRequestUser, verifyEmailTenant, verifyEmailRequestTenant, resetPasswordTenant, sendEmailResetPasswordTenant, verifyChangeEmailTenant, verifyChangeEmailUser, verifyChangeEmailRequestTenant } from "@/controllers/auth.controller";
 import { errorHandlingValidator } from "@/middlewares/validator/error.handling.validator";
 import { loginValidator } from "@/middlewares/validator/login.validator";
 import { registerValidator } from "@/middlewares/validator/register.validator";
@@ -12,17 +12,18 @@ import { Router } from "express";
 const authRouter = Router()
 
 authRouter.post('/', loginValidator, loginUser)
-authRouter.post('/register', registerValidator,  registerUser)
-
 authRouter.post('/tenant',loginValidator, loginTenant)
+
+authRouter.post('/register', registerValidator,  registerUser)
 authRouter.post('/tenant/register', registerValidator, registerTenant)
 
 authRouter.post('/tenant/verify-email-request', verifyEmailRequestValidator, verifyEmailRequestTenant)
+authRouter.post('/tenant/verify-change-email-request', verifyToken, verifyChangeEmailRequestTenant)
+authRouter.patch('/tenant/verify-change-email', verifyToken, verifyChangeEmailTenant)
 authRouter.patch('/tenant/verify-email', verifyToken, verifyEmailValidator, verifyEmailTenant)
 
-authRouter.patch('/tenant/verify-change-email', verifyToken, verifyChangeEmailTenant)
-
-authRouter.post('/verify-email-request', verifyEmailRequestValidator, verifyEmailRequestUser)
+authRouter.post('/verify-email-request', verifyEmailRequestUser)
+authRouter.patch('/verify-change-email', verifyToken, verifyChangeEmailUser)
 authRouter.patch('/verify-email', verifyToken, verifyEmailValidator, verifyEmailUser)
 
 authRouter.post('/send-email-reset-password', sendEmailResetPasswordValidator, sendEmailResetPasswordUser)

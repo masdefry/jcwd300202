@@ -31,13 +31,21 @@ const VerifyEmailUserPage = ({params} : {params: { token: string }}) => {
           })
       },
       onSuccess: (res) => {
-          toast.success('Verify account success')
+        toast((t) => (
+            <span className='flex gap-2 items-center font-semibold justify-center text-xs'>
+              Verify account success
+            </span>
+        ))
           setTimeout(() => {
               router.push('/auth')
           }, 1500)
       },
       onError: (err: any) => {
-          toast.error(err?.response?.data?.message)
+          toast((t) => (
+        <span className='flex gap-2 items-center font-semibold justify-center text-xs'>
+          {err?.response?.data?.message}
+        </span>
+      ))
       }
     })  
 

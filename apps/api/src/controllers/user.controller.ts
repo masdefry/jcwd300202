@@ -1,6 +1,10 @@
 import prisma from "@/prisma";
+import { createTokenExpiresIn1H } from "@/utils/jwt";
+import { transporter } from "@/utils/transporter";
 import { format } from "date-fns";
 import { NextFunction, Request, Response } from "express";
+import fs from 'fs'
+import { compile } from "handlebars";
 
 export const getUserProfile = async(req: Request, res: Response, next: NextFunction) => {
     try {
@@ -207,6 +211,68 @@ export const updateUserProfilePicture = async(req: Request, res: Response, next:
             }
         })
 
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const updateUserEmail = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id, role, email } = req.body
+
+        const isUserExist = await prisma.user.findUnique({
+            where: {
+                id,
+            }
+        })
+
+        if(!isUserExist?.id || isUserExist?.deletedAt) throw { msg: 'User not found!', status: 406 }
+        if(isUserExist?.role !== role) throw { msg: 'Role unauthorized!', status: 406 }
+        if(isUserExist?.email === email) throw { msg: 'The new email cannot be the same as your current email!', status: 406 }
+
+        const token = await createTokenExpiresIn1H({ id: isUserExist?.id, role: isUserExist?.role })
+
+        await prisma.$transaction(async(tx) => {
+            try {
+                const updatedEmail = await tx.user.update({
+                    where: {
+                        id
+                    },
+                    data: {
+                        email,
+                        isVerified: false,
+                        token
+                    }
+                })
+        
+                if(!updatedEmail?.email) throw { msg: 'Update user email failed!', status: 500 }
+        
+                const link = `http://localhost:3000/auth/verify/email/${token}`
+            
+                const emailBody = fs.readFileSync('./src/public/body.email/verify.change.email.html', 'utf-8')
+                let compiledEmailBody: any = await compile(emailBody)
+                compiledEmailBody = compiledEmailBody({ url: link })
+
+                await transporter.sendMail({
+                    to: email,
+                    subject: 'Verify New Email [Roomify]',
+                    html: compiledEmailBody
+                })
+            } catch (err) {
+                throw { msg: 'Send email for verification failed!', status: 500 }
+            }
+        }, {
+            timeout: 50000
+        })
+
+
+        res.status(200).json({
+            error: false,
+            message: 'Update user email success',
+            data: {
+                email
+            }
+        })
     } catch (error) {
         next(error)
     }

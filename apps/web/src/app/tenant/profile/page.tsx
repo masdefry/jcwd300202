@@ -53,7 +53,11 @@ const ProfileTenantPage = () => {
     onSuccess: (res) => {
       setShowChangeEmail(false)
       setNewEmail('')
-      toast.success(res?.message)
+      toast((t) => (
+        <span className='flex gap-2 items-center font-semibold justify-center text-xs'>
+          {res?.message}
+        </span>
+      ))
     },
     onError: (err: any) => {
       toast.error(err?.response?.data?.message || 'Connection error')
@@ -78,7 +82,11 @@ const ProfileTenantPage = () => {
       return res?.data
     },
     onSuccess: (res: any) => {
-      toast.success(res?.message)
+      toast((t) => (
+        <span className='flex gap-2 items-center font-semibold justify-center text-xs'>
+          {res?.message}
+        </span>
+      ))
       setTimeout(() => {
         window.location.reload()
       }, 1000)
@@ -175,7 +183,7 @@ const ProfileTenantPage = () => {
                   <button type='button' onClick={() => {setShowChangeEmail(true)}} className='px-5 py-2 font-bold hover:opacity-70 active:scale-90 transition duration-100 text-sm bg-gray-900 text-white w-fit border border-gray-900 rounded-full'>Change</button>
                   {
                     showChangeEmail && (
-                      <section className='fixed bg-black bg-opacity-20 backdrop-blur-sm w-full h-full z-[51] top-0 left-0 flex items-center justify-center'>
+                      <section className='fixed bg-black bg-opacity-20 backdrop-blur-sm w-full h-full z-[51] top-0 left-0 flex items-center p-5 justify-center'>
                         <div className='bg-white border border-slate-200 shadow-md p-5 rounded-md flex flex-col gap-7'>
                           <div className='flex items-center justify-end'><IoClose className='hover:opacity-75 hover:cursor-pointer text-gray-900 ' onClick={() => setShowChangeEmail(false)} /></div>
                           <hgroup className='flex flex-col mt-[-10px]'>
@@ -214,18 +222,18 @@ const ProfileTenantPage = () => {
                   <Field as='textarea' id='address' name='address' type="text" placeholder='Jln MH Thamrin No. 8-10' className='placeholder-shown:text-sm placeholder-shown:text-slate-300 focus:outline-none text-sm font-medium text-gray-900 focus:ring-slate-600 border border-slate-300 rounded-3xl px-5 py-2' />
                   <ErrorMessage name='address' component={'div'} className='text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full z-20'/>
                 </div>
-                <div className={`${!isSubmitting && 'hidden'} backdrop-blur-sm fixed top-0 left-0 w-screen h-screen shadow-sm bg-black bg-opacity-20 z-[51] flex items-center justify-center`}>
-                  <div className='bg-white rounded-3xl flex flex-col justify-between gap-3 p-5'>
-                    <h1 className='text-lg font-bold text-gray-800 pb-2 border-b border-b-slate-300'>
+                <div className={`${!isSubmitting && 'hidden'} p-5 backdrop-blur-sm fixed top-0 left-0 w-screen h-screen shadow-sm bg-black bg-opacity-20 z-[51] flex items-center justify-center`}>
+                <div className='bg-white border border-slate-200 shadow-md p-5 rounded-md flex flex-col gap-5'>
+                  <h1 className='text-lg font-bold text-slate-800 pb-2 border-b border-slate-300'>
                     Are you sure you want to update your profile?
                     </h1>
-                    <article className='text-base font-light text-gray-700'>
+                    <article className='text-sm font-medium text-gray-500'>
                       Please review your information before submitting.
                       Your changes cannot be undone once saved.
                     </article>
                     <div className='flex items-center justify-end gap-2'>
-                      <button type='button' onClick={() => setIsSubmitting(false)} className='border border-slate-100 box-border flex items-center gap-1.5 rounded-full hover:opacity-75 hover:bg-slate-200 active:scale-90 transition duration-100 bg-white text-gray-800 text-sm font-bold px-5 py-3 shadow-md justify-center'>Cancel</button>
-                      <button type='submit' className='z-20 flex items-center gap-1.5 rounded-full hover:opacity-75 active:scale-90 transition duration-100 bg-blue-600 text-white text-sm font-bold px-5 py-3 shadow-md justify-center'>Confirm</button>
+                      <button type='button' onClick={() => setIsSubmitting(false)} className='px-5 hover:bg-slate-200 transition duration-100 active:scale-90 py-1.5 text-gray-700 text-sm font-bold rounded-full shadow-md border border-slate-100 '>Cancel</button>
+                      <button type='submit' disabled={isPendingUpdateTenantProfile || isPendingUpdateTenantProfilePicture} className='disabled:bg-slate-300 disabled:text-white disabled:scale-100 disabled:opacity-100 px-5 hover:opacity-75 transition duration-100 active:scale-90 py-1.5 text-white text-sm font-bold rounded-full shadow-md border bg-blue-800 border-slate-100'>Confirm</button>
                     </div>
                   </div>
                 </div>

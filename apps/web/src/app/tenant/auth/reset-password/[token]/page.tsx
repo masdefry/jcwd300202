@@ -31,7 +31,11 @@ const SetResetPasswordTenantPage = ({ params }: { params: { token: string } }) =
             })
         },
         onSuccess: (res) => {
-            toast.success('Reset password success!')
+            toast((t) => (
+                <span className='flex gap-2 items-center font-semibold justify-center text-xs'>
+                  Reset password success
+                </span>
+              ))
             setTimeout(() => {
                 router.push('/tenant/auth')
             })

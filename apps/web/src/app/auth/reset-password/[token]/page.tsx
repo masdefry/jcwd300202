@@ -31,13 +31,21 @@ const SetResetPasswordUserPage = ({ params }: { params: { token: string } }) => 
             })
         },
         onSuccess: (res) => {
-            toast.success('Reset password success!')
+            toast((t) => (
+                <span className='flex gap-2 items-center font-semibold justify-center text-xs'>
+                  Reset password success
+                </span>
+            ))
             setTimeout(() => {
                 router.push('/auth')
             })
         },
         onError: (err: any) => {
-            toast.error(err?.response?.data?.message)
+            toast((t) => (
+        <span className='flex gap-2 items-center font-semibold justify-center text-xs'>
+          {err?.response?.data?.message}
+        </span>
+      ))
         }
     })
 

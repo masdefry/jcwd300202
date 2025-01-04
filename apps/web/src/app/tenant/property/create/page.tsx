@@ -148,9 +148,9 @@ const CreatePropertyPage = () => {
   })
 
   const { mutate: mutateCreateProperty, isPending: isPendingCreateProperty } = useMutation({
-    mutationFn: async(fd: any) => {
-      console.log('MUTATIONCREATEPROPERTY')
+    mutationFn: async(fd: FormData) => {
       const res = await instance.post('/property', fd)
+      console.log('MUTATIONCREATEPROPERTY')
       return res
     },
     onSuccess: (res) => {
@@ -174,7 +174,11 @@ const CreatePropertyPage = () => {
     onSuccess: (res) => {
       setPropertyType({ name: res?.data?.name, id: res?.data?.id })
       setShowFormCreatePropertyType(false)
-      toast.success(res?.message)
+      toast((t) => (
+        <span className='flex gap-2 items-center font-semibold justify-center text-xs'>
+          {res?.message}
+        </span>
+      ))
     },
     onError: (err: any) => {
       toast.error(err?.response?.data?.message || 'Connection error!')

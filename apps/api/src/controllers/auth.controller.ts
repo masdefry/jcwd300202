@@ -1,10 +1,11 @@
 import prisma from "@/prisma";
 import { comparePassword, hashPassword } from "@/utils/hashPassword";
-import { createToken, createTokenExpiresIn1H } from "@/utils/jwt";
+import { createToken, createTokenExpiresIn1H, decodeToken } from "@/utils/jwt";
 import { transporter } from "@/utils/transporter";
 import { NextFunction, Request, Response } from "express";
 import fs from 'fs'
 import { compile } from "handlebars";
+import { JwtPayload } from "jsonwebtoken";
 import { text } from "stream/consumers";
 
 export const loginTenant = async(req: Request, res: Response, next: NextFunction) => {
@@ -227,30 +228,68 @@ export const verifyEmailRequestUser = async(req: Request, res: Response, next: N
 
         const tokenForVerifyEmail = await createTokenExpiresIn1H({id: isUserExist.id, role: isUserExist.role})
         
-        await prisma.$transaction(async(tx) => {
-            await tx.user.update({
-                where: {
-                    id: isUserExist.id
-                }, 
-                data: {
-                    token: tokenForVerifyEmail
-                }
-            })
-                
-            const verifyEmailLink = `http://localhost:3000/auth/verify/${tokenForVerifyEmail}`
+        if(!isUserExist?.password) {
+            await prisma.$transaction(async(tx) => {
+                try {
+                    
+                    await tx.user.update({
+                        where: {
+                            id: isUserExist.id
+                        }, 
+                        data: {
+                            token: tokenForVerifyEmail
+                        }
+                    })
+                    
+
+                    const verifyEmailLink = `http://localhost:3000/auth/verify/${tokenForVerifyEmail}`
+                    const emailBody = fs.readFileSync('./src/public/body.email/verify.email.tenant.html', 'utf-8')
+                    
+                    let compiledEmailBody: any = await compile(emailBody)
+                    compiledEmailBody = compiledEmailBody({url: verifyEmailLink})
             
-            const emailBody = fs.readFileSync('./src/public/body.email/verify.email.tenant.html', 'utf-8')
-            let compiledEmailBody: any = await compile(emailBody)
-            compiledEmailBody = compiledEmailBody({url: verifyEmailLink})
-    
-            await transporter.sendMail({
-                to: email,
-                subject: 'Request Verify Email [Roomify]',
-                html: compiledEmailBody  
+                    await transporter.sendMail({
+                        to: email,
+                        subject: 'Request Verify Email [Roomify]',
+                        html: compiledEmailBody  
+                    })
+                } catch (error) {
+                    throw { msg: 'Send email for verification failed!', status: 500 }
+                }
+            }, {
+                timeout: 25000
             })
-        }, {
-            timeout: 25000
-        })
+        } else {
+            await prisma.$transaction(async(tx) => {
+                try {
+                    
+                    await tx.user.update({
+                        where: {
+                            id: isUserExist.id
+                        }, 
+                        data: {
+                            token: tokenForVerifyEmail
+                        }
+                    })
+                        
+                    const verifyEmailLink = `http://localhost:3000/auth/verify/email/${tokenForVerifyEmail}`
+                    
+                    const emailBody = fs.readFileSync('./src/public/body.email/verify.change.email.html', 'utf-8')
+                    let compiledEmailBody: any = await compile(emailBody)
+                    compiledEmailBody = compiledEmailBody({url: verifyEmailLink})
+            
+                    await transporter.sendMail({
+                        to: email,
+                        subject: 'Request Verify Email [Roomify]',
+                        html: compiledEmailBody  
+                    })
+                } catch (error) {
+                    throw { msg: 'Send email for verification failed!', status: 500 }
+                }
+            }, {
+                timeout: 25000
+            })            
+        }
 
         res.status(200).json({
             error: false,
@@ -263,51 +302,110 @@ export const verifyEmailRequestUser = async(req: Request, res: Response, next: N
     }
 }
 
-export const verifyEmailRequestTenant = async(req: Request, res: Response, next: NextFunction) => {
+export const verifyChangeEmailRequestTenant = async(req: Request, res: Response, next: NextFunction) => {
     try{
-    const { email } = req.body
-        const isTenantExist = await prisma.tenant.findUnique({
-            where: {
-                email
-            }
-        })
-        
-        if( !isTenantExist?.id || isTenantExist?.deletedAt ) throw { msg: 'Tenant not found!', status: 406 }
-        if( isTenantExist?.isVerified ) throw { msg: 'Email already verified!', status: 406 }
+        const { id, role } = req.body
 
-        const tokenForVerifyEmail = await createTokenExpiresIn1H({id: isTenantExist.id, role: isTenantExist.role})
-        
-        await prisma.$transaction(async(tx) => {
-            await tx.tenant.update({
+            const isTenantExist = await prisma.tenant.findUnique({
                 where: {
-                    id: isTenantExist.id
-                }, 
-                data: {
-                    token: tokenForVerifyEmail
+                    id
                 }
             })
-                
-            const verifyEmailLink = `http://localhost:3000/tenant/auth/verify/${tokenForVerifyEmail}`
             
-            const emailBody = fs.readFileSync('./src/public/body.email/verify.email.html', 'utf-8')
-            let compiledEmailBody: any = await compile(emailBody)
-            compiledEmailBody = compiledEmailBody({url: verifyEmailLink})
+            if( !isTenantExist?.id || isTenantExist?.deletedAt ) throw { msg: 'Tenant not found!', status: 406 }
+            if( isTenantExist?.role !== role ) throw { msg: 'Role unauthorized!', status: 406 }
+            if( isTenantExist?.isVerified ) throw { msg: 'Email already verified!', status: 406 }
     
-            await transporter.sendMail({
-                to: email,
-                subject: 'Request Verify Email [Roomify]',
-                html: compiledEmailBody  
+            const tokenForVerifyEmail = await createTokenExpiresIn1H({id: isTenantExist.id, role: isTenantExist.role})
+            
+            await prisma.$transaction(async(tx) => {
+                await tx.tenant.update({
+                    where: {
+                        id: isTenantExist.id
+                    }, 
+                    data: {
+                        token: tokenForVerifyEmail
+                    }
+                })
+                    
+                const verifyEmailLink = `http://localhost:3000/tenant/auth/verify/email/${tokenForVerifyEmail}`
+                
+                const emailBody = fs.readFileSync('./src/public/body.email/verify.email.html', 'utf-8')
+                let compiledEmailBody: any = await compile(emailBody)
+                compiledEmailBody = compiledEmailBody({url: verifyEmailLink})
+        
+                await transporter.sendMail({
+                    to: isTenantExist?.email,
+                    subject: 'Request Verify Email [Roomify]',
+                    html: compiledEmailBody  
+                })
+            }, {
+                timeout: 25000
             })
-        }, {
-            timeout: 25000
-        })
+    
+            res.status(200).json({
+                error: false,
+                message: 'Send link verify email success',
+                data: {}
+            })
+    
+    } catch (error) {
+        next(error)
+    }
+}
 
-        res.status(200).json({
-            error: false,
-            message: 'Send link verify email success',
-            data: {}
-        })
+export const verifyEmailRequestTenant = async(req: Request, res: Response, next: NextFunction) => {
+    try{
+        const { email } = req.body
 
+            const isTenantExist = await prisma.tenant.findUnique({
+                where: {
+                    email
+                }
+            })
+            
+            if( !isTenantExist?.id || isTenantExist?.deletedAt ) throw { msg: 'Tenant not found!', status: 406 }
+            if( isTenantExist?.isVerified ) throw { msg: 'Email already verified!', status: 406 }
+    
+            const tokenForVerifyEmail = await createTokenExpiresIn1H({id: isTenantExist.id, role: isTenantExist.role})
+            
+            await prisma.$transaction(async(tx) => {
+                await tx.tenant.update({
+                    where: {
+                        id: isTenantExist.id
+                    }, 
+                    data: {
+                        token: tokenForVerifyEmail
+                    }
+                })
+                
+                let verifyEmailLink, emailBody
+                if(isTenantExist?.password) {
+                    verifyEmailLink = `http://localhost:3000/tenant/auth/verify/email/${tokenForVerifyEmail}`
+                    emailBody = fs.readFileSync('./src/public/body.email/verify.change.email.tenant.html', 'utf-8')
+                } else {
+                    verifyEmailLink = `http://localhost:3000/tenant/auth/verify/${tokenForVerifyEmail}`
+                    emailBody = fs.readFileSync('./src/public/body.email/verify.email.tenant.html', 'utf-8')
+                }
+                
+                let compiledEmailBody: any = await compile(emailBody)
+                compiledEmailBody = compiledEmailBody({url: verifyEmailLink})
+        
+                await transporter.sendMail({
+                    to: email,
+                    subject: 'Request Verify Email [Roomify]',
+                    html: compiledEmailBody  
+                })
+            }, {
+                timeout: 25000
+            })
+    
+            res.status(200).json({
+                error: false,
+                message: 'Send link verify email success',
+                data: {}
+            })
+    
     } catch (error) {
         next(error)
     }
@@ -710,6 +808,39 @@ export const verifyChangeEmailTenant = async(req: Request, res: Response, next: 
         if(isTenantExist?.token !== token) throw { msg: 'Session expired!', status: 406 }
 
         await prisma.tenant.update({
+            where: {
+                id
+            },
+            data: {
+                isVerified: true,
+                token: ''
+            }
+        })
+
+        res.status(200).json({
+            error: false,
+            message: 'Verify new email success',
+            data: {}
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const verifyChangeEmailUser = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id, role, token } = req.body
+
+        const isUserExist = await prisma.user.findUnique({
+            where: {
+                id
+            }
+        })
+        
+        if(!isUserExist?.id || isUserExist?.deletedAt ) throw { msg: 'User not found!', status: 406 }
+        if(isUserExist?.token !== token) throw { msg: 'Session expired!', status: 406 }
+
+        await prisma.user.update({
             where: {
                 id
             },

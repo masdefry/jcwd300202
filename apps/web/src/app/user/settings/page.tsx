@@ -15,7 +15,11 @@ const UserSettingsPage = () => {
         return res?.data
     },
     onSuccess: (res) => {
-        toast.success(res?.message)
+        toast((t) => (
+        <span className='flex gap-2 items-center font-semibold justify-center text-xs'>
+          {res?.message}
+        </span>
+      ))
     },
     onError: (err: any) => {
         toast.error(err?.response?.data?.message || 'Connection error')

@@ -16,13 +16,41 @@ const UserSettingsPage = () => {
         return res?.data
     },
     onSuccess: (res) => {
-        toast.success(res?.message)
+        toast((t) => (
+        <span className='flex gap-2 items-center font-semibold justify-center text-xs'>
+          {res?.message}
+        </span>
+      ))
     },
     onError: (err: any) => {
         toast.error(err?.response?.data?.message || 'Connection error')
     }
   })  
 
+  const { mutate: mutateRequestVerifyEmail, isPending: isPendingRequestVerifyEmail } = useMutation({
+    mutationFn: async() => {
+      const res = await instance.post('/auth/tenant/verify-change-email-request')
+      return res?.data
+    },
+    onSuccess: (res) => {
+      console.log(res)
+      toast((t) => (
+        <span className='flex gap-2 items-center font-semibold justify-center text-xs'>
+          Check your email to verify!
+          <button className='bg-gray-900 hover:opacity-75 active:scale-90 text-white rounded-full px-4 py-1' onClick={() => toast.dismiss(t.id)}>
+            Dismiss
+          </button>
+        </span>
+      ));
+    },
+    onError: (err: any) => {
+      toast((t) => (
+        <span className='flex gap-2 items-center justify-center text-xs font-semibold text-red-700'>
+          {err?.response?.data?.message || 'Connection error!'}
+        </span>
+      ))
+    }
+  })
   return (
       <main className='flex flex-col gap-5 p-5'>
       <hgroup className='flex flex-col pb-5 border-b-4 border-slate-700'>
@@ -35,7 +63,7 @@ const UserSettingsPage = () => {
                 <h1 className='text-gray-800 text-medium font-bold'>Verify Email</h1>
                 <p className='text-gray-400 text-xs font-semibold'>Check your inbox and verify your email to get started</p>
             </hgroup>
-            <button disabled={isPendingDeleteAccount} onClick={() => setIsSubmitting(true)} className='disabled:bg-slate-300 disabled:hover:opacity-100 disabled:active:scale-100 disabled:text-white transition duration-100 flex items-center gap-1.5 text-sm font-bold text-white bg-slate-900 rounded-full px-5 py-3 shadow-sm hover:opacity-75 active:scale-90'>
+            <button disabled={isPendingRequestVerifyEmail} onClick={() => mutateRequestVerifyEmail()} className='disabled:bg-slate-300 disabled:hover:opacity-100 disabled:active:scale-100 disabled:text-white transition duration-100 flex items-center gap-1.5 text-sm font-bold text-white bg-slate-900 rounded-full px-5 py-3 shadow-sm hover:opacity-75 active:scale-90'>
                 <IoIosSend size={18}/>
                 Send Email
             </button>

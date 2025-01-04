@@ -21,7 +21,11 @@ const useLoginWithGoogleHook = () => {
             username: res?.data?.data?.username,
             country: res?.data?.data?.country,
         })
-        toast.success('Login success')
+        toast((t) => (
+            <span className='flex gap-2 items-center font-semibold justify-center text-xs'>
+              Login success
+            </span>
+          ))
         setTimeout(() => {
             router.push('/')
         }, 1500)
@@ -36,7 +40,11 @@ const useLoginWithGoogleHook = () => {
         mutateReqOAuth( res?.user?.email as string )
     }
     const onErrorOAuth = (err: any) => {
-        toast.error(err?.response?.data?.message)
+        toast((t) => (
+        <span className='flex gap-2 items-center font-semibold justify-center text-xs'>
+          {err?.response?.data?.message}
+        </span>
+      ))
     }
     
     const { mutateOAuth, isPendingOAuth } = useMutateOAuthApi({ onSuccess: onSuccessOAuth, onError: onErrorOAuth })

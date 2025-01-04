@@ -109,16 +109,18 @@ export default function Home() {
             dataLandingPage?.data?.cities?.map((item: any, index: number) => {
               if(index < 2) {
                 return(
-                <div key={index}>
-                  <CityRecommendationCard
-                  isPending={isPendingDataLandingPage} 
-                  imgSrc={`http://localhost:5000/api/${item?.directory}/${item?.filename}.jpg`}
-                  alt={item?.name.toLowerCase().split(' ').join('-')}
-                  city={item?.name}
-                  country={item?.country?.name}
-                  h1Size='text-3xl'
-                  />
-                </div>
+                <Link key={index} href={`/explore/search?city=${item?.id}`}>
+                  <div>
+                    <CityRecommendationCard
+                    isPending={isPendingDataLandingPage} 
+                    imgSrc={`http://localhost:5000/api/${item?.directory}/${item?.filename}.jpg`}
+                    alt={item?.name.toLowerCase().split(' ').join('-')}
+                    city={item?.name}
+                    country={item?.country?.name}
+                    h1Size='text-3xl'
+                    />
+                  </div>
+                </Link>
               )
               }
             })

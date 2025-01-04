@@ -3,8 +3,10 @@
 import useHamburgerMenuHook from '@/hooks/useHamburgerMenuHook'
 import React from 'react'
 import Link from 'next/link'
-import { IoPersonCircleOutline } from 'react-icons/io5'
+import { IoPersonCircleOutline, IoPersonOutline } from 'react-icons/io5'
 import { RiBuilding3Fill } from 'react-icons/ri'
+import authStore from '@/zustand/authStore'
+import Image from 'next/image'
 
 const HamburgerMenu = () => {
     const {
@@ -13,7 +15,9 @@ const HamburgerMenu = () => {
         hamburgerMenuActive,
         setHamburgerMenuActive
     } = useHamburgerMenuHook()
-
+    const token = authStore(state => state.token)
+    const profilePictureUrl = authStore(state => state.profilePictureUrl)
+    const role = authStore(state => state.role)
     const headerNavMenu = [
         {
           title:'Explore',
@@ -59,7 +63,32 @@ const HamburgerMenu = () => {
               </div>
             </div>
           </div>
-          <div className='flex items-center gap-1.5'>
+          {
+              token ? (
+                <Link href={role === 'TENANT' ? '/tenant/profile' : '/user/profile'}>
+                  <figure className="rounded-full h-7 w-7 border-2 border-green-400 bg-gray-900 overflow-hidden flex items-center justify-center">
+                    {
+                    profilePictureUrl ? (
+                      <Image
+                      src={profilePictureUrl}
+                      alt=''
+                      width={100}
+                      height={100}
+                      className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <IoPersonOutline className='text-white text-base 2xl:text-lg'/>
+                    )
+                    }
+                  </figure>
+                </Link>
+              ) : (
+              <Link href='/auth'>
+                <div className="text-xs font-bold text-white bg-slate-900 rounded-full min-w-max px-4 py-2 hover:opacity-75 active:scale-90 transition duration-100">Sign in or register</div>
+              </Link>
+              ) 
+            }
+          {/* <div className='flex items-center gap-1.5'>
             <div>
               <Link href='/auth'>
                 <div className='text-xs font-bold text-white bg-slate-900 rounded-full px-4 py-2 hover:opacity-75 active:scale-90 transition duration-100'>Sign in</div>
@@ -70,7 +99,7 @@ const HamburgerMenu = () => {
                 <div className='text-xs font-bold text-white bg-slate-900 rounded-full px-4 py-2 hover:opacity-75 active:scale-90 transition duration-100'>Sign up</div>
               </Link>
             </div>
-          </div>
+          </div> */}
         </div>
         <nav className={`origin-top ${showHamburgerNav} transition duration-300 ease-in absolute left-0  top-[77px] bg-white border-b border-slate-200 shadow-md w-full h-fit z-50`}>
         {

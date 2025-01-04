@@ -8,14 +8,14 @@ import { useRouter } from 'next/navigation'
 import authStore from '@/zustand/authStore'
 import toast from 'react-hot-toast'
 
-const VerifyEmailTenantPage = ({ params }: { params: { token: string } }) => {
+const VerifyEmailUserPage = ({ params }: { params: { token: string } }) => {
   const router = useRouter()
   const setLogout = authStore(state => state.setLogout)
-  const { isPending: isPendingVerifyEmailTenant, isError: isErrorVerifyEmailTenant, isSuccess: isSuccessVerifyEmailTenant, error: errorVerifyEmailTenant } = useQuery({
-    queryKey: ['verifyTenant'],
+  const { isPending: isPendingVerifyEmailUser, isError: isErrorVerifyEmailUser, isSuccess: isSuccessVerifyEmailUser, error: errorVerifyEmailUser } = useQuery({
+    queryKey: ['verifyUser'],
     queryFn: async() => {
       setLogout()
-      const res = await instance.patch(`/auth/tenant/verify-change-email/`, {}, {
+      const res = await instance.patch(`/auth/verify-change-email`, {}, {
         headers: {
           authorization: `Bearer ${params.token}`
         }
@@ -24,7 +24,7 @@ const VerifyEmailTenantPage = ({ params }: { params: { token: string } }) => {
     },
   })
 
-  if(isPendingVerifyEmailTenant) {
+  if(isPendingVerifyEmailUser) {
     return (
     <div className="flex items-center justify-center h-screen ">
       <div className="flex flex-col items-center justify-center space-y-4">
@@ -36,8 +36,8 @@ const VerifyEmailTenantPage = ({ params }: { params: { token: string } }) => {
     )
   }
 
-  if(isErrorVerifyEmailTenant) {
-    console.log(errorVerifyEmailTenant)
+  if(isErrorVerifyEmailUser) {
+    console.log(errorVerifyEmailUser)
     return (
       <div className="flex items-center justify-center h-screen bg-white text-gray-900 p-5">
         <div className="text-center">
@@ -58,14 +58,14 @@ const VerifyEmailTenantPage = ({ params }: { params: { token: string } }) => {
     )
   }
 
-  if(isSuccessVerifyEmailTenant) {
+  if(isSuccessVerifyEmailUser) {
     toast((t) => (
       <span className='flex gap-2 items-center font-semibold justify-center text-xs'>
         Verify new email success
       </span>
     ))
     setTimeout(() => {
-      router.push('/tenant/auth')
+      router.push('/auth')
     }, 1500)
   }
 
@@ -74,4 +74,4 @@ const VerifyEmailTenantPage = ({ params }: { params: { token: string } }) => {
   )
 }
 
-export default VerifyEmailTenantPage
+export default VerifyEmailUserPage

@@ -14,8 +14,6 @@ import { GoChecklist } from 'react-icons/go'
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io'
 import { IoPerson, IoPersonOutline, IoSearchOutline, IoTimeOutline } from 'react-icons/io5'
 import { MdAttachMoney, MdKeyboardArrowDown, MdOutlineEmojiFoodBeverage, MdOutlineMeetingRoom } from 'react-icons/md'
-import { TbPawOff } from 'react-icons/tb'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import ImageCarousel from '@/features/property/components/ImageCarousel'
 import Link from 'next/link'
 import authStore from '@/zustand/authStore' 
@@ -24,51 +22,37 @@ import toast from 'react-hot-toast'
 import { RiCloseFill } from 'react-icons/ri'
 import { MdPeopleOutline } from "react-icons/md";
 import DatePickerWithPrices from '@/features/property/components/DatePickerWithPrices'
+import useFilterRoomHook from '@/features/property/details/hooks/useFilterRoomHook'
+import useShowRoomDetailHook from '@/features/property/details/hooks/useShowRoomDetailHook'
+import PropertyImages from '@/features/property/components/PropertyImages'
 
 const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, searchParams: any}) => {
     const [ showMoreDescription, setShowMoreDescription ] = useState(false)
     const [ showPropertyImages, setShowPropertyImages ] = useState(false)
     const [ dataPropertyRoomType, setDataPropertyRoomType ] = useState<any>([])
-    const [dateRange, setDateRange] = useState<any>([null, null]);
-    const [ showGuestCounter, setShowGuestCounter ] = useState(false)
-    const [ children, setChildren ] = useState(0)
-    const [ adult, setAdult ] = useState(1)
+    const {
+        checkInDate,
+        checkOutDate,
+        setDateRange,
+        dateRange,
+        handleGuest,
+        showGuestCounter,
+        setShowGuestCounter,
+        adult,
+        children,
+        setAdult,
+        setChildren
+    } = useFilterRoomHook()
+    const {
+        showDataRoom, 
+        setShowDataRoom,
+        currSlideRoomImages, 
+        setCurrSlideRoomImages,
+        prevRoomImage, 
+        nextRoomImage
+    } = useShowRoomDetailHook()
 
-    const handleGuest = (type: string, operation: string) => {
-        if(type === 'children') {
-            if(operation === 'plus') {
-                setChildren(state => state + 1)
-            } else if(operation === 'minus' && children > 0) {
-                setChildren(state => state - 1)
-            }
-        } else if(type === 'adult') {
-            if(operation === 'plus') {
-                setAdult(state => state + 1)
-            } else if(operation === 'minus' && adult > 1) {
-                setAdult(state => state - 1)
-            }
-        }
-    }
-    const [startDate, endDate] = dateRange;
-    const [ showDataRoom, setShowDataRoom ] = useState({
-        roomImages: [],
-        roomHasFacilities: [],
-        name: '',
-        description: '', 
-        rooms: 0,
-        capacity: 0,
-        bathrooms: 0,
-        price: 0
 
-    })
-    const [currSlideRoomImages, setCurrSlideRoomImages] = useState(0)
-    const prevRoomImage = ({ roomImagesLength }: { roomImagesLength : number }) => {
-        setCurrSlideRoomImages(currSlideRoomImages == 0 ? roomImagesLength - 1 : currSlideRoomImages - 1)
-    }
-    
-    const nextRoomImage = ({ roomImagesLength }: { roomImagesLength : number }) => {
-        setCurrSlideRoomImages(currSlideRoomImages == roomImagesLength - 1 ? 0 : currSlideRoomImages + 1)
-    }
     const token = authStore(state => state.token)
     const router = useRouter()
     const handleUnauthorizedUser = () => {
@@ -81,7 +65,6 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
         queryKey: ['getPropertyDetail'],
         queryFn: async() => {
             const res = await instance.get(`/property/${params?.slug}/search`)
-            console.log(res)
             mutatePropertyRoomType({ limit: 2, offset: 0, propertyId: res?.data?.data?.property?.id })
 
             return res?.data?.data
@@ -95,10 +78,10 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
     },
     onSuccess: (res) => {
         setDataPropertyRoomType(res?.data)
-        console.log('success:', res?.message)
+        console.log(res?.message)
     },
-    onError: (err) => {
-        console.log('error:', err)
+    onError: (err: any) => {
+        console.log(err?.response?.data?.message)
     }
   })
 
@@ -111,84 +94,7 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
   return (
     <main className='w-full min-h-min 2xl:py-5 pb-5'>
         <section className='m-auto max-w-screen-xl flex flex-col gap-7'>
-        <section className='hidden 2xl:grid grid-cols-5 gap-5 w-full h-[700px]'>
-            {
-                dataPropertyDetail?.propertyImagesPreview?.map((item: any, index: number) => {
-                    let className
-                    if(index === 0) {
-                        className = 'overflow-hidden relative rounded-md w-full h-full col-span-3 hover:cursor-pointer row-span-6'
-                    } else if(index === 1 || index === 2) {
-                        className = 'overflow-hidden relative rounded-md w-full h-full col-span-2 hover:cursor-pointer row-span-3'
-                    } else {
-                        className = 'overflow-hidden relative rounded-md w-full h-full col-span-1 hover:cursor-pointer row-span-2'
-                    }
-                    if(index === 7) {
-                        return (
-                        <div onClick={() => setShowPropertyImages(true)} key={index} className={className}>
-                            {
-                                item?.directory ? (
-                                    <Image 
-                                    src={`http://localhost:5000/api/${item?.directory}/${item?.filename}.${item?.fileExtension}`}
-                                    width={800}
-                                    height={800}
-                                    alt=''
-                                    className='h-full w-full object-cover '
-                                    />
-                                ) : (
-                                    <div className='h-full w-full object-cover bg-blue-200' >
-                                    </div>
-                                )
-                            }
-                            <div className='rounded-md absolute top-0 left-0 w-full h-full hover:bg-opacity-60 bg-black bg-opacity-40 flex items-center justify-center'>
-                                <p className='text-xl text-white font-bold hover:cursor-pointer hover:underline transition duration-100'>+{dataPropertyDetail?.propertyImages.length - dataPropertyDetail?.propertyImagesPreview.length} Photos</p>
-                            </div>
-                        </div>
-                        )
-                    }
-                    return(
-                        <div onClick={() => setShowPropertyImages(true)} key={index} className={className}>
-                            {
-                                item?.directory ? (
-                                    <Image 
-                                        src={`http://localhost:5000/api/${item?.directory}/${item?.filename}.${item?.fileExtension}`}
-                                        width={1000}
-                                        height={1000}
-                                        alt=''
-                                        className='h-full w-full object-cover '
-                                    />
-                                ) : (
-                                    <div className='h-full w-full object-cover bg-blue-200' >
-                                    </div>
-                                )
-                            }
-                        </div>
-                    )
-                })
-            }
-        </section>
-        {
-            showPropertyImages && (
-            <section className='bg-black bg-opacity-25 backdrop-blur-sm z-[52] fixed top-0 left-0 w-full h-full flex items-center justify-center p-5'>
-                <div className='w-full max-w-[800px] h-[500px] p-1 flex flex-col gap-3 bg-white rounded-md shadow-md'>
-                    <div className='text-gray-950 text-lg w-full flex justify-end'>
-                        <RiCloseFill onClick={() => setShowPropertyImages(false)} className='hover:opacity-60 transition duration-100 hover:cursor-pointer'/>
-                    </div>
-                    <ImageCarousel imagesArr={dataPropertyDetail?.propertyImages}/>
-                </div>
-            </section>
-            )
-        }
-        <section className='px-5 pt-8 2xl:hidden'>
-            <div onClick={() => setShowPropertyImages(true)} className='bg-blue-200 w-full md:h-[300px] h-[200px] rounded-xl shadow-md overflow-hidden'>
-                <Image
-                src={`http://localhost:5000/api/${dataPropertyDetail?.propertyImages[0]?.directory}/${dataPropertyDetail?.propertyImages[0]?.filename}.${dataPropertyDetail?.propertyImages[0]?.fileExtension}`}
-                width={1000}
-                height={1000}
-                alt=''
-                className='h-full w-full object-cover '
-                />
-            </div>
-        </section>
+        <PropertyImages showPropertyImages={showPropertyImages} setShowPropertyImages={setShowPropertyImages} dataPropertyDetail={dataPropertyDetail} />
         <hgroup className='flex flex-col leading-3 2xl:gap-2 2xl:p-0 px-5 '>
             <h1 className='text-lg lg:text-xl 2xl:text-4xl font-bold tracking-wide text-gray-900'>{dataPropertyDetail?.property?.name}</h1>
             <p className='text-sm 2xl:text-base font-medium text-gray-700 flex items-center gap-2'><CiLocationOn size={23} className='text-red-600 md:flex hidden' />{dataPropertyDetail?.property?.address}</p>
@@ -296,7 +202,7 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                 <div className='p-4 overflow-x-auto'>
                     <div className=' flex items-center justify-center bg-amber-400 rounded-md p-[1px]'>
                         <div>
-                            <DatePickerWithPrices basePrice={dataPropertyDetail?.basePrice} dateAndPrice={dataPropertyDetail?.dateAndPrice} />
+                            <DatePickerWithPrices dateRange={dateRange} setDateRange={setDateRange} checkInDate={checkInDate} checkOutDate={checkOutDate} basePrice={dataPropertyDetail?.basePrice} dateAndPrice={dataPropertyDetail?.dateAndPrice} />
                         </div>
                         <button onClick={() => setShowGuestCounter(true)} className='min-w-max bg-white text-xs font-semibold text-gray-800 px-2 py-2 pr-5 flex items-center gap-3 border-2 border-amber-400 '><IoPersonOutline />{adult} Adult . {children} Children . 1 Room</button>
                         <button className='bg-blue-800 hover:opacity-75 transition duration-100 text-xs font-semibold text-white px-2 py-2 pr-5 flex items-center gap-3 rounded-r-md border-2 border-amber-400 '><IoSearchOutline />Search</button>

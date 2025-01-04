@@ -7,8 +7,20 @@ import { RiLoginBoxLine, RiLogoutBoxRLine } from 'react-icons/ri'
 import { TbHomeCancel } from 'react-icons/tb'
 import { CgArrowsScrollV } from "react-icons/cg";
 import { IoSearchSharp } from 'react-icons/io5'
+import { useQuery } from '@tanstack/react-query'
+import instance from '@/utils/axiosInstance'
+import Link from 'next/link'
 
 const PropertyListPage = () => {
+  const { data: dataProperties, isPending: isPendingProperties } = useQuery({
+    queryKey: ['getPropertiesByTenant'],
+    queryFn: async() => {
+      const res = await instance.get('/property/tenant')
+      console.log(res)
+      return res?.data?.data
+    }
+  })
+
   return (
     <main className='flex flex-col gap-5 p-5'>
       <hgroup className='flex flex-col pb-5 border-b-4 border-slate-700'>
@@ -80,23 +92,29 @@ const PropertyListPage = () => {
             <tr>
                 <th></th>
                 <th>Name</th>
-                <th>Job</th>
-                <th>company</th>
-                <th>location</th>
-                <th>Last Login</th>
-                <th>Favorite Color</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th>Booked</th>
+                <th>Review</th>
+                <th>Cancellation</th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <th>1</th>
-                <td>Cy Ganderton</td>
-                <td>Quality Control Specialist</td>
-                <td>Littel, Schaden and Vandervort</td>
-                <td>Canada</td>
-                <td>12/16/2020</td>
-                <td>Blue</td>
-            </tr>
+              {
+                dataProperties?.map((item: any, index: number) => {
+                  return(
+                    <tr>
+                        <th>{index + 1}</th>
+                        <td className='hover:text-blue-800 transition duration-100 underline active:text-blue-500'><Link href={`/tenant/property/manage/${item?.slug}`}>{item?.name}</Link></td>
+                        <td>{item?.address}</td>
+                        <td>{item?.totalBooked}</td>
+                        <td>{item?.totalBooked}</td>
+                        <td>{item?.avgRating}</td>
+                        <td>{item?.totalCancelled}</td>
+                    </tr>
+                  )
+                })
+              }
             </tbody>
         </table>
       </div>

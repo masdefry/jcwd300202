@@ -27,9 +27,17 @@ const RequestVerifyEmailPage = () => {
                 email: values?.email
             })
         }, onSuccess: (res) => {
-            toast.success('Request email verify success')
+            toast((t) => (
+                <span className='flex gap-2 items-center font-semibold justify-center text-xs'>
+                  Request email verify success
+                </span>
+              ))
         }, onError: (err: any) => {
-            toast.error(err?.response?.data?.message)
+            toast((t) => (
+        <span className='flex gap-2 items-center font-semibold justify-center text-xs'>
+          {err?.response?.data?.message}
+        </span>
+      ))
             if(err?.response?.data?.message === 'Email already verified!') {
                 setTimeout(() => {
                     router.push('/auth')

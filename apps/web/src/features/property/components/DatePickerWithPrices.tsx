@@ -12,12 +12,15 @@ interface IDate {
 
 interface IDatePickerWithPricesProps {
   dateAndPrice: any,
-  basePrice: number
+  basePrice: number,
+  dateRange: string[] | Date[] | null[],
+  setDateRange: any,
+  checkInDate: Date,
+  checkOutDate: Date,
 }
 
-const DatePickerWithPrices = ({ dateAndPrice = {}, basePrice = 0 }: IDatePickerWithPricesProps) => {
-  const [dateRange, setDateRange] = useState<any>([null, null]);
-  const [checkInDate, checkOutDate] = dateRange;
+const DatePickerWithPrices = ({ dateAndPrice = {}, basePrice = 0, dateRange, setDateRange, checkInDate, checkOutDate }: IDatePickerWithPricesProps) => {
+
   
   const formatPrice = (price: number): string => {
     return price >= 1000000

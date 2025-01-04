@@ -26,7 +26,11 @@ const useLoginHook = ({ endPoint, role }: IUseLoginHookProps) => {
     } = useMutateLoginApi({ 
         endPoint, 
         onSuccess:(res: any) => {
-            toast.success('Login success!')
+            toast((t) => (
+                <span className='flex gap-2 items-center font-semibold justify-center text-xs'>
+                  Login success
+                </span>
+              ))
             setAuth({ 
                 isVerified: res?.isVerified,
                 profilePictureUrl: res?.profilePictureUrl,

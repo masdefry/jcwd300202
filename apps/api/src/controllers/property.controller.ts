@@ -142,8 +142,8 @@ export const createProperty = async(req: Request, res: Response, next: NextFunct
         //     }
         // })
 
-        console.log('imagesForProperty')
-        console.log(imagesForProperty)
+        // console.log('imagesForProperty')
+        // console.log(imagesForProperty)
         const createdPropertyImages = await prisma.propertyImage.createMany({
             data: imagesForProperty
         })
@@ -1015,6 +1015,102 @@ export const getRoomType = async(req: Request, res: Response, next: NextFunction
             data: result
         })
         
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const getPropertiesByTenant = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id, role } = req.body
+
+        const isTenantExist = await prisma.tenant.findUnique({
+            where: {
+                id
+            }
+        })
+        
+        if(!isTenantExist?.id || isTenantExist?.deletedAt) throw { msg: 'Tenant not found!', status: 406 }
+
+        const getProperties = await prisma.property.findMany({
+            where: {
+                tenantId: isTenantExist?.id
+            }
+        })
+
+        const getTransactionsPaid = await prisma.transactionStatus.findMany({
+            where: {
+                AND: [
+                    {
+                        transaction: {
+                            tenantId: isTenantExist?.id
+                        }
+                    },
+                    {
+                        status: 'PAID'
+                    }
+                ]
+            },
+            include: {
+                transaction: true
+            }
+        })
+
+        const getTransactionsCancelled = await prisma.transactionStatus.findMany({
+            where: {
+                AND: [
+                    {
+                        transaction: {
+                            tenantId: isTenantExist?.id
+                        }
+                    },
+                    {
+                        status: 'CANCELLED'
+                    }
+                ]
+            },
+            include: {
+                transaction: true
+            }
+        })
+
+        const reviews = await prisma.review.findMany({
+            where: {
+                AND: [
+                    {
+                    property: {
+                        tenantId: isTenantExist?.id
+                    }
+                    }
+                ]
+            }
+        })
+
+        const addedDataGetProperties = getProperties.map((item, index) => {
+            const totalBooked = getTransactionsPaid.filter(itm => itm?.transaction?.propertyId === item?.id).length
+            const totalCancelled = getTransactionsCancelled.filter(itm => itm?.transaction?.propertyId === item?.id).length
+            const reviewsByProperty = reviews.filter(itm => itm?.propertyId === item?.id)
+            .map(itm => {
+                if(!isNaN(Number(itm?.rating))) {
+                    return itm?.rating
+                } else {
+                    return 0
+                }
+            })
+            let avgRating;
+            if(reviewsByProperty.length > 0) {
+                avgRating = reviewsByProperty.reduce((acc: any, curr: any) => acc + curr)
+            }
+            return {    
+                ...item, totalBooked, totalCancelled, avgRating: avgRating || 0
+            }
+        })
+
+        res.status(200).json({
+            error: false,
+            message: 'Get properties by tenant success',
+            data: addedDataGetProperties
+        })
     } catch (error) {
         next(error)
     }

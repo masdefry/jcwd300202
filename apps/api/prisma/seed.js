@@ -32,7 +32,7 @@ const prisma = new PrismaClient();
 const tenants = [
     {
         email: 'john.doe@gmail.com',
-        password: 'SecurePass123!',
+        password: 'SecurePass123',
     },
     {
         email: 'sarah.connor@yahoo.com',
@@ -40,7 +40,7 @@ const tenants = [
     },
     {
         email: 'emily.smith@outlook.com',
-        password: 'Password!456'
+        password: 'Password456'
     }
 ]
 

@@ -50,7 +50,11 @@ const useLoginHook = ({ endPoint, role }: IUseLoginHookProps) => {
             }
         }, 
         onError: (err: any) => {
-            toast.error(err?.response?.data?.message || 'Connection error!')
+            toast((t) => (
+        <span className='flex gap-2 items-center font-semibold justify-center text-xs text-red-600'>
+          {err?.response?.data?.message || 'Connection error!'}
+        </span>
+      ))
         }})
   
     return {

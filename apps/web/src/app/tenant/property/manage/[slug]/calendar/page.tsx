@@ -35,7 +35,11 @@ const CalendarPage = ({ params }: { params: { slug: string } }) => {
             console.log(res)
         },
         onError: (err: any) => {
-            toast.error(err?.response?.data?.message || 'Connection error!')
+            toast((t) => (
+        <span className='flex gap-2 items-center font-semibold justify-center text-xs text-red-600'>
+          {err?.response?.data?.message || 'Connection error!'}
+        </span>
+      ))
         }
     })
     //i want to have click and drag to choose multiple dates, what event javascript i must use? btw i use tsx

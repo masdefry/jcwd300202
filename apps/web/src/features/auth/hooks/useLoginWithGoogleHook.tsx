@@ -31,7 +31,11 @@ const useLoginWithGoogleHook = () => {
         }, 1500)
     } 
     const onErrorReqOAuth = (err: any) => {
-        toast.error(err?.response?.data?.message || 'Connection error!')
+        toast((t) => (
+        <span className='flex gap-2 items-center font-semibold justify-center text-xs text-red-600'>
+          {err?.response?.data?.message || 'Connection error!'}
+        </span>
+      ))
     }
     
     const { mutateReqOAuth, isPendingReqOAuth } = useMutateReqOAuthApi({ onSuccess: onSuccessReqOAuth, onError: onErrorReqOAuth })
@@ -41,8 +45,8 @@ const useLoginWithGoogleHook = () => {
     }
     const onErrorOAuth = (err: any) => {
         toast((t) => (
-        <span className='flex gap-2 items-center font-semibold justify-center text-xs'>
-          {err?.response?.data?.message}
+        <span className='flex gap-2 items-center font-semibold justify-center text-xs text-red-600'>
+          {err?.response?.data?.message || 'Connection error!'}
         </span>
       ))
     }

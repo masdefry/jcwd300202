@@ -1,4 +1,4 @@
-import { keepAuth, loginTenant, loginUser, registerTenant, registerUser, resetPasswordUser, sendEmailResetPasswordUser, signInWithGoogle, verifyEmailUser, verifyEmailRequestUser, verifyEmailTenant, verifyEmailRequestTenant, resetPasswordTenant, sendEmailResetPasswordTenant, verifyChangeEmailTenant, verifyChangeEmailUser, verifyChangeEmailRequestTenant } from "@/controllers/auth.controller";
+import { keepAuth, loginTenant, loginUser, registerTenant, registerUser, resetPasswordUser, sendEmailResetPasswordUser, signInWithGoogle, verifyEmailUser, verifyEmailRequestUser, verifyEmailTenant, verifyEmailRequestTenant, resetPasswordTenant, sendEmailResetPasswordTenant, verifyChangeEmailTenant, verifyChangeEmailUser, verifyChangeEmailRequestTenant, verifyChangeEmailRequestUser } from "@/controllers/auth.controller";
 import { errorHandlingValidator } from "@/middlewares/validator/error.handling.validator";
 import { loginValidator } from "@/middlewares/validator/login.validator";
 import { registerValidator } from "@/middlewares/validator/register.validator";
@@ -23,6 +23,7 @@ authRouter.patch('/tenant/verify-change-email', verifyToken, verifyChangeEmailTe
 authRouter.patch('/tenant/verify-email', verifyToken, verifyEmailValidator, verifyEmailTenant)
 
 authRouter.post('/verify-email-request', verifyEmailRequestUser)
+authRouter.post('/verify-change-email-request', verifyToken, verifyChangeEmailRequestUser)
 authRouter.patch('/verify-change-email', verifyToken, verifyChangeEmailUser)
 authRouter.patch('/verify-email', verifyToken, verifyEmailValidator, verifyEmailUser)
 

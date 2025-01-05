@@ -34,8 +34,8 @@ const RequestVerifyEmailPage = () => {
               ))
         }, onError: (err: any) => {
             toast((t) => (
-        <span className='flex gap-2 items-center font-semibold justify-center text-xs'>
-          {err?.response?.data?.message}
+        <span className='flex gap-2 items-center font-semibold justify-center text-xs text-red-600'>
+          {err?.response?.data?.message || 'Connection error!'}
         </span>
       ))
             if(err?.response?.data?.message === 'Email already verified!') {

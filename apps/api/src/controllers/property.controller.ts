@@ -926,10 +926,7 @@ export const getProperties = async(req: Request, res: Response, next: NextFuncti
                 }
             }
         })
-        console.log(whereConditionGeneral)
-        console.log('>>>')
-        console.log('countryId',countryId)
-        console.log(req.query)
+
         res.status(200).json({
             error: false,
             message: 'Get properties success',
@@ -958,49 +955,125 @@ export const getProperties = async(req: Request, res: Response, next: NextFuncti
         })
 
     } catch (error: any) {
-        // res.status(500).json({
-        //     error: true,
-        //     message: error.message
-        // })
         next(error)
     }
 }
-/*
-model PropertyRoomType {
-  id         Int    @id @default(autoincrement())
-  name       String
-  description String
-  rooms      Int?
-  capacity   Int
-  bathrooms  Int
-  price      Int
-  totalRooms Int
-*/
 
+export const getPropertyDescriptions = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id, role } = req.body
+        const { slug } = req.params
 
+        const isTenantExist = await prisma.tenant.findUnique({
+            where: {
+                id
+            }
+        })
+            
+        if( !isTenantExist?.id || isTenantExist?.deletedAt ) throw { msg: 'Tenant not found!', status: 406 }
+        if( isTenantExist?.role !== role ) throw { msg: 'Role unauthorized!', status: 406 }
 
-// name              String
-//   address           String
-//   zipCode           String
-//   location          String
-//   checkInStartTime  DateTime
-//   checkInEndTime    DateTime
-//   checkOutStartTime DateTime
-//   checkOutEndTime   DateTime
-//   slug              String   @unique
-  
+        const getProperty = await prisma.property.findFirst({
+            where: {
+                slug
+            },
+            include: {
+                propertyDetail: true,
 
-//   propertyTypeId Int?
-//   propertyType   PropertyType? @relation(fields: [propertyTypeId], references: [id])
+            }
+        })
+        if(!getProperty?.id) throw { msg: 'Property not found!', status: 406 }
+        
+        const getPropertyRoomType = await prisma.propertyRoomType.findMany({
+            where: {
+                propertyId: getProperty?.id
+            }
+        })
 
-//   tenantId String?
-//   tenant   Tenant? @relation(fields: [tenantId], references: [id])
+        if(getPropertyRoomType.length <= 0) throw { msg: 'Property room type not found!', status: 406 }
 
-//   countryId Int?
-//   country   Country? @relation(fields: [countryId], references: [id])
+        res.status(200).json({
+            error: false,
+            message: 'Get property description success',
+            data: {
+                property: getProperty,
+                propertyRoomType: getPropertyRoomType
+            }
+        })
+    } catch (error) {
+        console.log(error)
+        next(error)
+    }
+}
 
-//   cityId Int?
-//   city 
+export const updatePropertyDescriptions = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { slug } = req.params
+        const { id, role, propertyDescription, neighborhoodDescription, propertyRoomType } = req.body
+
+        if(!Array.isArray(propertyRoomType)) throw { msg: 'Property room type description is missing!', status: 406 }
+
+        const isTenantExist = await prisma.tenant.findUnique({
+            where: {
+                id
+            }
+        })
+            
+        if( !isTenantExist?.id || isTenantExist?.deletedAt ) throw { msg: 'Tenant not found!', status: 406 }
+        if( isTenantExist?.role !== role ) throw { msg: 'Role unauthorized!', status: 406 }
+        
+        const isPropertyExist = await prisma.property.findFirst({
+            where: {
+                slug
+            },
+            include: {
+                propertyDetail: true
+            }
+        })
+
+        if(!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+
+        const dataForUpdatePropertyDescriptions = {
+            propertyDescription,
+            neighborhoodDescription
+        }
+
+        const updatedPropertyDescriptions = await prisma.propertyDetail.update({
+            where: {
+                id: isPropertyExist?.propertyDetail?.id
+            },
+            data: {
+                propertyDescription,
+                neighborhoodDescription
+            }
+        })
+
+        propertyRoomType.forEach(async(item) => {
+            if(item?.description) {
+                await prisma.propertyRoomType.update({
+                    where: {
+                        id: item?.id
+                    },
+                    data: {
+                        description: item?.description
+                    }
+                })
+            }
+        })
+
+        res.status(200).json({
+            error: false,
+            message: 'Update property descriptions success',
+            data: {
+                propertyDescription, 
+                neighborhoodDescription
+            }
+        })
+
+    } catch (error) {
+        next(error)
+    }
+}
 
 export const getRoomType = async(req: Request, res: Response, next: NextFunction) => {
     try {

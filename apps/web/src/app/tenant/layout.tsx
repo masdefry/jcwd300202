@@ -21,10 +21,9 @@ const ProfileUserLayout = ({  children }: { children: ReactNode }) => {
   const companyName = authStore(state => state.companyName)  
   const setLogout = authStore(state => state.setLogout)
   const router = useRouter()
-  const [ showLogoutConfirmation, setShowLogoutConfirmation ] = useState(false)
-
-    if(pathname.includes('/auth') || pathname.includes('/tenant/property/create')) {
-      return (
+  
+  if(pathname.includes('/auth') || pathname.includes('/tenant/property/create')) {
+    return (
         <main className='w-full min-h-min py-5'>
           <section className='m-auto max-w-screen-xl w-full h-full'>
             {children}
@@ -32,6 +31,7 @@ const ProfileUserLayout = ({  children }: { children: ReactNode }) => {
         </main>
       )
     }
+  const [ showConfirmationToLogout, setShowConfirmationToLogout ] = useState(false)
   const menus = [
       {
         link: '/tenant/profile',
@@ -111,33 +111,31 @@ const ProfileUserLayout = ({  children }: { children: ReactNode }) => {
                 )
               })
             }
-              <div onClick={() => setShowLogoutConfirmation(true)} className='text-base font-semibold text-gray-800 transition duration-100 px-5 py-3 flex items-center gap-2 rounded-md hover:cursor-pointer hover:bg-slate-200'>
+              <div onClick={() => setShowConfirmationToLogout(true)} className='text-base font-semibold text-gray-800 transition duration-100 px-5 py-3 flex items-center gap-2 rounded-md hover:cursor-pointer hover:bg-slate-200'>
                 <IoMdLogOut size={20} className='text-red-600'/>
                 Sign Out
-                {
-                  showLogoutConfirmation && (
-                  <div className='flex items-center justify-center fixed bg-black bg-opacity-25 backdrop-blur-sm w-full h-full top-0 left-0 z-[51]'>
-                    <div className='bg-white rounded-3xl flex flex-col justify-between gap-3 p-5'>
-                      <h1 className='text-lg font-bold text-gray-800 pb-2 border-b border-b-slate-300'>
+                  <div className={`${showConfirmationToLogout ? 'flex' : 'hidden'} items-center justify-center fixed bg-black bg-opacity-25 backdrop-blur-sm w-full h-full top-0 left-0 z-[51]`}>
+                    <div className='bg-white border border-slate-200 shadow-md p-5 rounded-md flex flex-col gap-5'>
+                      <h1 className='text-lg font-bold text-slate-800 pb-2 border-b border-slate-300'>
                       Log Out Confirmation
                       </h1>
-                      <article className='text-base font-light text-gray-700'>
+                      <article className='text-sm font-medium text-gray-500'>
                       Are you sure you want to log out?
                       </article>
                       <div className='flex items-center justify-end gap-2'>
-                        <button type='button' onClick={() => setShowLogoutConfirmation(false)} className='border border-slate-100 box-border flex items-center gap-1.5 rounded-full hover:opacity-75 hover:bg-slate-200 active:scale-90 transition duration-100 bg-white text-gray-800 text-sm font-bold px-5 py-3 shadow-md justify-center'>No, Stay Logged In</button>
+                        <button type='button' onClick={() => {
+                          setShowConfirmationToLogout(false)
+                          }} className='px-5 hover:bg-slate-200 transition duration-100 active:scale-90 py-1.5 text-gray-700 text-sm font-bold rounded-full shadow-md border border-slate-100'>No, Stay Logged In</button>
                         <button type='button' 
                         onClick={() => {
-                        setShowLogoutConfirmation(false)
+                        setShowConfirmationToLogout(false)
                         setLogout()
                         router.push('/')
                         }} 
-                        className='z-20 flex items-center gap-1.5 rounded-full hover:opacity-75 active:scale-90 transition duration-100 bg-red-700 text-white text-sm font-bold px-5 py-3 shadow-md justify-center'>Yes, Log Me Out</button>
+                        className='disabled:bg-slate-300 disabled:text-white disabled:scale-100 disabled:opacity-100 px-5 hover:opacity-75 transition duration-100 active:scale-90 py-1.5 text-white text-sm font-bold rounded-full shadow-md border bg-red-700 border-slate-100'>Yes, Log Me Out</button>
                       </div>
                     </div>
                   </div>
-                  )
-                }
               </div>
             </section>
           </div>

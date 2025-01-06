@@ -5,106 +5,6 @@ export const getLandingPageData = async(req: Request, res: Response, next: NextF
     try {
         const { id, role } = req.body
         let cities, user;
-        let propertyByHistoryView: any[] = []
-        let propertyByRecentBooks: any[] = []
-        let propertyByUserCountry: any[] = []
-        if(id) {
-            user = await prisma.user.findUnique({
-                where: {
-                    id
-                }
-            })
-
-            if(user!.id) {
-                const propertyIdByRecentBooks = await prisma.transaction.findMany({
-                    where: {
-                        userId: id
-                    },
-                    include: {
-                        property: {
-                            include: {
-                                city: true,
-                                country: true,
-                                propertyRoomType: {
-                                    orderBy: {
-                                        price: 'asc'
-                                    }
-                                },
-                                propertyDetail: {
-                                    include: {
-                                        propertyImage: true
-                                    }
-                                },
-                                propertyType: true,
-                                review: true
-                            }
-                        }
-                    }
-                })
-        
-                propertyByRecentBooks = propertyIdByRecentBooks.map(item => {
-                    return item.property
-                })
-        
-                const propertyIdByHistoryView = await prisma.historyView.findMany({
-                    where: {
-                        userId: id
-                    },
-                    include: {
-                        property: {
-                            include: {
-                                city: true,
-                                country: true,
-                                propertyRoomType: {
-                                    orderBy: {
-                                        price: 'asc'
-                                    }
-                                },
-                                propertyDetail: {
-                                    include: {
-                                        propertyImage: true
-                                    }
-                                },
-                                propertyType: true,
-                                review: true
-                            }
-                        }
-                    },
-                    take: 10
-                })
-        
-                propertyByHistoryView = propertyIdByHistoryView.map(item => {
-                    return item.property
-                })
-                
-                if(user?.countryId) {
-                    propertyByUserCountry = await prisma.property.findMany({
-                        where: {
-                            countryId: user?.countryId
-                        },
-                        take: 10,
-                        include: {
-                            city: true,
-                            country: true,
-                            propertyRoomType: {
-                                orderBy: {
-                                    price: 'asc'
-                                }
-                            },
-                            propertyDetail: {
-                                include: {
-                                    propertyImage: true
-                                }
-                            },
-                            propertyType: true,
-                            review: true
-                        }
-                    })
-                }
-
-                
-            }
-        }
 
         
         const transactions = await prisma.transaction.groupBy({
@@ -178,9 +78,6 @@ export const getLandingPageData = async(req: Request, res: Response, next: NextF
                 properties,
                 propertyTypes,
                 transactions,
-                propertyByHistoryView,
-                propertyByRecentBooks,
-                propertyByUserCountry,
             }
         })
 

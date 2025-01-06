@@ -1,28 +1,48 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { CiBoxList } from 'react-icons/ci'
 import { FaArrowUpShortWide, FaRegStar } from 'react-icons/fa6'
 import { RiLoginBoxLine, RiLogoutBoxRLine } from 'react-icons/ri'
 import { TbHomeCancel } from 'react-icons/tb'
 import { CgArrowsScrollV } from "react-icons/cg";
 import { IoSearchSharp } from 'react-icons/io5'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import instance from '@/utils/axiosInstance'
 import Link from 'next/link'
+import toast from 'react-hot-toast'
 
 const PropertyListPage = () => {
-  const { data: dataProperties, isPending: isPendingProperties } = useQuery({
+  const [ dataProperties, setDataProperties ] = useState<any>({})
+  const { isPending: isPendingProperties } = useQuery({
     queryKey: ['getPropertiesByTenant'],
     queryFn: async() => {
       const res = await instance.get('/property/tenant')
-      console.log(res)
+      setDataProperties(res?.data?.data)
       return res?.data?.data
     }
   })
 
+  const { mutate: mutateRefreshPage, isPending: isPendingRefreshPage } = useMutation({
+    mutationFn: async({limit, offset}: { limit: number, offset: number }) => {
+      const res = await instance.get(`/property/tenant?limit=${limit}&offset=${offset}`)
+      console.log(res)
+      return res?.data
+    },
+    onSuccess: (res) => {
+      setDataProperties(res?.data)
+    },
+    onError: (err: any) => {
+      toast((t) => (
+        <span className='flex gap-2 items-center font-semibold justify-center text-xs text-red-600'>
+          {err?.response?.data?.message || 'Connection error!'}
+        </span>
+      ))
+    }
+  })
+
   return (
-    <main className='flex flex-col gap-5 p-5'>
+    <main className='flex flex-col gap-5'>
       <hgroup className='flex flex-col pb-5 border-b-4 border-slate-700'>
         <h1 className='text-2xl font-bold text-gray-800'>Property List</h1>
         <p className='text-sm font-medium text-gray-500'>Effortlessly Manage and Monitor Your Active Properties</p>
@@ -86,7 +106,7 @@ const PropertyListPage = () => {
         </div>
       </section>
       <section>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto flex flex-col gap-4">
         <table className="table table-xs">
             <thead className='text-gray-800'>
             <tr>
@@ -101,10 +121,10 @@ const PropertyListPage = () => {
             </thead>
             <tbody>
               {
-                dataProperties?.map((item: any, index: number) => {
+                dataProperties?.properties?.map((item: any, index: number) => {
                   return(
                     <tr>
-                        <th>{index + 1}</th>
+                        <th>{Number(dataProperties?.offset) + index + 1}</th>
                         <td className='hover:text-blue-800 transition duration-100 underline active:text-blue-500'><Link href={`/tenant/property/manage/${item?.slug}`}>{item?.name}</Link></td>
                         <td>{item?.address}</td>
                         <td>{item?.totalBooked}</td>
@@ -117,6 +137,17 @@ const PropertyListPage = () => {
               }
             </tbody>
         </table>
+        <div className='flex items-center justify-center w-full'>
+          <div className="join">
+            {
+              Array.from({ length: dataProperties?.totalPage }).map((_, index) => {
+                return (
+                  <button onClick={() => mutateRefreshPage({ limit: 5, offset: 5 * index })} className={`join-item btn btn-sm scale:90 ${dataProperties?.pageInUse === (index + 1) && 'btn-active'}`}>{index + 1}</button>
+                )
+              })
+            }
+          </div>
+        </div>
       </div>
       </section>
     </main>

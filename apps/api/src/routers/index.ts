@@ -17,6 +17,7 @@ import historyViewRouter from "./history.view.router";
 import seasonRouter from "./season.router";
 import propertyTypeRouter from "./property.type.router";
 import propertyHasFacilitiesRouter from "./property.has.facility.router";
+import propertyImageRouter from "./property.image.router";
 
 
 const router = Router()
@@ -39,6 +40,7 @@ router.use('/history', historyViewRouter)
 router.use('/season', seasonRouter)
 router.use('/property-type', propertyTypeRouter)
 router.use('/property-has-facilities', propertyHasFacilitiesRouter)
+router.use('/property-images', propertyImageRouter)
 
 
 

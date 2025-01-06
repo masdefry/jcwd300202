@@ -4,10 +4,42 @@ import { ITransaction } from '@/services/transaction.service/types'
 
 export const createTransaction = async(req: Request, res: Response, next: NextFunction) => {
     try {
-        const { checkInDate = new Date(), checkOutDate = new Date(), total, price, qty, adult, children, id, tenantId, propertyId, roomId }: ITransaction= req.body
-        console.log(req.body)
+        // const { checkInDate = new Date(), checkOutDate = new Date(), total, price, qty, adult, children, id, tenantId, propertyId, roomId }: ITransaction= req.body
+        // console.log(req.body)
 
-        const payment = await createTransactionService({ checkInDate, checkOutDate, total, price, qty, adult, children, id, tenantId, propertyId, roomId })
+        const {
+            checkInDate = new Date(),
+            checkOutDate = new Date(),
+            total,
+            price,
+            qty,
+            adult,
+            children,
+            tenantId,
+            propertyId,
+            roomId,
+        } = req.body;
+
+        const userId = req.body.id;
+        if (!userId) {
+            return res.status(403).json({
+                message: "Unauthorized",
+                error: true
+            })
+        }
+
+        const payment = await createTransactionService({ 
+            checkInDate, 
+            checkOutDate, 
+            total, 
+            price, 
+            qty, 
+            adult, 
+            children,
+            userId: userId,
+            tenantId, 
+            propertyId, 
+            roomId })
 
         res.status(201).json({
             message: 'Transaction created successfully',

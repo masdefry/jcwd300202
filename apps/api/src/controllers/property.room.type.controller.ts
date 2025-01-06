@@ -16,6 +16,11 @@ export const getPropertyRoomType = async(req: Request, res: Response, next: Next
                     include: {
                         propertyRoomFacility: true
                     }
+                },
+                property: {
+                    select: {
+                        tenantId: true
+                    }
                 }
             },
             orderBy: {
@@ -47,6 +52,11 @@ export const getPropertyRoomTypeByProperty = async(req: Request, res: Response, 
             const isPropertyExist = await prisma.property.findFirst({
                 where: {
                     slug
+                }, 
+                select: {
+                    id: true,
+                    tenantId: true,
+                    deletedAt: true
                 }
             })
 

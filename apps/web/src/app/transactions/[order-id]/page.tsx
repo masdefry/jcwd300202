@@ -64,13 +64,13 @@ const TransactionPage = () => {
                       <p className='text-xs'>Children <span>{item.children}</span></p>
                       <p className='text-xs'>Night(s) <span>{item.nights}</span></p>
                     </div>
-                    <div  className='flex flex-col'>
+                    <div  className='flex flex-col mt-3 gap-2'>
                       <p className='text-xs'>Please proceed to payment</p>
-                      <Link href=''></Link>
+                      <a href={item.redirectUrl} className="rounded-md bg-black text-white text-center px-7 py-3 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200">Pay</a>
                     </div>
                   </div>
                   <div className="w-full min-h-min flex flex-col items-end justify-start gap-3">
-                    <button className="rounded-full bg-black text-white px-7 py-3 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200"></button>
+                    {/* <button className="rounded-full bg-black text-white px-7 py-3 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200"></button> */}
                   </div>
                 </div>
               </div>

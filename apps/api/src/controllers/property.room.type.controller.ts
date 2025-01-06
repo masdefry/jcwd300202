@@ -41,22 +41,22 @@ export const getPropertyRoomType = async (
             }
         })
 
-    const propertyRoomType = await prisma.propertyRoomType.findMany({
-      where: {
-        id: Number(id),
-      },
-      include: {
-        propertyRoomImage: true,
-        roomHasFacilities: {
-          include: {
-            propertyRoomFacility: true,
-          },
-        },
-      },
-      orderBy: {
-        price: 'asc',
-      },
-    })
+    // const propertyRoomType = await prisma.propertyRoomType.findMany({
+    //   where: {
+    //     id: Number(id),
+    //   },
+    //   include: {
+    //     propertyRoomImage: true,
+    //     roomHasFacilities: {
+    //       include: {
+    //         propertyRoomFacility: true,
+    //       },
+    //     },
+    //   },
+    //   orderBy: {
+    //     price: 'asc',
+    //   },
+    // })
 
 
     res.status(200).json({
@@ -216,16 +216,16 @@ export const getPropertyRoomTypeByProperty = async (
     //     }
     // })
 
-            const isPropertyExist = await prisma.property.findFirst({
-                where: {
-                    slug
-                }, 
-                select: {
-                    id: true,
-                    tenantId: true,
-                    deletedAt: true
-                }
-            })
+            // const isPropertyExist = await prisma.property.findFirst({
+            //     where: {
+            //         slug
+            //     }, 
+            //     select: {
+            //         id: true,
+            //         tenantId: true,
+            //         deletedAt: true
+            //     }
+            // })
 
     const seasonalPriceListView = propertyRoomType.map((room, roomIdx) => {
       return {

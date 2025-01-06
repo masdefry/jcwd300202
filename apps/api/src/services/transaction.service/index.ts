@@ -15,8 +15,6 @@ const tokenSnap = new midtransClient.Snap({
 })
 
 export const createTransactionService = async({ checkInDate, checkOutDate, total, price, qty, adult, children, userId , tenantId, propertyId, roomId }: ITransaction) => {
-    const grossAmount = Number(total)
-    console.log(grossAmount, 'GROSSSS')
     const isUserExist = await prisma.user.findUnique({
         where: {
             id: userId,
@@ -88,15 +86,25 @@ export const createTransactionService = async({ checkInDate, checkOutDate, total
         const params = {
             transaction_details: {
                 order_id: setTransaction.id,
-                gross_amount: 100000,
+                gross_amount: setTransaction.total,
             }
         }
 
-        console.log('total',total)
-
         
 
-        const snapToken = await tokenSnap.createTransaction(params)
+        const snapTokenResponse = await tokenSnap.createTransaction(params)
+        const snapToken = snapTokenResponse.token; 
+        const redirectUrl = snapTokenResponse.redirect_url;
+
+        await tx.transaction.update({
+            where: {
+                id: setTransaction.id,
+            }, 
+            data: {
+                snapToken: snapToken,
+                redirectUrl: redirectUrl
+            }
+        })
 
         const room = await prisma.propertyRoomType.findUnique({
             where: {
@@ -111,6 +119,7 @@ export const createTransactionService = async({ checkInDate, checkOutDate, total
         return {
             id,
             snapToken,
+            redirectUrl,
             checkInDate, 
             checkOutDate,  
             nights,
@@ -173,6 +182,8 @@ export const transactionHistoryService = async(id: string) => {
                 adult: true,
                 children: true,
                 expiryDate: true,
+                snapToken: true,
+                redirectUrl: true,
                 room: {
                     select: {
                         id: true,
@@ -212,7 +223,7 @@ export const transactionHistoryService = async(id: string) => {
                 }
             },
             orderBy: {
-                checkInDate: 'desc',
+                expiryDate: 'desc',
             }    
         })
     }), {

@@ -5,5 +5,6 @@ const roomTypeRouter = Router()
 
 roomTypeRouter.get('/:id', getPropertyRoomType)
 roomTypeRouter.get('/property/:slug/search', getPropertyRoomTypeByProperty)
+roomTypeRouter.patch('/property/:slug', getPropertyRoomTypeByProperty)
 
 export default roomTypeRouter

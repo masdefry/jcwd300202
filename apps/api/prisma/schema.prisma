@@ -321,8 +321,6 @@ model PropertyRoomImage {
 }
 
 model HistoryView {
-  id String @id @default(cuid())
-
   userId String
   user   User   @relation(fields: [userId], references: [id])
 
@@ -334,6 +332,7 @@ model HistoryView {
   deletedAt DateTime?
 
   @@map("history_view")
+  @@id([userId, propertyId])
 }
 
 model RoomFilled {

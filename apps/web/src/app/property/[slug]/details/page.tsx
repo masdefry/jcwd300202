@@ -70,6 +70,16 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
             return res?.data?.data
         }
       })
+
+    useQuery({
+        queryKey: ['createHistoryView'],
+        queryFn: async() => {
+            const res = await instance.post(`/history/${params?.slug}`)
+            console.log(res)
+            
+            return res?.data?.data
+        }
+      })
   
   const { mutate: mutatePropertyRoomType, isPending: isPendingPropertyRoomType } = useMutation({
     mutationFn: async({ limit, offset, propertyId }: { limit: number, offset: number, propertyId: string }) => {
@@ -401,11 +411,11 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                             price: 0
                             })} className='hover:opacity-60 transition duration-100 hover:cursor-pointer'/></div>
                         <div className='h-[300px] w-full bg-blue-200 rounded-md relative overflow-hidden'>
-                            <div className={`flex items-center h-full w-[${showDataRoom?.roomImages.length * 100}%] transition-transform ease-in-out duration-1000`} style={{transform: `translateX(-${currSlideRoomImages/showDataRoom?.roomImages.length * 100}%)`}}>
+                            <div className={`flex items-center h-full w-[${showDataRoom?.roomImages.length * 100}] transition-transform ease-in-out duration-1000`} style={{transform: `translateX(-${currSlideRoomImages/showDataRoom?.roomImages.length * 100}%)`}}>
                                 {
                                     showDataRoom?.roomImages.map((itm: any, idx: number) => {
                                         return (
-                                            <figure className='w-[100%] h-full' key={idx}>
+                                            <figure className={`w-full h-full`} key={idx}>
                                                 <Image
                                                 src={`http://localhost:5000/api/${itm?.directory}/${itm?.filename}.${itm?.fileExtension}`}
                                                 width={500}

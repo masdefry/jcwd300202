@@ -373,6 +373,7 @@ model Transaction {
   nights   Int @default(1)
 
   snapToken String?
+  redirectUrl String?
 
   cityId Int
   city   City @relation(fields: [cityId], references: [id])

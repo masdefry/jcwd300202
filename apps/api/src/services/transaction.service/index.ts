@@ -15,8 +15,6 @@ const tokenSnap = new midtransClient.Snap({
 })
 
 export const createTransactionService = async({ checkInDate, checkOutDate, total, price, qty, adult, children, userId , tenantId, propertyId, roomId }: ITransaction) => {
-    const grossAmount = Number(total)
-    console.log(grossAmount, 'GROSSSS')
     const isUserExist = await prisma.user.findUnique({
         where: {
             id: userId,
@@ -88,7 +86,7 @@ export const createTransactionService = async({ checkInDate, checkOutDate, total
         const params = {
             transaction_details: {
                 order_id: setTransaction.id,
-                gross_amount: 100000,
+                gross_amount: setTransaction.total,
             }
         }
 
@@ -121,6 +119,7 @@ export const createTransactionService = async({ checkInDate, checkOutDate, total
         return {
             id,
             snapToken,
+            redirectUrl,
             checkInDate, 
             checkOutDate,  
             nights,
@@ -184,6 +183,7 @@ export const transactionHistoryService = async(id: string) => {
                 children: true,
                 expiryDate: true,
                 snapToken: true,
+                redirectUrl: true,
                 room: {
                     select: {
                         id: true,
@@ -223,7 +223,7 @@ export const transactionHistoryService = async(id: string) => {
                 }
             },
             orderBy: {
-                checkInDate: 'desc',
+                expiryDate: 'desc',
             }    
         })
     }), {

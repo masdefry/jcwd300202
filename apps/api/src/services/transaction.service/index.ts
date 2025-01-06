@@ -92,11 +92,21 @@ export const createTransactionService = async({ checkInDate, checkOutDate, total
             }
         }
 
-        console.log('total',total)
-
         
 
-        const snapToken = await tokenSnap.createTransaction(params)
+        const snapTokenResponse = await tokenSnap.createTransaction(params)
+        const snapToken = snapTokenResponse.token; 
+        const redirectUrl = snapTokenResponse.redirect_url;
+
+        await tx.transaction.update({
+            where: {
+                id: setTransaction.id,
+            }, 
+            data: {
+                snapToken: snapToken,
+                redirectUrl: redirectUrl
+            }
+        })
 
         const room = await prisma.propertyRoomType.findUnique({
             where: {
@@ -173,6 +183,7 @@ export const transactionHistoryService = async(id: string) => {
                 adult: true,
                 children: true,
                 expiryDate: true,
+                snapToken: true,
                 room: {
                     select: {
                         id: true,

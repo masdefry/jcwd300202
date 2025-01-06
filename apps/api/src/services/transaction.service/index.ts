@@ -14,12 +14,16 @@ const tokenSnap = new midtransClient.Snap({
     clientKey: 'SB-Mid-client-RHLdbA1UmPF_rh8s',
 })
 
-export const createTransactionService = async({ checkInDate, checkOutDate, total, price, qty, adult, children, id, tenantId, propertyId, roomId }: ITransaction) => {
+export const createTransactionService = async({ checkInDate, checkOutDate, total, price, qty, adult, children, userId , tenantId, propertyId, roomId }: ITransaction) => {
+    const grossAmount = Number(total)
+    console.log(grossAmount, 'GROSSSS')
     const isUserExist = await prisma.user.findUnique({
         where: {
-            id
+            id: userId,
         }
     })
+
+    console.log(userId)
 
     if(!isUserExist?.id || isUserExist.deletedAt) throw { msg: 'User not found!', status: 406 }
     
@@ -28,6 +32,7 @@ export const createTransactionService = async({ checkInDate, checkOutDate, total
             id: propertyId
         }
     })
+
 
     if (!propertyInTransaction?.id){
         throw new Error(`Could not found property`)
@@ -56,36 +61,40 @@ export const createTransactionService = async({ checkInDate, checkOutDate, total
 
         const setTransaction = await tx.transaction.create({
             data: {
-                id,
+                id: id,
                 checkInDate: new Date(checkInDate),
                 checkOutDate: new Date(checkOutDate),
                 nights,
-                total,
-                price,
-                qty,
-                adult,
-                children,
+                total: price * qty,
+                price: price,
+                qty: qty,
+                adult: Number(adult),
+                children: Number(children),
                 expiryDate: addHours(new Date(), 1),
-                userId: id,
-                tenantId,
-                propertyId,
-                roomId,
-                countryId,
-                cityId,
+                userId: userId,
+                tenantId: tenantId,
+                propertyId: propertyId,
+                roomId: roomId,
+                countryId: countryId,
+                cityId: cityId,
                 transactionStatus: {
                     create: [
                         { status: Status.WAITING_FOR_PAYMENT }
                     ]
-                }
+                },
             }
-        })
+        });
 
         const params = {
             transaction_details: {
                 order_id: setTransaction.id,
-                gross_amount: total,
+                gross_amount: 100000,
             }
         }
+
+        console.log('total',total)
+
+        
 
         const snapToken = await tokenSnap.createTransaction(params)
 

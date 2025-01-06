@@ -4,12 +4,13 @@ import React from 'react'
 import instance from '@/utils/axiosInstance'
 import { useQuery } from '@tanstack/react-query'
 import { useMutation } from '@tanstack/react-query';
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 
 const BookingPage = ({ params }: { params: { slug: string }}) => {
 
   const searchParams = useSearchParams()
+  const router = useRouter()
   const checkInDate = searchParams.get('check-in-date')
   const checkOutDate = searchParams.get('check-out-date')
   const adult = searchParams.get('adult')
@@ -55,17 +56,17 @@ const BookingPage = ({ params }: { params: { slug: string }}) => {
       return await instance.post(`/transaction/create`, transactionDetails)
     },
     onSuccess: (data: any) => {
-
+      router.push(`/transactions/${params.slug}`)
     },
     onError: (error: any) => {
-
+      console.log('ERROR', error)
     }
     
   })
 
   if(isPendingPropertyRoomType){
     return (
-        <div>Loading ...</div>
+        <div>Please wait</div>
     )
   }
 
@@ -185,17 +186,16 @@ const BookingPage = ({ params }: { params: { slug: string }}) => {
                       mutateTransaction({
                         checkInDate: checkInDate,
                         checkOutDate: checkOutDate,
-                        total: item.total,
-                        price: item.price,
+                        price: Number(item.price),
                         qty: 1,
-                        adult: adult,
-                        children: children,
-                        userId: '',
-                        tenantId: '',
+                        adult: String(adult),
+                        children: String(children),
+                        tenantId: item.property.tenantId,
                         propertyId: item.propertyId,
                         roomId: item.id
                       })
                     }
+                    disabled={isPendingTransaction}
                     className="w-full rounded-full bg-[#e2e8f0] text-black px-7 py-3 mt-10 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200">Continue</button>
                 </div>
               </div> 

@@ -47,10 +47,12 @@ const PropertyManageRoomDetailsPage = ({ params }: { params: { slug: string } })
                                 <p className='flex items-center gap-1.5'><FaMoneyBillWave className='text-base text-emerald-500'/>Base price: <span className='font-medium'>Rp{item?.price}</span></p>
                             </article>
                             <section className='flex gap-1.5'>
-                                <Link href={`/tenant/property/manage/${params.slug}/room-details/edit/${item?.id}`}>
-                                    <div className='bg-gray-900 rounded-full text-white text-sm font-bold px-4 py-1.5 hover:opacity-65 transition duration-100 active:scale-90 hover:cursor-pointer'>Edit</div>
+                                <Link href={`/tenant/property/manage/${params.slug}/room-details/edit/${item?.id}`}  className='bg-gray-900 rounded-full text-white text-sm font-bold px-4 py-1.5 hover:opacity-65 transition duration-100 active:scale-90 hover:cursor-pointer'>
+                                    Edit
                                 </Link>
-                                <div className='bg-gray-900 rounded-full text-white text-base font-bold px-4 py-1.5 hover:opacity-65 transition duration-100 active:scale-90 hover:cursor-pointer flex items-center justify-center'><IoCameraOutline /></div>
+                                <Link href={`/tenant/property/manage/${params.slug}/room-details/edit/${item?.id}/photos`}  className='bg-gray-900 rounded-full text-white text-base font-bold px-4 py-1.5 hover:opacity-65 transition duration-100 active:scale-90 hover:cursor-pointer flex items-center justify-center'>
+                                   <IoCameraOutline />
+                                </Link>
                                 <div className='bg-red-700 rounded-full text-white text-sm font-bold px-4 py-1.5 hover:opacity-65 transition duration-100 active:scale-90 hover:cursor-pointer'>Delete</div>
                             </section>
                         </section>

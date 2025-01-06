@@ -6,7 +6,7 @@ import Link from 'next/link'
 const PropertyDetailPage = ({ params }: { params: { slug: string }}) => {
   return (
     <main className="flex flex-col">
-      <nav className='flex items-center bg-blue-800 text-white rounded-lg w-full overflow-hidden p-2'>
+            {/* <nav className='flex items-center bg-blue-800 text-white rounded-lg w-full overflow-hidden p-2'>
         <Link href={`/tenant/property/manage/${params.slug}/calendar`}>
           <div className='text-sm font-bold p-2 hover:border-white border-b-4 border-transparent'>
               Price & Season
@@ -27,7 +27,7 @@ const PropertyDetailPage = ({ params }: { params: { slug: string }}) => {
             Facility & Service
         </div>
         </Link>
-      </nav>
+      </nav> */}
     </main>
   )
 }

@@ -10,7 +10,6 @@ export const getPropertyRoomType = async (
   try {
     const { id } = req.params
 
-
         const propertyRoomType = await prisma.propertyRoomType.findMany({
             where: {
                 id: Number(id)
@@ -82,7 +81,7 @@ export const getPropertyRoomTypeByProperty = async (
 
     const isPropertyExist = await prisma.property.findFirst({
       where: {
-        slug,
+        slug
       },
     })
 

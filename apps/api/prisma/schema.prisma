@@ -372,6 +372,8 @@ model Transaction {
   children Int @default(0)
   nights   Int @default(1)
 
+  snapToken String?
+
   cityId Int
   city   City @relation(fields: [cityId], references: [id])
 

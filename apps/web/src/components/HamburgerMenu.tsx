@@ -57,10 +57,12 @@ const HamburgerMenu = () => {
               <div className='h-[1.5px] bg-gray-900 w-[20px] origin-top-left transition duration-300 ease-in-out rounded-full'></div>
             </div>
             <div className="flex items-center gap-5">
+              <Link href='/'>
               <div className="flex items-center gap-1.5 rounded-full py-2 px-2 text-gray-800">
                 <RiBuilding3Fill className="text-gray-800" size={20}/>
                 <p className="text-xs font-bold text-gray-800">Roomify Inc.</p>
               </div>
+              </Link>
             </div>
           </div>
           {

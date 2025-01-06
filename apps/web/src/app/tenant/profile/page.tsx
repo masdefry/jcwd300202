@@ -105,7 +105,7 @@ const ProfileTenantPage = () => {
   })
 
   return (
-    <main className='flex flex-col gap-5 p-5'>
+    <main className='flex flex-col gap-5'>
       <hgroup className='flex flex-col pb-5 border-b-4 border-slate-700'>
         <h1 className='text-2xl font-bold text-gray-800'>Account</h1>
         <p className='text-sm font-medium text-gray-500'>Change your profile</p>
@@ -138,7 +138,7 @@ const ProfileTenantPage = () => {
         {
           ({setFieldValue}) => (
             <Form className='flex flex-col gap-5'>
-              <section className='flex items-center gap-10 rounded-md p-5 px-10 border border-slate-300'>
+              <section className='flex items-center gap-10 rounded-md p-5 border border-slate-300'>
                 <div className='flex flex-col gap-3 items-center'>
                   <figure className='overflow-hidden rounded-full h-[150px] w-[150px] bg-blue-300 border-2 border-slate-300'>
                     <Image

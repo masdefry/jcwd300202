@@ -30,23 +30,14 @@ export const createProperty = async (
       propertyTypeId,
       propertyFacilitiesId,
       propertyFacilitiesName,
-      propertyImages, //arr of obj
+      propertyImages,
       propertyDescription,
-      neighborhoodDescription, //nilai jual lingkungan
+      neighborhoodDescription,
       phoneNumber,
-      url, //property website
-      totalRooms, //total room in this property
+      url,
+      totalRooms,
       propertyRoomTypes,
-      propertyRoomNames, //arr
-      propertyRoomDescriptions, //arr
-      propertyRoomCapacities, //arr
-      propertyRoomBathrooms, //arr
-      propertyRoomPrices, //arr
-      propertyRoomTotalRooms, //arr
-      propertyRoomImages, //arr of obj
     } = req.body
-
-    console.log(req.body)
 
     if (Array.isArray(req.files))
       throw { msg: 'Images not found!', status: 406 }
@@ -137,8 +128,8 @@ export const createProperty = async (
             fileExtension: copiedImagesUploaded[i]?.filename.split('.')[1],
             directory: copiedImagesUploaded[i]?.destination,
           })
+          copiedImagesUploaded.shift()
         }
-        copiedImagesUploaded.splice(0, countPropertyImages)
 
         createdPropertyRoomTypes =
           await tx.propertyRoomType.createManyAndReturn({
@@ -170,23 +161,15 @@ export const createProperty = async (
             .flat(),
         })
 
-        // const findCreatedPropertyDetailId = await prisma.propertyDetail.findUnique({
-        //     where: {
-        //         id: createdPropertyDetail?.id
-        //     },
-        //     select: {
-        //         id: true
-        //     }
-        // })
-
-        // console.log('imagesForProperty')
-        // console.log(imagesForProperty)
-        const createdPropertyImages = await prisma.propertyImage.createMany({
+        const createdPropertyImages = await tx.propertyImage.createMany({
           data: imagesForProperty,
         })
+
         const imagesForRooms: any = []
+        const propertyRoomTypesFromBody = JSON.parse(propertyRoomTypes)
+
         JSON.parse(propertyRoomTypes).forEach((item: any, index: number) => {
-          for (let i = 0; i < item?.countRoomImage; i++) {
+          for (let i = 0; i < item?.countRoomImages; i++) {
             imagesForRooms.push({
               propertyRoomTypeId: createdPropertyRoomTypes[index].id,
               filename: copiedImagesUploaded[i].filename.split('.')[0],
@@ -194,15 +177,14 @@ export const createProperty = async (
               directory: copiedImagesUploaded[i].destination,
             })
           }
-          copiedImagesUploaded.splice(0, item?.countRoomImage)
         })
 
-        const createdRoomImages = await prisma.propertyRoomImage.createMany({
+        const createdRoomImages = await tx.propertyRoomImage.createMany({
           data: imagesForRooms,
         })
       },
       {
-        timeout: 50000,
+        timeout: 60000,
       },
     )
 
@@ -210,13 +192,11 @@ export const createProperty = async (
       error: false,
       message: 'Create property success',
       data: {
-        tes: req.files,
-        tes2: req.body,
-        // createdProperty,
-        // createdRoomHasFacilities,
-        // createdPropertyDetail,
-        // createdPropertyRoomTypes,
-        // createdPropertyHasFacilities,
+        createdProperty,
+        createdRoomHasFacilities,
+        createdPropertyDetail,
+        createdPropertyRoomTypes,
+        createdPropertyHasFacilities,
       },
     })
   } catch (error) {

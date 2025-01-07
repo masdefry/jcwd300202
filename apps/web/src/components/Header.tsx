@@ -2,6 +2,7 @@
 
 import {
   IoEarth,
+  IoLogOutOutline,
   IoNotificationsOutline,
   IoPersonOutline,
 } from 'react-icons/io5'
@@ -76,22 +77,11 @@ export default function Header() {
           </div>
           <nav className="text-base font-medium py-5">
             <ul className="flex gap-8 items-center">
-              {token && (
-                <li>
-                  <Link
-                    href={
-                      role === 'TENANT'
-                        ? '/tenant/notifications'
-                        : '/user/notifications'
-                    }
-                  >
-                    <IoNotificationsOutline
-                      size={23}
-                      className="hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-100"
-                    />
-                  </Link>
-                </li>
-              )}
+                  {
+                    token && (
+                      <li><IoLogOutOutline onClick={() => setShowConfirmationToLogout(true)} size={23} className="text-red-700 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-100"/></li>
+                    )
+                  }
               <div
                 className={`${showConfirmationToLogout ? 'flex' : 'hidden'} items-center justify-center fixed bg-black bg-opacity-25 backdrop-blur-sm w-full h-full top-0 left-0 z-[51]`}
               >

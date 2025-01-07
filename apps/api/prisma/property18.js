@@ -50,6 +50,7 @@ async function Property18 ({ tenantAccounts, countryId, cityId }) {
                 address: property.address,
                 zipCode: property.zipCode,
                 cityId,
+                star: 3,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,

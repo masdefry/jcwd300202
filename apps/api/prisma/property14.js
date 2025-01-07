@@ -51,6 +51,7 @@ async function Property14 ({ tenantAccounts, countryId, cityId }) {
                 address: property.address,
                 zipCode: property.zipCode,
                 cityId,
+                star: 4,
                 location: property.location,
                 checkInStartTime: property.checkInStartTime,
                 checkInEndTime: property.checkInEndTime,

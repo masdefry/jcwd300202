@@ -49,6 +49,7 @@ async function Property10 ({ tenantAccounts, countryId, cityId }) {
                 id,
                 name: property.name,
                 countryId,
+                star: 5,
                 address: property.address,
                 zipCode: property.zipCode,
                 cityId,

@@ -4,13 +4,14 @@ import React, { useState, useRef } from 'react'
 import { Formik, Form, Field, FieldArray, insert, ErrorMessage } from 'formik'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
+import { FaPlus } from 'react-icons/fa6'
 import TextInput from '@/features/tenant/property/create/components/TextInput'
 import { Textarea } from '@/components/ui/textarea'
 import TextAreaCustom from '@/features/tenant/property/create/components/TextArea'
 import Separator from '@/features/auth/components/Separator'
 import { Checkbox } from '@/components/ui/checkbox'
 import { FiPlus } from 'react-icons/fi'
-import { CiTrash } from 'react-icons/ci'
+import { CiCirclePlus, CiTrash } from 'react-icons/ci'
 import { IoClose, IoCloudUploadOutline } from 'react-icons/io5'
 import { GiModernCity } from 'react-icons/gi'
 import { FaMountainCity } from 'react-icons/fa6'
@@ -48,9 +49,44 @@ const CreatePropertyPage = () => {
   const [inputCheckInEndTime, setInputCheckInEndTime] = useState('')
   const [inputCheckOutStartTime, setInputCheckOutStartTime] = useState('')
   const [inputCheckOutEndTime, setInputCheckOutEndTime] = useState('10:00')
+  const [showCreatePropertyFacilityForm, setShowCreatePropertyFacilityForm] =
+    useState(false)
+  const [dataCreatePropertyFacility, setDataCreatePropertyFacility] = useState({
+    name: '',
+    file: [] as File[],
+  })
   const [dataCreatePropertyType, setDataCreatePropertyType] = useState({
     name: '',
     description: '',
+  })
+
+  const {
+    mutate: mutateCreatePropertyFacility,
+    isPending: isPendingCreatePropertyFacility,
+  } = useMutation({
+    mutationFn: async () => {
+      const fd = new FormData()
+      fd.append('name', dataCreatePropertyFacility?.name)
+      fd.append('images', dataCreatePropertyFacility?.file[0])
+      const res = await instance.post('/property-facility', fd)
+
+      console.log(res)
+      return res?.data
+    },
+    onSuccess: (res) => {
+      toast((t) => (
+        <span className="flex gap-2 items-center font-semibold justify-center text-xs">
+          {res?.message}
+        </span>
+      ))
+    },
+    onError: (err: any) => {
+      toast((t) => (
+        <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
+          {err?.response?.data?.message || 'Connection error!'}
+        </span>
+      ))
+    },
   })
 
   const { data: dataRoomFacilities, isPending: isPendingRoomFacilities } =
@@ -243,7 +279,6 @@ const CreatePropertyPage = () => {
               ],
             }}
             onSubmit={(values) => {
-              console.log('SUBMIT', values)
               const fd = new FormData()
               fd.append('cityName', values?.cityName)
               fd.append('countryName', values?.countryName)
@@ -880,13 +915,140 @@ const CreatePropertyPage = () => {
                                       }
                                     }}
                                   />
-                                  <label className="text-sm font-medium leading-none text-gray-900 peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                  <label className="text-sm font-medium leading-none text-gray-900 peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1.5">
+                                    <figure>
+                                      <Image
+                                        src={`http://localhost:5000/api/${item?.iconDirectory}/${item?.iconFilename}.${item?.iconFileExtension}`}
+                                        width={100}
+                                        height={100}
+                                        alt=""
+                                        className="h-4 w-4"
+                                      />
+                                    </figure>
                                     {item?.name}
                                   </label>
                                 </div>
                               )
                             },
                           )}
+                          <div
+                            onClick={() =>
+                              setShowCreatePropertyFacilityForm(true)
+                            }
+                            className="px-3 flex items-center gap-1.5 py-1.5 bg-slate-800 text-xs font-bold w-fit text-white rounded-md shadow-md hover:opacity-70 hover:cursor-pointer active:scale-90 transition duration-100"
+                          >
+                            <FaPlus className="text-sm" />
+                            Add Facility
+                          </div>
+                          <section>
+                            {showCreatePropertyFacilityForm && (
+                              <div className="fixed bg-black bg-opacity-20 backdrop-blur-sm w-full h-full z-[51] top-0 left-0 flex items-center justify-center">
+                                <div className="bg-white border border-slate-200 shadow-md p-5 rounded-md flex flex-col gap-7">
+                                  <div className="flex items-center justify-end">
+                                    <IoClose
+                                      className="hover:opacity-75 hover:cursor-pointer text-gray-900 "
+                                      onClick={() =>
+                                        setShowCreatePropertyFacilityForm(false)
+                                      }
+                                    />
+                                  </div>
+                                  <hgroup className="flex flex-col mt-[-10px]">
+                                    <h1 className="text-lg font-bold text-slate-800">
+                                      Add Property Facility
+                                    </h1>
+                                    <p className="text-sm font-light text-gray-500">
+                                      Empower Your Property, Add Facilities with
+                                      Ease!
+                                    </p>
+                                  </hgroup>
+                                  <div className="flex flex-col gap-3">
+                                    <div className="flex flex-col gap-1 ">
+                                      <label className="text-sm font-bold text-black ml-5">
+                                        Name
+                                      </label>
+                                      <Field
+                                        id="propertyTypeName"
+                                        onChange={(e: any) => {
+                                          setDataCreatePropertyFacility(
+                                            (state: any) => {
+                                              state.name = e.target.value
+                                              return state
+                                            },
+                                          )
+                                        }}
+                                        name="createPropertyFacilityName"
+                                        type="text"
+                                        placeholder="Swimming Pool"
+                                        className="placeholder-shown:text-sm placeholder-shown:text-slate-300 focus:outline-none text-sm font-medium text-gray-900 focus:ring-slate-600 border border-slate-300 rounded-full px-5 py-2"
+                                      />
+                                      <ErrorMessage
+                                        name="propertyTypeName"
+                                        component={'div'}
+                                        className="text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full z-20"
+                                      />
+                                    </div>
+                                      <label className="flex flex-col text-sm font-bold text-slate-900 items-start justify-center w-full h-full cursor-pointer">
+                                        <p className='mb-1 ml-5'>Icon</p> 
+                                    {
+                                      dataCreatePropertyFacility?.file[0]?.name ? (
+                                        <figure className="relative rounded-md overflow-hidden h-12 w-12">
+                                        <Image
+                                          src={URL.createObjectURL(
+                                            dataCreatePropertyFacility?.file[0],
+                                          )}
+                                          width={100}
+                                          height={100}
+                                          alt=""
+                                          className="object-cover w-full h-full"
+                                        />
+                                      </figure>
+                                      ) : (
+                                        <div className="flex flex-col border-2-dotted border-slate-500 items-center justify-center h-12 w-12 bg-slate-300 rounded-md hover:bg-slate-400 transition duration-75">
+                                        <FaPlus className="text-xl text-gray-700" />
+                                        </div>
+                                      )
+                                    }
+                                        <input
+                                          type="file"
+                                          className="hidden"
+                                          name='createPropertyFacilityIcon'
+                                          onChange={(e: any) => {
+                                            if (e.currentTarget.files[0]) {
+                                              setDataCreatePropertyFacility((state) => {
+                                                state.file[0] = e.currentTarget.files[0]
+                                                return state
+                                              })
+                                              console.log(dataCreatePropertyFacility)
+                                            }
+                                          }}
+                                        />
+                                      </label>
+                                  </div>
+                                  <div className="flex items-center gap-2 justify-end">
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        setShowCreatePropertyFacilityForm(false)
+                                      }
+                                      className="px-5 hover:bg-slate-200 transition duration-100 active:scale-90 py-1.5 text-gray-700 text-sm font-bold rounded-full shadow-md border border-slate-100 "
+                                    >
+                                      Cancel
+                                    </button>
+                                    <button
+                                      type="button"
+                                      disabled={isPendingCreatePropertyFacility}
+                                      onClick={() =>
+                                        mutateCreatePropertyFacility()
+                                      }
+                                      className="disabled:bg-slate-300 disabled:text-white disabled:scale-100 disabled:opacity-100 px-5 hover:opacity-75 transition duration-100 active:scale-90 py-1.5 text-white text-sm font-bold rounded-full shadow-md border bg-gray-900 border-slate-100 "
+                                    >
+                                      Create
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </section>
                         </section>
                       </div>
                     )}
@@ -1317,7 +1479,16 @@ const CreatePropertyPage = () => {
                                                           }}
                                                           className="scale-90"
                                                         />
-                                                        <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                                        <label className="flex items-center gap-1.5 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                                          <figure>
+                                                            <Image
+                                                              src={`http://localhost:5000/api/${roomFacility?.iconDirectory}/${roomFacility?.iconFilename}.${roomFacility?.iconFileExtension}`}
+                                                              width={100}
+                                                              height={100}
+                                                              alt=""
+                                                              className="h-4 w-4"
+                                                            />
+                                                          </figure>
                                                           {roomFacility?.name}
                                                         </label>
                                                       </div>

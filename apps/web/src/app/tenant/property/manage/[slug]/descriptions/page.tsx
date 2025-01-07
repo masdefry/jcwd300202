@@ -86,11 +86,17 @@ const PropertyManageDescriptionPage = ({ params }: { params: { slug: string } })
             <div className='bg-slate-100 rounded-md p-3 text-justify text-sm font-normal text-gray-600'>
               {dataPropertyDescriptions?.property?.propertyDetail?.propertyDescription}
             </div>
-            <TextAreaCustom 
-            labelName='New Description'
-            name='propertyDescription'
-            placeholder='Describe your property – Highlight its best features, location, and amenities to attract potential renters'
-            />
+            <div className="collapse collapse-plus bg-white rounded-md border border-slate-300">
+              <input type="checkbox" name={`accordion-property-description`} />
+              <div className="collapse-title text-sm font-bold">Show Edit Description</div>
+              <div className="collapse-content">
+              <TextAreaCustom 
+              labelName='Edit Description'
+              name='propertyDescription'
+              placeholder='Describe your property – Highlight its best features, location, and amenities to attract potential renters'
+              />
+              </div>
+            </div>
           </section>
           <section className='p-5 rounded-md shadow-md border border-slate-200 flex flex-col gap-5'>
             <h1 className='text-lg font-bold text-gray-800 flex items-center gap-1.5'>
@@ -100,11 +106,17 @@ const PropertyManageDescriptionPage = ({ params }: { params: { slug: string } })
             <div className='bg-slate-100 rounded-md p-3 text-justify text-sm font-normal text-gray-600'>
               {dataPropertyDescriptions?.property?.propertyDetail?.neighborhoodDescription}
             </div>
-            <TextAreaCustom 
-            labelName='New Description'
-            name='neighborhoodDescription'
-            placeholder='Describe the neighborhood, including nearby amenities, transport, parks, and attractions.'
-            />
+            <div className="collapse collapse-plus bg-white rounded-md border border-slate-300">
+              <input type="checkbox" name={`accordion-neighborhood-description`} />
+              <div className="collapse-title text-sm font-bold">Show Edit Description</div>
+              <div className="collapse-content">
+              <TextAreaCustom 
+              labelName='Edit Description'
+              name='neighborhoodDescription'
+              placeholder='Describe the neighborhood, including nearby amenities, transport, parks, and attractions.'
+              />
+              </div>
+            </div>
           </section>
           <section className='p-5 rounded-md shadow-md border border-slate-200 flex flex-col gap-5'>
             <h1 className='text-lg font-bold text-gray-800 flex items-center gap-1.5'>
@@ -118,15 +130,21 @@ const PropertyManageDescriptionPage = ({ params }: { params: { slug: string } })
                   dataPropertyDescriptions?.propertyRoomType.map((item: any, index: number) => {
                     return (
                     <div className='flex flex-col gap-5'>
-                      <p className='text-sm font-light text-gray-700 mb-[-15px] flex items-center gap-1'>This description for <b>{item?.name}</b> type:</p>
+                      <p className='text-sm font-normal text-gray-700 mb-[-15px] flex items-center gap-1'><b className='text-base font-bold'>{item?.name}</b>type description:</p>
                       <div className='bg-slate-100 rounded-md p-3 text-justify text-sm font-normal text-gray-600'>
                       {item?.description}
                       </div>
-                      <TextAreaCustom 
-                      labelName='New Description'
-                      name={`propertyRoomType.${index}.description`}
-                      placeholder='Enter a detailed description of your room type – Highlight key features such as bed size, amenities, views, and unique characteristics to attract potential renters.'
-                      />
+                      <div className="collapse collapse-plus bg-white rounded-md border border-slate-300">
+                        <input type="checkbox" name={`accordion-${index}`} />
+                        <div className="collapse-title text-sm font-bold">Show Edit Description</div>
+                        <div className="collapse-content">
+                          <TextAreaCustom 
+                          labelName=''
+                          name={`propertyRoomType.${index}.description`}
+                          placeholder='Enter a detailed description of your room type – Highlight key features such as bed size, amenities, views, and unique characteristics to attract potential renters.'
+                          />
+                        </div>
+                      </div>
                     </div>
 
                     )

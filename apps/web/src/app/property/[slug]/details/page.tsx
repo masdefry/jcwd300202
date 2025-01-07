@@ -575,8 +575,8 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                     <article className='flex flex-col gap-1 text-sm'>
                         <h1 className='font-bold text-gray-900'>Check-in/Check-out Time</h1>
                         <span className='flex items-center gap-5 text-gray-600'>
-                            <p>Check-in from: <b className='text-gray-700'>{dataPropertyDetail?.property?.checkInStartTime.split('T')[1].slice(0, 5)} -  {dataPropertyDetail?.property?.checkInEndTime.split('T')[1].slice(0, 5)}</b></p>
-                            <p>Check-out at: <b className='text-gray-700'>{dataPropertyDetail?.property?.checkOutStartTime.split('T')[1].slice(0, 5)} -  {dataPropertyDetail?.property?.checkOutEndTime.split('T')[1].slice(0, 5)}</b></p>
+                            <p>Check-in from: <b className='text-gray-700'>{dataPropertyDetail?.property?.checkInStartTime.split('T')[1]?.slice(0, 5)} -  {dataPropertyDetail?.property?.checkInEndTime?.split('T')[1].slice(0, 5)}</b></p>
+                            <p>Check-out at: <b className='text-gray-700'>{dataPropertyDetail?.property?.checkOutStartTime.split('T')[1]?.slice(0, 5)} -  {dataPropertyDetail?.property?.checkOutEndTime?.split('T')[1].slice(0, 5)}</b></p>
                         </span>
                     </article>
                 </div>

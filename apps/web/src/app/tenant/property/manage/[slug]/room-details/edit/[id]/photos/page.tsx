@@ -275,7 +275,7 @@ const PropertyManageRoomPhotosPage = ({ params }: { params: { slug: string, id: 
                   setFieldValue('file[0]', null)
                   }} 
                   type='button' className='text-sm font-bold rounded-md p-2 w-full shadow-md text-gray-800 bg-white border border-slate-100 hover:opacity-75 active:scale-95 transition duration-100'>Cancel</button>
-                <button disabled={values?.file.length <= 0} type='submit' className='disabled:text-white disabled:bg-slate-300 disabled:scale-100 disabled:cursor-not-allowed text-sm font-bold rounded-md p-2 w-full shadow-md text-white bg-gray-800 hover:opacity-75 active:scale-95 transition duration-100'>Add image</button>
+                <button disabled={!values?.file[0]?.name} type='submit' className='disabled:text-white disabled:bg-slate-300 disabled:scale-100 disabled:cursor-not-allowed text-sm font-bold rounded-md p-2 w-full shadow-md text-white bg-gray-800 hover:opacity-75 active:scale-95 transition duration-100'>Add image</button>
               </div>
             </div>
           </Form>

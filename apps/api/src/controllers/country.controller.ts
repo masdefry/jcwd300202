@@ -52,25 +52,28 @@ export const createCountry = async (
       },
     })
 
-    if (!isTenantExist?.id || isTenantExist?.deletedAt) throw { msg: 'Tenant not found!', status: 406 }
-    if (isTenantExist.role !== role) throw { msg: 'Role unauthorized!', status: 406 }
+    if (!isTenantExist?.id || isTenantExist?.deletedAt)
+      throw { msg: 'Tenant not found!', status: 406 }
+    if (isTenantExist.role !== role)
+      throw { msg: 'Role unauthorized!', status: 401 }
 
     const createdCountry = await prisma.country.create({
-        data: {
-            name: countryName,
-            description,
-            directory: imagesUploaded[0].destination,
-            filename: imagesUploaded[0].filename.split('.')[0],
-            fileExtension: imagesUploaded[0].filename.split('.')[0],
-        }
+      data: {
+        name: countryName,
+        description,
+        directory: imagesUploaded[0].destination,
+        filename: imagesUploaded[0].filename.split('.')[0],
+        fileExtension: imagesUploaded[0].filename.split('.')[0],
+      },
     })
 
-    if(!createdCountry?.id) throw { msg: 'Create country failed!', status: 500 }
+    if (!createdCountry?.id)
+      throw { msg: 'Create country failed!', status: 500 }
 
     res.status(201).json({
-        error: false,
-        message: 'Create country success',
-        data: createdCountry
+      error: false,
+      message: 'Create country success',
+      data: createdCountry,
     })
   } catch (error) {
     next(error)

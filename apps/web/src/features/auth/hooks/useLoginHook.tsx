@@ -45,7 +45,7 @@ const useLoginHook = ({ endPoint, role }: IUseLoginHookProps) => {
                 }, 1500)
             } else {
                 setTimeout(() => {
-                    router.push('/tenant/profile')
+                    router.push('/tenant/property/list')
                 }, 1500)
             }
         }, 

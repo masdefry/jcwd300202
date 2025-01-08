@@ -38,7 +38,8 @@ export const createPropertyFacility = async (
   try {
     const { id, role, name } = req.body
 
-    if(Array.isArray(req.files)) throw { msg: 'Images not found!', status: 406 }
+    if (Array.isArray(req.files))
+      throw { msg: 'Images not found!', status: 406 }
     const imagesUploaded: any = req?.files?.images
 
     const isTenantExist = await prisma.tenant.findUnique({
@@ -47,24 +48,27 @@ export const createPropertyFacility = async (
       },
     })
 
-    if (!isTenantExist?.id || isTenantExist?.deletedAt) throw { msg: 'Tenant not found!', status: 406 }
-    if (isTenantExist.role !== role) throw { msg: 'Role unauthorized!', status: 406 }
+    if (!isTenantExist?.id || isTenantExist?.deletedAt)
+      throw { msg: 'Tenant not found!', status: 406 }
+    if (isTenantExist.role !== role)
+      throw { msg: 'Role unauthorized!', status: 401 }
 
     const createdPropertyFacility = await prisma.propertyFacility.create({
-        data: {
-            name,
-            iconDirectory: imagesUploaded[0].destination,
-            iconFilename: imagesUploaded[0].filename.split('.')[0],
-            iconFileExtension: imagesUploaded[0].filename.split('.')[0],
-        }
+      data: {
+        name,
+        iconDirectory: imagesUploaded[0].destination,
+        iconFilename: imagesUploaded[0].filename.split('.')[0],
+        iconFileExtension: imagesUploaded[0].filename.split('.')[0],
+      },
     })
 
-    if(!createdPropertyFacility?.id) throw { msg: 'Create property facility failed!', status: 500 }
+    if (!createdPropertyFacility?.id)
+      throw { msg: 'Create property facility failed!', status: 500 }
 
     res.status(201).json({
-        error: false,
-        message: 'Create property facility success',
-        data: createdPropertyFacility
+      error: false,
+      message: 'Create property facility success',
+      data: createdPropertyFacility,
     })
   } catch (error) {
     next(error)

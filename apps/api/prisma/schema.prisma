@@ -474,6 +474,8 @@ model SeasonalPrice {
   id               Int      @id @default(autoincrement())
   price            Float
   date             DateTime
+  isStartSeason    Boolean @default(false)
+  isEndSeason      Boolean @default(false)
   roomAvailability Boolean  @default(true)
   roomToRent       Int
   isPeak           Boolean  @default(false)

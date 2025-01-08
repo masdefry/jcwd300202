@@ -1,388 +1,597 @@
-import prisma from "@/prisma";
-import { Response, Request, NextFunction } from "express";
-import { addDays, addMonths, differenceInDays } from "date-fns";
-import { error } from "console";
+import prisma from '@/prisma'
+import { Response, Request, NextFunction } from 'express'
+import { addDays, addMonths, differenceInDays } from 'date-fns'
+import { error } from 'console'
 
-export const createSeasonalPriceAndAvailabilty = async(req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { id, role, roomPrices, roomsToSell, availability, propertyRoomTypeId, name, startDate, endDate, isPeak } = req.body
+export const createSeasonalPriceAndAvailabilty = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const {
+      id,
+      role,
+      roomPrices,
+      roomsToSell,
+      availability,
+      propertyRoomTypeId,
+      name,
+      startDate,
+      endDate,
+      isPeak,
+    } = req.body
 
-        const isTenantExist = await prisma.tenant.findUnique({
-            where: {
-                id
-            }
-        })
+    const isTenantExist = await prisma.tenant.findUnique({
+      where: {
+        id,
+      },
+    })
 
-        if(!isTenantExist?.id || isTenantExist?.deletedAt) throw { msg: 'Tenant not found!', status: 406 }
-        if(isTenantExist?.role !== role) throw { msg: 'Role unauthorized!', status: 406 }
-        if(!isTenantExist?.isVerified) throw { msg: 'Tenant not verified!', status: 406 }
+    if (!isTenantExist?.id || isTenantExist?.deletedAt)
+      throw { msg: 'Tenant not found!', status: 406 }
+    if (isTenantExist?.role !== role)
+      throw { msg: 'Role unauthorized!', status: 401 }
+    if (!isTenantExist?.isVerified)
+      throw { msg: 'Tenant not verified!', status: 406 }
 
-        const isPropertyExist = await prisma.property.findFirst({
-            where: {
-                propertyRoomType: {
-                    some: {
-                        id: Number(propertyRoomTypeId)
-                    }
-                }
-            },
-            select: {
-                id: true,
-                tenantId: true
-            }
-        })
+    const isPropertyExist = await prisma.property.findFirst({
+      where: {
+        propertyRoomType: {
+          some: {
+            id: Number(propertyRoomTypeId),
+          },
+        },
+      },
+      select: {
+        id: true,
+        tenantId: true,
+      },
+    })
 
-        if(!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
-        if(isPropertyExist?.tenantId !== id) throw { msg: 'Actions not permitted!', status: 406 }
+    if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+    if (isPropertyExist?.tenantId !== id)
+      throw { msg: 'Actions not permitted!', status: 406 }
 
-        const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
-            where: {
-                id: Number(propertyRoomTypeId)
-            }
-        })
+    const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
+      where: {
+        id: Number(propertyRoomTypeId),
+      },
+    })
 
-        if(!isPropertyRoomTypeExist?.id || isPropertyRoomTypeExist?.deletedAt) throw { msg: 'Room type not found!', status: 406 }
-        if(roomsToSell > isPropertyRoomTypeExist?.totalRooms) throw { msg: 'The number of rooms exceeds the total rooms limit! Change capacity first.', status: 406 }
+    if (!isPropertyRoomTypeExist?.id || isPropertyRoomTypeExist?.deletedAt)
+      throw { msg: 'Room type not found!', status: 406 }
+    if (roomsToSell > isPropertyRoomTypeExist?.totalRooms)
+      throw {
+        msg: 'The number of rooms exceeds the total rooms limit! Change capacity first.',
+        status: 406,
+      }
 
-        const isDateUsed = await prisma.seasonalPrice.findMany({
-            where: {
-                date: {
-                    lte: startDate,
-                    gte: endDate
-                }
-            }
-        })
+    const isDateUsed = await prisma.seasonalPrice.findMany({
+      where: {
+        date: {
+          lte: startDate,
+          gte: endDate,
+        },
+      },
+    })
 
-        if(isDateUsed.length > 0) throw { msg: 'Date has been used!', status: 406 }
+    if (isDateUsed.length > 0) throw { msg: 'Date has been used!', status: 406 }
 
-        let createdSeason : any, createdSeasonalPrice
-        await prisma.$transaction(async(tx) => {
-            createdSeason = await tx.season.create({
-                data: {
-                    propertyRoomTypeId,
-                    propertyId: isPropertyExist?.id,
-                    name,
-                    startDate: new Date(startDate.split('T')[0]).toISOString(),
-                    endDate: new Date(endDate.split('T')[0]).toISOString(),
-                }
-            })
+    let createdSeason: any, createdSeasonalPrice
+    await prisma.$transaction(async (tx) => {
+      createdSeason = await tx.season.create({
+        data: {
+          propertyRoomTypeId,
+          propertyId: isPropertyExist?.id,
+          name,
+          startDate: new Date(startDate.split('T')[0]).toISOString(),
+          endDate: new Date(endDate.split('T')[0]).toISOString(),
+        },
+      })
 
-            if(!createdSeason?.id) throw { msg: 'Create season failed!', status: 500 }
-            
-            const dataToCreateSeasonalPrices = Array.from({ length: differenceInDays(new Date(endDate), new Date(startDate)) + 1}).map((_, index) => {
-                return {
-                    price: roomPrices,
-                    propertyId: isPropertyExist?.id,
-                    seasonId: createdSeason?.id as number,
-                    propertyRoomTypeId,
-                    roomAvailability: availability,
-                    isPeak,
-                    roomToRent: roomsToSell,
-                    date: new Date((addDays(startDate.split('T')[0], index))).toISOString()
+      if (!createdSeason?.id)
+        throw { msg: 'Create season failed!', status: 500 }
 
-                }
-            })
-            
-            createdSeasonalPrice = await tx.seasonalPrice.createMany({
-                data: dataToCreateSeasonalPrices
-            })
+      const dataToCreateSeasonalPrices = Array.from({
+        length: differenceInDays(new Date(endDate), new Date(startDate)) + 1,
+      }).map((_, index) => {
+        return {
+          price: roomPrices,
+          propertyId: isPropertyExist?.id,
+          seasonId: createdSeason?.id as number,
+          propertyRoomTypeId,
+          roomAvailability: availability,
+          isPeak,
+          isStartSeason: Boolean(new Date(addDays(startDate.split('T')[0], index)).toISOString() ===  new Date(startDate.split('T')[0]).toISOString()),
+          isEndSeason: Boolean(new Date(addDays(startDate.split('T')[0], index)).toISOString() ===  new Date(endDate.split('T')[0]).toISOString()),
+          roomToRent: availability ? roomsToSell : 0,
+          date: new Date(addDays(startDate.split('T')[0], index)).toISOString(),
+        }
+      })
 
+      createdSeasonalPrice = await tx.seasonalPrice.createMany({
+        data: dataToCreateSeasonalPrices,
+      })
+    })
 
-        })
+    res.status(201).json({
+      error: false,
+      message: 'Create seasonal price success',
+      data: {
+        createdSeason,
+        createdSeasonalPrice,
+      },
+    })
 
-
-        res.status(200).json({
-            error: false,
-            message: 'Create seasonal price success',
-            data: {
-                createdSeason,
-                createdSeasonalPrice  
-            }
-        })
-    } catch (error) {
-        console.log(error)
-        next(error)
-    }
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
 }
 
-export const getBulkSeasonalPriceAndAvailability = async(req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { propertyRoomTypeId, startDate, endDate } = req.query
+export const getBulkSeasonalPriceAndAvailability = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { propertyRoomTypeId, startDate, endDate } = req.query
 
-        const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
-            where: {
-                id: Number(propertyRoomTypeId)
-            }
-        })
+    const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
+      where: {
+        id: Number(propertyRoomTypeId),
+      },
+    })
 
-        if(!isPropertyRoomTypeExist?.id || isPropertyRoomTypeExist?.deletedAt) throw { msg: 'Room type not found!', status: 406 }
+    if (!isPropertyRoomTypeExist?.id || isPropertyRoomTypeExist?.deletedAt)
+      throw { msg: 'Room type not found!', status: 406 }
 
-        const season = await prisma.season.findFirst({
-            where: {
-                propertyRoomTypeId: Number(propertyRoomTypeId),
-                startDate: {
-                    gte: new Date(startDate as string).toISOString()
-                },
-                endDate: {
-                    lte: new Date(startDate as string).toISOString()
-                },
-                // startDate: new Date(startDate as string).toISOString(),
-                // endDate: new Date(endDate as string).toISOString(),
-            }
-        })
+    const season = await prisma.season.findFirst({
+      where: {
+        propertyRoomTypeId: Number(propertyRoomTypeId),
+        startDate: {
+          gte: new Date(startDate as string).toISOString(),
+        },
+        endDate: {
+          lte: new Date(startDate as string).toISOString(),
+        },
+        // startDate: new Date(startDate as string).toISOString(),
+        // endDate: new Date(endDate as string).toISOString(),
+      },
+    })
 
-        res.status(200).json({
-            error: false,
-            message: 'Get seasonal price success',
-            data: {
-
-            }
-        })
-    } catch (error) {
-        next(error)
-    }
+    res.status(200).json({
+      error: false,
+      message: 'Get seasonal price success',
+      data: {},
+    })
+  } catch (error) {
+    next(error)
+  }
 }
 
-export const getSingleSeasonalPriceAndAvailability = async(req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { propertyRoomTypeId, date } = req.query
+export const getSingleSeasonalPriceAndAvailability = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { propertyRoomTypeId, date } = req.query
 
-        const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
-            where: {
-                id: Number(propertyRoomTypeId)
-            }
-        })
+    const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
+      where: {
+        id: Number(propertyRoomTypeId),
+      },
+    })
 
-        if(!isPropertyRoomTypeExist?.id || isPropertyRoomTypeExist?.deletedAt) throw { msg: 'Room type not found!', status: 406 }
-        if(!date) throw { msg: "Date not found!", status: 406 }
+    if (!isPropertyRoomTypeExist?.id || isPropertyRoomTypeExist?.deletedAt)
+      throw { msg: 'Room type not found!', status: 406 }
+    if (!date) throw { msg: 'Date not found!', status: 406 }
 
-        let dateForSearch = date as string
-        const seasonalPrice = await prisma.seasonalPrice.findFirst({
-            where: {
-                propertyRoomTypeId: Number(propertyRoomTypeId),
-                date: new Date(dateForSearch).toISOString()
-            },
-            include: {
-                season: true
-            }
-        })
+    let dateForSearch = date as string
+    const seasonalPrice = await prisma.seasonalPrice.findFirst({
+      where: {
+        propertyRoomTypeId: Number(propertyRoomTypeId),
+        date: new Date(dateForSearch).toISOString(),
+      },
+      include: {
+        season: true,
+      },
+    })
 
-        // console.log('seasonalPrice:', seasonalPrice)
-        // console.log('season:', season?.id)
-        const season = seasonalPrice?.season
+    // console.log('seasonalPrice:', seasonalPrice)
+    // console.log('season:', season?.id)
+    const season = seasonalPrice?.season
 
-        res.status(200).json({
-            error: false,
-            message: 'Get seasonal price success',
-            data: {
-                season: {
-                    ...season,
-                    propertyRoomTypeId: isPropertyRoomTypeExist?.id,
-                },
-                seasonalPrice: {
-                    ...seasonalPrice,
-                    basePrice: isPropertyRoomTypeExist?.price,
-                    totalRooms: isPropertyRoomTypeExist?.totalRooms,
-                }
-            }
-        })
-    } catch (error) {
-        next(error)
-    }
+    res.status(200).json({
+      error: false,
+      message: 'Get seasonal price success',
+      data: {
+        season: {
+          ...season,
+          propertyRoomTypeId: isPropertyRoomTypeExist?.id,
+        },
+        seasonalPrice: {
+          ...seasonalPrice,
+          basePrice: isPropertyRoomTypeExist?.price,
+          totalRooms: isPropertyRoomTypeExist?.totalRooms,
+        },
+      },
+    })
+  } catch (error) {
+    next(error)
+  }
 }
 
-export const updateSeason = async(req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { id, role, seasonId, roomPrices, roomsToSell, availability, propertyRoomTypeId, name, startDate, endDate, isPeak } = req.body
+export const updateSeason = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const {
+      id,
+      role,
+      seasonId,
+      roomPrices,
+      roomsToSell,
+      availability,
+      propertyRoomTypeId,
+      name,
+      startDate,
+      endDate,
+      isPeak,
+    } = req.body
 
-        const isTenantExist = await prisma.tenant.findUnique({
-            where: {
-                id
-            }
-        })
+    const isTenantExist = await prisma.tenant.findUnique({
+      where: {
+        id,
+      },
+    })
 
-        if(!isTenantExist?.id || isTenantExist?.deletedAt) throw { msg: 'Tenant not found!', status: 406 }
-        if(isTenantExist?.role !== role) throw { msg: 'Role unauthorized!', status: 406 }
-        if(!isTenantExist?.isVerified) throw { msg: 'Tenant not verified!', status: 406 }
+    if (!isTenantExist?.id || isTenantExist?.deletedAt)
+      throw { msg: 'Tenant not found!', status: 406 }
+    if (isTenantExist?.role !== role)
+      throw { msg: 'Role unauthorized!', status: 401 }
+    if (!isTenantExist?.isVerified)
+      throw { msg: 'Tenant not verified!', status: 406 }
 
-        const isPropertyExist = await prisma.property.findFirst({
-            where: {
-                propertyRoomType: {
-                    some: {
-                        id: Number(propertyRoomTypeId)
-                    }
-                }
-            },
-            select: {
-                id: true,
-                tenantId: true
-            }
-        })
+    const isPropertyExist = await prisma.property.findFirst({
+      where: {
+        propertyRoomType: {
+          some: {
+            id: Number(propertyRoomTypeId),
+          },
+        },
+      },
+      select: {
+        id: true,
+        tenantId: true,
+      },
+    })
 
-        if(!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
-        if(isPropertyExist?.tenantId !== id) throw { msg: 'Actions not permitted!', status: 406 }
+    if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+    if (isPropertyExist?.tenantId !== id)
+      throw { msg: 'Actions not permitted!', status: 406 }
 
-        const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
-            where: {
-                id: Number(propertyRoomTypeId)
-            }
-        })
+    const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
+      where: {
+        id: Number(propertyRoomTypeId),
+      },
+    })
 
-        if(!isPropertyRoomTypeExist?.id || isPropertyRoomTypeExist?.deletedAt) throw { msg: 'Room type not found!', status: 406 }
-        if(roomsToSell > isPropertyRoomTypeExist?.totalRooms) throw { msg: 'The number of rooms exceeds the total rooms limit! Edit total room first.', status: 406 }
-        console.log(seasonId)
-        const isSeasonExist = await prisma.season.findUnique({
-            where: {
-                id: Number(seasonId)
-            }
-        })
+    if (!isPropertyRoomTypeExist?.id || isPropertyRoomTypeExist?.deletedAt)
+      throw { msg: 'Room type not found!', status: 406 }
+    if (roomsToSell > isPropertyRoomTypeExist?.totalRooms)
+      throw {
+        msg: 'The number of rooms exceeds the total rooms limit! Edit total room first.',
+        status: 406,
+      }
+    console.log(seasonId)
+    const isSeasonExist = await prisma.season.findUnique({
+      where: {
+        id: Number(seasonId),
+      },
+    })
 
-        let createdSeason : any, createdSeasonalPrice
-        await prisma.$transaction(async(tx) => {
-            const deletedSeasonalPrice = await tx.seasonalPrice.deleteMany({
-                where: {
-                    seasonId: isSeasonExist?.id
-                }
-            })
+    let createdSeason: any, createdSeasonalPrice
+    await prisma.$transaction(async (tx) => {
+      const deletedSeasonalPrice = await tx.seasonalPrice.deleteMany({
+        where: {
+          seasonId: isSeasonExist?.id,
+        },
+      })
 
-            const deletedSeason = await tx.season.delete({
-                where: {
-                    id: isSeasonExist?.id
-                }
-            })
+      const deletedSeason = await tx.season.delete({
+        where: {
+          id: isSeasonExist?.id,
+        },
+      })
 
-            createdSeason = await tx.season.create({
-                data: {
-                    propertyRoomTypeId,
-                    propertyId: isPropertyExist?.id,
-                    name,
-                    startDate: new Date(startDate.split('T')[0]).toISOString(),
-                    endDate: new Date(endDate.split('T')[0]).toISOString(),
-                }
-            })
+      createdSeason = await tx.season.create({
+        data: {
+          propertyRoomTypeId,
+          propertyId: isPropertyExist?.id,
+          name,
+          startDate: new Date(startDate.split('T')[0]).toISOString(),
+          endDate: new Date(endDate.split('T')[0]).toISOString(),
+        },
+      })
 
-            if(!createdSeason?.id) throw { msg: 'Create season failed!', status: 500 }
-            
-            const dataToCreateSeasonalPrices = Array.from({ length: differenceInDays(new Date(endDate), new Date(startDate)) + 1}).map((_, index) => {
-                return {
-                    price: roomPrices,
-                    propertyId: isPropertyExist?.id,
-                    seasonId: createdSeason?.id as number,
-                    roomAvailability: availability,
-                    propertyRoomTypeId,
-                    isPeak,
-                    roomToRent: roomsToSell,
-                    date: new Date((addDays(startDate.split('T')[0], index))).toISOString()
+      if (!createdSeason?.id)
+        throw { msg: 'Create season failed!', status: 500 }
 
-                }
-            })
-            
-            createdSeasonalPrice = await tx.seasonalPrice.createMany({
-                data: dataToCreateSeasonalPrices
-            })
+      const dataToCreateSeasonalPrices = Array.from({
+        length: differenceInDays(new Date(endDate), new Date(startDate)) + 1,
+      }).map((_, index) => {
+        return {
+          price: roomPrices,
+          propertyId: isPropertyExist?.id,
+          seasonId: createdSeason?.id as number,
+          roomAvailability: availability,
+          propertyRoomTypeId,
+          isPeak,
+          isStartSeason: Boolean(new Date(addDays(startDate.split('T')[0], index)).toISOString() ===  new Date(startDate.split('T')[0]).toISOString()),
+          isEndSeason: Boolean(new Date(addDays(startDate.split('T')[0], index)).toISOString() ===  new Date(endDate.split('T')[0]).toISOString()),
+          roomToRent: availability ? roomsToSell : 0,
+          date: new Date(addDays(startDate.split('T')[0], index)).toISOString(),
+        }
+      })
 
+      createdSeasonalPrice = await tx.seasonalPrice.createMany({
+        data: dataToCreateSeasonalPrices,
+      })
+    })
 
-        })
+    // let updatedSeason : any, updatedSeasonalPrice
+    // await prisma.$transaction(async(tx) => {
+    //     updatedSeason = await tx.season.update({
+    //         where: {
+    //             id: isSeasonExist?.id
+    //         },
+    //         data: {
+    //             name,
+    //             startDate: new Date(startDate.split('T')[0]).toISOString(),
+    //             endDate: new Date(endDate.split('T')[0]).toISOString(),
+    //         }
+    //     })
 
-        // let updatedSeason : any, updatedSeasonalPrice
-        // await prisma.$transaction(async(tx) => {
-        //     updatedSeason = await tx.season.update({
-        //         where: {
-        //             id: isSeasonExist?.id
-        //         },
-        //         data: {
-        //             name,
-        //             startDate: new Date(startDate.split('T')[0]).toISOString(),
-        //             endDate: new Date(endDate.split('T')[0]).toISOString(),
-        //         }
-        //     })
- 
-        //     if(!updatedSeason?.id) throw { msg: 'update season failed!', status: 500 }
-            
-        //     const dataToupdateSeasonalPrices = Array.from({ length: differenceInDays(new Date(endDate), new Date(startDate)) + 1}).map((_, index) => {
-        //         return {
-        //             price: roomPrices,
-        //             propertyId: isPropertyExist?.id,
-        //             seasonId: updatedSeason?.id as number,
-        //             propertyRoomTypeId,
-        //             isPeak,
-        //             roomToRent: roomsToSell,
-        //             date: new Date((addDays(startDate.split('T')[0], index))).toISOString()
+    //     if(!updatedSeason?.id) throw { msg: 'update season failed!', status: 500 }
 
-        //         }
-        //     })
-            
-        //     updatedSeasonalPrice = await tx.seasonalPrice.updateMany({
-        //         data: dataToUpdateSeasonalPrices
-        //     })
+    //     const dataToupdateSeasonalPrices = Array.from({ length: differenceInDays(new Date(endDate), new Date(startDate)) + 1}).map((_, index) => {
+    //         return {
+    //             price: roomPrices,
+    //             propertyId: isPropertyExist?.id,
+    //             seasonId: updatedSeason?.id as number,
+    //             propertyRoomTypeId,
+    //             isPeak,
+    //             isStartSeason: Boolean(new Date(addDays(startDate.split('T')[0], index)).toISOString() ===  new Date(startDate.split('T')[0]).toISOString()),
+    //             isEndSeason: Boolean(new Date(addDays(startDate.split('T')[0], index)).toISOString() ===  new Date(endDate.split('T')[0]).toISOString()),
+    //             roomToRent: availability ? roomsToSell : 0,
+    //             date: new Date((addDays(startDate.split('T')[0], index))).toISOString()
 
+    //         }
+    //     })
 
-        // })
-        res.status(200).json({
-            error: false,
-            message: 'Update seasonal price success',
-            data: {
-                updatedSeason: createdSeason,
-                updatedSeasonalPrice: createdSeasonalPrice  
-            }
-        })
-    } catch (error) {
-        next(error)
-    }
+    //     updatedSeasonalPrice = await tx.seasonalPrice.updateMany({
+    //         data: dataToUpdateSeasonalPrices
+    //     })
+
+    // })
+    res.status(200).json({
+      error: false,
+      message: 'Update seasonal price success',
+      data: {
+        updatedSeason: createdSeason,
+        updatedSeasonalPrice: createdSeasonalPrice,
+      },
+    })
+  } catch (error) {
+    next(error)
+  }
 }
 
-export const getSeasonsByProperty = async(req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { id, role } = req.body
-        const { month = new Date().getMonth(), year = new Date().getFullYear() } = req.query
-        const { slug } = req.params
-        const isTenantExist = await prisma.tenant.findUnique({
-            where: {
-                id
-            }
+export const getSeasonsByProperty = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id, role } = req.body
+    const { month = new Date().getMonth(), year = new Date().getFullYear() } =
+      req.query
+    const { slug } = req.params
+    const isTenantExist = await prisma.tenant.findUnique({
+      where: {
+        id,
+      },
+    })
+    if (!isTenantExist?.id || isTenantExist?.deletedAt)
+      throw { msg: 'Tenant not found!', status: 406 }
+    if (isTenantExist?.role !== role)
+      throw { msg: 'Role unauthorized!', status: 401 }
+    if (!isTenantExist?.isVerified)
+      throw { msg: 'Tenant not verified!', status: 406 }
+
+    const isPropertyExist = await prisma.property.findFirst({
+      where: {
+        slug,
+      },
+      include: {
+        propertyRoomType: {
+          include: {
+            season: true
+          }
+        }
+      },
+    })
+
+    if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+    if (isPropertyExist?.tenantId !== id)
+      throw { msg: 'Actions not permitted!', status: 406 }
+
+    const startDate = new Date(Number(year), Number(month), 0)
+    const endDate = addMonths(new Date(Number(year), Number(month), 0), 1)
+
+    const getSeasons = await prisma.seasonalPrice.findMany({
+      where: {
+        property: {
+          slug,
+        },
+        date: {
+          gte: startDate,
+          lt: endDate,
+        },
+      },
+      include: {
+        season: true,
+      },
+    })
+
+    let filterredSeasonByPropertySeason = isPropertyExist?.propertyRoomType[0]?.season.filter((item) => {
+      let isPropertySeasonExist = true
+      isPropertyExist?.propertyRoomType?.filter(room => {
+        const findIndexSameSeason = room?.season?.findIndex(season => {
+          return (season.name === item.name) && (season.startDate.toString() == item.startDate.toString()) && (season.endDate.toString() == item.endDate.toString())  
         })
-        if(!isTenantExist?.id || isTenantExist?.deletedAt) throw { msg: 'Tenant not found!', status: 406 }
-        if(isTenantExist?.role !== role) throw { msg: 'Role unauthorized!', status: 406 }
-        if(!isTenantExist?.isVerified) throw { msg: 'Tenant not verified!', status: 406 }
+      })
+      return isPropertySeasonExist
+    })
 
-        const isPropertyExist = await prisma.property.findFirst({
-            where: {
-                slug
-            },
-            include: {
-                propertyRoomType: true
+    const findPropertySeasonalPrice = await prisma.season.findMany({
+      where: {
+        id: {
+          in: filterredSeasonByPropertySeason.map(item => item?.id)
+        }
+      },
+      include: {
+        seasonalPrice: true
+      }
+    })
+    res.status(200).json({
+      error: false,
+      message: 'Get seasons by property success',
+      data: {
+        property: isPropertyExist,
+        seasons: getSeasons,
+        propertySeasons: findPropertySeasonalPrice
+      },
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const createSeasonalAvailabiltyByProperty = async(req: Request, res: Response, next: NextFunction) => {
+  try {
+    const {
+      id,
+      role,
+      availability,
+      name,
+      startDate,
+      endDate,
+      isPeak,
+    } = req.body
+
+    const { slug } = req.params
+    console.log('slug', slug)
+    const isTenantExist = await prisma.tenant.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!isTenantExist?.id || isTenantExist?.deletedAt)
+      throw { msg: 'Tenant not found!', status: 406 }
+    if (isTenantExist?.role !== role)
+      throw { msg: 'Role unauthorized!', status: 401 }
+    if (!isTenantExist?.isVerified)
+      throw { msg: 'Tenant not verified!', status: 406 }
+
+    const isPropertyExist = await prisma.property.findFirst({
+      where: {
+        slug
+      },
+      include: {
+        propertyRoomType: true
+      }
+    })
+
+    if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+    if (isPropertyExist?.tenantId !== id)
+      throw { msg: 'Actions not permitted!', status: 406 }
+
+    const isDateUsed = await prisma.seasonalPrice.findMany({
+      where: {
+        date: {
+          lte: startDate,
+          gte: endDate,
+        },
+      },
+    })
+
+    if (isDateUsed.length > 0) throw { msg: 'Date has been used!', status: 406 }
+
+    const dataForCreateManySeason = isPropertyExist?.propertyRoomType.map((item) => {
+      return {
+        propertyRoomTypeId: item?.id,
+        propertyId: isPropertyExist?.id,
+        name,
+        startDate: new Date(startDate.split('T')[0]).toISOString(),
+        endDate: new Date(endDate.split('T')[0]).toISOString(),
+      }
+    })
+
+    let createdSeasons: any, createdSeasonalPrices
+    await prisma.$transaction(async (tx) => {
+      createdSeasons = await tx.season.createManyAndReturn({
+        data: dataForCreateManySeason
+      })
+
+      if (createdSeasons?.length <= 0)
+        throw { msg: 'Create season failed!', status: 500 }
+
+
+      const dataToCreateSeasonalPrices = createdSeasons?.map((item: any, indexCreatedSeason: number) => {
+        const price = isPropertyExist?.propertyRoomType[indexCreatedSeason].price
+        const totalRooms = isPropertyExist?.propertyRoomType[indexCreatedSeason].totalRooms
+        return (
+          Array.from({
+            length: differenceInDays(new Date(endDate), new Date(startDate)) + 1,
+          }).map((_, index) => {
+            return {
+              price,
+              propertyId: isPropertyExist?.id,
+              seasonId: item?.id as number,
+              propertyRoomTypeId: item?.propertyRoomTypeId,
+              roomAvailability: availability,
+              isPeak,
+              isStartSeason: Boolean(new Date(addDays(startDate.split('T')[0], index)).toISOString() ===  new Date(startDate.split('T')[0]).toISOString()),
+              isEndSeason: Boolean(new Date(addDays(startDate.split('T')[0], index)).toISOString() ===  new Date(endDate.split('T')[0]).toISOString()),
+              roomToRent: totalRooms,
+              date: new Date(addDays(startDate.split('T')[0], index)).toISOString(),
             }
-        })
+          })
+        )
+      }).flat()
 
-        if(!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
-        if(isPropertyExist?.tenantId !== id) throw { msg: 'Actions not permitted!', status: 406 }
+      createdSeasonalPrices = await tx.seasonalPrice.createMany({
+        data: dataToCreateSeasonalPrices,
+      })
+    })
 
-        const startDate = new Date(Number(year), Number(month), 0)
-        const endDate =  addMonths(new Date(Number(year), Number(month), 0), 1)
+    res.status(201).json({
+      error: false,
+      message: 'Create seasonal price success',
+      data: {
+        createdSeasons,
+        createdSeasonalPrices,
+      },
+    })
 
-        const getSeasons = await prisma.seasonalPrice.findMany({
-            where: {
-                property: {
-                    slug
-                },
-                date: {
-                    gte: startDate,
-                    lt: endDate
-                }
-            },
-            include: {
-                season: true
-            }
-        })
-
-        res.status(200).json({
-            error: false,
-            message: 'Get seasons by property success',
-            data: {
-                property: isPropertyExist,
-                seasons: getSeasons
-            }
-        })
-    } catch (error) {
-        next(error)
-    }
+  } catch (error) {
+    next(error)
+  }
 }

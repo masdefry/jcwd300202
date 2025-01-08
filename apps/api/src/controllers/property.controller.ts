@@ -200,7 +200,9 @@ export const createProperty = async (
       },
     })
   } catch (error) {
-    deleteFiles({ imagesUploaded: req.files })
+    if (!Array.isArray(req.files)) {
+      deleteFiles({ imagesUploaded: req.files })
+    }
     next(error)
   }
 
@@ -1095,7 +1097,7 @@ export const getPropertyDescriptions = async (
     if (!isTenantExist?.id || isTenantExist?.deletedAt)
       throw { msg: 'Tenant not found!', status: 406 }
     if (isTenantExist?.role !== role)
-      throw { msg: 'Role unauthorized!', status: 406 }
+      throw { msg: 'Role unauthorized!', status: 401 }
 
     const getProperty = await prisma.property.findFirst({
       where: {
@@ -1157,7 +1159,7 @@ export const updatePropertyDescriptions = async (
     if (!isTenantExist?.id || isTenantExist?.deletedAt)
       throw { msg: 'Tenant not found!', status: 406 }
     if (isTenantExist?.role !== role)
-      throw { msg: 'Role unauthorized!', status: 406 }
+      throw { msg: 'Role unauthorized!', status: 401 }
 
     const isPropertyExist = await prisma.property.findFirst({
       where: {
@@ -1249,17 +1251,17 @@ export const getPropertiesByTenant = async (
     if (!isTenantExist?.id || isTenantExist?.deletedAt)
       throw { msg: 'Tenant not found!', status: 406 }
     if (isTenantExist?.role !== role)
-      throw { msg: 'Role unauthorized!', status: 406 }
+      throw { msg: 'Role unauthorized!', status: 401 }
 
     const getProperties = await prisma.property.findMany({
       where: {
         tenantId: isTenantExist?.id,
       },
       orderBy: {
-        name: 'asc'
+        name: 'asc',
       },
       take: Number(limit),
-      skip: Number(offset)
+      skip: Number(offset),
     })
 
     const getTransactionsPaid = await prisma.transactionStatus.findMany({
@@ -1282,8 +1284,8 @@ export const getPropertiesByTenant = async (
 
     const countPropertiesByTenant = await prisma.property.count({
       where: {
-        tenantId: id
-      }
+        tenantId: id,
+      },
     })
 
     const getTransactionsCancelled = await prisma.transactionStatus.findMany({
@@ -1356,7 +1358,7 @@ export const getPropertiesByTenant = async (
         countProperties: countPropertiesByTenant,
         totalPage,
         pageInUse,
-        offset
+        offset,
       },
     })
   } catch (error) {
@@ -1378,10 +1380,10 @@ export const getPropertiesByUser = async (
       },
     })
 
-    if(!isUserExist?.id || isUserExist?.deletedAt)
+    if (!isUserExist?.id || isUserExist?.deletedAt)
       throw { msg: 'User not found!', status: 406 }
-    if(isUserExist?.role !== role)
-      throw { msg: 'Role unauthorized!', status: 406 }
+    if (isUserExist?.role !== role)
+      throw { msg: 'Role unauthorized!', status: 401 }
 
     const propertyIdByRecentBooks = await prisma.transaction.findMany({
       where: {
@@ -1408,9 +1410,9 @@ export const getPropertiesByUser = async (
         },
       },
       orderBy: {
-        createdAt: 'desc'
-      },      
-      take: 10
+        createdAt: 'desc',
+      },
+      take: 10,
     })
 
     const propertyByRecentBooks = propertyIdByRecentBooks.map((item) => {
@@ -1442,7 +1444,7 @@ export const getPropertiesByUser = async (
         },
       },
       orderBy: {
-        createdAt: 'desc'
+        createdAt: 'desc',
       },
       take: 10,
     })
@@ -1452,12 +1454,12 @@ export const getPropertiesByUser = async (
     })
 
     res.status(200).json({
-        error: false,
-        message: 'Get properties by user success',
-        data: {
-            propertyByRecentBooks,
-            propertyByHistoryView,
-        }
+      error: false,
+      message: 'Get properties by user success',
+      data: {
+        propertyByRecentBooks,
+        propertyByHistoryView,
+      },
     })
   } catch (error) {
     next(error)

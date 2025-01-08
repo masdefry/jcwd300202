@@ -1,5 +1,5 @@
-import prisma from "@/prisma";
-import { NextFunction, Request, Response } from "express";
+import prisma from '@/prisma'
+import { NextFunction, Request, Response } from 'express'
 
 // export const getHistoryView = async(req: Request, res: Response, next: NextFunction) => {
 //     try {
@@ -12,7 +12,7 @@ import { NextFunction, Request, Response } from "express";
 //         })
 
 //         if(!isUserExist?.id || isUserExist?.deletedAt) throw { msg: 'User not found!', status: 406 }
-//         if(isUserExist?.role !== role) throw { msg: 'Role unauthorized!', status: 406 }
+//         if(isUserExist?.role !== role) throw { msg: 'Role unauthorized!', status: 401 }
 //         if(!isUserExist?.isVerified) throw { msg: 'User not verified!', status: 406 }
 
 //         const userHistoryViews = await prisma.historyView.findMany({
@@ -36,42 +36,47 @@ import { NextFunction, Request, Response } from "express";
 //     }
 // }
 
-export const createUserHistoryView = async(req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { id, role } = req.body
-        const { slug } = req.params
+export const createUserHistoryView = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id, role } = req.body
+    const { slug } = req.params
 
-        const isUserExist = await prisma.user.findUnique({
-            where: {
-                id
-            }
-        })
-            
-        if(!isUserExist?.id || isUserExist?.deletedAt) throw { msg: 'User not found!', status: 406 }
-        if(isUserExist?.role !== role) throw { msg: 'Role unauthorized!', status: 406 }
+    const isUserExist = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+    })
 
-        const getProperty = await prisma.property.findFirst({
-            where: {
-                slug
-            }
-        })
+    if (!isUserExist?.id || isUserExist?.deletedAt)
+      throw { msg: 'User not found!', status: 406 }
+    if (isUserExist?.role !== role)
+      throw { msg: 'Role unauthorized!', status: 401 }
 
-        if(!getProperty?.id) throw { msg: 'Property not found!', status: 406 }
+    const getProperty = await prisma.property.findFirst({
+      where: {
+        slug,
+      },
+    })
 
-        const createdUserHistoryView = await prisma.historyView.create({
-            data: {
-                userId: id,
-                propertyId: getProperty?.id
-            }
-        })
+    if (!getProperty?.id) throw { msg: 'Property not found!', status: 406 }
 
-        res.status(201).json({
-            error: false,
-            message: "Create user history view success",
-            data: createdUserHistoryView
-        })
+    const createdUserHistoryView = await prisma.historyView.create({
+      data: {
+        userId: id,
+        propertyId: getProperty?.id,
+      },
+    })
 
-    } catch (error) {
-        next(error)
-    }
+    res.status(201).json({
+      error: false,
+      message: 'Create user history view success',
+      data: createdUserHistoryView,
+    })
+  } catch (error) {
+    next(error)
+  }
 }

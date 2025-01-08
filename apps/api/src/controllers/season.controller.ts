@@ -595,3 +595,160 @@ export const createSeasonalAvailabiltyByProperty = async(req: Request, res: Resp
     next(error)
   }
 }
+
+export const updateManySeasonsByPropertySeason = async(req: Request, res: Response, next: NextFunction) => {
+  try {
+    const {
+      id,
+      role,
+      seasonId,
+      roomsToSell,
+      availability,
+      propertyRoomTypeId,
+      name,
+      startDate,
+      endDate,
+      isPeak,
+    } = req.body
+
+    const { slug } = req.params
+
+    const isTenantExist = await prisma.tenant.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!isTenantExist?.id || isTenantExist?.deletedAt)
+      throw { msg: 'Tenant not found!', status: 406 }
+    if (isTenantExist?.role !== role)
+      throw { msg: 'Role unauthorized!', status: 401 }
+    if (!isTenantExist?.isVerified)
+      throw { msg: 'Tenant not verified!', status: 406 }
+
+    const isPropertyExist = await prisma.property.findFirst({
+      where: {
+        slug
+      },
+      include: {
+        propertyRoomType: {
+          include: {
+            season: true
+          }
+        }
+      }
+    })
+
+    if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+    if (isPropertyExist?.tenantId !== id)
+      throw { msg: 'Actions not permitted!', status: 406 }
+
+    const isPropertyRoomTypesExist = await prisma.propertyRoomType.findMany({
+      where: {
+        id: {
+          in: isPropertyExist?.propertyRoomType.map(item => item?.id)
+        },
+        deletedAt: null
+      },
+    })
+
+    if (isPropertyRoomTypesExist.length <= 0)
+      throw { msg: 'Room type not found!', status: 406 }
+
+    let filterredSeasonByPropertySeason = isPropertyExist?.propertyRoomType[0]?.season.filter((item) => {
+      let isPropertySeasonExist = true
+      isPropertyExist?.propertyRoomType?.filter(room => {
+        const findIndexSameSeason = room?.season?.findIndex(season => {
+          return (season.name === item.name) && (season.startDate.toString() == item.startDate.toString()) && (season.endDate.toString() == item.endDate.toString())  
+        })
+      })
+      return isPropertySeasonExist
+    })
+
+    const findPropertySeasonalPrice = await prisma.season.findMany({
+      where: {
+        id: {
+          in: filterredSeasonByPropertySeason.map(item => item?.id)
+        }
+      },
+      include: {
+        seasonalPrice: true
+      }
+    })
+
+    let createdSeasons: any, createdSeasonalPrices
+    await prisma.$transaction(async (tx) => {
+      const deletedSeasonalPrice = await tx.seasonalPrice.deleteMany({
+        where: {
+          seasonId: {
+            in: findPropertySeasonalPrice.map(item => item.id)
+          }
+        },
+      })
+
+      const deletedSeason = await tx.season.deleteMany({
+        where: {
+          id: {
+            in: findPropertySeasonalPrice.map(item => item.id)
+          }
+        },
+      })
+
+      const dataForCreateManySeason = isPropertyExist?.propertyRoomType.map((item) => {
+        return {
+          propertyRoomTypeId: item?.id,
+          propertyId: isPropertyExist?.id,
+          name,
+          startDate: new Date(startDate.split('T')[0]).toISOString(),
+          endDate: new Date(endDate.split('T')[0]).toISOString(),
+        }
+      })
+
+      createdSeasons = await tx.season.createManyAndReturn({
+        data: dataForCreateManySeason
+      })
+
+      if (createdSeasons?.length <= 0)
+        throw { msg: 'Create season failed!', status: 500 }
+
+
+      const dataToCreateSeasonalPrices = createdSeasons?.map((item: any, indexCreatedSeason: number) => {
+        const price = isPropertyExist?.propertyRoomType[indexCreatedSeason].price
+        const totalRooms = isPropertyExist?.propertyRoomType[indexCreatedSeason].totalRooms
+        return (
+          Array.from({
+            length: differenceInDays(new Date(endDate), new Date(startDate)) + 1,
+          }).map((_, index) => {
+            return {
+              price,
+              propertyId: isPropertyExist?.id,
+              seasonId: item?.id as number,
+              propertyRoomTypeId: item?.propertyRoomTypeId,
+              roomAvailability: availability,
+              isPeak,
+              isStartSeason: Boolean(new Date(addDays(startDate.split('T')[0], index)).toISOString() ===  new Date(startDate.split('T')[0]).toISOString()),
+              isEndSeason: Boolean(new Date(addDays(startDate.split('T')[0], index)).toISOString() ===  new Date(endDate.split('T')[0]).toISOString()),
+              roomToRent: totalRooms,
+              date: new Date(addDays(startDate.split('T')[0], index)).toISOString(),
+            }
+          })
+        )
+      }).flat()
+
+      createdSeasonalPrices = await tx.seasonalPrice.createMany({
+        data: dataToCreateSeasonalPrices,
+      })
+    })
+    
+    res.status(200).json({
+      error: false,
+      message: 'Update seasonal price success',
+      data: {
+        updatedSeasons: createdSeasons,
+        updatedSeasonalPrices: createdSeasonalPrices,
+      },
+    })
+  } catch (error) {
+    next(error)
+  }
+}

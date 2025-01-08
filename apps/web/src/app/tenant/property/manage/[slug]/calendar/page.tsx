@@ -17,7 +17,7 @@ import 'rsuite/Calendar/styles/index.css';
 import { Calendar } from 'rsuite'
 import { differenceInDays } from 'date-fns'
 
-const CalendarPage = ({ params }: { params: { slug: string } }) => {
+const CalendarPage = ({ params, searchParams }: { params: { slug: string }, searchParams: { view: string} }) => {
   const { data: dataSeasonsByProperty, isPending: isPendingSeasonsByProperty } =
     useQuery({
       queryKey: ['getSeasonsByProperty'],
@@ -27,7 +27,7 @@ const CalendarPage = ({ params }: { params: { slug: string } }) => {
         return res?.data?.data
       },
     })
-  const [dateRange, setDateRange] = useState<{ startDate: string | null, endDate: string | null}>({
+  const [dateRange, setDateRange] = useState<{ startDate: string | null, endDate: string | null, id?: string | number, name?: string}>({
     startDate: null,
     endDate: null
   })
@@ -135,8 +135,6 @@ const CalendarPage = ({ params }: { params: { slug: string } }) => {
   const { mutate: mutateCreatePropertySeason, isPending: isPendingCreatePropertySeason } =
     useMutation({
       mutationFn: async (values: any) => {
-        console.log('MUTATEPROPETYAHHAH', values)
-
         const res = await instance.post(`/season/${params?.slug}`, {
           availability: values?.availability,
           propertyRoomTypeId: values?.propertyRoomTypeId,
@@ -214,7 +212,6 @@ const CalendarPage = ({ params }: { params: { slug: string } }) => {
         ))
       },
     })
-  //i want to have click and drag to choose multiple dates, what event javascript i must use? btw i use tsx
 
   const [month, setMonth] = useState(new Date().getMonth())
   const [year, setYear] = useState(new Date().getFullYear())
@@ -239,9 +236,12 @@ const CalendarPage = ({ params }: { params: { slug: string } }) => {
             View:
           </label>
           <select
-            onChange={(e) => setViewMode(e.target.value)}
+            onChange={(e) =>{ 
+              searchParams.view = e.target.value
+              setViewMode(e.target.value)
+            }}
             name="view"
-            defaultValue="list-view"
+            defaultValue={searchParams.view || "list-view"}
             id="view"
             className="hover:cursor-pointer bg-gray-50 border border-slate-300 text-gray-800 text-xs font-semibold rounded-full h-[3em] p-1.5 px-2 focus:outline-none focus:ring-slate-400 focus:border-slate-400 block w-[200px] min-w-max dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
@@ -406,13 +406,17 @@ const CalendarPage = ({ params }: { params: { slug: string } }) => {
                         <div className="  justify-center items-end p-2 text-sm font-medium text-gray-600 w-full flex flex-col gap-2 h-[45px]">
                           <span className="flex items-center">
                             {seasonIdx > -1
-                              ? Math.round(
-                                  Number(
-                                    dataSeasonsByProperty?.seasons[seasonIdx]?.price,
-                                  ) / 1000,
+                              ? (
+                                Number(dataSeasonsByProperty?.seasons[seasonIdx]?.price) > 100000 ? 
+                                Number(dataSeasonsByProperty?.seasons[seasonIdx]?.price / 1000000).toFixed(1).toString()+'M' : 
+                                Number(dataSeasonsByProperty?.seasons[seasonIdx]?.price).toString().slice(0, -3)+'K'
                                 )
-                              : Math.round(Number(item?.price) / 1000)}
-                            <span className="ml-1">K</span>
+                              : ( 
+                                Number(item?.price) > 100000 ? 
+                                Number(item?.price / 1000000).toFixed(1).toString()+'M' : 
+                                Number(item?.price).toString().slice(0, -3)+'K'
+                                )}
+                            
                           </span>
                         </div>
                       </div>
@@ -433,8 +437,30 @@ const CalendarPage = ({ params }: { params: { slug: string } }) => {
           <div className='w-full flex items-center'>
           <Calendar
           onSelect={(date) => { 
-          handleDateRange(addHours(date, 7))
-          setChangeDate((state) => !state)
+            let seasonStartDate: any;
+            let seasonEndDate: any;
+            let seasonId: any;
+            let seasonName: any
+            dataSeasonsByProperty?.propertySeasons?.forEach((seasonalPrice: any, index: number) => {
+              const getIndex = seasonalPrice?.seasonalPrice?.findIndex((season: any) => (season?.date === addHours(date, 7).toISOString()) && (season?.propertyId === dataSeasonsByProperty?.property?.id))
+              if(getIndex > -1) {
+                seasonStartDate = seasonalPrice?.startDate
+                seasonEndDate = seasonalPrice?.endDate
+                seasonId = seasonalPrice?.id
+                seasonName = seasonalPrice?.name
+              }
+            })
+            if(seasonId) {
+              setDateRange({
+                startDate: seasonStartDate,
+                endDate: seasonEndDate,
+                id: seasonId,
+                name: seasonName 
+              })
+            } else {
+              handleDateRange(addHours(date, 7))
+            }
+            setChangeDate((state) => !state)
           }}
           cellClassName={(date) => {
             let rangeDateArr: any[] = []
@@ -459,6 +485,9 @@ const CalendarPage = ({ params }: { params: { slug: string } }) => {
             let isStartSeason;
             let isEndSeason;
             let isAvailable;
+            let seasonStartDate: any;
+            let seasonEndDate: any;
+            let seasonId: any;
             dataSeasonsByProperty?.propertySeasons?.forEach((seasonalPrice: any, index: number) => {
               const getIndex = seasonalPrice?.seasonalPrice?.findIndex((season: any) => (season?.date === addHours(date, 7).toISOString()) && (season?.propertyId === dataSeasonsByProperty?.property?.id))
               if(getIndex > -1) {
@@ -467,6 +496,9 @@ const CalendarPage = ({ params }: { params: { slug: string } }) => {
                 isEndSeason = seasonalPrice?.seasonalPrice[getIndex]?.isEndSeason
                 isStartSeason = seasonalPrice?.seasonalPrice[getIndex]?.isStartSeason
                 isAvailable = seasonalPrice?.seasonalPrice[getIndex]?.roomAvailability
+                seasonStartDate = seasonalPrice?.startDate
+                seasonEndDate = seasonalPrice?.endDate
+                seasonId = seasonalPrice?.id
               }
             })
 
@@ -527,18 +559,14 @@ const CalendarPage = ({ params }: { params: { slug: string } }) => {
                     }
                   
               {
-                // untuk yang pertengahan
-                // untuk isStartSeason
-
-                // untuk isEndSeason
                 selectRoom === 'all-rooms' ? (
                 <div className='w-full h-fit flex items-center justify-center p-1.5'>
-                  <p>{Number(lowestPrice) > 100000 ? Number(lowestPrice).toString().slice(0, -6)+'M' : Number(lowestPrice).toString().slice(0, -3)+'K'}</p>
+                  <p>{Number(lowestPrice) > 100000 ? Number(lowestPrice / 1000000).toFixed(1).toString()+'M' : Number(lowestPrice).toString().slice(0, -3)+'K'}</p>
                   <p>-</p>
-                  <p>{Number(highestPrice) > 100000 ? Number(highestPrice).toString().slice(0, -6)+'M' : Number(highestPrice).toString().slice(0, -3)+'K'}</p>
+                  <p>{Number(highestPrice) > 100000 ? Number(highestPrice / 1000000).toFixed(1).toString()+'M' : Number(highestPrice).toString().slice(0, -3)+'K'}</p>
                 </div>
                 ) : (
-                  <p>{Number(roomPrice) > 100000 ? Number(roomPrice).toString().slice(0, -6)+'M' : Number(roomPrice).toString().slice(0, -3)+'K'}</p>
+                  <p>{Number(roomPrice) > 100000 ? Number(roomPrice / 1000000).toFixed(1).toString()+'M' : Number(roomPrice).toString().slice(0, -3)+'K'}</p>
                 )
               }
             </div>
@@ -564,7 +592,7 @@ const CalendarPage = ({ params }: { params: { slug: string } }) => {
               dataRoomPerDate?.seasonalPrice?.roomAvailability || false,
             propertyRoomTypeId:
               dataRoomPerDate?.season?.propertyRoomTypeId || '',
-            name: dataRoomPerDate?.season?.name || '',
+            name: dataRoomPerDate?.season?.name || dateRange?.name || '',
             startDate: dataRoomPerDate?.season?.startDate || new Date(),
             endDate: dataRoomPerDate?.season?.endDate || new Date(),
             isPeak: dataRoomPerDate?.seasonalPrice?.isPeak || false,

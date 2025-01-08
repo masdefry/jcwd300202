@@ -6,6 +6,7 @@ import authStore from '@/zustand/authStore'
 import { usePathname, useRouter } from 'next/navigation'
 import { IAuthProviderProps } from './types'
 import { useQuery } from '@tanstack/react-query';
+import LoadingMain from '@/app/loading';
 
 export default function AuthProvider({children}: IAuthProviderProps){
     const router = useRouter()
@@ -18,7 +19,24 @@ export default function AuthProvider({children}: IAuthProviderProps){
     useQuery({
         queryKey: ["token"],
         queryFn: () => {
-            if(pathname.split('/').includes('auth') && Boolean(token)) return setTimeout(() => router.push('/') , 1000)
+            if(pathname.split('/').includes('auth') && Boolean(token)) {
+                setTimeout(() =>{ 
+                    router.push('/')
+                    setLoading(false)
+                } , 1500)
+            } else if ((pathname.split('/').includes('tenant')) && !Boolean(token)){
+                setTimeout(() =>{ 
+                    router.push('/tenant/auth')
+                    setLoading(false)
+                } , 1500)
+            } else if((pathname.split('/').includes('booking') || pathname.split('/').includes('transactions')) && !Boolean(token)) {
+                setTimeout(() =>{ 
+                    router.push('/auth')
+                    setLoading(false)
+                } , 1500)
+            } else {
+                setLoading(false)
+            }
             return ""
         }
     })
@@ -35,10 +53,17 @@ export default function AuthProvider({children}: IAuthProviderProps){
                 country: res?.data?.data?.country,
                 companyName: res?.data?.data?.companyName
             })
-            console.log(res)
             return res?.data?.data
         }
     })
+
+    if(loading) {
+        return (
+            <>
+            <LoadingMain/>
+            </>
+        )
+    }
     // useEffect(() => {
     // }, [])
     // // const fetchKeepAuth = async() => {

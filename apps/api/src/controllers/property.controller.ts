@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express'
 import { v4 as uuidV4 } from 'uuid'
 import { getRoomTypeService } from '@/services/property.service'
 import { deleteFiles } from '@/utils/deleteFiles'
-import { addDays, differenceInDays, format } from 'date-fns'
+import { addDays, addHours, differenceInDays, format } from 'date-fns'
 
 export const createProperty = async (
   req: Request,
@@ -1105,6 +1105,9 @@ export const getPropertyDescriptions = async (
       },
       include: {
         propertyDetail: true,
+        propertyType: true,
+        city: true,
+        country: true
       },
     })
     if (!getProperty?.id) throw { msg: 'Property not found!', status: 406 }
@@ -1127,7 +1130,6 @@ export const getPropertyDescriptions = async (
       },
     })
   } catch (error) {
-    console.log(error)
     next(error)
   }
 }
@@ -1171,6 +1173,7 @@ export const updatePropertyDescriptions = async (
     })
 
     if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+    if (isPropertyExist?.tenantId !== id) throw { msg: 'Actions not permitted!', status: 406 }
 
     const dataForUpdatePropertyDescriptions = {
       propertyDescription,
@@ -1465,3 +1468,132 @@ export const getPropertiesByUser = async (
     next(error)
   }
 }
+
+export const updatePropertyGeneralInfo = async(req: Request, res: Response,next: NextFunction) => {
+  try {
+    const { slug } = req.params
+    const {
+      id,
+      role,
+      name,
+      address,
+      zipCode,
+      location,
+      cityId,
+      countryId,
+      checkInStartTime,
+      checkInEndTime,
+      checkOutStartTime,
+      checkOutEndTime,
+      star, 
+      phoneNumber,
+      url,
+    } = req.body
+    const isTenantExist = await prisma.tenant.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!isTenantExist?.id || isTenantExist?.deletedAt)
+      throw { msg: 'Tenant not found!', status: 406 }
+    if (isTenantExist?.role !== role)
+      throw { msg: 'Role unauthorized!', status: 401 }
+
+    const isPropertyExist = await prisma.property.findFirst({
+      where: {
+        slug,
+      },
+      include: {
+        propertyDetail: true,
+      },
+    })
+
+    if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+    if (isPropertyExist?.tenantId !== id) throw { msg: 'Actions not permitted!', status: 406 }
+
+    let newSlug;
+    if(isPropertyExist?.name !== name) {
+      newSlug = `${name.toLowerCase().split(' ').join('-')}-${isPropertyExist?.id}`
+    }
+
+    const updatedProperty = await prisma.property.update({
+      where: {
+        id: isPropertyExist?.id
+      },
+      data: {
+        name,
+        address,
+        zipCode,
+        location,
+        cityId,
+        countryId,
+        checkInStartTime: addHours(
+          new Date(
+            new Date().toISOString().split('T')[0] +
+              'T' +
+              checkInStartTime +
+              ':00',
+          ), 7
+        ) 
+        ,
+        checkInEndTime: checkInEndTime
+          ? addHours(
+          new Date(
+              new Date().toISOString().split('T')[0] +
+                'T' +
+                checkInEndTime +
+                ':00',
+              ), 7
+            ) 
+          : null,
+        checkOutStartTime: checkOutStartTime
+          ?  addHours(
+          new Date(
+              new Date().toISOString().split('T')[0] +
+                'T' +
+                checkOutStartTime +
+                ':00',
+              ), 7
+            ) 
+          : null,
+        checkOutEndTime:addHours(
+         new Date(
+          new Date().toISOString().split('T')[0] +
+            'T' +
+            checkOutEndTime +
+            ':00',
+          ), 7
+        ), 
+        star, 
+        slug: newSlug || slug
+      }
+    })
+
+    if(!updatedProperty) throw { msg: 'Update property general info failed!', status: 500 }
+    
+    const updatedPropertyDetail = await prisma.propertyDetail.update({
+      where: {
+        propertyId: isPropertyExist?.id
+      },
+      data: {
+        phoneNumber,
+        url,
+      }
+    })
+
+    if(!updatedPropertyDetail) throw { msg: 'Update property general info failed!', status: 500 }
+
+    res.status(200).json({
+      error: false,
+      message: 'Update property general info success',
+      data: {
+        updatedProperty,
+        updatedPropertyDetail
+      }
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+

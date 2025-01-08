@@ -35,7 +35,7 @@ const TenantManagePropertyLayout = ({ children }: { children: ReactNode }) => {
         <Link href={`/tenant/property/manage/${pathname.split('/')[4]}/photos`}>
           <div className='text-[10px] font-base flex flex-col gap-1.5 p-4 items-center justify-center hover:border-white hover:scale-105 active:opacity-75 transition duration-100 border-b-4 border-transparent'>
           <MdOutlinePhotoLibrary className='text-2xl' />  
-              Pictures
+              Photos
           </div>
         </Link>
         <Link href={`/tenant/property/manage/${pathname.split('/')[4]}/room-details`}>

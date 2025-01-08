@@ -56,10 +56,7 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
     const token = authStore(state => state.token)
     const router = useRouter()
     const handleUnauthorizedUser = () => {
-        toast.error('Please login first!')
-        setTimeout(() => {
-            router.push('/auth')
-        }, 1500)
+        toast.error('Please Login First!')
     }
     const { data: dataPropertyDetail, isPending: isPendingPropertyDetail } = useQuery({
         queryKey: ['getPropertyDetail'],
@@ -361,8 +358,8 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                                                         <button disabled={item?.totalRoomsLeft <= 0} className='disabled:bg-slate-300 disabled:opacity-100 disabled:text-white disabled:scale-100 my-auto italic text-sm font-bold min-w-max px-8 py-3 rounded-full bg-blue-800 text-white hover:opacity-75 active:scale-95 transition duration-100' type='button'>{item?.totalRoomsLeft <= 0 ? 'Not available' : 'Book now'}</button>
                                                     </Link>
                                                 ) : (
-                                                    <Link href='#'>
-                                                        <button onClick={handleUnauthorizedUser} disabled={item?.totalRoomsLeft <= 0} className='disabled:bg-slate-300 disabled:opacity-100 disabled:text-white disabled:scale-100 my-auto italic text-sm font-bold min-w-max px-8 py-3 rounded-full bg-blue-800 text-white hover:opacity-75 active:scale-95 transition duration-100' type='button'>{item?.totalRoomsLeft <= 0 ? 'Not available' : 'Book now'}</button>
+                                                    <Link href='/auth'>
+                                                        <button  disabled={item?.totalRoomsLeft <= 0} className='disabled:bg-slate-300 disabled:opacity-100 disabled:text-white disabled:scale-100 my-auto italic text-sm font-bold min-w-max px-8 py-3 rounded-full bg-blue-800 text-white hover:opacity-75 active:scale-95 transition duration-100' type='button'>{item?.totalRoomsLeft <= 0 ? 'Not available' : 'Book now'}</button>
                                                     </Link>
                                                 )
                                             }

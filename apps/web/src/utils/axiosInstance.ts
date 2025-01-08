@@ -23,9 +23,10 @@ instance.interceptors.response.use(
         return res
     },
     (error) => {
+        console.log(error)
         if(error?.response?.data?.message === 'jwt expired') {
-            const setLogOut = authStore((state) => state.setLogOut)
-            setLogOut()
+            const setLogout = authStore((state) => state.setLogout())
+            setLogout()
         
             window.location.href = '/'
         }

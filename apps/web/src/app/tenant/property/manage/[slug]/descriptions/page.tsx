@@ -51,10 +51,10 @@ const PropertyManageDescriptionPage = ({ params }: { params: { slug: string } })
   const [ isSubmitting, setIsSubmitting ] = useState(false)
   return (
     <main className='flex flex-col gap-5 p-5'>
-      <hgroup className='flex flex-col pb-5 border-b-4 border-slate-700'>
-        <h1 className='text-2xl font-bold text-gray-800'>Property Descriptions</h1>
-        <p className='text-sm font-medium text-gray-500'>Easily Update Your Property Description – Keep it Fresh, Keep it Yours!</p>
-      </hgroup>
+      <div className='flex flex-col'>
+        <h1 className='text-lg font-bold text-gray-800'>Property Descriptions</h1>
+        <p className='text-sm font-medium text-slate-600'>Easily Update Your Property Description – Keep it Fresh, Keep it Yours!</p>
+      </div>
       <section className='rounded-md text-sm font-bold shadow-md border border-slate-200 bg-white text-gray-800 flex items-center gap-1.5 px-5 py-3'>
         <div className='h-7 w-7 flex items-center justify-center rounded-full bg-blue-200'><MdTipsAndUpdates className='text-base text-blue-800'/></div>Keep It Accurate, Keep It Attractive – Update Your Property Today!
       </section>

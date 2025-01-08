@@ -44,7 +44,8 @@ export const createPropertyType = async(req: Request, res: Response, next: NextF
         })
 
         if(!isTenantExist?.id || isTenantExist?.deletedAt) throw { msg: 'Tenant not found!', status: 406 }
-
+        if(!isTenantExist.isVerified)  throw { msg: 'Tenant not verified!', status: 406 }
+        
         const isPropertyTypeExist = await prisma.propertyType.findFirst({
             where: {
                 name: {

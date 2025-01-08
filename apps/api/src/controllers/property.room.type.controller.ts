@@ -10,35 +10,35 @@ export const getPropertyRoomType = async (
   try {
     const { id } = req.params
 
-        const propertyRoomType = await prisma.propertyRoomType.findMany({
-            where: {
-                id: Number(id)
-            },
-            include: {
-                propertyRoomImage: true,
-                roomHasFacilities: {
-                    include: {
-                        propertyRoomFacility: true
-                    }
-                },
-                property: {
-                    select: {
-                        tenantId: true
-                    }
-                }
-            },
-            orderBy: {
-                price: 'asc'
-            },
-        })
+    const propertyRoomType = await prisma.propertyRoomType.findMany({
+      where: {
+        id: Number(id),
+      },
+      include: {
+        propertyRoomImage: true,
+        roomHasFacilities: {
+          include: {
+            propertyRoomFacility: true,
+          },
+        },
+        property: {
+          select: {
+            tenantId: true,
+          },
+        },
+      },
+      orderBy: {
+        price: 'asc',
+      },
+    })
 
-        res.status(200).json({
-            error: false,
-            message: 'Get property room type success',
-            data: {
-                propertyRoomType
-            }
-        })
+    res.status(200).json({
+      error: false,
+      message: 'Get property room type success',
+      data: {
+        propertyRoomType,
+      },
+    })
 
     // const propertyRoomType = await prisma.propertyRoomType.findMany({
     //   where: {
@@ -56,7 +56,6 @@ export const getPropertyRoomType = async (
     //     price: 'asc',
     //   },
     // })
-
 
     res.status(200).json({
       error: false,
@@ -81,7 +80,7 @@ export const getPropertyRoomTypeByProperty = async (
 
     const isPropertyExist = await prisma.property.findFirst({
       where: {
-        slug
+        slug,
       },
     })
 
@@ -215,16 +214,16 @@ export const getPropertyRoomTypeByProperty = async (
     //     }
     // })
 
-            // const isPropertyExist = await prisma.property.findFirst({
-            //     where: {
-            //         slug
-            //     }, 
-            //     select: {
-            //         id: true,
-            //         tenantId: true,
-            //         deletedAt: true
-            //     }
-            // })
+    // const isPropertyExist = await prisma.property.findFirst({
+    //     where: {
+    //         slug
+    //     },
+    //     select: {
+    //         id: true,
+    //         tenantId: true,
+    //         deletedAt: true
+    //     }
+    // })
 
     const seasonalPriceListView = propertyRoomType.map((room, roomIdx) => {
       return {
@@ -237,7 +236,6 @@ export const getPropertyRoomTypeByProperty = async (
         }),
       }
     })
-
 
     // let tes, tesfind
     // propertyRoomType.forEach((item, index) => {
@@ -395,7 +393,17 @@ export const updatePropertyRoomTypeGeneral = async (
   next: NextFunction,
 ) => {
   try {
-    const { name, totalRooms, rooms, bathrooms, capacity, price, id, role, propertyRoomTypeId } = req.body
+    const {
+      name,
+      totalRooms,
+      rooms,
+      bathrooms,
+      capacity,
+      price,
+      id,
+      role,
+      propertyRoomTypeId,
+    } = req.body
     const { slug } = req.params
 
     const isTenantExist = await prisma.tenant.findUnique({
@@ -407,7 +415,7 @@ export const updatePropertyRoomTypeGeneral = async (
     if (!isTenantExist?.id || isTenantExist?.deletedAt)
       throw { msg: 'Tenant not found!', status: 406 }
     if (isTenantExist.role !== role)
-      throw { msg: 'Role unauthorized!', status: 406 }
+      throw { msg: 'Role unauthorized!', status: 401 }
 
     const isPropertyExist = await prisma.property.findFirst({
       where: {
@@ -418,39 +426,41 @@ export const updatePropertyRoomTypeGeneral = async (
     if (!isPropertyExist?.id || isPropertyExist?.deletedAt)
       throw { msg: 'Property not found!', status: 406 }
     if (isPropertyExist?.tenantId !== id)
-        throw { msg: 'Actions not permitted!', status: 406 }
+      throw { msg: 'Actions not permitted!', status: 406 }
 
     const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
-        where: {
-            id: Number(propertyRoomTypeId)
-        }
+      where: {
+        id: Number(propertyRoomTypeId),
+      },
     })
 
     if (!isPropertyRoomTypeExist?.id || isPropertyRoomTypeExist?.deletedAt)
       throw { msg: 'Property room type not found!', status: 406 }
 
-    const updatedPropertyRoomTypeGeneral = await prisma.propertyRoomType.update({
+    const updatedPropertyRoomTypeGeneral = await prisma.propertyRoomType.update(
+      {
         where: {
-            id: Number(propertyRoomTypeId)
+          id: Number(propertyRoomTypeId),
         },
         data: {
-            name, 
-            totalRooms, 
-            rooms, 
-            bathrooms, 
-            capacity, 
-            price
-        }
-    })
+          name,
+          totalRooms,
+          rooms,
+          bathrooms,
+          capacity,
+          price,
+        },
+      },
+    )
 
-    if(updatedPropertyRoomTypeGeneral?.id) throw { msg: 'Update property room type failed!', status: 500 }
+    if (updatedPropertyRoomTypeGeneral?.id)
+      throw { msg: 'Update property room type failed!', status: 500 }
 
     res.status(200).json({
-        error: false,
-        message: 'Update property room type success',
-        data: updatedPropertyRoomTypeGeneral
+      error: false,
+      message: 'Update property room type success',
+      data: updatedPropertyRoomTypeGeneral,
     })
-
   } catch (error) {
     next(error)
   }

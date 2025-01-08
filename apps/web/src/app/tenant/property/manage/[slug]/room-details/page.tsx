@@ -20,7 +20,7 @@ const PropertyManageRoomDetailsPage = ({ params }: { params: { slug: string } })
         }
     })
   return (
-    <main className='flex flex-col gap-7'>
+    <main className='flex flex-col gap-7 py-5'>
         <hgroup className='flex flex-col px-5'>
         <h1 className='text-lg font-bold text-gray-800'>Room Details</h1>
         <p className='text-sm font-medium text-slate-600'>Easily Manage Your Space: Update Room Details Anytime, Anywhere</p>

@@ -77,6 +77,7 @@ const PropertyManageFacilitiesPage = ({ params, searchParams }: { params: { slug
       <hgroup className='flex flex-col px-5'>
         <h1 className='text-lg font-bold text-gray-800'>Facilities & Services</h1>
         <p className='text-sm font-medium text-slate-600'>Update Your Space: Let Us Know What You Need</p>
+
       </hgroup>
       <div className='flex flex-col px-5'>
         <input onChange={(e) => {

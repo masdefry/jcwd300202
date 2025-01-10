@@ -43,7 +43,11 @@ const nextConfig = {
                 pathname: '**'
             },
         ]
-    }
+    },
+    onDemandEntries: {
+        maxInactiveAge: 15 * 60 * 1000, 
+        pagesBufferLength: 4,
+      }
 }
 
 module.exports = nextConfig

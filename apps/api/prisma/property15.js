@@ -77,7 +77,7 @@ async function Property15 ({ tenantAccounts, countryId, cityId }) {
                 description: 'A modern and stylish studio apartment with a breathtaking skyline view. Perfect for solo travelers or couples seeking comfort and elegance.',
                 capacity: 2,
                 bathrooms: 1,
-                price: 8000,
+                price: 6000000,
                 totalRooms: 35,
                 propertyId: createdProperty15.id
             }
@@ -88,7 +88,7 @@ async function Property15 ({ tenantAccounts, countryId, cityId }) {
                 description: 'A cozy and well-designed one-bedroom suite with scenic park views. Ideal for small families, couples, or business travelers looking for comfort and convenience.',
                 capacity: 3,
                 bathrooms: 1,
-                price: 15000,
+                price: 8500000,
                 totalRooms: 30, 
                 propertyId: createdProperty15.id
             },
@@ -100,7 +100,7 @@ async function Property15 ({ tenantAccounts, countryId, cityId }) {
                 rooms: 3,
                 capacity: 6,
                 bathrooms: 3,
-                price: 50000,
+                price: 10000000,
                 totalRooms: 20,
                 propertyId: createdProperty15.id
             }

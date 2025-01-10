@@ -454,6 +454,7 @@ model Season {
   name      String
   startDate DateTime
   endDate   DateTime
+  ratesPercentage Int @default(100)
 
   seasonalPrice SeasonalPrice[]
 
@@ -472,6 +473,7 @@ model Season {
 
 model SeasonalPrice {
   id               Int      @id @default(autoincrement())
+
   price            Float
   date             DateTime
   isStartSeason    Boolean @default(false)

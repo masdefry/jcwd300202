@@ -60,10 +60,10 @@ const PropertyManageRoomDetailsPage = ({ params }: { params: { slug: string } })
                     )
                 })
             }
-            <div className='flex flex-col gap-1 items-center justify-center text-lg font-bold text-gray-900 h-[350px] w-[250px] rounded-2xl overflow-hidden shadow-md border-2 border-slate-800 hover:bg-slate-800 hover:text-white transition duration-100 hover:cursor-pointer active:scale-95'>
+            <Link href={`/tenant/property/manage/${params.slug}/room-details/add-room`} className='flex flex-col gap-1 items-center justify-center text-lg font-bold text-gray-900 h-[350px] w-[250px] rounded-2xl overflow-hidden shadow-md border-2 border-slate-800 hover:bg-slate-800 hover:text-white transition duration-100 hover:cursor-pointer active:scale-95'>
                 <CiCirclePlus className='text-2xl'/>
                 <p>Add a new room</p>
-            </div>
+            </Link>
         </section>
     </main>
   )

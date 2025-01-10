@@ -125,7 +125,7 @@ const footerNavMenu = [
 const Footer = () => {
   const pathname = usePathname()
 
-  if(pathname.includes('/auth') || pathname.includes('/tenant')) {
+  if(pathname.includes('/auth')) {
     return <></>
   }
   return (

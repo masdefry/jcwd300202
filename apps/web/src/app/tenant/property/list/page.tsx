@@ -13,6 +13,29 @@ import Link from 'next/link'
 import toast from 'react-hot-toast'
 
 const PropertyListPage = () => {
+  const params = new URLSearchParams();
+  const [ searchParamsWithValue, setSearchParamsWithValue ] = useState<any>([])
+  const handleSearchParams = (orderBy: string ,value: string) => {
+    let isOrderByExistIndex = -1
+    if(searchParamsWithValue.length > 0) {
+      isOrderByExistIndex =  searchParamsWithValue.findIndex((item: any) => item[0] === orderBy)
+    }
+    if(isOrderByExistIndex <= -1) {
+      setSearchParamsWithValue((state: any )=> {
+        state.push([orderBy, value])
+        return state
+      })
+    } else {
+      setSearchParamsWithValue((state: any )=> {
+        state[isOrderByExistIndex] = [orderBy, value]
+        return state
+      })
+    }
+    searchParamsWithValue.forEach((item: any) => {
+      params.set(item[0], item[1])
+    })
+    window.history.pushState({}, '', '?' + params.toString())
+  }
   const [ dataProperties, setDataProperties ] = useState<any>({})
   const { isPending: isPendingProperties } = useQuery({
     queryKey: ['getPropertiesByTenant'],
@@ -79,7 +102,7 @@ const PropertyListPage = () => {
       <section className='grid grid-cols-3 gap-3'>
         <div className='flex flex-col gap-1.5'>
             <label htmlFor="sort" className='text-xs min-w-max font-bold text-gray-900 flex items-center gap-1.5'><FaArrowUpShortWide />Sort by:</label>
-            <select defaultValue="asc-name" id="sort" className="bg-gray-50 border border-slate-300 text-gray-800 text-xs font-semibold rounded-md h-[3em] p-1.5 px-2 focus:outline-none focus:ring-slate-400 focus:border-slate-400 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <select onChange={(e) =>  handleSearchParams('sort', e.target.value)} defaultValue="asc-name" id="sort" className="bg-gray-50 border border-slate-300 text-gray-800 text-xs font-semibold rounded-md h-[3em] p-1.5 px-2 focus:outline-none focus:ring-slate-400 focus:border-slate-400 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                 <option value="asc-name">Ascending by Name</option>
                 <option value="desc-name">Descending by Name</option>
                 <option value="asc-reservation">Lowest to Highest Reservation</option>
@@ -94,8 +117,8 @@ const PropertyListPage = () => {
         </div>
         <div className='flex flex-col gap-1.5'>
             <label htmlFor="filter-select" className='text-xs min-w-max font-bold text-gray-900 flex items-center gap-1.5'><CgArrowsScrollV />Filter by:</label>
-            <select defaultValue="allProperties" id="filter-select" className="bg-gray-50 border border-slate-300 text-gray-800 text-xs font-semibold rounded-md h-[3em] p-1.5 px-2 focus:outline-none focus:ring-slate-400 focus:border-slate-400 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                <option value="allProperties">All Properties</option>
+            <select onChange={(e) =>  handleSearchParams('select', e.target.value)} defaultValue="" id="filter-select" className="bg-gray-50 border border-slate-300 text-gray-800 text-xs font-semibold rounded-md h-[3em] p-1.5 px-2 focus:outline-none focus:ring-slate-400 focus:border-slate-400 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                <option value="">All Properties</option>
                 <option value="open">Bookable/Open</option>
                 <option value="close">Unable to Order/Close</option>
             </select>

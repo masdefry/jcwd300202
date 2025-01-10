@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import { FaRegBuilding, FaRegCalendarDays, FaRegComments, FaWifi } from 'react-icons/fa6'
 import { TbFileDescription } from 'react-icons/tb'
 import { MdOutlineBedroomParent, MdOutlinePhotoLibrary, MdOutlineRoomService } from 'react-icons/md'
-import { IoStatsChart } from 'react-icons/io5'
+import { IoSettingsOutline, IoStatsChart } from 'react-icons/io5'
 
 const TenantManagePropertyLayout = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname()
@@ -66,6 +66,12 @@ const TenantManagePropertyLayout = ({ children }: { children: ReactNode }) => {
         <div className='text-[10px] font-base flex flex-col gap-1.5 p-4 items-center justify-center hover:border-white hover:scale-105 active:opacity-75 transition duration-100 border-b-4 border-transparent'>
         <IoStatsChart className='text-2xl' />
             Property Statistic
+        </div>
+        </Link>
+        <Link href={`#`}>
+        <div className='text-[10px] font-base flex flex-col gap-1.5 p-4 items-center justify-center hover:border-white hover:scale-105 active:opacity-75 transition duration-100 border-b-4 border-transparent'>
+        <IoSettingsOutline className='text-2xl' />
+            Settings
         </div>
         </Link>
       </nav>

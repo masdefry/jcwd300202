@@ -14,8 +14,6 @@ export const createProperty = async (
     const {
       id,
       role,
-      cityName,
-      countryName,
       cityId,
       countryId,
       name,
@@ -41,7 +39,18 @@ export const createProperty = async (
 
     if (Array.isArray(req.files))
       throw { msg: 'Images not found!', status: 406 }
+    
     const imagesUploaded: any = req?.files?.images
+    const isTenantExist = await prisma.tenant.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!isTenantExist?.id || isTenantExist?.deletedAt)
+      throw { msg: 'Tenant not found!', status: 406 }
+    if (isTenantExist?.role !== role)
+      throw { msg: 'Role unauthorized!', status: 401 }
 
     const uuid = uuidV4()
     const propertyId = uuid
@@ -616,11 +625,13 @@ export const getProperties = async (
       propertytypeidarr = '',
       propertyfacilityidarr = '',
       propertyroomfacilityidarr = '',
+      propertystararr = '',
     } = req.headers
 
     let numberedPropertyFacilityIdArr,
       numberedPropertyRoomFacilityIdArr,
-      numberedPropertyTypeIdArr
+      numberedPropertyTypeIdArr,
+      numberedPropertyStarArr
     let propertyFacilityFromPrisma, propertyRoomFacilityFromPrisma
     let city, country
     if (!sortBy) throw { msg: 'Sort parameter not found!', status: 406 }
@@ -663,6 +674,13 @@ export const getProperties = async (
       const propertyTypeIdStr = propertytypeidarr as string
       numberedPropertyTypeIdArr = propertyTypeIdStr.split(',')
       numberedPropertyTypeIdArr = numberedPropertyTypeIdArr.map((item) =>
+        Number(item),
+      )
+    }
+    if (propertystararr) {
+      const propertyStarStr = propertystararr as string
+      numberedPropertyStarArr = propertyStarStr.split(',')
+      numberedPropertyStarArr = numberedPropertyStarArr.map((item) =>
         Number(item),
       )
     }
@@ -712,7 +730,7 @@ export const getProperties = async (
             },
           }))
         : []
-
+           
     // const whereConditionLocation = [
 
     // ].filter(item => Object.keys(item).length)
@@ -764,6 +782,15 @@ export const getProperties = async (
                 in: numberedPropertyTypeIdArr,
               },
             },
+          }
+        : null,
+      propertystararr &&
+      numberedPropertyStarArr &&
+      numberedPropertyStarArr.length > 0
+        ? {
+           star: {
+                in: numberedPropertyStarArr,
+              },
           }
         : null,
     ]
@@ -1048,6 +1075,50 @@ export const getProperties = async (
       },
     )
 
+    const countPropertyWith2Star = await prisma.property.count({
+      where: {
+        id: {
+          in: propertiesWithoutLimit.map(
+            (item) => item?.id,
+          ),
+        },
+        star: 2
+      },
+    })
+
+    const countPropertyWith3Star = await prisma.property.count({
+      where: {
+        id: {
+          in: propertiesWithoutLimit.map(
+            (item) => item?.id,
+          ),
+        },
+        star: 3
+      },
+    })
+
+    const countPropertyWith4Star = await prisma.property.count({
+      where: {
+        id: {
+          in: propertiesWithoutLimit.map(
+            (item) => item?.id,
+          ),
+        },
+        star: 4
+      },
+    })
+
+    const countPropertyWith5Star = await prisma.property.count({
+      where: {
+        id: {
+          in: propertiesWithoutLimit.map(
+            (item) => item?.id,
+          ),
+        },
+        star: 5
+      },
+    })
+
     res.status(200).json({
       error: false,
       message: 'Get properties success',
@@ -1067,6 +1138,12 @@ export const getProperties = async (
           propertyFacilityCounter,
           propertyRoomFacility,
           propertyRoomFacilityCounter,
+          countPropertyWithStar: [
+            countPropertyWith5Star,
+            countPropertyWith4Star,
+            countPropertyWith3Star,
+            countPropertyWith2Star,
+          ]
         },
         country,
         city,
@@ -1107,7 +1184,7 @@ export const getPropertyDescriptions = async (
         propertyDetail: true,
         propertyType: true,
         city: true,
-        country: true
+        country: true,
       },
     })
     if (!getProperty?.id) throw { msg: 'Property not found!', status: 406 }
@@ -1173,7 +1250,8 @@ export const updatePropertyDescriptions = async (
     })
 
     if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
-    if (isPropertyExist?.tenantId !== id) throw { msg: 'Actions not permitted!', status: 406 }
+    if (isPropertyExist?.tenantId !== id)
+      throw { msg: 'Actions not permitted!', status: 406 }
 
     const dataForUpdatePropertyDescriptions = {
       propertyDescription,
@@ -1469,7 +1547,11 @@ export const getPropertiesByUser = async (
   }
 }
 
-export const updatePropertyGeneralInfo = async(req: Request, res: Response,next: NextFunction) => {
+export const updatePropertyGeneralInfo = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { slug } = req.params
     const {
@@ -1485,7 +1567,7 @@ export const updatePropertyGeneralInfo = async(req: Request, res: Response,next:
       checkInEndTime,
       checkOutStartTime,
       checkOutEndTime,
-      star, 
+      star,
       phoneNumber,
       url,
     } = req.body
@@ -1510,16 +1592,17 @@ export const updatePropertyGeneralInfo = async(req: Request, res: Response,next:
     })
 
     if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
-    if (isPropertyExist?.tenantId !== id) throw { msg: 'Actions not permitted!', status: 406 }
+    if (isPropertyExist?.tenantId !== id)
+      throw { msg: 'Actions not permitted!', status: 406 }
 
-    let newSlug;
-    if(isPropertyExist?.name !== name) {
+    let newSlug
+    if (isPropertyExist?.name !== name) {
       newSlug = `${name.toLowerCase().split(' ').join('-')}-${isPropertyExist?.id}`
     }
 
     const updatedProperty = await prisma.property.update({
       where: {
-        id: isPropertyExist?.id
+        id: isPropertyExist?.id,
       },
       data: {
         name,
@@ -1534,66 +1617,70 @@ export const updatePropertyGeneralInfo = async(req: Request, res: Response,next:
               'T' +
               checkInStartTime +
               ':00',
-          ), 7
-        ) 
-        ,
+          ),
+          7,
+        ),
         checkInEndTime: checkInEndTime
           ? addHours(
-          new Date(
-              new Date().toISOString().split('T')[0] +
-                'T' +
-                checkInEndTime +
-                ':00',
-              ), 7
-            ) 
+              new Date(
+                new Date().toISOString().split('T')[0] +
+                  'T' +
+                  checkInEndTime +
+                  ':00',
+              ),
+              7,
+            )
           : null,
         checkOutStartTime: checkOutStartTime
-          ?  addHours(
-          new Date(
-              new Date().toISOString().split('T')[0] +
-                'T' +
-                checkOutStartTime +
-                ':00',
-              ), 7
-            ) 
+          ? addHours(
+              new Date(
+                new Date().toISOString().split('T')[0] +
+                  'T' +
+                  checkOutStartTime +
+                  ':00',
+              ),
+              7,
+            )
           : null,
-        checkOutEndTime:addHours(
-         new Date(
-          new Date().toISOString().split('T')[0] +
-            'T' +
-            checkOutEndTime +
-            ':00',
-          ), 7
-        ), 
-        star, 
-        slug: newSlug || slug
-      }
+        checkOutEndTime: addHours(
+          new Date(
+            new Date().toISOString().split('T')[0] +
+              'T' +
+              checkOutEndTime +
+              ':00',
+          ),
+          7,
+        ),
+        star,
+        slug: newSlug || slug,
+      },
     })
 
-    if(!updatedProperty) throw { msg: 'Update property general info failed!', status: 500 }
-    
+    if (!updatedProperty)
+      throw { msg: 'Update property general info failed!', status: 500 }
+
     const updatedPropertyDetail = await prisma.propertyDetail.update({
       where: {
-        propertyId: isPropertyExist?.id
+        propertyId: isPropertyExist?.id,
       },
       data: {
         phoneNumber,
         url,
-      }
+      },
     })
 
-    if(!updatedPropertyDetail) throw { msg: 'Update property general info failed!', status: 500 }
+    if (!updatedPropertyDetail)
+      throw { msg: 'Update property general info failed!', status: 500 }
 
     res.status(200).json({
       error: false,
       message: 'Update property general info success',
       data: {
         updatedProperty,
-        updatedPropertyDetail
-      }
+        updatedPropertyDetail,
+      },
     })
   } catch (error) {
     next(error)
   }
 }
-

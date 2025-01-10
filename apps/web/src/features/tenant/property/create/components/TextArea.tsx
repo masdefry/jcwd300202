@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Field } from 'formik'
+import { ErrorMessage, Field } from 'formik'
 import { Label } from '@/components/ui/label'
 
 interface ITextAreaCustomProps {
@@ -25,6 +25,7 @@ const TextAreaCustom = ({ labelName, name, placeholder }: ITextAreaCustomProps) 
         placeholder={placeholder}
         className="w-full px-2 h-[100px] py-1.5 border-2 border-slate-300 text-sm placeholder-shown:text-sm rounded-md focus:outline-none focus:border-blue-600"
         />
+        <ErrorMessage name={name} component={'div'} className='text-red-600 text-xs font-bold bg-red-200 rounded-full p-1 px-5'/>
     </div>
   )
 }

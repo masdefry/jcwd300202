@@ -14,6 +14,7 @@ import { IoClose, IoCloudUploadOutline } from 'react-icons/io5'
 import { GiModernCity } from 'react-icons/gi'
 import { FaMountainCity } from 'react-icons/fa6'
 import Image from 'next/image'
+import { createPropertyValidationSchema } from '@/features/tenant/property/create/schemas/createPropertyValidationSchema'
 import {
   Card,
   CardContent,
@@ -29,6 +30,11 @@ import instance from '@/utils/axiosInstance'
 import toast from 'react-hot-toast'
 import { FaRegBuilding, FaRegTrashCan } from 'react-icons/fa6'
 import { BsBuildingSlash } from 'react-icons/bs'
+import Rate from 'rsuite/Rate'
+import SelectPicker from 'rsuite/SelectPicker'
+
+import 'rsuite/SelectPicker/styles/index.css'
+import 'rsuite/Rate/styles/index.css'
 
 const CreatePropertyPage = () => {
   const [roomFacilities, setRoomFacilities] = useState<any[]>([[]])
@@ -53,7 +59,25 @@ const CreatePropertyPage = () => {
     name: '',
     description: '',
   })
-
+  const [cityId, setCityId] = useState<null | number>(null)
+  const [
+    showCreatePropertyRoomFacilityForm,
+    setShowCreatePropertyRoomFacilityForm,
+  ] = useState(false)
+  // const [
+  //   showCreatePropertyFacilityForm,
+  //   setShowCreatePropertyFacilityForm,
+  // ] = useState(false)
+  const [dataCreatePropertyRoomFacility, setDataCreatePropertyRoomFacility] =
+    useState({
+      name: '',
+      file: [] as File[],
+    })
+  // const [dataCreatePropertyFacility, setDataCreatePropertyFacility] =
+  //   useState({
+  //     name: '',
+  //     file: [] as File[],
+  //   })
   const {
     mutate: mutateCreatePropertyFacility,
     isPending: isPendingCreatePropertyFacility,
@@ -102,7 +126,7 @@ const CreatePropertyPage = () => {
       return res?.data?.data
     },
   })
-  const [dataPropertyTypes, setDataPropertyTypes] = useState<any>([])
+  // const [dataPropertyTypes, setDataPropertyTypes] = useState<any>([])
   const handleClearInputPropertyType = () => {
     setInputPropertyType('')
   }
@@ -142,62 +166,151 @@ const CreatePropertyPage = () => {
       console.log(err?.response?.data?.message || 'Connection error!')
     },
   })
+  // const [changedCheckbox, setChangedCheckbox] = useState(false)
+  // const [uploadFile, setUploadFile] = useState(false)
 
-  const { mutate: mutateGetCities } = useMutation({
-    mutationFn: async (value: string) => {
-      const res = await instance.get(`/city?cityName=${value}`)
-      console.log(res)
-      return res
+  const {
+    mutate: mutateCreatePropertyRoomFacility,
+    isPending: isPendingCreatePropertyRoomFacility,
+  } = useMutation({
+    mutationFn: async () => {
+      const fd = new FormData()
+      fd.append('name', dataCreatePropertyRoomFacility?.name)
+      fd.append('images', dataCreatePropertyRoomFacility?.file[0])
+      const res = await instance.post('/room-facility', fd)
+
+      return res?.data
     },
     onSuccess: (res) => {
-      if (res?.data?.data?.cities.length > 0) {
-        setDataCities(res?.data?.data?.cities)
-      } else {
-        const notFound = [{ name: 'City not found', id: '' }]
-        setDataCities(notFound)
-      }
+      setShowCreatePropertyRoomFacilityForm(false)
+      setDataCreatePropertyRoomFacility({
+        name: '',
+        file: [],
+      })
+      toast((t) => (
+        <span className="flex gap-2 items-center font-semibold justify-center text-xs">
+          {res?.message}
+        </span>
+      ))
+      setTimeout(() => {
+        window.location.reload()
+      }, 1000)
     },
     onError: (err: any) => {
-      console.log(err?.response?.data?.message || 'Connection error!')
+      toast((t) => (
+        <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
+          {err?.response?.data?.message || 'Connection error!'}
+        </span>
+      ))
     },
   })
-
-  const { mutate: mutateGetCountries } = useMutation({
-    mutationFn: async (value: string) => {
-      const res = await instance.get(`/country?countryName=${value}`)
-      console.log(res)
-      return res
-    },
-    onSuccess: (res) => {
-      if (res?.data?.data?.countries.length > 0) {
-        setDataCountries(res?.data?.data?.countries)
-      } else {
-        const notFound = [{ name: 'Country not found', id: '' }]
-        setDataCountries(notFound)
-      }
-    },
-    onError: (err: any) => {
-      console.log(err?.response?.data?.message || 'Connection error!')
-    },
+  
+  const [showCreateCity, setShowCreateCity] = useState(false)
+  const [showCreateCountry, setShowCreateCountry] = useState(false)
+  const [uploadFile, setUploadFile] = useState(false)
+  const [countryId, setCountryId] = useState<null | number>(null)
+  const [propertyTypeId, setPropertyTypeId] = useState<null | number>(null)
+  const [dataPropertyTypes, setDataPropertyTypes] = useState<any>([])
+  const [dataCreateCity, setDataCreateCity] = useState<{
+    name: string
+    file: File[]
+    countryId: null | number
+  }>({
+    name: '',
+    file: [] as File[],
+    countryId: null,
   })
-
-  const { mutate: mutateCreateProperty, isPending: isPendingCreateProperty } =
+  const [dataCreateCountry, setDataCreateCountry] = useState<{
+    name: string
+    description: string
+    file: File[]
+  }>({
+    name: '',
+    description: '',
+    file: [] as File[],
+  })
+  const [cityList, setCityList] = useState([])
+  const [countryList, setCountryList] = useState([])
+  const [propertyTypes, setPropertyTypes] = useState([])
+  const { mutate: mutateCreateCountry, isPending: isPendingCreateCountry } =
     useMutation({
-      mutationFn: async (fd: FormData) => {
-        const res = await instance.post('/property', fd)
-        console.log('MUTATIONCREATEPROPERTY')
-        return res
+      mutationFn: async () => {
+        const fd = new FormData()
+        fd.append('name', dataCreateCountry?.name)
+        fd.append('description', dataCreateCountry?.description)
+        fd.append('images', dataCreateCountry?.file[0])
+        const res = await instance.post('/country', fd)
+
+        console.log(res)
+        return res?.data
       },
       onSuccess: (res) => {
-        console.log(res)
+        setDataCreateCountry({ name: '', file: [], description: '' })
+        setShowCreateCountry(false)
+        toast((t) => (
+          <span className="flex gap-2 items-center font-semibold justify-center text-xs">
+            {res?.message}
+          </span>
+        ))
+        setTimeout(() => {
+          window.location.reload()
+        }, 1500)
       },
-      onError: (err) => {
-        console.log(err)
+      onError: (err: any) => {
+        toast((t) => (
+          <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
+            {err?.response?.data?.message || 'Connection error!'}
+          </span>
+        ))
       },
     })
+  const { isPending: isPendingCities } = useQuery({
+    queryKey: ['getCities'],
+    queryFn: async () => {
+      const res = await instance.get('/city')
+      const dataForCityList = res?.data?.data?.cities?.map((item: any) => {
+        return {
+          label: item?.name,
+          value: item?.id,
+        }
+      })
+      setCityList(dataForCityList)
+      return res
+    },
+  })
+  const { isPending: isPendingCountries } = useQuery({
+    queryKey: ['getCountries'],
+    queryFn: async () => {
+      const res = await instance.get('/country')
+      const dataForCountryList = res?.data?.data?.countries?.map(
+        (item: any) => {
+          return {
+            label: item?.name,
+            value: item?.id,
+          }
+        },
+      )
+      setCountryList(dataForCountryList)
+      return res
+    },
+  })
+
+  const { isPending: isPendingPropertyTypes } = useQuery({
+    queryKey: ['getPropertyTypes'],
+    queryFn: async () => {
+      const res = await instance.get('/property-type/search')
+      const dataForPropertyTypes = res?.data?.data?.map((item: any) => {
+        return {
+          label: item?.name,
+          value: item?.id,
+        }
+      })
+      setPropertyTypes(dataForPropertyTypes)
+      return res
+    },
+  })
 
   const [propertyType, setPropertyType] = useState({ name: '', id: '' })
-
   const {
     mutate: mutateCreatePropertyType,
     isPending: isPendingCreatePropertyType,
@@ -217,6 +330,10 @@ const CreatePropertyPage = () => {
           {res?.message}
         </span>
       ))
+      setTimeout(() => {
+        window.location.reload()
+      }, 1500)
+
     },
     onError: (err: any) => {
       toast((t) => (
@@ -226,30 +343,95 @@ const CreatePropertyPage = () => {
       ))
     },
   })
+  // const { mutate: mutateGetCities } = useMutation({
+  //   mutationFn: async (value: string) => {
+  //     const res = await instance.get(`/city?cityName=${value}`)
+  //     console.log(res)
+  //     return res
+  //   },
+  //   onSuccess: (res) => {
+  //     if (res?.data?.data?.cities.length > 0) {
+  //       setDataCities(res?.data?.data?.cities)
+  //     } else {
+  //       const notFound = [{ name: 'City not found', id: '' }]
+  //       setDataCities(notFound)
+  //     }
+  //   },
+  //   onError: (err: any) => {
+  //     console.log(err?.response?.data?.message || 'Connection error!')
+  //   },
+  // })
 
-  const [city, setCity] = useState({ name: '', id: '' })
-  const [country, setCountry] = useState({ name: '', id: '' })
+  // const { mutate: mutateGetCountries } = useMutation({
+  //   mutationFn: async (value: string) => {
+  //     const res = await instance.get(`/country?countryName=${value}`)
+  //     console.log(res)
+  //     return res
+  //   },
+  //   onSuccess: (res) => {
+  //     if (res?.data?.data?.countries.length > 0) {
+  //       setDataCountries(res?.data?.data?.countries)
+  //     } else {
+  //       const notFound = [{ name: 'Country not found', id: '' }]
+  //       setDataCountries(notFound)
+  //     }
+  //   },
+  //   onError: (err: any) => {
+  //     console.log(err?.response?.data?.message || 'Connection error!')
+  //   },
+  // })
+
+  const { mutate: mutateCreateProperty, isPending: isPendingCreateProperty } =
+    useMutation({
+      mutationFn: async (fd: FormData) => {
+        const res = await instance.post('/property', fd)
+        console.log('MUTATIONCREATEPROPERTY')
+        return res?.data
+      },
+      onSuccess: (res) => {
+        setShowCreatePropertyFacilityForm(false)
+        setDataCreatePropertyFacility({
+          name: '',
+          file: [],
+        })
+        toast((t) => (
+          <span className="flex gap-2 items-center font-semibold justify-center text-xs">
+            {res?.message}
+          </span>
+        ))
+        setTimeout(() => {
+          window.location.reload()
+        }, 1500)
+      },
+      onError: (err: any) => {
+        toast((t) => (
+          <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
+            {err?.response?.data?.message || 'Connection error!'}
+          </span>
+        ))
+      },
+    })
   const [changedCheckbox, setChangedCheckbox] = useState(false)
 
   return (
-    <main className="w-full p-5">
+    <main className="w-full md:px-5">
       <section className="mx-auto max-w-screen-2xl w-full h-full flex items-start gap-5 px-5 py-5">
         <div className="w-full">
           <Formik
             initialValues={{
-              cityName: '',
-              countryName: '',
               cityId: 0,
               countryId: 0,
               name: '',
               zipCode: '',
               address: '',
               location: '',
+              star: 0,
               checkInStartTime: '14:00',
               checkInEndTime: '',
-              checkOutStartTime: '10:00',
-              checkOutEndTime: '',
+              checkOutStartTime: '',
+              checkOutEndTime: '10:00',
               propertyTypeId: 0,
+              propertyTypeName: '',
               propertyFacilitiesId: [],
               propertyFacilitiesName: [],
               propertyImages: [] as File[],
@@ -268,82 +450,88 @@ const CreatePropertyPage = () => {
                   bathrooms: 1,
                   description: '',
                   roomFacilities: [],
-                  roomImages: [],
+                  roomImages: [] as File[],
                 },
               ],
             }}
+            validationSchema={createPropertyValidationSchema}
             onSubmit={(values) => {
-              const fd = new FormData()
-              fd.append('cityName', values?.cityName)
-              fd.append('countryName', values?.countryName)
-              fd.append('cityId', values?.cityId.toString())
-              fd.append('countryId', values?.countryId.toString())
-              fd.append('name', values?.name)
-              fd.append('zipCode', values?.zipCode)
-              fd.append('address', values?.address)
-              fd.append('location', values?.location)
-              fd.append('checkInStartTime', values?.checkInStartTime || '14:00')
-              fd.append('checkInEndTime', values?.checkInEndTime)
-              fd.append('checkOutStartTime', values?.checkOutStartTime)
-              fd.append('checkOutEndTime', values?.checkOutEndTime || '10:00')
-              fd.append('propertyTypeId', values?.propertyTypeId.toString())
+              console.log('aaaaaaa', values)
+              // const fd = new FormData()
+              // // fd.append('cityName', values?.cityName)
+              // // fd.append('countryName', values?.countryName)
+              // fd.append('cityId', values?.cityId.toString())
+              // fd.append('countryId', values?.countryId.toString())
+              // fd.append('name', values?.name)
+              // fd.append('zipCode', values?.zipCode)
+              // fd.append('address', values?.address)
+              // fd.append('location', values?.location)
+              // fd.append('checkInStartTime', values?.checkInStartTime || '14:00')
+              // fd.append('checkInEndTime', values?.checkInEndTime)
+              // fd.append('checkOutStartTime', values?.checkOutStartTime)
+              // fd.append('checkOutEndTime', values?.checkOutEndTime || '10:00')
+              // fd.append('propertyTypeId', values?.propertyTypeId.toString())
 
-              fd.append(
-                'propertyFacilitiesId',
-                JSON.stringify(
-                  values?.propertyFacilitiesId.map((item) => ({ id: item })),
-                ),
-              )
-              fd.append(
-                'propertyFacilitiesName',
-                JSON.stringify(
-                  values?.propertyFacilitiesName.map((item) => ({
-                    name: item,
-                  })),
-                ),
-              )
+              // fd.append(
+              //   'propertyFacilitiesId',
+              //   JSON.stringify(
+              //     values?.propertyFacilitiesId.map((item) => ({ id: item })),
+              //   ),
+              // )
+              // fd.append(
+              //   'propertyFacilitiesName',
+              //   JSON.stringify(
+              //     values?.propertyFacilitiesName.map((item) => ({
+              //       name: item,
+              //     })),
+              //   ),
+              // )
 
-              fd.append(
-                'countPropertyImages',
-                values?.propertyImages.length.toString(),
-              )
-              fd.append('propertyDescription', values?.propertyDescription)
-              fd.append(
-                'neighborhoodDescription',
-                values?.neighborhoodDescription,
-              )
-              fd.append('phoneNumber', values?.phoneNumber)
-              fd.append('url', values?.url)
-              fd.append('totalRooms', values?.totalRooms.toString())
-              const propertyRoomTypes = values?.propertyRoomTypes.map(
-                (item) => {
-                  return {
-                    name: item?.name,
-                    capacity: item?.capacity,
-                    totalRooms: item?.totalRooms,
-                    price: item?.price,
-                    rooms: item?.rooms,
-                    bathrooms: item?.bathrooms,
-                    description: item?.description,
-                    roomFacilities: item?.roomFacilities,
-                    countRoomImages: item?.roomImages.length,
-                  }
-                },
-              )
-              fd.append('propertyRoomTypes', JSON.stringify(propertyRoomTypes))
-              values?.propertyImages.forEach((item: File) =>
-                fd.append('images', item),
-              )
-              values?.propertyRoomTypes.forEach((item: any) => {
-                item?.roomImages.forEach((itm: File) =>
-                  fd.append('images', itm),
-                )
-              })
+              // fd.append(
+              //   'countPropertyImages',
+              //   values?.propertyImages.length.toString(),
+              // )
+              // fd.append('propertyDescription', values?.propertyDescription)
+              // fd.append(
+              //   'neighborhoodDescription',
+              //   values?.neighborhoodDescription,
+              // )
+              // fd.append('phoneNumber', values?.phoneNumber)
+              // fd.append('url', values?.url)
+              // fd.append('totalRooms', values?.totalRooms.toString())
+              // const propertyRoomTypes = values?.propertyRoomTypes.map(
+              //   (item) => {
+              //     return {
+              //       name: item?.name,
+              //       capacity: item?.capacity,
+              //       totalRooms: item?.totalRooms,
+              //       price: item?.price,
+              //       rooms: item?.rooms,
+              //       bathrooms: item?.bathrooms,
+              //       description: item?.description,
+              //       roomFacilities: item?.roomFacilities,
+              //       countRoomImages: item?.roomImages.length,
+              //     }
+              //   },
+              // )
+              // fd.append('propertyRoomTypes', JSON.stringify(propertyRoomTypes))
+              // values?.propertyImages.forEach((item: File) =>
+              //   fd.append('images', item),
+              // )
+              // values?.propertyRoomTypes.forEach((item: any) => {
+              //   item?.roomImages.forEach((itm: File) =>
+              //     fd.append('images', itm),
+              //   )
+              // })
 
-              mutateCreateProperty(fd)
+              // mutateCreateProperty(fd)
             }}
           >
-            {({ values, setFieldValue }) => (
+            {({ values, setFieldValue, errors, touched, isValid }) =>  {
+          console.log("Errors:", errors);
+          console.log("Touched:", touched);
+          console.log("Is Valid:", isValid);
+              return (
               <Form className="flex flex-col gap-10">
                 <section className="flex flex-col gap-5">
                   <hgroup className="flex flex-col mb-5">
@@ -361,190 +549,167 @@ const CreatePropertyPage = () => {
                     type="text"
                     placeholder="Pan Pacific / Westin Hotel"
                   />
-                  <div className="grid items-center gap-1.5 w-full relative">
-                    <Label
-                      htmlFor="propertyType"
-                      className="text-sm font-bold text-gray-900"
-                    >
-                      Property Type
-                    </Label>
-                    <div className="flex items-center">
-                      <input
-                        onChange={(e) => {
-                          handleInputPropertyType(e)
-                          if (e.target.value.length > 2) {
-                            mutateGetPropertyTypes(e.target.value)
-                          } else if (e.target.value.length <= 0) {
-                            setDataPropertyTypes([])
-                          } else {
-                            const notFound = [
-                              { name: 'Minimum 3 characters', id: '' },
-                            ]
-                            setDataPropertyTypes(notFound)
-                          }
-                        }}
-                        name="propertyType"
-                        value={inputPropertyType}
-                        type="text"
-                        id="propertyType"
-                        placeholder={
-                          propertyType?.name ? '' : 'Hotel / Apartment'
-                        }
-                        className="w-full py-1.5 border-b-2 border-slate-300 text-sm placeholder-shown:text-sm rounded-none focus:outline-none focus:border-blue-600"
-                      />
-                      <button
-                        onClick={() => setShowFormCreatePropertyType(true)}
-                        disabled={Boolean(propertyType?.name)}
-                        className="disabled:bg-slate-300 disabled:opacity-100 disabled:cursor-not-allowed disabled:border-slate-300 disabled:scale-100 min-w-max text-white text-sm hover:opacity-75 transition duration-100 active:scale-95 font-bold rounded-r-full bg-gray-900 border-2 border-gray-900 p-5 py-1.5"
-                        type="button"
-                      >
-                        Add new
-                      </button>
-                    </div>
-                    {dataPropertyTypes && dataPropertyTypes.length > 0 && (
-                      <ul
-                        id="property-type-list"
-                        className="bg-white z-[51] absolute top-[65px] w-full flex flex-col rounded-md text-sm text-gray-800 border-2 border-gray-900 overflow-hidden"
-                      >
-                        {dataPropertyTypes &&
-                          dataPropertyTypes.length > 0 &&
-                          dataPropertyTypes.map((item: any, index: number) => {
-                            return (
-                              <li
-                                className={`px-5 py-2 ${item?.id ? 'hover:bg-gray-800 hover:text-white hover:cursor-pointer' : 'bg-gray-300 text-gray-600'} flex items-center gap-1.5 active:opacity-80 transition duration-100`}
-                                onClick={() => {
-                                  if (item?.id) {
-                                    setPropertyType({
-                                      name: item?.name,
-                                      id: item?.id,
-                                    })
-                                    handleClearInputPropertyType()
-                                    setDataPropertyTypes([])
-                                    setFieldValue('propertyTypeId', item?.id)
-                                  }
-                                }}
-                              >
-                                {item?.id ? (
-                                  <FaRegBuilding className="text-base text-gray-600" />
-                                ) : (
-                                  <BsBuildingSlash className="text-base" />
-                                )}
-                                {item?.name}
-                              </li>
-                            )
-                          })}
-                      </ul>
-                    )}
-                    {propertyType?.name && (
-                      <div className="absolute top-[25px] border-2 border-slate-600 py-1 px-3 flex items-center gap-1.5 text-sm font-bold text-gray-800 rounded-full bg-white w-fit">
-                        <FaRegBuilding className="text-base text-gray-600" />
-                        {propertyType?.name}
-                        <IoClose
-                          className="text-base ml-2 hover:cursor-pointer hover:opacity-60"
-                          onClick={() => {
-                            setPropertyType({ name: '', id: '' })
-                            setFieldValue('propertyTypeId', null)
-                          }}
-                        />
+                  <section className="flex flex-col gap-1.5 w-full">
+                  <section className="flex items-center gap-8">
+                    {values?.propertyTypeName
+                      ?.toLowerCase()
+                      .includes('hotel') && (
+                      <div className="grid items-center gap-1.5 min-w-max relative">
+                        <label
+                          htmlFor="propertyType"
+                          className="text-sm font-bold text-gray-900"
+                        >
+                          Star
+                        </label>
+                        <div>
+                          <Rate
+                            value={values?.star}
+                            color="yellow"
+                            size="xs"
+                            onChangeActive={(value: number) =>
+                              setFieldValue('star', value)
+                            }
+                          />
+                        </div>
+                        
                       </div>
                     )}
-                    <section>
-                      {showFormCreatePropertyType && (
-                        <div className="fixed bg-black bg-opacity-20 backdrop-blur-sm w-full h-full z-[51] top-0 left-0 flex items-center justify-center">
-                          <div className="bg-white border border-slate-200 shadow-md p-5 rounded-md flex flex-col gap-7">
-                            <div className="flex items-center justify-end">
-                              <IoClose
-                                className="hover:opacity-75 hover:cursor-pointer text-gray-900 "
-                                onClick={() =>
-                                  setShowFormCreatePropertyType(false)
-                                }
-                              />
-                            </div>
-                            <hgroup className="flex flex-col mt-[-10px]">
-                              <h1 className="text-lg font-bold text-slate-800">
-                                Add Property Type
-                              </h1>
-                              <p className="text-sm font-light text-gray-500">
-                                Can't Find Your Property Type? Build It Here!
-                              </p>
-                            </hgroup>
-                            <div className="flex flex-col gap-3">
-                              <div className="flex flex-col gap-1 ">
-                                <label className="text-sm font-bold text-black ml-5">
-                                  Name
-                                </label>
-                                <Field
-                                  id="propertyTypeName"
-                                  onChange={(e: any) => {
-                                    setDataCreatePropertyType((state: any) => {
-                                      state.name = e.target.value
-                                      return state
-                                    })
-                                  }}
-                                  name="createPropertyTypeName"
-                                  type="text"
-                                  placeholder="Hotel / Apartment / Villa"
-                                  className="placeholder-shown:text-sm placeholder-shown:text-slate-300 focus:outline-none text-sm font-medium text-gray-900 focus:ring-slate-600 border border-slate-300 rounded-full px-5 py-2"
-                                />
-                                <ErrorMessage
-                                  name="propertyTypeName"
-                                  component={'div'}
-                                  className="text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full z-20"
-                                />
-                              </div>
-                              <div className="flex flex-col gap-1 ">
-                                <label className="text-sm font-bold text-black ml-5">
-                                  Description
-                                </label>
-                                <Field
-                                  as="textarea"
-                                  onChange={(e: any) => {
-                                    setDataCreatePropertyType((state: any) => {
-                                      state.description = e.target.value
-                                      return state
-                                    })
-                                  }}
-                                  id="createPropertyTypeDescription"
-                                  name="propertyTypeDescription"
-                                  type="text"
-                                  placeholder="Highlight its main features and target audience."
-                                  className="placeholder-shown:text-sm placeholder-shown:text-slate-300 focus:outline-none text-sm font-medium text-gray-900 focus:ring-slate-600 border border-slate-300 rounded-3xl px-5 py-2 h-[150px]"
-                                />
-                                <ErrorMessage
-                                  name="propertyTypeDescription"
-                                  component={'div'}
-                                  className="text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full"
-                                />
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2 justify-end">
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  setShowFormCreatePropertyType(false)
-                                }
-                                className="px-5 hover:bg-slate-200 transition duration-100 active:scale-90 py-1.5 text-gray-700 text-sm font-bold rounded-full shadow-md border border-slate-100 "
-                              >
-                                Cancel
-                              </button>
-                              <button
-                                type="button"
-                                disabled={isPendingCreatePropertyType}
-                                onClick={() => mutateCreatePropertyType()}
-                                className="disabled:bg-slate-300 disabled:text-white disabled:scale-100 disabled:opacity-100 px-5 hover:opacity-75 transition duration-100 active:scale-90 py-1.5 text-white text-sm font-bold rounded-full shadow-md border bg-gray-900 border-slate-100 "
-                              >
-                                Create
-                              </button>
-                            </div>
+                    <div className="flex items-end gap-2 w-full">
+                      <div className="grid items-center gap-1.5 w-full relative">
+                        <label
+                          htmlFor="propertyType"
+                          className="text-sm font-bold text-gray-900"
+                        >
+                          Property Type
+                        </label>
+                        <div>
+                          <SelectPicker
+                            onChange={(value) => {
+                              setPropertyTypeId(value)
+                              setFieldValue('propertyTypeId', Number(value))
+                              const getPropertyType: any = propertyTypes.find(
+                                (item: {
+                                  value: string | number
+                                  label: string
+                                }) => Number(item?.value) === Number(value),
+                              )
+
+                              setFieldValue(
+                                'propertyTypeName',
+                                getPropertyType?.label,
+                              )
+                            }}
+                            menuClassName="text-sm font-bold text-gray-800"
+                            value={propertyTypeId}
+                            className="text-gray-600"
+                            data={propertyTypes}
+                            block
+                          />
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setShowFormCreatePropertyType(true)}
+                        disabled={Boolean(propertyTypeId)}
+                        className="disabled:bg-slate-300 disabled:opacity-100 disabled:cursor-not-allowed disabled:border-slate-300 disabled:scale-100 min-w-max text-white text-sm hover:opacity-75 transition duration-100 active:scale-95 font-bold rounded-md bg-gray-900 border-2 border-gray-900 p-5 py-1.5"
+                        type="button"
+                      >
+                        Add Property Type
+                      </button>
+                    </div>
+                  </section>
+                  <ErrorMessage name='propertyTypeId' component={'div'} className='text-red-600 text-xs font-bold bg-red-200 rounded-full p-1 px-5'/>
+                  <ErrorMessage name='star' component={'div'} className='text-red-600 text-xs font-bold bg-red-200 rounded-full p-1 px-5'/>
+                  </section>
+                  {showFormCreatePropertyType && (
+                    <div className="fixed bg-black bg-opacity-20 backdrop-blur-sm w-full h-full z-[51] top-0 left-0 flex items-center justify-center">
+                      <div className="bg-white border border-slate-200 shadow-md p-5 rounded-md flex flex-col gap-7">
+                        <div className="flex items-center justify-end">
+                          <IoClose
+                            className="hover:opacity-75 hover:cursor-pointer text-gray-900 "
+                            onClick={() => setShowFormCreatePropertyType(false)}
+                          />
+                        </div>
+                        <hgroup className="flex flex-col mt-[-10px]">
+                          <h1 className="text-lg font-bold text-slate-800">
+                            Add Property Type
+                          </h1>
+                          <p className="text-sm font-light text-gray-500">
+                            Can't Find Your Property Type? Build It Here!
+                          </p>
+                        </hgroup>
+                        <div className="flex flex-col gap-3">
+                          <div className="flex flex-col gap-1 ">
+                            <label className="text-sm font-bold text-black ml-5">
+                              Name
+                            </label>
+                            <Field
+                              id="propertyTypeName"
+                              onChange={(e: any) => {
+                                setDataCreatePropertyType((state: any) => {
+                                  state.name = e.target.value
+                                  return state
+                                })
+                              }}
+                              name="createPropertyTypeName"
+                              type="text"
+                              placeholder="Hotel / Apartment / Villa"
+                              className="placeholder-shown:text-sm placeholder-shown:text-slate-300 focus:outline-none text-sm font-medium text-gray-900 focus:ring-slate-600 border border-slate-300 rounded-full px-5 py-2"
+                            />
+                            <ErrorMessage
+                              name="propertyTypeName"
+                              component={'div'}
+                              className="text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full z-20"
+                            />
+                          </div>
+                          <div className="flex flex-col gap-1 ">
+                            <label className="text-sm font-bold text-black ml-5">
+                              Description
+                            </label>
+                            <Field
+                              as="textarea"
+                              onChange={(e: any) => {
+                                setDataCreatePropertyType((state: any) => {
+                                  state.description = e.target.value
+                                  return state
+                                })
+                              }}
+                              id="createPropertyTypeDescription"
+                              name="propertyTypeDescription"
+                              type="text"
+                              placeholder="Highlight its main features and target audience."
+                              className="placeholder-shown:text-sm placeholder-shown:text-slate-300 focus:outline-none text-sm font-medium text-gray-900 focus:ring-slate-600 border border-slate-300 rounded-3xl px-5 py-2 h-[150px]"
+                            />
+                            <ErrorMessage
+                              name="propertyTypeDescription"
+                              component={'div'}
+                              className="text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full"
+                            />
                           </div>
                         </div>
-                      )}
-                    </section>
-                  </div>
+                        <div className="flex items-center gap-2 justify-end">
+                          <button
+                            type="button"
+                            onClick={() => setShowFormCreatePropertyType(false)}
+                            className="px-5 hover:bg-slate-200 transition duration-100 active:scale-90 py-1.5 text-gray-700 text-sm font-bold rounded-full shadow-md border border-slate-100 "
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            disabled={isPendingCreatePropertyType}
+                            onClick={() => mutateCreatePropertyType()}
+                            className="disabled:bg-slate-300 disabled:text-white disabled:scale-100 disabled:opacity-100 px-5 hover:opacity-75 transition duration-100 active:scale-90 py-1.5 text-white text-sm font-bold rounded-full shadow-md border bg-gray-900 border-slate-100 "
+                          >
+                            Create
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   <section
                     id="region"
-                    className="flex flex-col xl:flex-row gap-5 items-center"
+                    className="flex flex-col gap-5 items-center"
                   >
                     <TextInput
                       labelName="Zip Code"
@@ -552,190 +717,365 @@ const CreatePropertyPage = () => {
                       type="text"
                       placeholder="10332"
                     />
-                    <div className="grid items-center gap-1.5 w-full relative">
-                      <Label
-                        htmlFor="city"
-                        className="text-sm font-bold text-gray-900"
-                      >
-                        City
-                      </Label>
-                      <div className="flex items-center">
-                        <input
-                          onChange={(e) => {
-                            handleInputCity(e)
-                            if (e.target.value.length > 2) {
-                              mutateGetCities(e.target.value)
-                            } else if (e.target.value.length <= 0) {
-                              setDataCities([])
-                            } else {
-                              const notFound = [
-                                { name: 'Minimum 3 characters', id: '' },
-                              ]
-                              setDataCities(notFound)
-                            }
-                          }}
-                          name="city"
-                          value={inputCity}
-                          type="text"
-                          id="city"
-                          placeholder={city?.name ? '' : 'Jakarta / New York'}
-                          className="w-full py-1.5 border-b-2 border-slate-300 text-sm placeholder-shown:text-sm rounded-none focus:outline-none focus:border-blue-600"
-                        />
-                        <button
-                          onClick={() => {
-                            setCity({ name: inputCity, id: '' })
-                            handleClearInputCity()
-                            setFieldValue('cityName', inputCity)
-                          }}
-                          disabled={Boolean(city?.name)}
-                          className="disabled:bg-slate-300 disabled:opacity-100 disabled:cursor-not-allowed disabled:border-slate-300 disabled:scale-100 min-w-max text-white text-sm hover:opacity-75 transition duration-100 active:scale-95 font-bold rounded-r-full bg-gray-900 border-2 border-gray-900 p-5 py-1.5"
-                          type="button"
+                    <section className="flex flex-col gap-1.5 w-full">
+                    <section className="flex items-end gap-2 w-full">
+                      <div className="grid items-center gap-1.5 w-full relative">
+                        <label
+                          htmlFor="city"
+                          className="text-sm font-bold text-gray-900"
                         >
-                          Add
-                        </button>
-                      </div>
-                      {dataCities && dataCities.length > 0 && (
-                        <ul
-                          id="city-list"
-                          className="bg-white z-[51] absolute top-[65px] w-full flex flex-col rounded-md text-sm text-gray-800 border-2 border-gray-900 overflow-hidden"
-                        >
-                          {dataCities &&
-                            dataCities.length > 0 &&
-                            dataCities.map((item: any, index: number) => {
-                              return (
-                                <li
-                                  className={`px-5 py-2 ${item?.id ? 'hover:bg-gray-800 hover:text-white hover:cursor-pointer' : 'bg-gray-300 text-gray-600'} flex items-center gap-1.5 active:opacity-80 transition duration-100`}
-                                  onClick={() => {
-                                    if (item?.id) {
-                                      setCity({
-                                        name: item?.name,
-                                        id: item?.id,
-                                      })
-                                      handleClearInputCity()
-                                      setDataCities([])
-                                      setFieldValue('cityName', item?.name)
-                                      setFieldValue('cityId', item?.id)
-                                    }
-                                  }}
-                                >
-                                  {item?.id ? (
-                                    <GiModernCity className="text-base text-gray-600" />
-                                  ) : (
-                                    <BsBuildingSlash className="text-base" />
-                                  )}
-                                  {item?.name}
-                                </li>
-                              )
-                            })}
-                        </ul>
-                      )}
-                      {city?.name && (
-                        <div className="absolute top-[25px] border-2 border-slate-600 py-1 px-3 flex items-center gap-1.5 text-sm font-bold text-gray-800 rounded-full bg-white w-fit">
-                          <GiModernCity className="text-base text-gray-600" />
-                          {city?.name}
-                          <IoClose
-                            className="text-base ml-2 hover:cursor-pointer hover:opacity-60"
-                            onClick={() => {
-                              setCity({ name: '', id: '' })
-                              setFieldValue('cityName', '')
-                              setFieldValue('cityId', null)
+                          City
+                        </label>
+                        <div>
+                          <SelectPicker
+                            onChange={(value) => {
+                              setCityId(Number(value))
+                              setFieldValue('cityId', Number(value))
                             }}
+                            menuClassName="text-sm font-bold text-gray-800"
+                            value={cityId}
+                            className="text-gray-600"
+                            data={cityList}
+                            block
                           />
                         </div>
-                      )}
-                    </div>
-                    <div className="grid items-center gap-1.5 w-full relative">
-                      <Label
-                        htmlFor="country"
-                        className="text-sm font-bold text-gray-900"
-                      >
-                        Country
-                      </Label>
-                      <div className="flex items-center">
-                        <input
-                          onChange={(e) => {
-                            handleInputCountry(e)
-                            if (e.target.value.length > 2) {
-                              mutateGetCountries(e.target.value)
-                            } else if (e.target.value.length <= 0) {
-                              setDataCountries([])
-                            } else {
-                              const notFound = [
-                                { name: 'Minimum 3 characters', id: '' },
-                              ]
-                              setDataCountries(notFound)
-                            }
-                          }}
-                          name="country"
-                          value={inputCountry}
-                          type="text"
-                          id="country"
-                          placeholder={country?.name ? '' : 'Indonesia'}
-                          className="w-full py-1.5 border-b-2 border-slate-300 text-sm placeholder-shown:text-sm rounded-none focus:outline-none focus:border-blue-600"
-                        />
-                        <button
-                          onClick={() => {
-                            setCountry({ name: inputCountry, id: '' })
-                            handleClearInputCountry()
-                            setFieldValue('countryName', inputCountry)
-                          }}
-                          disabled={Boolean(country?.name)}
-                          className="disabled:bg-slate-300 disabled:opacity-100 disabled:cursor-not-allowed disabled:border-slate-300 disabled:scale-100 min-w-max text-white text-sm hover:opacity-75 transition duration-100 active:scale-95 font-bold rounded-r-full bg-gray-900 border-2 border-gray-900 p-5 py-1.5"
-                          type="button"
-                        >
-                          Add
-                        </button>
                       </div>
-                      {dataCountries && dataCountries.length > 0 && (
-                        <ul
-                          id="country-list"
-                          className="bg-white z-[51] absolute top-[65px] w-full flex flex-col rounded-md text-sm text-gray-800 border-2 border-gray-900 overflow-hidden"
-                        >
-                          {dataCountries &&
-                            dataCountries.length > 0 &&
-                            dataCountries.map((item: any, index: number) => {
-                              return (
-                                <li
-                                  className={`px-5 py-2 ${item?.id ? 'hover:bg-gray-800 hover:text-white hover:cursor-pointer' : 'bg-gray-300 text-gray-600'} flex items-center gap-1.5 active:opacity-80 transition duration-100`}
-                                  onClick={() => {
-                                    if (item?.id) {
-                                      setCountry({
-                                        name: item?.name,
-                                        id: item?.id,
-                                      })
-                                      handleClearInputCountry()
-                                      setDataCountries([])
-                                      setFieldValue('countryName', item?.name)
-                                      setFieldValue('countryId', item?.id)
-                                    }
-                                  }}
-                                >
-                                  {item?.id ? (
-                                    <FaMountainCity className="text-base text-gray-600" />
-                                  ) : (
-                                    <BsBuildingSlash className="text-base" />
-                                  )}
-                                  {item?.name}
-                                </li>
-                              )
-                            })}
-                        </ul>
-                      )}
-                      {country?.name && (
-                        <div className="absolute top-[25px] border-2 border-slate-600 py-1 px-3 flex items-center gap-1.5 text-sm font-bold text-gray-800 rounded-full bg-white w-fit">
-                          <FaMountainCity className="text-base text-gray-600" />
-                          {country?.name}
-                          <IoClose
-                            className="text-base ml-2 hover:cursor-pointer hover:opacity-60"
+                      <button
+                        onClick={() => setShowCreateCity(true)}
+                        disabled={Boolean(cityId)}
+                        className="disabled:bg-slate-300 disabled:opacity-100 disabled:cursor-not-allowed disabled:border-slate-300 disabled:scale-100 min-w-max text-white text-sm hover:opacity-75 transition duration-100 active:scale-95 font-bold rounded-md bg-gray-900 border-2 border-gray-900 p-5 py-1.5"
+                        type="button"
+                      >
+                        Add City
+                      </button>
+                    </section>
+                        <ErrorMessage name='cityId' component={'div'} className='text-red-600 text-xs font-bold bg-red-200 rounded-full p-1 px-5'/>
+                    </section>
+                    <section
+                      className={`z-[52] p-5 fixed w-full h-full top-0 left-0 bg-black bg-opacity-25 backdrop-blur-sm ${showCreateCity ? 'flex' : 'hidden'} flex-col gap-1 items-center justify-center`}
+                    >
+                      <div className=" flex flex-col gap-1 items-center justify-center w-full">
+                        <div className="w-[400px] flex justify-end">
+                          <div
                             onClick={() => {
-                              setCountry({ name: '', id: '' })
-                              setFieldValue('countryName', '')
-                              setFieldValue('countryId', null)
+                              setDataCreateCity({
+                                file: [],
+                                name: '',
+                                countryId: null,
+                              })
+                              setShowCreateCity(false)
                             }}
+                            className="bg-white rounded-full flex items-center text-lg text-gray-800 justify-center h-7 w-7 hover:bg-slate-100 hover:cursor-pointer transition duration-100 active:scale-90"
+                          >
+                            <IoClose />
+                          </div>
+                        </div>
+                        <div className="bg-white  flex flex-col gap-3 shadow-md p-5 w-[400px] rounded-md h-fit">
+                          <div className="grid items-center gap-1.5 w-full relative">
+                            <label
+                              htmlFor="createCityName"
+                              className="text-sm font-bold text-gray-900"
+                            >
+                              City Name
+                            </label>
+                            <input
+                              name="createCityName"
+                              onChange={(e) =>
+                                setDataCreateCity((state) => {
+                                  state.name = e.target.value
+                                  return state
+                                })
+                              }
+                              type="text"
+                              id="createCityName"
+                              placeholder="Jakarta / New York"
+                              className="w-full py-1.5 border-b-2 border-slate-300 text-sm placeholder-shown:text-sm rounded-none focus:outline-none focus:border-blue-600"
+                            />
+                          </div>
+                          <div className="grid items-center gap-1.5 w-full relative">
+                            <label
+                              htmlFor="country"
+                              className="text-sm font-bold text-gray-900"
+                            >
+                              Country
+                            </label>
+                            <div className="z-[53]">
+                              <SelectPicker
+                                onChange={(value) => {
+                                  setDataCreateCity((state) => {
+                                    state.countryId = Number(value)
+                                    return state
+                                  })
+                                }}
+                                menuClassName="text-sm font-bold text-gray-800"
+                                className="text-gray-600"
+                                data={countryList}
+                                block
+                              />
+                            </div>
+                          </div>
+                          {dataCreateCity?.file[0]?.name ? (
+                            <figure className="w-full h-[200px] relative rounded-md overflow-hidden">
+                              <Image
+                                src={URL.createObjectURL(
+                                  dataCreateCity?.file[0],
+                                )}
+                                width={400}
+                                height={400}
+                                alt=""
+                                className="object-cover w-full h-full"
+                              />
+                              <div className="hover:cursor-pointer text-lg absolute right-4 bottom-4 bg-white shadow-md text-red-600 hover:text-opacity-75 active:scale-90 transition duration-100 h-10 w-10 flex items-center justify-center rounded-2xl">
+                                <FaRegTrashCan
+                                  onClick={() => {
+                                    setDataCreateCity((state) => {
+                                      state.file = []
+                                      return state
+                                    })
+                                    setUploadFile((state) => !state)
+                                  }}
+                                />
+                              </div>
+                            </figure>
+                          ) : (
+                            <label className="border-2 border-gray-300 border-dashed flex flex-col items-center justify-center w-full h-[200px] overflow-hidden rounded-md cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                <IoCloudUploadOutline size={24} />
+                                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                  <span className="font-semibold">
+                                    Click to upload
+                                  </span>
+                                </p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                  JPG, PNG or JPEG (MAX. 2MB)
+                                </p>
+                              </div>
+                              <input
+                                type="file"
+                                className="hidden"
+                                name="createCityFile"
+                                onChange={(e: any) => {
+                                  if (e.target.files[0]) {
+                                    setDataCreateCity((state) => {
+                                      state.file[0] = e.target.files[0]
+                                      return state
+                                    })
+                                    console.log(dataCreateCity)
+                                    setUploadFile((state) => !state)
+                                  }
+                                }}
+                              />
+                            </label>
+                          )}
+                          <div className="flex items-center justify-between w-full gap-1.5">
+                            <button
+                              onClick={() => {
+                                setShowCreateCity(false)
+                                setDataCreateCity({
+                                  file: [],
+                                  name: '',
+                                  countryId: null,
+                                })
+                              }}
+                              type="button"
+                              className="text-sm font-bold rounded-md p-2 w-full shadow-md text-gray-800 bg-white border border-slate-100 hover:opacity-75 active:scale-95 transition duration-100"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              disabled={
+                                !dataCreateCity?.name ||
+                                !dataCreateCity?.countryId ||
+                                !dataCreateCity?.file[0]?.name
+                              }
+                              type="button"
+                              className="disabled:text-white disabled:bg-slate-300 disabled:scale-100 disabled:cursor-not-allowed text-sm font-bold rounded-md p-2 w-full shadow-md text-white bg-gray-800 hover:opacity-75 active:scale-95 transition duration-100"
+                            >
+                              Add City
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+                    <section className="flex flex-col gap-1.5 w-full">
+                    <section className="flex items-end gap-2 w-full">
+                      <div className="grid items-center gap-1.5 w-full relative">
+                        <label
+                          htmlFor="country"
+                          className="text-sm font-bold text-gray-900"
+                        >
+                          Country
+                        </label>
+                        <div >
+                          <SelectPicker
+                            onChange={(value) => {
+                              setCountryId(value)
+                              setFieldValue('countryId', Number(value))
+                            }}
+                            menuClassName="text-sm font-bold text-gray-800 z-[53]"
+                            value={countryId}
+                            className="text-gray-600"
+                            data={countryList}
+                            block
                           />
                         </div>
-                      )}
-                    </div>
+                      </div>
+                      <button
+                        onClick={() => setShowCreateCountry(true)}
+                        disabled={Boolean(countryId)}
+                        className="disabled:bg-slate-300 disabled:opacity-100 disabled:cursor-not-allowed disabled:border-slate-300 disabled:scale-100 min-w-max text-white text-sm hover:opacity-75 transition duration-100 active:scale-95 font-bold rounded-md bg-gray-900 border-2 border-gray-900 p-5 py-1.5"
+                        type="button"
+                      >
+                        Add Country
+                      </button>
+                    </section>
+                        <ErrorMessage name='countryId' component={'div'} className='text-red-600 text-xs font-bold bg-red-200 rounded-full p-1 px-5'/>
+                    </section>
+                    <section
+                      className={`z-[52] p-5 fixed w-full h-full top-0 left-0 bg-black bg-opacity-25 backdrop-blur-sm ${showCreateCountry ? 'flex' : 'hidden'} flex-col gap-1 items-center justify-center`}
+                    >
+                      <div className=" flex flex-col gap-1 items-center justify-center w-full">
+                        <div className="w-[400px] flex justify-end">
+                          <div
+                            onClick={() => {
+                              setDataCreateCountry({
+                                file: [],
+                                name: '',
+                                description: '',
+                              })
+                              setShowCreateCountry(false)
+                            }}
+                            className="bg-white rounded-full flex items-center text-lg text-gray-800 justify-center h-7 w-7 hover:bg-slate-100 hover:cursor-pointer transition duration-100 active:scale-90"
+                          >
+                            <IoClose />
+                          </div>
+                        </div>
+                        <div className="bg-white  flex flex-col gap-3 shadow-md p-5 w-[400px] rounded-md h-fit">
+                          <div className="grid items-center gap-1.5 w-full relative">
+                            <label
+                              htmlFor="createCountryName"
+                              className="text-sm font-bold text-gray-900"
+                            >
+                              Country Name
+                            </label>
+                            <input
+                              name="createCountryName"
+                              onChange={(e) => {
+                                setDataCreateCountry((state) => {
+                                  state.name = e.target.value
+                                  return state
+                                })
+                                setUploadFile((state) => !state)
+                              }}
+                              type="text"
+                              id="createCountryName"
+                              placeholder="Indonesia"
+                              className="w-full py-1.5 border-b-2 border-slate-300 text-sm placeholder-shown:text-sm rounded-none focus:outline-none focus:border-blue-600"
+                            />
+                          </div>
+                          <div className="grid items-center gap-1.5 w-full relative">
+                            <label
+                              htmlFor="createCountryDescription"
+                              className="text-sm font-bold text-gray-900"
+                            >
+                              Description
+                            </label>
+                            <textarea
+                              name="createCountryDescription"
+                              onChange={(e) => {
+                                setDataCreateCountry((state) => {
+                                  state.description = e.target.value
+                                  return state
+                                })
+                                setUploadFile((state) => !state)
+                              }}
+                              placeholder="Provide a brief description of the country where your property is located. Include details like the region, culture, or notable landmarks"
+                              className="w-full px-2 h-[100px] py-1.5 border-2 border-slate-300 text-sm placeholder-shown:text-sm rounded-md focus:outline-none focus:border-blue-600"
+                            ></textarea>
+                          </div>
+                          {dataCreateCountry?.file[0]?.name ? (
+                            <figure className="w-full h-[200px] relative rounded-md overflow-hidden">
+                              <Image
+                                src={URL.createObjectURL(
+                                  dataCreateCountry?.file[0],
+                                )}
+                                width={400}
+                                height={400}
+                                alt=""
+                                className="object-cover w-full h-full"
+                              />
+                              <div className="hover:cursor-pointer text-lg absolute right-4 bottom-4 bg-white shadow-md text-red-600 hover:text-opacity-75 active:scale-90 transition duration-100 h-10 w-10 flex items-center justify-center rounded-2xl">
+                                <FaRegTrashCan
+                                  onClick={() => {
+                                    setDataCreateCountry((state) => {
+                                      state.file = []
+                                      return state
+                                    })
+                                    setUploadFile((state) => !state)
+                                  }}
+                                />
+                              </div>
+                            </figure>
+                          ) : (
+                            <label className="border-2 border-gray-300 border-dashed flex flex-col items-center justify-center w-full h-[200px] overflow-hidden rounded-md cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                <IoCloudUploadOutline size={24} />
+                                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                  <span className="font-semibold">
+                                    Click to upload
+                                  </span>
+                                </p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                  JPG, PNG or JPEG (MAX. 2MB)
+                                </p>
+                              </div>
+                              <input
+                                type="file"
+                                className="hidden"
+                                name="createCountryFile"
+                                onChange={(e: any) => {
+                                  if (e.target.files[0]) {
+                                    setDataCreateCountry((state) => {
+                                      state.file[0] = e.target.files[0]
+                                      return state
+                                    })
+                                    console.log(dataCreateCountry)
+                                    setUploadFile((state) => !state)
+                                  }
+                                }}
+                              />
+                            </label>
+                          )}
+                          <div className="flex items-center justify-between w-full gap-1.5">
+                            <button
+                              onClick={() => {
+                                setShowCreateCountry(false)
+                                setDataCreateCountry({
+                                  file: [],
+                                  name: '',
+                                  description: '',
+                                })
+                              }}
+                              type="button"
+                              className="text-sm font-bold rounded-md p-2 w-full shadow-md text-gray-800 bg-white border border-slate-100 hover:opacity-75 active:scale-95 transition duration-100"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              disabled={
+                                !dataCreateCountry?.name ||
+                                !dataCreateCountry?.file[0]?.name
+                              }
+                              onClick={() => mutateCreateCountry()}
+                              type="button"
+                              className="disabled:text-white disabled:bg-slate-300 disabled:scale-100 disabled:cursor-not-allowed text-sm font-bold rounded-md p-2 w-full shadow-md text-white bg-gray-800 hover:opacity-75 active:scale-95 transition duration-100"
+                            >
+                              Add Country
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
                   </section>
                   <TextInput
                     labelName="Phone Number"
@@ -783,9 +1123,11 @@ const CreatePropertyPage = () => {
                           setFieldValue('checkInStartTime', e.target.value)
                           setInputCheckInStartTime(e.target.value)
                         }}
+                        defaultValue='14:00'
                         value={inputCheckInStartTime}
                         className="hover:cursor-text hover:opacity-60 transition duration-100 w-fit rounded-md px-3 py-1.5 border-2 border-slate-300 text-sm placeholder-shown:text-sm focus:outline-none focus:border-blue-600"
                       />
+                      <ErrorMessage name='checkInStartTime' component={'div'} className='text-red-600 text-xs font-bold bg-red-200 rounded-full p-1 px-5'/>
                     </div>
                     <div className="grid items-center gap-1.5 w-full relative">
                       <label
@@ -805,6 +1147,7 @@ const CreatePropertyPage = () => {
                         value={inputCheckInEndTime}
                         className="hover:cursor-text hover:opacity-60 transition duration-100 w-fit rounded-md px-3 py-1.5 border-2 border-slate-300 text-sm placeholder-shown:text-sm focus:outline-none focus:border-blue-600"
                       />
+                      <ErrorMessage name='checkInEndTime' component={'div'} className='text-red-600 text-xs font-bold bg-red-200 rounded-full p-1 px-5'/>
                     </div>
                   </section>
                   <section className="flex sm:flex-row flex-col sm:items-center justify-between bg-white shadow-md border border-gray-200 rounded-md p-3">
@@ -826,6 +1169,7 @@ const CreatePropertyPage = () => {
                         value={inputCheckOutStartTime}
                         className="hover:cursor-text hover:opacity-60 transition duration-100 w-fit rounded-md px-3 py-1.5 border-2 border-slate-300 text-sm placeholder-shown:text-sm focus:outline-none focus:border-blue-600"
                       />
+                      <ErrorMessage name='checkOutStartTime' component={'div'} className='text-red-600 text-xs font-bold bg-red-200 rounded-full p-1 px-5'/>
                     </div>
                     <div className="grid items-center gap-1.5 w-full relative">
                       <label
@@ -842,9 +1186,11 @@ const CreatePropertyPage = () => {
                           setFieldValue('checkOutEndTime', e.target.value)
                           setInputCheckOutEndTime(e.target.value)
                         }}
+                        defaultValue='10:00'
                         value={inputCheckOutEndTime}
                         className="hover:cursor-text hover:opacity-60 transition duration-100 w-fit rounded-md px-3 py-1.5 border-2 border-slate-300 text-sm placeholder-shown:text-sm focus:outline-none focus:border-blue-600"
                       />
+                      <ErrorMessage name='checkOutEndTime' component={'div'} className='text-red-600 text-xs font-bold bg-red-200 rounded-full p-1 px-5'/>
                     </div>
                   </section>
                   <TextAreaCustom
@@ -877,6 +1223,7 @@ const CreatePropertyPage = () => {
                       Property facilities will explain to customers what they
                       will get while staying in this property
                     </p>
+                    <ErrorMessage name='propertyFacilitiesId' component={'div'} className='mt-1.5 text-red-600 text-xs font-bold bg-red-200 rounded-full p-1 px-5'/>
                   </hgroup>
                   <FieldArray name="propertyFacilitiesId">
                     {({ push: pushPropertyFacility }) => (
@@ -925,6 +1272,11 @@ const CreatePropertyPage = () => {
                               )
                             },
                           )}
+ 
+                        </section>
+                      </div>
+                    )}
+                  </FieldArray>
                           <div
                             onClick={() =>
                               setShowCreatePropertyFacilityForm(true)
@@ -932,7 +1284,7 @@ const CreatePropertyPage = () => {
                             className="px-3 flex items-center gap-1.5 py-1.5 bg-slate-800 text-xs font-bold w-fit text-white rounded-md shadow-md hover:opacity-70 hover:cursor-pointer active:scale-90 transition duration-100"
                           >
                             <FaPlus className="text-sm" />
-                            Add Facility
+                            Add Property Facility
                           </div>
                           <section>
                             {showCreatePropertyFacilityForm && (
@@ -941,9 +1293,15 @@ const CreatePropertyPage = () => {
                                   <div className="flex items-center justify-end">
                                     <IoClose
                                       className="hover:opacity-75 hover:cursor-pointer text-gray-900 "
-                                      onClick={() =>
-                                        setShowCreatePropertyFacilityForm(false)
-                                      }
+                                      onClick={() => {
+                                        setShowCreatePropertyFacilityForm(
+                                          false,
+                                        )
+                                        setDataCreatePropertyFacility({
+                                          name: '',
+                                          file: [] as File[],
+                                        })
+                                      }}
                                     />
                                   </div>
                                   <hgroup className="flex flex-col mt-[-10px]">
@@ -951,8 +1309,7 @@ const CreatePropertyPage = () => {
                                       Add Property Facility
                                     </h1>
                                     <p className="text-sm font-light text-gray-500">
-                                      Empower Your Property, Add Facilities with
-                                      Ease!
+                                    Customize Your Stay: Add Any Facility You Need, If It's Not Already on the List!
                                     </p>
                                   </hgroup>
                                   <div className="flex flex-col gap-3">
@@ -961,7 +1318,7 @@ const CreatePropertyPage = () => {
                                         Name
                                       </label>
                                       <Field
-                                        id="propertyTypeName"
+                                        id="propertyFacilityName"
                                         onChange={(e: any) => {
                                           setDataCreatePropertyFacility(
                                             (state: any) => {
@@ -969,68 +1326,87 @@ const CreatePropertyPage = () => {
                                               return state
                                             },
                                           )
+                                          setUploadFile((state) => !state)
                                         }}
                                         name="createPropertyFacilityName"
                                         type="text"
-                                        placeholder="Swimming Pool"
+                                        placeholder="Bathtub"
                                         className="placeholder-shown:text-sm placeholder-shown:text-slate-300 focus:outline-none text-sm font-medium text-gray-900 focus:ring-slate-600 border border-slate-300 rounded-full px-5 py-2"
                                       />
-                                      <ErrorMessage
-                                        name="propertyTypeName"
+                                      {/* <ErrorMessage
+                                        name="propertyFacilityName"
                                         component={'div'}
                                         className="text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full z-20"
-                                      />
+                                      /> */}
                                     </div>
-                                      <label className="flex flex-col text-sm font-bold text-slate-900 items-start justify-center w-full h-full cursor-pointer">
-                                        <p className='mb-1 ml-5'>Icon</p> 
-                                    {
-                                      dataCreatePropertyFacility?.file[0]?.name ? (
-                                        <figure className="relative rounded-md overflow-hidden h-12 w-12">
-                                        <Image
-                                          src={URL.createObjectURL(
-                                            dataCreatePropertyFacility?.file[0],
-                                          )}
-                                          width={100}
-                                          height={100}
-                                          alt=""
-                                          className="object-cover w-full h-full"
-                                        />
-                                      </figure>
-                                      ) : (
-                                        <div className="flex flex-col border-2-dotted border-slate-500 items-center justify-center h-12 w-12 bg-slate-300 rounded-md hover:bg-slate-400 transition duration-75">
-                                        <FaPlus className="text-xl text-gray-700" />
-                                        </div>
-                                      )
-                                    }
+                                    <label className="flex items-center gap-3 text-sm font-bold text-slate-900 justify-start w-full h-full cursor-pointer ">
+                                      <p className="mb-1 ml-5">Icon</p>
+                                      <div className="flex items-center justify-between gap-3 w-full rounded-md shadow-md border border-slate-200 bg-white p-2 px-3">
+                                        {dataCreatePropertyFacility?.file[0]
+                                          ?.name ? (
+                                          <figure className="relative rounded-md overflow-hidden h-12 w-12 border-2 border-slate-600 border-dotted">
+                                            <Image
+                                              src={URL.createObjectURL(
+                                                dataCreatePropertyFacility
+                                                  ?.file[0],
+                                              )}
+                                              width={100}
+                                              height={100}
+                                              alt=""
+                                              className="object-cover w-full h-full"
+                                            />
+                                          </figure>
+                                        ) : (
+                                          <div className="flex flex-col border-2 border-dotted border-slate-600 items-center justify-center h-12 w-12 text-slate-400 bg-slate-300 rounded-md hover:bg-slate-400 transition duration-75">
+                                            <FaPlus size={24} />
+                                          </div>
+                                        )}
                                         <input
                                           type="file"
-                                          className="hidden"
-                                          name='createPropertyFacilityIcon'
+                                          className="file-input file-input-bordered file-input-xs w-full max-w-xs"
+                                          name="createPropertyFacilityIcon"
                                           onChange={(e: any) => {
-                                            if (e.currentTarget.files[0]) {
-                                              setDataCreatePropertyFacility((state) => {
-                                                state.file[0] = e.currentTarget.files[0]
-                                                return state
-                                              })
-                                              console.log(dataCreatePropertyFacility)
+                                            if (e.target.files[0]) {
+                                              setDataCreatePropertyFacility(
+                                                (state) => {
+                                                  state.file[0] =
+                                                    e.target.files[0]
+                                                  return state
+                                                },
+                                              )
                                             }
+                                            setUploadFile(
+                                              (state: boolean) => !state,
+                                            )
                                           }}
                                         />
-                                      </label>
+                                      </div>
+                                    </label>
                                   </div>
                                   <div className="flex items-center gap-2 justify-end">
                                     <button
                                       type="button"
-                                      onClick={() =>
-                                        setShowCreatePropertyFacilityForm(false)
-                                      }
+                                      onClick={() => {
+                                        setShowCreatePropertyFacilityForm(
+                                          false,
+                                        )
+                                        setDataCreatePropertyFacility({
+                                          name: '',
+                                          file: [] as File[],
+                                        })
+                                      }}
                                       className="px-5 hover:bg-slate-200 transition duration-100 active:scale-90 py-1.5 text-gray-700 text-sm font-bold rounded-full shadow-md border border-slate-100 "
                                     >
                                       Cancel
                                     </button>
                                     <button
                                       type="button"
-                                      disabled={isPendingCreatePropertyFacility}
+                                      disabled={
+                                        isPendingCreatePropertyFacility ||
+                                        !dataCreatePropertyFacility?.name ||
+                                        !dataCreatePropertyFacility?.file[0]
+                                          ?.name
+                                      }
                                       onClick={() =>
                                         mutateCreatePropertyFacility()
                                       }
@@ -1043,10 +1419,6 @@ const CreatePropertyPage = () => {
                               </div>
                             )}
                           </section>
-                        </section>
-                      </div>
-                    )}
-                  </FieldArray>
                 </section>
                 <section className="flex flex-col gap-5">
                   <hgroup className="mb-5">
@@ -1056,6 +1428,7 @@ const CreatePropertyPage = () => {
                     <p className="text-sm font-medium text-gray-600">
                       Showcase Your Space: Stunning Property Images for Renters{' '}
                     </p>
+                    <ErrorMessage name="propertyImages" component={'div'} className='text-red-600 text-xs font-bold bg-red-200 rounded-full p-1 px-5'/>
                   </hgroup>
                   <FieldArray name="propertyImages">
                     {({
@@ -1410,6 +1783,7 @@ const CreatePropertyPage = () => {
                                         </CardDescription>
                                       </CardHeader>
                                       <CardContent className="space-y-2">
+                                        <ErrorMessage name={`propertyRoomTypes.${index}.roomFacilities`} component={'div'} className='text-red-600 text-xs font-bold bg-red-200 rounded-full p-1 px-5'/>
                                         <FieldArray
                                           name={`propertyRoomTypes.${index}.roomFacilities`}
                                         >
@@ -1490,7 +1864,177 @@ const CreatePropertyPage = () => {
                                                   },
                                                 )}
                                               </section>
-                                              <section></section>
+                                              <div
+                                                onClick={() =>
+                                                  setShowCreatePropertyRoomFacilityForm(
+                                                    true,
+                                                  )
+                                                }
+                                                className="px-3 flex items-center gap-1.5 py-1.5 bg-slate-800 text-xs font-bold w-fit text-white rounded-md shadow-md hover:opacity-70 hover:cursor-pointer active:scale-90 transition duration-100 mt-[-15px]"
+                                              >
+                                                <FaPlus className="text-sm" />
+                                                Add Room Facility
+                                              </div>
+                                              <section>
+                                                {showCreatePropertyRoomFacilityForm && (
+                                                  <div className="fixed bg-black bg-opacity-20 backdrop-blur-sm w-full h-full z-[51] top-0 left-0 flex items-center justify-center">
+                                                    <div className="bg-white border border-slate-200 shadow-md p-5 rounded-md flex flex-col gap-7">
+                                                      <div className="flex items-center justify-end">
+                                                        <IoClose
+                                                          className="hover:opacity-75 hover:cursor-pointer text-gray-900 "
+                                                          onClick={() => {
+                                                            setShowCreatePropertyRoomFacilityForm(
+                                                              false,
+                                                            )
+                                                            setDataCreatePropertyRoomFacility(
+                                                              {
+                                                                name: '',
+                                                                file: [] as File[],
+                                                              },
+                                                            )
+                                                          }}
+                                                        />
+                                                      </div>
+                                                      <hgroup className="flex flex-col mt-[-10px]">
+                                                        <h1 className="text-lg font-bold text-slate-800">
+                                                          Add Room Facility
+                                                        </h1>
+                                                        <p className="text-sm font-light text-gray-500">
+                                                          Customize Your Space:
+                                                          Add New Room
+                                                          Facilities to Fit Your
+                                                          Needs!
+                                                        </p>
+                                                      </hgroup>
+                                                      <div className="flex flex-col gap-3">
+                                                        <div className="flex flex-col gap-1 ">
+                                                          <label className="text-sm font-bold text-black ml-5">
+                                                            Name
+                                                          </label>
+                                                          <Field
+                                                            id="propertyRoomFacilityName"
+                                                            onChange={(
+                                                              e: any,
+                                                            ) => {
+                                                              setDataCreatePropertyRoomFacility(
+                                                                (
+                                                                  state: any,
+                                                                ) => {
+                                                                  state.name =
+                                                                    e.target.value
+                                                                  return state
+                                                                },
+                                                              )
+                                                              setUploadFile(
+                                                                (state) =>
+                                                                  !state,
+                                                              )
+                                                            }}
+                                                            name="createPropertyRoomFacilityName"
+                                                            type="text"
+                                                            placeholder="Bathtub"
+                                                            className="placeholder-shown:text-sm placeholder-shown:text-slate-300 focus:outline-none text-sm font-medium text-gray-900 focus:ring-slate-600 border border-slate-300 rounded-full px-5 py-2"
+                                                          />
+                                                          <ErrorMessage
+                                                            name="propertyRoomFacilityName"
+                                                            component={'div'}
+                                                            className="text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full z-20"
+                                                          />
+                                                        </div>
+                                                        <label className="flex items-center gap-3 text-sm font-bold text-slate-900 justify-start w-full h-full cursor-pointer ">
+                                                          <p className="mb-1 ml-5">
+                                                            Icon
+                                                          </p>
+                                                          <div className="flex items-center justify-between gap-3 w-full rounded-md shadow-md border border-slate-200 bg-white p-2 px-3">
+                                                            {dataCreatePropertyRoomFacility
+                                                              ?.file[0]
+                                                              ?.name ? (
+                                                              <figure className="relative rounded-md overflow-hidden h-12 w-12 border-2 border-slate-600 border-dotted">
+                                                                <Image
+                                                                  src={URL.createObjectURL(
+                                                                    dataCreatePropertyRoomFacility
+                                                                      ?.file[0],
+                                                                  )}
+                                                                  width={100}
+                                                                  height={100}
+                                                                  alt=""
+                                                                  className="object-cover w-full h-full"
+                                                                />
+                                                              </figure>
+                                                            ) : (
+                                                              <div className="flex flex-col border-2 border-dotted border-slate-600 items-center justify-center h-12 w-12 text-slate-400 bg-slate-300 rounded-md hover:bg-slate-400 transition duration-75">
+                                                                <FaPlus
+                                                                  size={24}
+                                                                />
+                                                              </div>
+                                                            )}
+                                                            <input
+                                                              type="file"
+                                                              className="file-input file-input-bordered file-input-xs w-full max-w-xs"
+                                                              name="createPropertyRoomFacilityIcon"
+                                                              onChange={(
+                                                                e: any,
+                                                              ) => {
+                                                                if (
+                                                                  e.target
+                                                                    .files[0]
+                                                                ) {
+                                                                  setDataCreatePropertyRoomFacility(
+                                                                    (state) => {
+                                                                      state.file[0] =
+                                                                        e.target.files[0]
+                                                                      return state
+                                                                    },
+                                                                  )
+                                                                }
+                                                                setUploadFile(
+                                                                  (
+                                                                    state: boolean,
+                                                                  ) => !state,
+                                                                )
+                                                              }}
+                                                            />
+                                                          </div>
+                                                        </label>
+                                                      </div>
+                                                      <div className="flex items-center gap-2 justify-end">
+                                                        <button
+                                                          type="button"
+                                                          onClick={() => {
+                                                            setShowCreatePropertyRoomFacilityForm(
+                                                              false,
+                                                            )
+                                                            setDataCreatePropertyRoomFacility(
+                                                              {
+                                                                name: '',
+                                                                file: [] as File[],
+                                                              },
+                                                            )
+                                                          }}
+                                                          className="px-5 hover:bg-slate-200 transition duration-100 active:scale-90 py-1.5 text-gray-700 text-sm font-bold rounded-full shadow-md border border-slate-100 "
+                                                        >
+                                                          Cancel
+                                                        </button>
+                                                        <button
+                                                          type="button"
+                                                          disabled={
+                                                            isPendingCreatePropertyRoomFacility ||
+                                                            !dataCreatePropertyRoomFacility?.name ||
+                                                            !dataCreatePropertyRoomFacility
+                                                              ?.file[0]?.name
+                                                          }
+                                                          onClick={() =>
+                                                            mutateCreatePropertyRoomFacility()
+                                                          }
+                                                          className="disabled:bg-slate-300 disabled:text-white disabled:scale-100 disabled:opacity-100 px-5 hover:opacity-75 transition duration-100 active:scale-90 py-1.5 text-white text-sm font-bold rounded-full shadow-md border bg-gray-900 border-slate-100 "
+                                                        >
+                                                          Create
+                                                        </button>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                )}
+                                              </section>
                                             </section>
                                           )}
                                         </FieldArray>
@@ -1509,7 +2053,8 @@ const CreatePropertyPage = () => {
                                           detail
                                         </CardDescription>
                                       </CardHeader>
-                                      <CardContent>
+                                      <CardContent className="space-y-2">
+                                      <ErrorMessage name={`propertyRoomTypes[${index}].roomImages`} component={'div'} className='text-red-600 text-xs font-bold bg-red-200 rounded-full p-1 px-5'/>
                                         <FieldArray
                                           name={`propertyRoomTypes[${index}].roomImages`}
                                         >
@@ -1686,11 +2231,11 @@ const CreatePropertyPage = () => {
                     )}
                   </FieldArray>
                 </section>
-                <button className="rounded-full py-3 flex items-center gap-1.5 justify-center w-full transition duration-100 bg-black hover:opacity-75 active:scale-95 text-white text-sm font-bold">
+                <button type='submit' className="rounded-full py-3 flex items-center gap-1.5 justify-center w-full transition duration-100 bg-black hover:opacity-75 active:scale-95 text-white text-sm font-bold">
                   Create Property
                 </button>
               </Form>
-            )}
+            )}} 
           </Formik>
         </div>
       </section>

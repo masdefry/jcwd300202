@@ -29,8 +29,11 @@ import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
 import { BsBuildings } from 'react-icons/bs';
 import { IoFilter } from 'react-icons/io5';
+import RangeSlider from 'rsuite/RangeSlider';
+import 'rsuite/RangeSlider/styles/index.css';
 
 const ExplorePage = ({ searchParams }: { searchParams: any }) => {
+    const [priceRange, setPriceRange] = useState([300000, 1000000])
     const pathname = usePathname()
     const router = useRouter()
     const [totalDays, setTotalDays] = useState(0)
@@ -38,9 +41,10 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
     const [propertyFacilityIdArr, setPropertyFacilityIdArr] = useState<any[]>([])
     const [propertyRoomFacilityIdArr, setPropertyRoomFacilityIdArr] = useState<any[]>([])
     const [propertyTypeIdArr, setPropertyTypeIdArr] = useState<any[]>([])
+    const [propertyStarArr, setPropertyStarArr] = useState<any[]>([])
     const [filterMobileMode, setFilterMobileMode] = useState(false)
     const [sortMobileMode, setSortMobileMode] = useState(false)
-    const [ priceRange, setPriceRange ] = useState({ minPrice: 0, maxPrice: 3000000 })
+    // const [ priceRange, setPriceRange ] = useState({ minPrice: 0, maxPrice: 3000000 })
     const [ minPrice, setMinPrice ] = useState(0)
     const [ maxPrice, setMaxPrice ] = useState(1000000)
 
@@ -83,6 +87,14 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
             setPropertyTypeIdArr([...propertyTypeIdArr, value])
         } else {
             setPropertyTypeIdArr(state => state.filter(item => item !== value))
+        }
+        mutateExplorePagination({})
+    }
+    const handlePropertyStarFilter = (isChecked: boolean, value: string | number) => {
+        if (isChecked){
+            setPropertyStarArr([...propertyStarArr, value])
+        } else {
+            setPropertyStarArr(state => state.filter(item => item !== value))
         }
         mutateExplorePagination({})
     }
@@ -133,6 +145,7 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                         propertyFacilityIdArr, 
                         propertyRoomFacilityIdArr,
                         propertyTypeIdArr, 
+                        propertyStarArr
                     }
                 })
 
@@ -234,7 +247,17 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                             <h1>Price</h1>
                             <p className='font-light text-gray-300'>Get the best deal</p>
                         </hgroup>
-                        <div className='flex items-center gap-1 p-5'>
+                        <div className='flex flex-col gap-1 p-5'>
+
+                        <RangeSlider value={[minPrice/100000, maxPrice/100000]} 
+                        onChange={(value) => {
+                            setMinPrice(value[0] * 100000)
+                            setMaxPrice(value[1] * 100000)
+                            
+                            }}
+                        renderTooltip={(value) => (<div className='font-bold text-xs'>{value && (value * 100000)}</div>)}    
+                            />
+                        <div className='flex items-center gap-1'>
                             <div className='text-sm font-semibold flex flex-col gap-1'>
                                 <label className='ml-3' htmlFor='minPrice'>Starts from</label>
                                 <input type="number" 
@@ -248,12 +271,13 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                                 value={maxPrice} name='maxPrice' id='maxPrice' className='w-full rounded-full border border-slate-300 bg-white text-xs placeholder-shown:text-xs text-gray-800 focus:outline-1 px-3 py-1' placeholder='3.000.000'/>
                             </div>
                         </div>
-                        <div className='flex items-center gap-1 px-5 pb-5'>
+                        <div className='flex items-center gap-1 mt-3'>
                             <button onClick={() => {
                                 searchParams.minPrice = minPrice
                                 searchParams.maxPrice = maxPrice
                                 mutateExplorePagination({})
-                            }} className='w-full text-xs font-bold hover:opacity-75 transition duration-100 active:scale-90 text-white bg-gray-900 rounded-md py-2 px-3 shadow-md' type='button'>Set price</button>
+                            }} className='w-full text-xs font-bold hover:opacity-75 transition duration-100 active:scale-90 text-white bg-gray-900 rounded-full py-2 px-3 shadow-md' type='button'>Set price</button>
+                        </div>
                         </div>
                     </div>
                     <div tabIndex={0} className="2xl:rounded-md rounded-none collapse collapse-arrow 2xl:shadow-md 2xl:border-t-0 border-t border-slate-300">
@@ -262,7 +286,7 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                             <span className='rounded-full bg-slate-200 text-slate-700 text-xs h-[1.5em] w-[1.5em] flex items-center justify-center'>{dataForFilteringProperty?.propertyTypeCounter}</span>
                         </div>
                         <div className="collapse-content pt-3">
-                            <div className=' 2xl:overflow-y-visible overflow-y-scroll max-h-[250px]'>
+                            <div className='overflow-y-auto scrollbar-thin max-h-[250px]'>
                             <ul className='flex flex-col gap-4 text-sm font-semibold 2xl:overflow-y-visible overflow-y-scroll'>
                                 {
                                     dataForFilteringProperty?.propertyType.slice(0,4).map((item: any, index: number) => {
@@ -307,7 +331,7 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                             <span className='rounded-full bg-slate-200 text-slate-700 text-xs h-[1.5em] w-[1.5em] flex items-center justify-center'>{dataForFilteringProperty?.propertyFacilityCounter}</span>
                         </div>
                         <div className="collapse-content pt-3">
-                            <div className=' 2xl:overflow-y-visible overflow-y-scroll max-h-[250px]'>
+                            <div className='overflow-y-auto scrollbar-thin max-h-[250px]'>
                             <ul className='flex flex-col gap-4 text-sm font-semibold'>
                                 {
                                     dataForFilteringProperty?.propertyFacility.slice(0,5).map((item: any, index: number) => {
@@ -352,7 +376,7 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                         <span className='rounded-full bg-slate-200 text-slate-700 text-xs h-[1.5em] w-[1.5em] flex items-center justify-center'>{dataForFilteringProperty?.propertyRoomFacilityCounter}</span>
                         </div>
                         <div className="collapse-content pt-3">
-                        <div className=' 2xl:overflow-y-visible overflow-y-scroll max-h-[250px]'>
+                        <div className='overflow-y-auto scrollbar-thin max-h-[250px]'>
                             <ul className='flex flex-col gap-4 text-sm font-semibold'>
                                 {
                                     dataForFilteringProperty?.propertyRoomFacility.slice(0,5).map((item: any, index: number) => {
@@ -397,15 +421,15 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                         <div className="collapse-content pt-3">
                         <ul className='flex flex-col gap-4 text-sm font-semibold'>
                                 {
-                                    Array.from({length: 4}).map((item, index) => {
+                                    Array.from({length: 4}).map((item, index: number) => {
                                         return (
                                         <li key={index} className="form-control">
                                             <label className="flex items-center gap-3 cursor-pointer">
-                                                <input type="checkbox" className="checkbox" />
+                                                <input value={5 - index} onChange={(e) => handlePropertyStarFilter(e.target.checked, e.target.value)} type="checkbox" className="checkbox" />
                                                 <span className="text-gray-600 label-text flex items-center gap-1.5">
                                                     <p>{5 - index}</p>
                                                     <FaStar key={index} size={18} className='text-yellow-400'/>
-                                                    <p>(1200)</p>
+                                                    <p>{dataForFilteringProperty?.countPropertyWithStar?.toString().split(',').join('')[index] || 0}</p>
                                                 </span>
                                             </label>
                                         </li>
@@ -519,7 +543,7 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                                                         item?.propertyType?.name.toLowerCase() === 'hotel' && (
                                                             <div className='flex items-center'>
                                                                 {
-                                                                    Array.from({length: 5}).map((_, index) => {
+                                                                    Array.from({length: Number(item?.star)}).map((_, index) => {
                                                                         return(
                                                                             <FaStar key={index} className='text-yellow-400 md:text-base text-sm'/>
                                                                         )

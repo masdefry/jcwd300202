@@ -465,3 +465,127 @@ export const updatePropertyRoomTypeGeneral = async (
     next(error)
   }
 }
+
+export const createPropertyRoomType = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const {
+      id,
+      role,
+      name,
+      description,
+      rooms,
+      capacity,
+      bathrooms,
+      price,
+      totalRooms,
+      propertyRoomFacilitiesId
+    } = req.body
+
+    const { slug } = req.params
+    if (Array.isArray(req.files))
+      throw { msg: 'Images not found!', status: 406 }
+    const imagesUploaded: any = req?.files?.images
+
+    const isTenantExist = await prisma.tenant.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!isTenantExist?.id || isTenantExist?.deletedAt)
+      throw { msg: 'Tenant not found!', status: 406 }
+    if (isTenantExist.role !== role)
+      throw { msg: 'Role unauthorized!', status: 401 }
+
+    const isPropertyExist = await prisma.property.findFirst({
+      where: {
+        slug,
+      },
+    })
+
+    if (!isPropertyExist?.id || isPropertyExist?.deletedAt)
+      throw { msg: 'Property not found!', status: 406 }
+    if (isPropertyExist?.tenantId !== id)
+      throw { msg: 'Actions not permitted!', status: 406 }
+
+
+    let createdPropertyRoomType: any
+    await prisma.$transaction(
+      async (tx) => {
+        try {
+          const property = await prisma.property.findUnique({
+            where: {
+              id: isPropertyExist?.id
+            },
+          }) 
+
+          // createdPropertyRoomType = await tx.propertyRoomType.create({
+          //   data: {
+          //     name,
+          //     description,
+          //     rooms: Number(rooms),
+          //     capacity: Number(capacity),
+          //     bathrooms: Number(bathrooms),
+          //     price: Number(price),
+          //     totalRooms: Number(totalRooms),
+          //     propertyId: property?.id,
+          //   },
+          // })
+
+          if (!createdPropertyRoomType?.id)
+            throw { msg: 'Create property room type failed!', status: 500 }
+          
+          const dataCreatedRoomHasFacilities = propertyRoomFacilitiesId.map((item: number | string) => {
+            return {
+              propertyRoomTypeId: createdPropertyRoomType?.id,
+              propertyRoomFacilityId: Number(item)
+            }
+          })
+              
+              const createdRoomHasFacilities = await tx.roomHasFacilities.createMany({
+                data: dataCreatedRoomHasFacilities  
+          })
+          
+          if (!createdRoomHasFacilities)
+            throw { msg: 'Create room has facilities failed!', status: 500 }
+          const dataForCreatePropertyRoomImages = imagesUploaded.map(
+            (item: any) => {
+              return {
+                directory: item?.destination,
+                filename: item?.filename.split('.')[0],
+                fileExtension: item?.filename.split('.')[1],
+                propertyRoomTypeId: createdPropertyRoomType?.id,
+              }
+            },
+          )
+
+          const createdPropertyRoomImages =
+            await tx.propertyRoomImage.createMany({
+              data: dataForCreatePropertyRoomImages,
+            })
+            
+          if (!createdPropertyRoomImages)
+            throw { msg: 'Upload room type images failed!', status: 500 }
+        } catch (error) {
+          console.log(error)
+          throw { msg: 'Connection failed!', status: 500 }
+        }
+      },
+      {
+        timeout: 10000,
+      },
+    )
+
+    res.status(201).json({
+      error: false,
+      message: 'Create property room type success',
+      data: createdPropertyRoomType,
+    })
+  } catch (error) {
+    next(error)
+  }
+}

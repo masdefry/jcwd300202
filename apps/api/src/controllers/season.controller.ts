@@ -97,7 +97,7 @@ export const createSeasonalPriceAndAvailabilty = async (
         length: differenceInDays(new Date(endDate), new Date(startDate)) + 1,
       }).map((_, index) => {
         return {
-          price: roomPrices,
+          price:  roomPrices,
           propertyId: isPropertyExist?.id,
           seasonId: createdSeason?.id as number,
           propertyRoomTypeId,
@@ -422,8 +422,12 @@ export const getSeasonsByProperty = async (
         propertyRoomType: {
           include: {
             season: true
+          },
+          orderBy: {
+            price: 'asc'
           }
-        }
+        },
+        
       },
     })
 
@@ -489,6 +493,7 @@ export const createSeasonalAvailabiltyByProperty = async(req: Request, res: Resp
       id,
       role,
       availability,
+      roomPricePercentage,
       name,
       startDate,
       endDate,
@@ -496,7 +501,6 @@ export const createSeasonalAvailabiltyByProperty = async(req: Request, res: Resp
     } = req.body
 
     const { slug } = req.params
-    console.log('slug', slug)
     const isTenantExist = await prisma.tenant.findUnique({
       where: {
         id,
@@ -555,7 +559,7 @@ export const createSeasonalAvailabiltyByProperty = async(req: Request, res: Resp
 
 
       const dataToCreateSeasonalPrices = createdSeasons?.map((item: any, indexCreatedSeason: number) => {
-        const price = isPropertyExist?.propertyRoomType[indexCreatedSeason].price
+        const price = roomPricePercentage ? (Number(roomPricePercentage) / 100) * isPropertyExist?.propertyRoomType[indexCreatedSeason].price : isPropertyExist?.propertyRoomType[indexCreatedSeason].price
         const totalRooms = isPropertyExist?.propertyRoomType[indexCreatedSeason].totalRooms
         return (
           Array.from({
@@ -604,6 +608,7 @@ export const updateManySeasonsByPropertySeason = async(req: Request, res: Respon
       seasonId,
       roomsToSell,
       availability,
+      roomPricePercentage,
       propertyRoomTypeId,
       name,
       startDate,
@@ -713,7 +718,7 @@ export const updateManySeasonsByPropertySeason = async(req: Request, res: Respon
 
 
       const dataToCreateSeasonalPrices = createdSeasons?.map((item: any, indexCreatedSeason: number) => {
-        const price = isPropertyExist?.propertyRoomType[indexCreatedSeason].price
+        const price = roomPricePercentage ? (Number(roomPricePercentage) / 100) * isPropertyExist?.propertyRoomType[indexCreatedSeason].price : isPropertyExist?.propertyRoomType[indexCreatedSeason].price
         const totalRooms = isPropertyExist?.propertyRoomType[indexCreatedSeason].totalRooms
         return (
           Array.from({

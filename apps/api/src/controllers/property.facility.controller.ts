@@ -53,12 +53,24 @@ export const createPropertyFacility = async (
     if (isTenantExist.role !== role)
       throw { msg: 'Role unauthorized!', status: 401 }
 
+    const isFacilityExist = await prisma.propertyFacility.findMany({
+      where: {
+        name: {
+          equals: name,
+          mode: 'insensitive'
+        }
+      }
+    })
+
+    if (isFacilityExist.length > 0)
+      throw { msg: 'Property facility already exist!', status: 406 }
+
     const createdPropertyFacility = await prisma.propertyFacility.create({
       data: {
         name,
         iconDirectory: imagesUploaded[0].destination,
         iconFilename: imagesUploaded[0].filename.split('.')[0],
-        iconFileExtension: imagesUploaded[0].filename.split('.')[0],
+        iconFileExtension: imagesUploaded[0].filename.split('.')[1],
       },
     })
 

@@ -53,7 +53,7 @@ const ProfileTenantLayout = ({  children }: { children: ReactNode }) => {
   ]
 
   
-  if(pathname.includes('/auth') || pathname.includes('/tenant/property/create')) {
+  if(pathname.includes('/auth')) {
     return (
         <main className='w-full min-h-min py-5'>
           <section className='m-auto max-w-screen-xl w-full h-full'>
@@ -70,10 +70,10 @@ const ProfileTenantLayout = ({  children }: { children: ReactNode }) => {
           <div className='bg-white shadow-md'>
             <section className=" max-w-screen-xl px-5 m-auto hidden lg:flex justify-between items-center w-full h-full">
               <div className="flex items-center">
-                  <div className="flex items-center gap-1.5 rounded-full p-1 px-2 text-slate-800">
+                  <Link href='/' className="flex items-center gap-1.5 rounded-full p-1 px-2 text-slate-800">
                     <RiBuilding3Fill className="" size={30}/>
                     <p className="text-xs font-bold ">Roomify Inc.</p>
-                  </div>
+                  </Link>
               </div>
               <nav className="text-base font-medium py-5 text-slate-900">
                 <ul className="flex gap-8 items-center">

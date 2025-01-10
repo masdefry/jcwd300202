@@ -10,7 +10,7 @@ import React, { useState } from 'react'
 import { FaCheck } from 'react-icons/fa'
 import { MdOutlineSell } from 'react-icons/md'
 import { BsCurrencyDollar } from 'react-icons/bs'
-import { FaRegCalendar } from 'react-icons/fa6'
+import { FaFire, FaRegCalendar } from 'react-icons/fa6'
 import toast from 'react-hot-toast'
 import { addDays, addHours, isBefore } from 'date-fns'
 import 'rsuite/Calendar/styles/index.css';
@@ -27,12 +27,37 @@ const CalendarPage = ({ params, searchParams }: { params: { slug: string }, sear
         return res?.data?.data
       },
     })
+    const paramsSearch = new URLSearchParams();
+    const [ searchParamsWithValue, setSearchParamsWithValue ] = useState<any>([])
+    const handleSearchParams = (orderBy: string ,value: string) => {
+      let isOrderByExistIndex = -1
+      if(searchParamsWithValue.length > 0) {
+        isOrderByExistIndex =  searchParamsWithValue.findIndex((item: any) => item[0] === orderBy)
+      }
+      if(isOrderByExistIndex <= -1) {
+        setSearchParamsWithValue((state: any )=> {
+          state.push([orderBy, value])
+          return state
+        })
+      } else {
+        setSearchParamsWithValue((state: any )=> {
+          state[isOrderByExistIndex] = [orderBy, value]
+          return state
+        })
+      }
+      console.log(searchParamsWithValue)
+      searchParamsWithValue.forEach((item: any) => {
+        paramsSearch.set(item[0], item[1])
+      })
+      window.history.pushState({}, '', '?' + params.toString())
+    }
   const [dateRange, setDateRange] = useState<{ startDate: string | null, endDate: string | null, id?: string | number, name?: string}>({
     startDate: null,
     endDate: null
   })
   const [ roomName, setRoomName ] = useState('')
-
+  const [ roomAvailability, setRoomAvailability ] = useState(true)
+  const [ isPeakSeason, setIsPeakSeason ] = useState(false)
   const [ changeDate, setChangeDate ] = useState(true)
   const handleDateRange = (date: Date) => {
     const dateISOString = date.toISOString()
@@ -58,6 +83,9 @@ const CalendarPage = ({ params, searchParams }: { params: { slug: string }, sear
     }
   }
   const [dataRoomPerDate, setDataRoomPerDate] = useState<any>()
+  const [ratesPercentage, setRatesPercentage] = useState(100)
+  const [maxRoomToSell, setMaxRoomToSell] = useState(1)
+  const [isEditRateByPercentage, setIsEditRateByPercentage] = useState(true)
   const [activeRoomSetter, setActiveRoomSetter] = useState<any>({
     startDate: '',
     endDate: '',
@@ -79,6 +107,9 @@ const CalendarPage = ({ params, searchParams }: { params: { slug: string }, sear
       },
       onSuccess: (res) => {
         setDataRoomPerDate(res?.data)
+        setRoomAvailability(res?.data?.seasonalPrice?.roomAvailability)
+        setIsPeakSeason(res?.data?.seasonalPrice?.isPeak)
+        setRatesPercentage(Math.floor((res?.data?.seasonalPrice?.price/res?.data?.seasonalPrice?.basePrice) * 100))
         console.log(res)
       },
       onError: (err: any) => {
@@ -137,6 +168,7 @@ const CalendarPage = ({ params, searchParams }: { params: { slug: string }, sear
       mutationFn: async (values: any) => {
         const res = await instance.post(`/season/${params?.slug}`, {
           availability: values?.availability,
+          roomPricePercentage: values?.roomPricePercentage,
           propertyRoomTypeId: values?.propertyRoomTypeId,
           name: values?.name,
           startDate: activeRoomSetter?.startDate || dateRange?.startDate,
@@ -237,7 +269,7 @@ const CalendarPage = ({ params, searchParams }: { params: { slug: string }, sear
           </label>
           <select
             onChange={(e) =>{ 
-              searchParams.view = e.target.value
+              handleSearchParams('view', e.target.value)
               setViewMode(e.target.value)
             }}
             name="view"
@@ -362,7 +394,7 @@ const CalendarPage = ({ params, searchParams }: { params: { slug: string }, sear
                   </div>
                   {Array.from({
                     length: new Date(year, month, 0).getDate(),
-                  }).map((_, index) => {
+                  }).map((_: any, index: number) => {
                       const seasonIdx = dataSeasonsByProperty?.seasons?.findIndex(
                           (season: any) =>
                             (season?.date === addHours(new Date(year, month, index + 1), 7).toISOString()) && (season?.propertyRoomTypeId === item?.id)
@@ -371,27 +403,36 @@ const CalendarPage = ({ params, searchParams }: { params: { slug: string }, sear
                       <div
                         key={index}
                         onClick={() => {
-                          mutateGetSeasonalPrice({
-                            propertyRoomTypeId: Number(item?.id),
-                            date: new Date(year, month, index + 1),
-                          })
-                          setActiveRoomSetter({
-                            startDate: new Date(year, month, index + 2),
-                            endDate: new Date(year, month, index + 2),
-                            name: item?.name,
-                          })
+                          if(isBefore(new Date(), new Date(year, month, index + 1))) {
+                            mutateGetSeasonalPrice({
+                              propertyRoomTypeId: Number(item?.id),
+                              date: new Date(year, month, index + 1),
+                            })
+                            setActiveRoomSetter({
+                              startDate: new Date(year, month, index + 2),
+                              endDate: new Date(year, month, index + 2),
+                              name: item?.name,
+                            })
+                          }
                         }}
-                        className={`${seasonIdx <= -1 ? 'bg-slate-100' : dataSeasonsByProperty?.seasons[seasonIdx]?.roomAvailability ? 'bg-slate-100' : 'bg-red-200'} rounded-2xl overflow-hidden flex flex-col border-2 border-white hover:border-amber-400 hover:cursor-pointer active:border-2 active:border-blue-400 transition duration-75`}
+                        className={`${seasonIdx <= -1 ? 'bg-slate-100' : dataSeasonsByProperty?.seasons[seasonIdx]?.roomAvailability ? 'bg-slate-100' : 'bg-red-200'} rounded-2xl overflow-hidden flex flex-col border-2 border-white hover:border-amber-400 ${isBefore(new Date(year, month, index + 1), new Date()) ? 'hover:cursor-not-allowed' : 'hover:cursor-pointer'} active:border-2 active:border-blue-400 transition duration-75`}
                       >
-                        <div className=" bg-gray-800 text-white justify-center items-end p-2 text-sm font-bold w-[85px] flex flex-col gap-2 h-[45px]">
-                          {index + 1}
+                        <div className=" bg-gray-800 text-white flex items-center justify-between p-2 text-sm font-bold w-[85px]  gap-2 h-[45px]">
+                            <div>
+                        {seasonIdx <= -1
+                            ? "" : dataSeasonsByProperty?.seasons[seasonIdx]?.isPeak ? (
+                              <FaFire className='text-amber-400 text-lg' />
+                            ) : ''}
+
+                            </div>
+                            {index + 1}
                         </div>
                         <div className="  justify-center p-2 text-sm font-bold text-gray-800 w-[85px] flex flex-col gap-2 h-[45px]">
                           <div
                             className={`h-[70%] w-full ${seasonIdx <= -1 ? 'bg-green-300 text-green-800' : dataSeasonsByProperty?.seasons[seasonIdx]?.roomAvailability ? 'bg-green-300 text-green-800' : 'bg-red-300 text-red-800'}
                                  opacity-65 rounded-full text-xs flex items-center justify-center `}
                           >
-                            {seasonIdx <= -1
+                             {seasonIdx <= -1
                               ? 'Open'
                               : dataSeasonsByProperty?.seasons[seasonIdx]?.roomAvailability
                                 ? 'Open'
@@ -584,12 +625,14 @@ const CalendarPage = ({ params, searchParams }: { params: { slug: string }, sear
               dataRoomPerDate?.seasonalPrice?.price ||
               dataRoomPerDate?.seasonalPrice?.basePrice ||
               0,
+            roomPricePercentage: dataRoomPerDate?.seasonalPrice?.price ? 
+            Math.floor((dataRoomPerDate?.seasonalPrice?.price/dataRoomPerDate?.seasonalPrice?.basePrice) * 100) : 100,
             roomsToSell:
             (dataRoomPerDate?.seasonalPrice?.roomToRent || (dataRoomPerDate?.seasonalPrice?.roomToRent !== 0)) ? 
             dataRoomPerDate?.seasonalPrice?.roomToRent : dataRoomPerDate?.seasonalPrice?.totalRooms ?
             dataRoomPerDate?.seasonalPrice?.totalRooms : 0,
             availability:
-              dataRoomPerDate?.seasonalPrice?.roomAvailability || false,
+              dataRoomPerDate?.seasonalPrice?.roomAvailability || true,
             propertyRoomTypeId:
               dataRoomPerDate?.season?.propertyRoomTypeId || '',
             name: dataRoomPerDate?.season?.name || dateRange?.name || '',
@@ -599,6 +642,8 @@ const CalendarPage = ({ params, searchParams }: { params: { slug: string }, sear
           }}
           enableReinitialize={true}
           onSubmit={(values) => {
+            setRoomAvailability(true)
+            setIsPeakSeason(false)
             if(!(selectRoom == 'all-rooms' && viewMode === 'monthly-view')) {
               if (values?.seasonId) {
                 mutateUpdateSeason(values)
@@ -660,21 +705,69 @@ const CalendarPage = ({ params, searchParams }: { params: { slug: string }, sear
                     type="text"
                     placeholder="Eid al-Fitr"
                     />
+                    <div className="flex items-center gap-1.5">
+                    <Checkbox name="isEditRateByPercentage" checked={isEditRateByPercentage} onCheckedChange={(e) => {
+                        if(e) {
+                            setIsEditRateByPercentage(true)
+                            setChangeDate(state => !state)
+                          } else {
+                            setIsEditRateByPercentage(false)
+                            setChangeDate(state => !state)
+                        }
+                        }
+
+                        } className="ml-5" />
+                    <label
+                        htmlFor="isEditRateByPercentage"
+                        className="text-sm font-bold text-black"
+                    >
+                        Edit Rates By Percentage
+                    </label>
+                    </div>
                     {
-                      (selectRoom !== 'all-rooms' || viewMode === 'list-view') && (
+                      dataRoomPerDate?.seasonalPrice?.basePrice && (
+                        <div className='flex items-center gap-2 w-full'>
+                        <div className='w-full text-xs text-gray-600 bg-slate-300 rounded-full px-2 flex justify-center py-1 font-bold'>
+                          Default: Rp{ dataRoomPerDate?.seasonalPrice?.basePrice}
+                        </div>
+                        {
+                          isEditRateByPercentage && (
+                        <div className='w-full text-xs text-gray-600 bg-slate-300 rounded-full px-2 flex justify-center py-1 font-bold'>
+                          New: Rp{values?.roomPrices}
+                        </div>
+                          )
+                        }
+                        </div>
+                      )
+                    }
+                    {
+                      ((!isEditRateByPercentage ) || (viewMode === 'monthly-view' && selectRoom === 'all-rooms')) ? (
                         <TextInput
                         name="roomPrices"
                         title="Rates"
                         type="number"
                         placeholder="500000"
                         />
+                      ) : (
+                        <div className='flex flex-col gap-1 '>
+                            <label htmlFor="pic" className='text-sm font-bold text-black ml-5'>Rates Percentage (%)</label>
+                            <input value={ratesPercentage} onChange={(e) => {
+                              setFieldValue('roomPrices',  Math.floor(dataRoomPerDate?.seasonalPrice?.basePrice * (Number(e.target.value)/100)))
+                              setRatesPercentage(Number(e.target.value))
+                              setChangeDate(state => !state)
+                              }} id='roomPricePercentage' name='roomPricePercentage' type='number' placeholder='100' className='placeholder-shown:text-sm placeholder-shown:text-slate-300 focus:outline-none text-sm font-medium text-gray-900 focus:ring-slate-600 border border-slate-300 rounded-full px-5 py-2' />
+                            <ErrorMessage name='roomPricePercentage' component={'div'} className='text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full z-20'/>
+                        </div>
+
                       )
                     }
                     <div className="flex items-center gap-1.5">
-                    <Checkbox name="availability" checked={values?.availability} onCheckedChange={(e) => {
+                    <Checkbox name="availability" checked={roomAvailability} onCheckedChange={(e) => {
                         if(e) {
+                            setRoomAvailability(true)
                             setFieldValue('availability', true)
-                        } else {
+                          } else {
+                            setRoomAvailability(false)
                             setFieldValue('availability', false)
                         }
                         }
@@ -698,12 +791,13 @@ const CalendarPage = ({ params, searchParams }: { params: { slug: string }, sear
                       </label>
                       <Field
                           as="input"
-                          disabled={!values?.availability}
+                          disabled={!values?.availability || !roomAvailability}
                           id="roomsToSell"
                           name="roomsToSell"
+                          max={dataRoomPerDate?.seasonalPrice?.totalRooms}
                           type="number"
                           placeholder={30}
-                          className={`${values?.availability ? 'text-gray-900' : 'text-gray-400'} placeholder-shown:text-sm placeholder-shown:text-slate-300 focus:outline-none text-sm font-medium  focus:ring-slate-600 border border-slate-300 rounded-full px-5 py-2`}
+                          className={`${(!values?.availability || !roomAvailability) ? 'text-gray-400' : 'text-gray-900'} placeholder-shown:text-sm placeholder-shown:text-slate-300 focus:outline-none text-sm font-medium  focus:ring-slate-600 border border-slate-300 rounded-full px-5 py-2`}
                       />
                       <ErrorMessage
                           name="roomsToSell"
@@ -716,10 +810,12 @@ const CalendarPage = ({ params, searchParams }: { params: { slug: string }, sear
                     }
                 </section>
                 <div className="flex items-center gap-1.5">
-                    <Checkbox name="isPeak"  checked={values?.isPeak} onCheckedChange={(e) => {
+                    <Checkbox name="isPeak"  checked={isPeakSeason} onCheckedChange={(e) => {
                         if(e) {
+                            setIsPeakSeason(true)
                             setFieldValue('isPeak', true)
-                        } else {
+                          } else {
+                            setIsPeakSeason(false)
                             setFieldValue('isPeak', false)
                         }
                         }} className="ml-5" />

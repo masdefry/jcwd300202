@@ -40,7 +40,7 @@ export const createCountry = async (
   next: NextFunction,
 ) => {
   try {
-    const { countryName, description, id, role } = req.body
+    const { name, description, id, role } = req.body
 
     if (Array.isArray(req.files))
       throw { msg: 'Images not found!', status: 406 }
@@ -59,7 +59,7 @@ export const createCountry = async (
 
     const createdCountry = await prisma.country.create({
       data: {
-        name: countryName,
+        name: name,
         description,
         directory: imagesUploaded[0].destination,
         filename: imagesUploaded[0].filename.split('.')[0],

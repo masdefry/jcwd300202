@@ -453,7 +453,7 @@ export const updatePropertyRoomTypeGeneral = async (
       },
     )
 
-    if (updatedPropertyRoomTypeGeneral?.id)
+    if (!updatedPropertyRoomTypeGeneral?.id)
       throw { msg: 'Update property room type failed!', status: 500 }
 
     res.status(200).json({
@@ -462,6 +462,7 @@ export const updatePropertyRoomTypeGeneral = async (
       data: updatedPropertyRoomTypeGeneral,
     })
   } catch (error) {
+    console.log(error)
     next(error)
   }
 }
@@ -517,29 +518,24 @@ export const createPropertyRoomType = async (
     await prisma.$transaction(
       async (tx) => {
         try {
-          const property = await prisma.property.findUnique({
-            where: {
-              id: isPropertyExist?.id
-            },
-          }) 
 
-          // createdPropertyRoomType = await tx.propertyRoomType.create({
-          //   data: {
-          //     name,
-          //     description,
-          //     rooms: Number(rooms),
-          //     capacity: Number(capacity),
-          //     bathrooms: Number(bathrooms),
-          //     price: Number(price),
-          //     totalRooms: Number(totalRooms),
-          //     propertyId: property?.id,
-          //   },
-          // })
+          createdPropertyRoomType = await tx.propertyRoomType.create({
+            data: {
+              name,
+              description,
+              rooms: Number(rooms),
+              capacity: Number(capacity),
+              bathrooms: Number(bathrooms),
+              price: Number(price),
+              totalRooms: Number(totalRooms),
+              propertyId: isPropertyExist?.id,
+            },
+          })
 
           if (!createdPropertyRoomType?.id)
             throw { msg: 'Create property room type failed!', status: 500 }
           
-          const dataCreatedRoomHasFacilities = propertyRoomFacilitiesId.map((item: number | string) => {
+          const dataCreatedRoomHasFacilities = JSON.parse(propertyRoomFacilitiesId).map((item: number | string) => {
             return {
               propertyRoomTypeId: createdPropertyRoomType?.id,
               propertyRoomFacilityId: Number(item)

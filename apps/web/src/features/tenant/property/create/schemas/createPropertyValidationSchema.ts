@@ -1,12 +1,19 @@
-import * as Yup from 'yup';
+import * as Yup from 'yup'
 
 export const createPropertyValidationSchema = Yup.object().shape({
-cityId: Yup.number().required('City ID is required').min(1, 'City ID must be greater than 0'),
+  cityId: Yup.number()
+    .required('City ID is required')
+    .min(1, 'City ID must be greater than 0'),
 
-countryId: Yup.number().required('Country ID is required').min(1, 'Country ID must be greater than 0'),
+  countryId: Yup.number()
+    .required('Country ID is required')
+    .min(1, 'Country ID must be greater than 0'),
 
   name: Yup.string()
-    .matches(/^[a-zA-Z0-9\s]*$/, 'Only alphanumeric characters and spaces allowed')
+    .matches(
+      /^[a-zA-Z0-9\s]*$/,
+      'Only alphanumeric characters and spaces allowed',
+    )
     .required('Property name is required'),
 
   zipCode: Yup.string()
@@ -14,14 +21,15 @@ countryId: Yup.number().required('Country ID is required').min(1, 'Country ID mu
     .required('Zip code is required'),
 
   address: Yup.string()
-    .matches(/^[a-zA-Z0-9\s.,]*$/, 'No special characters allowed except . and ,')
+    .matches(
+      /^[a-zA-Z0-9\s.,]*$/,
+      'No special characters allowed except . and ,',
+    )
     .required('Address is required'),
 
   location: Yup.string().required('Location is required'),
 
-  star: Yup.number()
-    .max(5, 'Star rating must be between 1 and 5')
-    .nullable(),
+  star: Yup.number().max(5, 'Star rating must be between 1 and 5').nullable(),
 
   checkInStartTime: Yup.string()
     .matches(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Invalid time format (HH:MM)')
@@ -34,90 +42,136 @@ countryId: Yup.number().required('Country ID is required').min(1, 'Country ID mu
   checkOutStartTime: Yup.string()
     .matches(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Invalid time format (HH:MM)')
     .nullable(),
-    
-checkOutEndTime: Yup.string()
+
+  checkOutEndTime: Yup.string()
     .matches(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Invalid time format (HH:MM)')
     .required('Check-out end time is required'),
 
-  propertyTypeId: Yup.number().min(1, 'Property type ID invalid').required('Property type is required'),
+  propertyTypeId: Yup.number()
+    .min(1, 'Property type ID invalid')
+    .required('Property type is required'),
 
   propertyTypeName: Yup.string()
-    .matches(/^[a-zA-Z0-9\s]*$/, 'Only alphanumeric characters and spaces allowed')
+    .matches(
+      /^[a-zA-Z0-9\s]*$/,
+      'Only alphanumeric characters and spaces allowed',
+    )
     .nullable(),
 
-  propertyFacilitiesId: Yup.array().of(Yup.number().min(1, 'Room facility ID must be greater than 0')).min(1, 'At least one facility must be selected').nullable(),
+  propertyFacilitiesId: Yup.array()
+    .of(Yup.number().min(1, 'Room facility ID must be greater than 0'))
+    .min(1, 'At least one facility must be selected')
+    .nullable(),
 
   propertyFacilitiesName: Yup.array().of(Yup.string()).nullable(),
 
-  propertyImages: Yup.array().of(
-    Yup.mixed<File>().test('fileSize', 'Maximum 2MB file size allowed', file => {
-        const limitFileSize = 2000000
-        return file && file.size <= limitFileSize
-    })
-    .test('fileFormat', 'File format must be png, jpg, or jpeg', file => {
-        const fileFormatAccepted = ['jpg', 'jpeg', 'png']
-        return file && fileFormatAccepted.includes(file.type.split('/')[1])
-    })
-).min(1, 'At least one image must be included').max(7, 'Maximum 7 image allowed'),
+  propertyImages: Yup.array()
+    .of(
+      Yup.mixed<File>()
+      .required('Image is required')
+      .test('fileSize', 'Maximum 2MB file size allowed', (file) => {
+          const limitFileSize = 2000000
+          return file && file.size <= limitFileSize
+        })
+        .test('fileFormat', 'File format must be png, jpg, or jpeg', (file) => {
+          const fileFormatAccepted = ['jpg', 'jpeg', 'png']
+          return file && fileFormatAccepted.includes(file.type.split('/')[1])
+        }),
+    )
+    .min(1, 'At least one image must be included')
+    .max(7, 'Maximum 7 image allowed'),
 
-  propertyDescription: Yup.string().matches(/^([^.,]*([.,][^.,]*){0,7}){0,1}$/, 'No more than 7 dots and commas allowed').matches(/^[a-zA-Z0-9\s.,]*$/, 'No special characters allowed').required('Property description is required'),
+  propertyDescription: Yup.string()
+    .matches(
+      /^([^.,-]*([.,-][^.,-]*){0,20}){0,1}$/,
+      'No more than 20 dots, commas, or hyphens allowed',
+    )
+    .matches(/^[a-zA-Z0-9\s.,-]*$/, 'No special characters allowed')
+    .required('Property description is required'),
 
-  neighborhoodDescription: Yup.string().matches(/^([^.,]*([.,][^.,]*){0,7}){0,1}$/, 'No more than 7 dots and commas allowed').matches(/^[a-zA-Z0-9\s.,]*$/, 'No special characters allowed').required('Neighborhood description is required'),
+  neighborhoodDescription: Yup.string()
+    .matches(
+      /^([^.,-]*([.,-][^.,-]*){0,20}){0,1}$/,
+      'No more than 20 dots, commas, or hyphens allowed',
+    )
+    .matches(/^[a-zA-Z0-9\s.,-]*$/, 'No special characters allowed')
+    .required('Neighborhood description is required'),
 
   phoneNumber: Yup.string()
     .matches(/^[\+0-9\s]*$/, 'Invalid phone number')
     .required('Property phone number is required'),
 
-  url: Yup.string()
-    .url('Invalid URL format')
-    .nullable(),
+  url: Yup.string().url('Invalid URL format').nullable(),
 
   totalRooms: Yup.number()
     .min(1, 'Total rooms must be at least 1')
     .required('Total rooms is required'),
 
-  propertyRoomTypes: Yup.array().of(
-    Yup.object().shape({
-      name: Yup.string()
-        .matches(/^[a-zA-Z0-9\s]*$/, 'Only alphanumeric characters and spaces allowed')
-        .required('Room type name is required'),
+  propertyRoomTypes: Yup.array()
+    .of(
+      Yup.object().shape({
+        name: Yup.string()
+          .matches(
+            /^[a-zA-Z0-9\s]*$/,
+            'Only alphanumeric characters and spaces allowed',
+          )
+          .required('Room type name is required'),
 
-      capacity: Yup.number()
-        .min(1, 'Room capacity must be at least 1')
-        .required('Room capacity is required'),
+        capacity: Yup.number()
+          .min(1, 'Room capacity must be at least 1')
+          .required('Room capacity is required'),
 
-      totalRooms: Yup.number()
-        .min(1, 'Total rooms for this type must be at least 1')
-        .required('Total rooms is required'),
+        totalRooms: Yup.number()
+          .min(1, 'Total rooms for this type must be at least 1')
+          .required('Total rooms is required'),
 
-      price: Yup.number()
-        .min(1, 'Price must be greater than 0')
-        .required('Price is required'),
+        price: Yup.number()
+          .min(1, 'Price must be greater than 0')
+          .required('Price is required'),
 
-      rooms: Yup.number()
-        .min(1, 'Rooms must be at least 1')
-        .required('Rooms are required'),
+        rooms: Yup.number()
+          .min(1, 'Rooms must be at least 1')
+          .required('Rooms are required'),
 
-      bathrooms: Yup.number()
-        .min(1, 'Bathrooms must be at least 1')
-        .required('Bathrooms are required'),
+        bathrooms: Yup.number()
+          .min(1, 'Bathrooms must be at least 1')
+          .required('Bathrooms are required'),
 
-      description: Yup.string().required('Room description are required'),
+        description: Yup.string()
+          .matches(
+            /^([^.,-]*([.,-][^.,-]*){0,20}){0,1}$/,
+            'No more than 20 dots, commas, or hyphens allowed',
+          )
+          .matches(/^[a-zA-Z0-9\s.,-]*$/, 'No special characters allowed')
+          .required('Room description are required'),
 
-      roomFacilities: Yup.array().of(Yup.number().min(1, 'Room facility ID must be greater than 0')).nullable(),
+        roomFacilities: Yup.array()
+          .of(Yup.number().min(1, 'Room facility ID must be greater than 0'))
+          .nullable(),
 
-      roomImages: Yup.array().of(
-              Yup.mixed<File>().test('fileSize', 'Maximum 2MB file size allowed', file => {
-                  const limitFileSize = 2000000
-                  return file && file.size <= limitFileSize
+        roomImages: Yup.array()
+          .of(
+            Yup.mixed<File>()
+            .required('Image is required')
+            .test('fileSize', 'Maximum 2MB file size allowed', (file) => {
+                const limitFileSize = 2000000
+                return file && file.size <= limitFileSize
               })
-              .test('fileFormat', 'File format must be png, jpg, or jpeg', file => {
+              .test(
+                'fileFormat',
+                'File format must be png, jpg, or jpeg',
+                (file) => {
                   const fileFormatAccepted = ['jpg', 'jpeg', 'png']
-                  return file && fileFormatAccepted.includes(file.type.split('/')[1])
-              })
-          ).min(1, 'At least one image must be included').max(5, 'Maximum 5 image allowed')  ,
-    })
-  )
-  .min(1, 'At least one room type must be defined')
-  .required('Room types are required'),
-});
+                  return (
+                    file && fileFormatAccepted.includes(file.type.split('/')[1])
+                  )
+                },
+              ),
+          )
+          .min(1, 'At least one image must be included')
+          .max(5, 'Maximum 5 image allowed'),
+      }),
+    )
+    .min(1, 'At least one room type must be defined')
+    .required('Room types are required'),
+})

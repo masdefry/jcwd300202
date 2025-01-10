@@ -16,6 +16,7 @@ import SelectPicker from 'rsuite/SelectPicker'
 import 'rsuite/SelectPicker/styles/index.css'
 import 'rsuite/Rate/styles/index.css'
 import Image from 'next/image'
+import { manageGeneralInfoValidationSchema } from '@/features/tenant/property/manage/general-info/schemas/manageGeneralInfoValidationSchema'
 const PropertyManageGeneralInfoPage = ({
   params,
 }: {
@@ -271,6 +272,7 @@ const PropertyManageGeneralInfoPage = ({
                 .slice(0, 2)
                 .join(':') || '',
           }}
+          validationSchema={manageGeneralInfoValidationSchema}
           enableReinitialize={true}
           onSubmit={(values) => {
             setIsSubmitting(false)

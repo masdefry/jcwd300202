@@ -10,8 +10,9 @@ import {
   MdOutlineAddPhotoAlternate,
   MdOutlineDeleteOutline,
 } from 'react-icons/md'
-import { Formik, Form, Field } from 'formik'
+import { Formik, Form, Field, ErrorMessage } from 'formik'
 import { FaRegTrashCan } from 'react-icons/fa6'
+import { managePropertyPhotosValidationSchema } from '@/features/tenant/property/manage/photos/schemas/managePropertyPhotosValidationSchema'
 
 const PropertyManagePhotosPage = ({ params }: { params: { slug: string } }) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -209,11 +210,11 @@ const PropertyManagePhotosPage = ({ params }: { params: { slug: string } }) => {
         initialValues={{
           file: [] as File[]
         }}
+        validationSchema={managePropertyPhotosValidationSchema}
         onSubmit={(values) => {
           const fd = new FormData()
           fd.append('images', values?.file[0])
           mutateCreatePropertyImage(fd)
-          console.log(values)
         }}
         >
           {
@@ -269,6 +270,7 @@ const PropertyManagePhotosPage = ({ params }: { params: { slug: string } }) => {
                   />
                 </label>
               )}
+              <ErrorMessage name="file" component={'div'} className='text-red-600 text-xs font-bold bg-red-200 rounded-full p-1 px-5'/>
               <div className='flex items-center justify-between w-full gap-1.5'>
                 <button onClick={() => {
                   setShowAddPhoto(false)

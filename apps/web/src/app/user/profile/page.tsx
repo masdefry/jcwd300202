@@ -176,8 +176,6 @@ const ProfileUserPage = () => {
       validationSchema={updateUserProfileValidationSchema}
       enableReinitialize={true}
       onSubmit={(values) => {
-        console.log(values.month)
-        console.log('asa')
         setIsSubmitting(false)
         const fd: any = new FormData()
         fd.append('images', values?.file[0])

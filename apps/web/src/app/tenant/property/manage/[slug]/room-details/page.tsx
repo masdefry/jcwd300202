@@ -15,7 +15,7 @@ const PropertyManageRoomDetailsPage = ({ params }: { params: { slug: string } })
     const { data: dataPropertyRoomTypes, isPending: isPendingPropertyRoomTypes } = useQuery({
         queryKey: ['getPropertyRoomTypes'],
         queryFn: async() => {
-            const res = await instance.get(`/room-type/property/${params?.slug}/search`)
+            const res = await instance.get(`/room-type/property/${params?.slug}/search?limit=100`)
             return res?.data?.data
         }
     })

@@ -11,6 +11,7 @@ import { Formik, Form, FieldArray } from 'formik'
 import { FiSend } from 'react-icons/fi'
 import toast from 'react-hot-toast'
 import { CiSquareMinus, CiSquarePlus } from 'react-icons/ci'
+import { managePropertyFacilitiesValidationSchema } from '@/features/tenant/property/manage/facilities/schemas/managePropertyFacilitiesValidationSchema'
 
 const PropertyManageFacilitiesPage = ({ params, searchParams }: { params: { slug: string }, searchParams: { name: string } }) => {
   const [ dataPropertyHasFacilities, setDataPropertyHasFacilities ] = useState<any>({
@@ -93,7 +94,7 @@ const PropertyManageFacilitiesPage = ({ params, searchParams }: { params: { slug
       initialValues={{
         propertyFacilitiesId: dataPropertyHasFacilities?.propertyFacilitiesId || []
       }}
-
+      validationSchema={managePropertyFacilitiesValidationSchema}
       enableReinitialize={true}
       onSubmit={(values) => {
         console.log(values)

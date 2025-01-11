@@ -18,6 +18,7 @@ import { FaRegSave } from 'react-icons/fa'
 import { IoCameraOutline } from 'react-icons/io5'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
+import { manageRoomValidationSchema } from '@/features/tenant/property/manage/room-details/edit/schemas/manageRoomValidationSchema'
 
 const PropertyManageRoomDetailsEditPage = ({
   params,
@@ -46,6 +47,7 @@ const PropertyManageRoomDetailsEditPage = ({
         bathrooms: values?.bathrooms,
         capacity: values?.capacity,
         price: values?.price,
+        propertyRoomTypeId: params?.id
       })
       console.log(res)
       return res?.data
@@ -81,7 +83,8 @@ const PropertyManageRoomDetailsEditPage = ({
           ) ? (
             <Link
               href={`/tenant/property/manage/${params.slug}/room-details/edit/${params.id}/photos`}
-              className="w-full h-full relative">
+              className="w-full h-full relative"
+            >
               <figure className="w-full h-full relative">
                 <Image
                   src={`http://localhost:5000/api/${dataPropertyRoomType?.propertyRoomType[0]?.propertyRoomImage[0]?.directory}/${dataPropertyRoomType?.propertyRoomType[0]?.propertyRoomImage[0]?.filename}.${dataPropertyRoomType?.propertyRoomType[0]?.propertyRoomImage[0]?.fileExtension}`}
@@ -95,7 +98,8 @@ const PropertyManageRoomDetailsEditPage = ({
           ) : (
             <Link
               href={`/tenant/property/manage/${params.slug}/room-details/edit/${params.id}/photos`}
-              className="w-full h-full relative">
+              className="w-full h-full relative"
+            >
               <label className="flex flex-col items-center justify-center w-full h-full  cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
                 <IoCameraOutline className="text-gray-300 text-6xl" />
               </label>
@@ -116,7 +120,8 @@ const PropertyManageRoomDetailsEditPage = ({
                 ) ? (
                   <Link
                     href={`/tenant/property/manage/${params.slug}/room-details/edit/${params.id}/photos`}
-                    className="w-full h-full relative">
+                    className="w-full h-full relative"
+                  >
                     <figure className="w-full h-full relative">
                       <Image
                         src={`http://localhost:5000/api/${dataPropertyRoomType?.propertyRoomType[0]?.propertyRoomImage[index + 1]?.directory}/${dataPropertyRoomType?.propertyRoomType[0]?.propertyRoomImage[index + 1]?.filename}.${dataPropertyRoomType?.propertyRoomType[0]?.propertyRoomImage[index + 1]?.fileExtension}`}
@@ -130,7 +135,8 @@ const PropertyManageRoomDetailsEditPage = ({
                 ) : (
                   <Link
                     href={`/tenant/property/manage/${params.slug}/room-details/edit/${params.id}/photos`}
-                    className="w-full h-full relative">
+                    className="w-full h-full relative"
+                  >
                     <label className="flex flex-col items-center justify-center w-full h-full bg-slate-200 dark:bg-gray-700  dark:border-gray-600 ">
                       <IoCameraOutline className="text-white text-6xl" />
                     </label>
@@ -145,16 +151,17 @@ const PropertyManageRoomDetailsEditPage = ({
         initialValues={{
           name: dataPropertyRoomType?.propertyRoomType[0]?.name || '',
           totalRooms:
-            dataPropertyRoomType?.propertyRoomType[0]?.totalRooms || 1,
+            dataPropertyRoomType?.propertyRoomType[0]?.totalRooms || '',
           rooms: dataPropertyRoomType?.propertyRoomType[0]?.rooms || 1,
           bathrooms: dataPropertyRoomType?.propertyRoomType[0]?.bathrooms || 1,
           capacity: dataPropertyRoomType?.propertyRoomType[0]?.capacity || 2,
-          price: dataPropertyRoomType?.propertyRoomType[0]?.price || 0,
+          price: dataPropertyRoomType?.propertyRoomType[0]?.price || '',
         }}
+        validationSchema={manageRoomValidationSchema}
         enableReinitialize={true}
         onSubmit={(values) => {
+          console.log('aaaaaaaaaaaaaaaa')
           mutateUpdatePropertyRoomTypeGeneral(values)
-          console.log(values)
         }}
       >
         <Form className="flex flex-col gap-5 px-5">

@@ -10,6 +10,7 @@ import { FaRegSave } from 'react-icons/fa'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import instance from '@/utils/axiosInstance'
 import toast from 'react-hot-toast'
+import { manageDescriptionValidationSchema } from '@/features/tenant/property/manage/descriptions/manageDescriptionValidationSchema'
 
 const PropertyManageDescriptionPage = ({ params }: { params: { slug: string } }) => {
   const { data: dataPropertyDescriptions, isPending: isPendingPropertyDescriptions, error, isError} = useQuery({
@@ -27,7 +28,6 @@ const PropertyManageDescriptionPage = ({ params }: { params: { slug: string } })
         neighborhoodDescription: values?.neighborhoodDescription,
         propertyRoomType: values?.propertyRoomType
       })
-      console.log(res)
       return res?.data
     },
     onSuccess: (res) => {
@@ -70,11 +70,10 @@ const PropertyManageDescriptionPage = ({ params }: { params: { slug: string } })
         }}
 
         enableReinitialize={true}
-
+        validationSchema={manageDescriptionValidationSchema}
         onSubmit={(values) => {
           setIsSubmitting(false)
           mutateUpdatePropertyDescriptions(values)
-          console.log(values)
         }}
       >
         <Form className='flex flex-col gap-5'>

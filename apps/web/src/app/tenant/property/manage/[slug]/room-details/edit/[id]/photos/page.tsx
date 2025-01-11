@@ -10,8 +10,9 @@ import {
   MdOutlineAddPhotoAlternate,
   MdOutlineDeleteOutline,
 } from 'react-icons/md'
-import { Formik, Form, Field } from 'formik'
+import { Formik, Form, Field, ErrorMessage } from 'formik'
 import { FaRegTrashCan } from 'react-icons/fa6'
+import { manageRoomPhotosValidationSchema } from '@/features/tenant/property/manage/room-details/edit/photos/schemas/manageRoomPhotosValidationSchema'
 
 const PropertyManageRoomPhotosPage = ({ params }: { params: { slug: string, id: string } }) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -209,6 +210,7 @@ const PropertyManageRoomPhotosPage = ({ params }: { params: { slug: string, id: 
         initialValues={{
           file: [] as File[]
         }}
+        validationSchema={manageRoomPhotosValidationSchema}
         onSubmit={(values) => {
           const fd = new FormData()
           fd.append('images', values?.file[0])
@@ -232,7 +234,7 @@ const PropertyManageRoomPhotosPage = ({ params }: { params: { slug: string, id: 
             </div>
             <div className="bg-white  flex flex-col gap-3 shadow-md p-1 pb-2 w-[400px] rounded-md h-[300px]">
               {values?.file[0]?.name ? (
-                <figure className="w-full h-full relative">
+                <figure className="w-full h-full relative overflow-hidden">
                   <Image
                     src={URL.createObjectURL(values?.file[0])}
                     width={1000}
@@ -269,6 +271,7 @@ const PropertyManageRoomPhotosPage = ({ params }: { params: { slug: string, id: 
                   />
                 </label>
               )}
+              <ErrorMessage name="file" component={'div'} className='text-red-600 text-xs font-bold bg-red-200 rounded-full p-1 px-5'/>
               <div className='flex items-center justify-between w-full gap-1.5'>
                 <button onClick={() => {
                   setShowAddPhoto(false)

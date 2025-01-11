@@ -455,6 +455,9 @@ model Season {
   startDate DateTime
   endDate   DateTime
   ratesPercentage Int @default(100)
+  availability Boolean @default(true)
+  isPeak Boolean @default(false)
+  roomToRent Int?
 
   seasonalPrice SeasonalPrice[]
 

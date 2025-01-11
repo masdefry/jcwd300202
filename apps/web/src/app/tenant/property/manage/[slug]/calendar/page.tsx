@@ -279,41 +279,43 @@ const CalendarPage = ({
   } = useMutation({
     mutationFn: async ({
       startDate,
-      endDate
+      endDate,
+      seasonId
     }: {
       endDate: Date
+      seasonId: number | string
       startDate: Date
     }) => {
       const res = await instance.get(
-        `/season/${selectRoom}?startDate=${startDate}&endDate=${endDate}`,
+        `/season/single/${seasonId}?startDate=${startDate}&endDate=${endDate}`,
       )
       return res?.data
     },
     onSuccess: (res) => {
       setDataPropertyRoomTypeSeason({
-        basePrice: res?.data?.property?.propertyRoomType[0]?.price,
+        basePrice: res?.data?.propertySeason?.propertyRoomType?.price,
         isBulk: true,
-        totalRooms: res?.data?.property?.propertyRoomType[0]?.totalRooms,
-        roomPrices: (Number(res?.data?.property?.propertyRoomType[0]?.price) * Number(res?.data?.propertySeasons[0]?.ratesPercentage)) / 100,
+        totalRooms: res?.data?.propertySeason?.propertyRoomType?.totalRooms,
+        roomPrices: (Number(res?.data?.propertySeason?.propertyRoomType?.price) * Number(res?.data?.propertySeason?.ratesPercentage)) / 100,
         roomsToSell:
-          res?.data?.propertySeasons[0]?.roomToRent ||
-          res?.data?.property?.propertyRoomType[0]?.totalRooms,
+          res?.data?.propertySeason?.roomToRent ||
+          res?.data?.propertySeason?.propertyRoomType?.totalRooms,
         seasonalPriceId: res?.data?.seasonalPrice?.id,
-        seasonId: res?.data?.propertySeasons[0]?.id,
-        pricePercentage: res?.data?.propertySeasons[0]?.ratesPercentage || 100 ,
+        seasonId: res?.data?.propertySeason?.id,
+        pricePercentage: res?.data?.propertySeason?.ratesPercentage || 100 ,
         availability:
-          res?.data?.propertySeasons[0]?.availability === undefined
+          res?.data?.propertySeason?.availability === undefined
             ? true
-            : res?.data?.propertySeasons[0]?.availability,
-        propertyRoomTypeId: res?.data?.property?.propertyRoomType[0]?.id,
-        name: res?.data?.propertySeasons[0]?.name,
-        startDate: res?.data?.propertySeasons[0]?.startDate,
-        endDate: res?.data?.propertySeasons[0]?.endDate,
-        isPeak: res?.data?.propertySeasons[0]?.isPeak ? res?.data?.propertySeasons[0]?.isPeak : false,
+            : res?.data?.propertySeason?.availability,
+        propertyRoomTypeId: res?.data?.propertySeason?.propertyRoomType?.id,
+        name: res?.data?.propertySeason?.name,
+        startDate: res?.data?.propertySeason?.startDate,
+        endDate: res?.data?.propertySeason?.endDate,
+        isPeak: res?.data?.propertySeason?.isPeak ? res?.data?.propertySeason?.isPeak : false,
       })
       setDataRoomPerDate(res?.data)
-      setRoomAvailability(res?.data?.seasonalPrice?.roomAvailability)
-      setIsPeakSeason(res?.data?.seasonalPrice?.isPeak)
+      // setRoomAvailability(res?.data?.seasonalPrice?.roomAvailability)
+      // setIsPeakSeason(res?.data?.seasonalPrice?.isPeak)
       setRatesPercentage(
         Math.floor(
           (res?.data?.seasonalPrice?.price /
@@ -1047,13 +1049,13 @@ const CalendarPage = ({
                                   : 'Closed'}
                             </div>
                           </div>
-                          <div className="  justify-center items-end p-2 text-base font-light text-gray-800 w-[85px] flex flex-col gap-2 h-[65px]">
+                          <div className={`  justify-center items-end p-2 text-base font-light ${seasonIdx <= -1 ? 'text-gray-800' : dataSeasonsByProperty?.seasons[seasonIdx]?.roomAvailability ? 'text-gray-800' : 'text-transparent'}  w-[85px] flex flex-col gap-2 h-[65px]`}>
                             {seasonIdx > -1
                               ? dataSeasonsByProperty?.seasons[seasonIdx]
                                   ?.roomToRent
                               : item?.totalRooms}
                           </div>
-                          <div className="  justify-center items-end p-2 text-sm font-medium text-gray-600 w-full flex flex-col gap-2 h-[45px]">
+                          <div className={`  justify-center items-end p-2 text-sm font-medium ${seasonIdx <= -1 ? 'text-gray-600' : dataSeasonsByProperty?.seasons[seasonIdx]?.roomAvailability ? 'text-gray-600' : 'text-transparent'} w-full flex flex-col gap-2 h-[45px]`}>
                             <span className="flex items-center">
                               {seasonIdx > -1
                                 ? Number(
@@ -1147,23 +1149,7 @@ const CalendarPage = ({
                       isPeak: seasonIsPeak,
                     })
                   } else {
-                    mutateGetSeasonalPriceByRoomType({startDate:seasonStartDate, endDate:seasonEndDate })
-                    // setDataPropertyRoomTypeSeason({
-                    //   basePrice: seasonBasePrice,
-                    // isBulk: false,
-                    //   roomPrices: (Number(seasonBasePrice) * (Number(seasonRatesPercentage)/100)).toFixed(0),
-                    //   roomsToSell: seasonRoomToRent,
-                    //   pricePercentage: seasonRatesPercentage,
-                    //   totalRooms: seasonRoomTypeTotalRooms,
-                    //   availability: seasonAvailability ,
-                    //   propertyRoomTypeId: selectRoom,
-                    //   name: seasonName,
-                    //   seasonId: seasonId,
-                    //   seasonalPriceId: '',
-                    //   startDate: seasonStartDate,
-                    //   endDate:seasonEndDate,
-                    //   isPeak: seasonIsPeak,
-                    // })
+                    mutateGetSeasonalPriceByRoomType({startDate:seasonStartDate, endDate:seasonEndDate, seasonId })
                   }
                 } else {
                   handleDateRange(addHours(date, 7))

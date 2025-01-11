@@ -1530,3 +1530,74 @@ export const deleteSingleSeason = async(req: Request, res: Response, next: NextF
     next(error)
   }
 }
+
+export const getSingleSeason = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id, role } = req.body
+    const { startDate, endDate } =
+      req.query
+    const { seasonId } = req.params
+
+    const isTenantExist = await prisma.tenant.findUnique({
+      where: {
+        id,
+      },
+    })
+    if (!isTenantExist?.id || isTenantExist?.deletedAt)
+      throw { msg: 'Tenant not found!', status: 406 }
+    if (isTenantExist?.role !== role)
+      throw { msg: 'Role unauthorized!', status: 401 }
+    if (!isTenantExist?.isVerified)
+      throw { msg: 'Tenant not verified!', status: 406 }
+
+    const isPropertyExist = await prisma.property.findFirst({
+      where: {
+        season: {
+          some: {
+            id: Number(seasonId)
+          }
+        },
+      },
+      include: {
+        propertyRoomType: {
+          include: {
+            season: true,
+          },
+          orderBy: {
+            price: 'asc',
+          },
+        },
+      },
+    })
+
+    if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+    if (isPropertyExist?.tenantId !== id)
+      throw { msg: 'Actions not permitted!', status: 406 }
+
+    const findPropertySeasonalPrice = await prisma.season.findUnique({
+      where: {
+        id: Number(seasonId),
+      },
+      include: {
+        seasonalPrice: true,
+        property: true,
+        propertyRoomType: true
+      },
+    })
+
+    res.status(200).json({
+      error: false,
+      message: 'Get seasons by property success',
+      data: {
+        property: isPropertyExist,
+        propertySeason: findPropertySeasonalPrice,
+      },
+    })
+  } catch (error) {
+    next(error)
+  }
+}

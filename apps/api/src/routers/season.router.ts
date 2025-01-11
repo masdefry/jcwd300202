@@ -1,4 +1,4 @@
-import { createOneSeason, createSeasonalAvailabiltyByProperty, deleteSingleSeason, createSeasonalPrice, deletePropertySeason, deleteSeasonalPrice, getSeasonsByProperty, getSeasonsByPropertyRoomType, getSingleSeasonalPriceAndAvailability, updateManySeasonsByPropertySeason, updateSeasonalPrice, updateSingleSeason } from "@/controllers/season.controller";
+import { createOneSeason, createSeasonalAvailabiltyByProperty, deleteSingleSeason, createSeasonalPrice, deletePropertySeason, deleteSeasonalPrice, getSeasonsByProperty, getSeasonsByPropertyRoomType, getSingleSeasonalPriceAndAvailability, updateManySeasonsByPropertySeason, updateSeasonalPrice, updateSingleSeason, getSingleSeason } from "@/controllers/season.controller";
 import { verifyToken } from "@/middlewares/verify.token";
 import { Router } from "express";
 const seasonRouter = Router()
@@ -18,6 +18,7 @@ seasonRouter.delete('/property/:slug',  verifyToken, deletePropertySeason)
 seasonRouter.post('/single/',  verifyToken, createOneSeason)
 seasonRouter.put('/single/:seasonId',  verifyToken, updateSingleSeason)
 seasonRouter.delete('/single/:seasonId',  verifyToken, deleteSingleSeason)
+seasonRouter.get('/single/:seasonId',  verifyToken, getSingleSeason)
 
 export default seasonRouter
 

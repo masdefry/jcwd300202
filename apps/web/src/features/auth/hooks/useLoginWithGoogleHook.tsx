@@ -7,12 +7,14 @@ import useMutateOAuthApi from '../api/useMutateOAuthApi'
 import authStore from '@/zustand/authStore'
 import { AxiosResponse } from 'axios'
 import { useRouter } from 'next/navigation'
+import Cookies from 'js-cookie'
 
 const useLoginWithGoogleHook = () => {
     const router = useRouter()
     const setAuth = authStore(state => state.setAuth)
 
     const onSuccessReqOAuth = (res: AxiosResponse) => {
+        Cookies.set('authToken', res?.data?.data?.token, { expires: 7 })
         setAuth({
             isGoogleRegistered: res?.data?.data?.isGoogleRegistered,
             isVerified: res?.data?.data?.isVerified,

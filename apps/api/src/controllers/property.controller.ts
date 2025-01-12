@@ -1321,30 +1321,159 @@ export const getPropertiesByTenant = async (
 ) => {
   try {
     const { id, role } = req.body
-    const { limit = 5, offset = 0, sortBy, order } = req.query
-
+    const { limit = 10, offset = 0, sortBy = 'name', order='asc', filterBy, filterValue, period } = req.query
+    
     const isTenantExist = await prisma.tenant.findUnique({
       where: {
         id,
       },
     })
+    if(order !== 'asc' && order !== 'desc') throw { msg: 'Order by value invalid!', status: 406 }
 
     if (!isTenantExist?.id || isTenantExist?.deletedAt)
       throw { msg: 'Tenant not found!', status: 406 }
     if (isTenantExist?.role !== role)
       throw { msg: 'Role unauthorized!', status: 401 }
 
-    const getProperties = await prisma.property.findMany({
+    let getPropertiesId;
+
+    if(sortBy === 'name' || sortBy === 'review') {
+      getPropertiesId = await prisma.property.findMany({
+        where: {
+          tenantId: isTenantExist?.id,
+        },
+        orderBy: {
+          name: order === 'desc' ? 'desc' : 'asc',
+        },
+      })
+    } else if(sortBy === 'booked') {
+     getPropertiesId = await prisma.property.findMany({
+        where: {
+          tenantId: isTenantExist?.id,
+          transaction: {
+            some: {
+                transactionStatus: {
+                  some: {
+                    status: 'PAID'
+                  }
+                },
+            }
+          }
+        },
+        orderBy: {
+          transaction: {
+            _count: order === 'desc' ? 'desc' : 'asc'
+          },
+        },
+      })
+    } else if(sortBy === 'cancellation') {
+      getPropertiesId = await prisma.property.findMany({
+        where: {
+          tenantId: isTenantExist?.id,
+          transaction: {
+            some: {
+              transactionStatus: {
+                some: {
+                  status: 'PAID'
+                }
+              },
+              checkOutDate: {
+                gte: addHours(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0), 7),
+                lt: addDays(addHours(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0), 7), 1)
+              }
+            }
+          }
+        },
+        orderBy: {
+          transaction: {
+            _count: order === 'desc' ? 'desc' : 'asc'
+          }
+        },
+      })
+    } else {
+      getPropertiesId = await prisma.property.findMany({
+        where: {
+          tenantId: isTenantExist?.id,
+        },
+        orderBy: {
+          name: 'asc',
+        },
+      })
+    }
+      let orderBy: any = {
+        name: 'asc'
+      };
+      if(sortBy === 'name') {
+        orderBy = {
+          name: order === 'desc' ? 'desc' : 'asc'
+        }
+      } else if(sortBy === 'booked') {
+        orderBy = {
+          transaction: {
+            _count: order === 'desc' ? 'desc' : 'asc'
+          },
+        }
+      } else if(sortBy === 'cancellation') {
+        orderBy = {
+          transaction: {
+            _count: order === 'desc' ? 'desc' : 'asc'
+          },
+        }
+      }
+    const getLeftProperties = await prisma.property.findMany({
       where: {
         tenantId: isTenantExist?.id,
+        id: {
+          notIn: getPropertiesId.map(item => item?.id)
+        }
       },
       orderBy: {
-        name: 'asc',
+        name: 'desc'
       },
-      take: Number(limit),
-      skip: Number(offset),
+      include: {
+        propertyRoomType: {
+          include: {
+            seasonalPrice :{
+              where: {
+                date: addHours(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()), 7).toISOString()
+              }
+            } 
+          }
+        }
+      }
+    })
+    const getSortedAndFilterredProperties = await prisma.property.findMany({
+      where: {
+        id: {
+          in: getPropertiesId.map(item => item?.id)
+        }
+      },
+      include: {
+        propertyRoomType: {
+          include: {
+            seasonalPrice :{
+              where: {
+                date: addHours(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()), 7).toISOString()
+              }
+            } 
+          }
+        }
+      },
+      orderBy
     })
 
+    if(order === 'asc' && sortBy !== 'name') {
+      getSortedAndFilterredProperties.reverse()
+    }
+
+
+    const getAllProperties = [...getSortedAndFilterredProperties, ...getLeftProperties]
+
+    if(sortBy !== 'name' && order === 'asc') {
+      getAllProperties.reverse()
+    }
+
+    const getProperties = [...getAllProperties]
     const getTransactionsPaid = await prisma.transactionStatus.findMany({
       where: {
         AND: [
@@ -1398,8 +1527,14 @@ export const getPropertiesByTenant = async (
         ],
       },
     })
+    
+    let addedDataGetProperties = getProperties!.map((item, index) => {
 
-    const addedDataGetProperties = getProperties.map((item, index) => {
+      let availability = true
+      let checkAvailability = item?.propertyRoomType?.filter((item) => (item?.seasonalPrice[0]?.roomAvailability === false) || item?.seasonalPrice[0]?.roomToRent <= 0)
+
+      if (checkAvailability?.length === item?.propertyRoomType?.length) availability = false 
+
       const totalBooked = getTransactionsPaid.filter(
         (itm) => itm?.transaction?.propertyId === item?.id,
       ).length
@@ -1415,27 +1550,44 @@ export const getPropertiesByTenant = async (
             return 0
           }
         })
-      let avgRating
+      let totalRating;
       if (reviewsByProperty.length > 0) {
-        avgRating = reviewsByProperty.reduce(
+        totalRating = reviewsByProperty.reduce(
           (acc: any, curr: any) => acc + curr,
         )
       }
       return {
         ...item,
         totalBooked,
+        availability,
         totalCancelled,
-        avgRating: avgRating || 0,
+        avgRating: totalRating ? Number(totalRating)/reviewsByProperty.length : 0,
       }
     })
-    const totalPage = Math.ceil(countPropertiesByTenant / Number(limit))
+    let totalPage = Math.ceil(countPropertiesByTenant / Number(limit))
     const pageInUse = Number(offset) / Number(limit) + 1
+
+    if(sortBy === 'review') {
+      if(order === 'asc') {
+        addedDataGetProperties.sort((a, b) => a.avgRating - b.avgRating)
+      } else if(order === 'desc') {
+        addedDataGetProperties.sort((a, b) => b.avgRating - a.avgRating)
+      }
+    }
+
+    if(filterBy === 'open') {
+      addedDataGetProperties = addedDataGetProperties.filter(item => item.availability)
+      totalPage = Math.ceil(addedDataGetProperties.length / Number(limit))
+    } else if(filterBy === 'close') {
+      addedDataGetProperties = addedDataGetProperties.filter(item => !(item.availability))
+      totalPage = Math.ceil(addedDataGetProperties.length / Number(limit))
+    }
 
     res.status(200).json({
       error: false,
       message: 'Get properties by tenant success',
       data: {
-        properties: addedDataGetProperties,
+        properties: addedDataGetProperties.slice(Number(offset), (Number(limit) + Number(offset))),
         countProperties: countPropertiesByTenant,
         totalPage,
         pageInUse,
@@ -1443,6 +1595,7 @@ export const getPropertiesByTenant = async (
       },
     })
   } catch (error) {
+    console.log(error)
     next(error)
   }
 }

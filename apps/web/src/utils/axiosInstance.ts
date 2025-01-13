@@ -1,5 +1,6 @@
 import authStore from "@/zustand/authStore";
 import axios, { InternalAxiosRequestConfig } from "axios";
+import Cookies from "js-cookie";
 
 const instance = axios.create({
     baseURL: 'http://localhost:5000/api'
@@ -7,6 +8,7 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
     async(req: InternalAxiosRequestConfig) => {
+        // const token = Cookies.get('authToken')
         const token = authStore.getState().token
 
         if(token) req.headers["Authorization"] = `Bearer ${token}`
@@ -23,11 +25,12 @@ instance.interceptors.response.use(
         return res
     },
     (error) => {
+        console.log(error)
         if(error?.response?.data?.message === 'jwt expired') {
-            const setLogOut = authStore((state) => state.setLogOut)
-            setLogOut()
-        
-            window.location.href = '/'
+            const setLogout = authStore((state) => state.setLogout())
+            setLogout()
+            // Cookies.remove('authToken')
+            window.location.href = '/login'
         }
         
         return Promise.reject(error)

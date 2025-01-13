@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express'
 import { v4 as uuidV4 } from 'uuid'
 import { getRoomTypeService } from '@/services/property.service'
 import { deleteFiles } from '@/utils/deleteFiles'
-import { addDays, differenceInDays, format } from 'date-fns'
+import { addDays, addHours, differenceInDays, format } from 'date-fns'
 
 export const createProperty = async (
   req: Request,
@@ -14,8 +14,6 @@ export const createProperty = async (
     const {
       id,
       role,
-      cityName,
-      countryName,
       cityId,
       countryId,
       name,
@@ -41,7 +39,18 @@ export const createProperty = async (
 
     if (Array.isArray(req.files))
       throw { msg: 'Images not found!', status: 406 }
+    
     const imagesUploaded: any = req?.files?.images
+    const isTenantExist = await prisma.tenant.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!isTenantExist?.id || isTenantExist?.deletedAt)
+      throw { msg: 'Tenant not found!', status: 406 }
+    if (isTenantExist?.role !== role)
+      throw { msg: 'Role unauthorized!', status: 401 }
 
     const uuid = uuidV4()
     const propertyId = uuid
@@ -200,7 +209,9 @@ export const createProperty = async (
       },
     })
   } catch (error) {
-    deleteFiles({ imagesUploaded: req.files })
+    if (!Array.isArray(req.files)) {
+      deleteFiles({ imagesUploaded: req.files })
+    }
     next(error)
   }
 
@@ -277,6 +288,9 @@ export const getPropertyDetail = async (
       where: {
         propertyId: property.id,
       },
+      include: {
+        user: true
+      }
     })
 
     const city = await prisma.city.findUnique({
@@ -614,13 +628,48 @@ export const getProperties = async (
       propertytypeidarr = '',
       propertyfacilityidarr = '',
       propertyroomfacilityidarr = '',
+      propertystararr = '',
     } = req.headers
 
     let numberedPropertyFacilityIdArr,
       numberedPropertyRoomFacilityIdArr,
-      numberedPropertyTypeIdArr
+      numberedPropertyTypeIdArr,
+      numberedPropertyStarArr
     let propertyFacilityFromPrisma, propertyRoomFacilityFromPrisma
     let city, country
+
+
+    let gteDate = new Date();
+    gteDate.setHours(0, 0, 0, 0);
+    let ltDate = addDays(gteDate, 2);
+    ltDate.setHours(0, 0, 0, 0);
+
+    let whereConditionDate ={}
+    
+    if (isNaN(gteDate.getTime()) || isNaN(ltDate.getTime())) {
+      throw { msg: 'Date range invalid!', status: 406 }
+    } else {
+      whereConditionDate = {...whereConditionDate,
+        gte: gteDate.toISOString(),
+        lt: ltDate.toISOString()
+      };
+    }
+
+    if(countryId && !isNaN(Number(countryId))) {
+      country = await prisma.country.findUnique({
+        where: {
+          id: Number(countryId)
+        }
+      })
+      if(cityId && !isNaN(Number(cityId))) {
+        city = await prisma.city.findUnique({
+          where: {
+            id: Number(cityId)
+          }
+        })
+      }
+    }
+
     if (!sortBy) throw { msg: 'Sort parameter not found!', status: 406 }
     if (propertyfacilityidarr) {
       const propertyFacilityIdStr = propertyfacilityidarr as string
@@ -664,22 +713,14 @@ export const getProperties = async (
         Number(item),
       )
     }
+    if (propertystararr) {
+      const propertyStarStr = propertystararr as string
+      numberedPropertyStarArr = propertyStarStr.split(',')
+      numberedPropertyStarArr = numberedPropertyStarArr.map((item) =>
+        Number(item),
+      )
+    }
 
-    // cityId && (
-    //     city = await prisma.city.findUnique({
-    //         where: {
-    //             id: Number(cityId)
-    //         }
-    //     })
-    // )
-
-    // countryId && (
-    //     country = await prisma.country.findUnique({
-    //         where: {
-    //             id: Number(countryId)
-    //         }
-    //     })
-    // )
 
     const whereConditionPropertyRoomFacility =
       propertyroomfacilityidarr &&
@@ -710,7 +751,7 @@ export const getProperties = async (
             },
           }))
         : []
-
+           
     // const whereConditionLocation = [
 
     // ].filter(item => Object.keys(item).length)
@@ -764,6 +805,15 @@ export const getProperties = async (
             },
           }
         : null,
+      propertystararr &&
+      numberedPropertyStarArr &&
+      numberedPropertyStarArr.length > 0
+        ? {
+           star: {
+                in: numberedPropertyStarArr,
+              },
+          }
+        : null,
     ]
       .filter(Boolean)
       .filter((item) => item?.countryId !== null)
@@ -794,17 +844,24 @@ export const getProperties = async (
       propertyroomfacilityidarr
     ) {
       propertiesWithoutLimit = await prisma.property.findMany({
-        // where: {
-        //     AND: [...whereConditionGeneral, ...whereConditionPropertyFacility, ...whereConditionPropertyRoomFacility].filter(Boolean),
-        //     OR: [
-        //         cityId: Number(cityId)
-        //     ]
-        // },
         where: whereCondition,
         include: {
-          propertyRoomType: true,
+          propertyRoomType: {
+            orderBy :{
+              price: 'asc'
+            }
+          },
         },
+        orderBy: {
+          name: order === 'desc' ? 'desc' : 'asc'
+        }
       })
+      if(minPrice &&
+        !isNaN(Number(minPrice)) &&
+        maxPrice &&
+        !isNaN(Number(maxPrice))) {
+          propertiesWithoutLimit = propertiesWithoutLimit.filter(item => item.propertyRoomType[0].price >= Number(minPrice))
+        }
       if (sortBy === 'name') {
         sortedProperties = await prisma.property.findMany({
           where: {
@@ -814,6 +871,11 @@ export const getProperties = async (
           },
           select: {
             id: true,
+            propertyRoomType: {
+              orderBy: {
+                price: 'asc'
+              }
+            }
           },
           orderBy: {
             name: order === 'desc' ? 'desc' : 'asc',
@@ -831,13 +893,18 @@ export const getProperties = async (
           },
           select: {
             id: true,
+            propertyRoomType: {
+              orderBy: {
+                price: 'asc'
+              }
+            }
           },
         })
         sortedProperties = await prisma.propertyRoomType.groupBy({
           where: {
             propertyId: {
               in: getPropertiesId.map((item) => item?.id),
-            },
+            }
           },
           by: ['propertyId'],
           orderBy: {
@@ -850,7 +917,8 @@ export const getProperties = async (
         })
         sortedPropertiesId = sortedProperties?.map((item) => item.propertyId)
       }
-
+      console.log('CHECKINDATE', addHours(new Date(new Date().setHours(0,0,0,0)).toISOString(), 31))
+      console.log('CHECKINDATE',  addHours(new Date(new Date().setHours(0,0,0,0)).toISOString(), 7))
       properties = await prisma.property.findMany({
         where: {
           // AND: [...whereCondition, ...whereConditionPropertyFacility, ...whereConditionPropertyRoomFacility],
@@ -863,6 +931,13 @@ export const getProperties = async (
             orderBy: {
               price: 'asc',
             },
+            include: {
+              seasonalPrice :{
+                where: {
+                  date: whereConditionDate
+                }
+              } 
+            }
           },
           propertyType: true,
           propertyHasFacility: {
@@ -886,13 +961,31 @@ export const getProperties = async (
     } else {
       propertiesWithoutLimit = await prisma.property.findMany({
         include: {
-          propertyRoomType: true,
+          propertyRoomType: {
+            orderBy: {
+              price: 'asc'
+            }
+          },
         },
+        orderBy: {
+          name: order === 'desc' ? 'desc' : 'asc'
+        }
       })
+      if(minPrice &&
+        !isNaN(Number(minPrice)) &&
+        maxPrice &&
+        !isNaN(Number(maxPrice))) {
+          propertiesWithoutLimit = propertiesWithoutLimit.filter(item => item.propertyRoomType[0].price >= Number(minPrice))
+        }
       if (sortBy === 'name') {
         sortedProperties = await prisma.property.findMany({
           select: {
             id: true,
+            propertyRoomType: {
+              orderBy: {
+                price: 'asc'
+              }
+            }
           },
           orderBy: {
             name: order === 'desc' ? 'desc' : 'asc',
@@ -901,8 +994,25 @@ export const getProperties = async (
           skip: Number(offset),
         })
         sortedPropertiesId = sortedProperties?.map((item) => item.id)
+        if(minPrice &&
+          !isNaN(Number(minPrice)) &&
+          maxPrice &&
+          !isNaN(Number(maxPrice))) {
+            sortedPropertiesId = sortedProperties.filter((item) => item.propertyRoomType[0].price >= Number(minPrice) ).map(item => item.id)
+          } 
       } else {
+        let whereConditionSortedProperties = {}
+        if(minPrice &&
+          !isNaN(Number(minPrice)) &&
+          maxPrice &&
+          !isNaN(Number(maxPrice))) {
+            whereConditionSortedProperties = {...whereConditionSortedProperties, price: {
+              gte: Number(minPrice),
+              lte: Number(maxPrice)
+            }}
+          }
         sortedProperties = await prisma.propertyRoomType.groupBy({
+          where: whereConditionSortedProperties,
           by: ['propertyId'],
           orderBy: {
             _min: {
@@ -915,6 +1025,7 @@ export const getProperties = async (
         sortedPropertiesId = sortedProperties?.map((item) => item.propertyId)
       }
 
+
       properties = await prisma.property.findMany({
         where: {
           id: {
@@ -926,6 +1037,13 @@ export const getProperties = async (
             orderBy: {
               price: 'asc',
             },
+            include: {
+              seasonalPrice :{
+                where: {
+                  date: whereConditionDate
+                }
+              } 
+            }
           },
           propertyType: true,
           propertyHasFacility: {
@@ -948,6 +1066,8 @@ export const getProperties = async (
       })
     }
 
+    
+
     if (sortBy !== 'price') {
     } else {
       if (order === 'desc') {
@@ -960,6 +1080,27 @@ export const getProperties = async (
         )
       }
     }
+
+    properties = properties.map(item => {
+      let availability = true
+      let checkAvailability = item?.propertyRoomType?.filter((item) => (item?.seasonalPrice[0]?.roomAvailability === false) || item?.seasonalPrice[0]?.roomToRent <= 0)
+
+      if (checkAvailability?.length === item?.propertyRoomType?.length) availability = false 
+      const reviewsByProperty = item?.review?.filter(itm => !isNaN(Number(itm?.rating))).map(itm => itm?.rating)
+      
+      let totalRating;
+      if (reviewsByProperty.length > 0) {
+        totalRating = reviewsByProperty.reduce(
+          (acc: any, curr: any) => acc + curr,
+        )
+      }
+
+      return {
+        ...item,
+        availability,
+        avgRating: totalRating ? Number(totalRating)/reviewsByProperty.length : 0,
+      }
+    })
 
     const propertyAvgRating = await prisma.review.aggregate({
       _avg: {
@@ -1046,6 +1187,53 @@ export const getProperties = async (
       },
     )
 
+    const countPropertyWith2Star = await prisma.property.count({
+      where: {
+        id: {
+          in: propertiesWithoutLimit.map(
+            (item) => item?.id,
+          ),
+        },
+        star: 2
+      },
+    })
+
+    const countPropertyWith3Star = await prisma.property.count({
+      where: {
+        id: {
+          in: propertiesWithoutLimit.map(
+            (item) => item?.id,
+          ),
+        },
+        star: 3
+      },
+    })
+
+    const countPropertyWith4Star = await prisma.property.count({
+      where: {
+        id: {
+          in: propertiesWithoutLimit.map(
+            (item) => item?.id,
+          ),
+        },
+        star: 4
+      },
+    })
+
+    const countPropertyWith5Star = await prisma.property.count({
+      where: {
+        id: {
+          in: propertiesWithoutLimit.map(
+            (item) => item?.id,
+          ),
+        },
+        star: 5
+      },
+    })
+
+    // console.log('CHECKINDATE', addHours(new Date(checkInDate as string).toISOString().split('T')[0], 7))
+    // console.log('CHECKOUTDATE', checkOutDate)
+
     res.status(200).json({
       error: false,
       message: 'Get properties success',
@@ -1065,6 +1253,12 @@ export const getProperties = async (
           propertyFacilityCounter,
           propertyRoomFacility,
           propertyRoomFacilityCounter,
+          countPropertyWithStar: [
+            countPropertyWith5Star,
+            countPropertyWith4Star,
+            countPropertyWith3Star,
+            countPropertyWith2Star,
+          ]
         },
         country,
         city,
@@ -1073,6 +1267,7 @@ export const getProperties = async (
       },
     })
   } catch (error: any) {
+    console.log(error)
     next(error)
   }
 }
@@ -1095,7 +1290,7 @@ export const getPropertyDescriptions = async (
     if (!isTenantExist?.id || isTenantExist?.deletedAt)
       throw { msg: 'Tenant not found!', status: 406 }
     if (isTenantExist?.role !== role)
-      throw { msg: 'Role unauthorized!', status: 406 }
+      throw { msg: 'Role unauthorized!', status: 401 }
 
     const getProperty = await prisma.property.findFirst({
       where: {
@@ -1103,6 +1298,9 @@ export const getPropertyDescriptions = async (
       },
       include: {
         propertyDetail: true,
+        propertyType: true,
+        city: true,
+        country: true,
       },
     })
     if (!getProperty?.id) throw { msg: 'Property not found!', status: 406 }
@@ -1125,7 +1323,6 @@ export const getPropertyDescriptions = async (
       },
     })
   } catch (error) {
-    console.log(error)
     next(error)
   }
 }
@@ -1157,7 +1354,7 @@ export const updatePropertyDescriptions = async (
     if (!isTenantExist?.id || isTenantExist?.deletedAt)
       throw { msg: 'Tenant not found!', status: 406 }
     if (isTenantExist?.role !== role)
-      throw { msg: 'Role unauthorized!', status: 406 }
+      throw { msg: 'Role unauthorized!', status: 401 }
 
     const isPropertyExist = await prisma.property.findFirst({
       where: {
@@ -1169,6 +1366,8 @@ export const updatePropertyDescriptions = async (
     })
 
     if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+    if (isPropertyExist?.tenantId !== id)
+      throw { msg: 'Actions not permitted!', status: 406 }
 
     const dataForUpdatePropertyDescriptions = {
       propertyDescription,
@@ -1238,30 +1437,159 @@ export const getPropertiesByTenant = async (
 ) => {
   try {
     const { id, role } = req.body
-    const { limit = 5, offset = 0, sortBy, order } = req.query
-
+    const { limit = 10, offset = 0, sortBy = 'name', order='asc', filterBy, filterValue, period } = req.query
+    
     const isTenantExist = await prisma.tenant.findUnique({
       where: {
         id,
       },
     })
+    if(order !== 'asc' && order !== 'desc') throw { msg: 'Order by value invalid!', status: 406 }
 
     if (!isTenantExist?.id || isTenantExist?.deletedAt)
       throw { msg: 'Tenant not found!', status: 406 }
     if (isTenantExist?.role !== role)
-      throw { msg: 'Role unauthorized!', status: 406 }
+      throw { msg: 'Role unauthorized!', status: 401 }
 
-    const getProperties = await prisma.property.findMany({
+    let getPropertiesId;
+
+    if(sortBy === 'name' || sortBy === 'review') {
+      getPropertiesId = await prisma.property.findMany({
+        where: {
+          tenantId: isTenantExist?.id,
+        },
+        orderBy: {
+          name: order === 'desc' ? 'desc' : 'asc',
+        },
+      })
+    } else if(sortBy === 'booked') {
+     getPropertiesId = await prisma.property.findMany({
+        where: {
+          tenantId: isTenantExist?.id,
+          transaction: {
+            some: {
+                transactionStatus: {
+                  some: {
+                    status: 'PAID'
+                  }
+                },
+            }
+          }
+        },
+        orderBy: {
+          transaction: {
+            _count: order === 'desc' ? 'desc' : 'asc'
+          },
+        },
+      })
+    } else if(sortBy === 'cancellation') {
+      getPropertiesId = await prisma.property.findMany({
+        where: {
+          tenantId: isTenantExist?.id,
+          transaction: {
+            some: {
+              transactionStatus: {
+                some: {
+                  status: 'PAID'
+                }
+              },
+              checkOutDate: {
+                gte: addHours(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0), 7),
+                lt: addDays(addHours(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0), 7), 1)
+              }
+            }
+          }
+        },
+        orderBy: {
+          transaction: {
+            _count: order === 'desc' ? 'desc' : 'asc'
+          }
+        },
+      })
+    } else {
+      getPropertiesId = await prisma.property.findMany({
+        where: {
+          tenantId: isTenantExist?.id,
+        },
+        orderBy: {
+          name: 'asc',
+        },
+      })
+    }
+      let orderBy: any = {
+        name: 'asc'
+      };
+      if(sortBy === 'name') {
+        orderBy = {
+          name: order === 'desc' ? 'desc' : 'asc'
+        }
+      } else if(sortBy === 'booked') {
+        orderBy = {
+          transaction: {
+            _count: order === 'desc' ? 'desc' : 'asc'
+          },
+        }
+      } else if(sortBy === 'cancellation') {
+        orderBy = {
+          transaction: {
+            _count: order === 'desc' ? 'desc' : 'asc'
+          },
+        }
+      }
+    const getLeftProperties = await prisma.property.findMany({
       where: {
         tenantId: isTenantExist?.id,
+        id: {
+          notIn: getPropertiesId.map(item => item?.id)
+        }
       },
       orderBy: {
-        name: 'asc'
+        name: 'desc'
       },
-      take: Number(limit),
-      skip: Number(offset)
+      include: {
+        propertyRoomType: {
+          include: {
+            seasonalPrice :{
+              where: {
+                date: addHours(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()), 7).toISOString()
+              }
+            } 
+          }
+        }
+      }
+    })
+    const getSortedAndFilterredProperties = await prisma.property.findMany({
+      where: {
+        id: {
+          in: getPropertiesId.map(item => item?.id)
+        }
+      },
+      include: {
+        propertyRoomType: {
+          include: {
+            seasonalPrice :{
+              where: {
+                date: addHours(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()), 7).toISOString()
+              }
+            } 
+          }
+        }
+      },
+      orderBy
     })
 
+    if(order === 'asc' && sortBy !== 'name') {
+      getSortedAndFilterredProperties.reverse()
+    }
+
+
+    const getAllProperties = [...getSortedAndFilterredProperties, ...getLeftProperties]
+
+    if(sortBy !== 'name' && order === 'asc') {
+      getAllProperties.reverse()
+    }
+
+    const getProperties = [...getAllProperties]
     const getTransactionsPaid = await prisma.transactionStatus.findMany({
       where: {
         AND: [
@@ -1282,8 +1610,8 @@ export const getPropertiesByTenant = async (
 
     const countPropertiesByTenant = await prisma.property.count({
       where: {
-        tenantId: id
-      }
+        tenantId: id,
+      },
     })
 
     const getTransactionsCancelled = await prisma.transactionStatus.findMany({
@@ -1315,8 +1643,14 @@ export const getPropertiesByTenant = async (
         ],
       },
     })
+    
+    let addedDataGetProperties = getProperties!.map((item, index) => {
 
-    const addedDataGetProperties = getProperties.map((item, index) => {
+      let availability = true
+      let checkAvailability = item?.propertyRoomType?.filter((item) => (item?.seasonalPrice[0]?.roomAvailability === false) || item?.seasonalPrice[0]?.roomToRent <= 0)
+
+      if (checkAvailability?.length === item?.propertyRoomType?.length) availability = false 
+
       const totalBooked = getTransactionsPaid.filter(
         (itm) => itm?.transaction?.propertyId === item?.id,
       ).length
@@ -1332,34 +1666,52 @@ export const getPropertiesByTenant = async (
             return 0
           }
         })
-      let avgRating
+      let totalRating;
       if (reviewsByProperty.length > 0) {
-        avgRating = reviewsByProperty.reduce(
+        totalRating = reviewsByProperty.reduce(
           (acc: any, curr: any) => acc + curr,
         )
       }
       return {
         ...item,
         totalBooked,
+        availability,
         totalCancelled,
-        avgRating: avgRating || 0,
+        avgRating: totalRating ? Number(totalRating)/reviewsByProperty.length : 0,
       }
     })
-    const totalPage = Math.ceil(countPropertiesByTenant / Number(limit))
+    let totalPage = Math.ceil(countPropertiesByTenant / Number(limit))
     const pageInUse = Number(offset) / Number(limit) + 1
+
+    if(sortBy === 'review') {
+      if(order === 'asc') {
+        addedDataGetProperties.sort((a, b) => a.avgRating - b.avgRating)
+      } else if(order === 'desc') {
+        addedDataGetProperties.sort((a, b) => b.avgRating - a.avgRating)
+      }
+    }
+
+    if(filterBy === 'open') {
+      addedDataGetProperties = addedDataGetProperties.filter(item => item.availability)
+      totalPage = Math.ceil(addedDataGetProperties.length / Number(limit))
+    } else if(filterBy === 'close') {
+      addedDataGetProperties = addedDataGetProperties.filter(item => !(item.availability))
+      totalPage = Math.ceil(addedDataGetProperties.length / Number(limit))
+    }
 
     res.status(200).json({
       error: false,
       message: 'Get properties by tenant success',
       data: {
-        properties: addedDataGetProperties,
+        properties: addedDataGetProperties.slice(Number(offset), (Number(limit) + Number(offset))),
         countProperties: countPropertiesByTenant,
         totalPage,
         pageInUse,
-        offset
+        offset,
       },
     })
   } catch (error) {
+    console.log(error)
     next(error)
   }
 }
@@ -1378,10 +1730,10 @@ export const getPropertiesByUser = async (
       },
     })
 
-    if(!isUserExist?.id || isUserExist?.deletedAt)
+    if (!isUserExist?.id || isUserExist?.deletedAt)
       throw { msg: 'User not found!', status: 406 }
-    if(isUserExist?.role !== role)
-      throw { msg: 'Role unauthorized!', status: 406 }
+    if (isUserExist?.role !== role)
+      throw { msg: 'Role unauthorized!', status: 401 }
 
     const propertyIdByRecentBooks = await prisma.transaction.findMany({
       where: {
@@ -1408,9 +1760,9 @@ export const getPropertiesByUser = async (
         },
       },
       orderBy: {
-        createdAt: 'desc'
-      },      
-      take: 10
+        createdAt: 'desc',
+      },
+      take: 10,
     })
 
     const propertyByRecentBooks = propertyIdByRecentBooks.map((item) => {
@@ -1442,7 +1794,7 @@ export const getPropertiesByUser = async (
         },
       },
       orderBy: {
-        createdAt: 'desc'
+        createdAt: 'desc',
       },
       take: 10,
     })
@@ -1452,12 +1804,150 @@ export const getPropertiesByUser = async (
     })
 
     res.status(200).json({
-        error: false,
-        message: 'Get properties by user success',
-        data: {
-            propertyByRecentBooks,
-            propertyByHistoryView,
-        }
+      error: false,
+      message: 'Get properties by user success',
+      data: {
+        propertyByRecentBooks,
+        propertyByHistoryView,
+      },
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const updatePropertyGeneralInfo = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { slug } = req.params
+    const {
+      id,
+      role,
+      name,
+      address,
+      zipCode,
+      location,
+      cityId,
+      countryId,
+      checkInStartTime,
+      checkInEndTime,
+      checkOutStartTime,
+      checkOutEndTime,
+      star,
+      phoneNumber,
+      url,
+    } = req.body
+    const isTenantExist = await prisma.tenant.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!isTenantExist?.id || isTenantExist?.deletedAt)
+      throw { msg: 'Tenant not found!', status: 406 }
+    if (isTenantExist?.role !== role)
+      throw { msg: 'Role unauthorized!', status: 401 }
+
+    const isPropertyExist = await prisma.property.findFirst({
+      where: {
+        slug,
+      },
+      include: {
+        propertyDetail: true,
+      },
+    })
+
+    if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+    if (isPropertyExist?.tenantId !== id)
+      throw { msg: 'Actions not permitted!', status: 406 }
+
+    let newSlug
+    if (isPropertyExist?.name !== name) {
+      newSlug = `${name.toLowerCase().split(' ').join('-')}-${isPropertyExist?.id}`
+    }
+
+    const updatedProperty = await prisma.property.update({
+      where: {
+        id: isPropertyExist?.id,
+      },
+      data: {
+        name,
+        address,
+        zipCode,
+        location,
+        cityId,
+        countryId,
+        checkInStartTime: addHours(
+          new Date(
+            new Date().toISOString().split('T')[0] +
+              'T' +
+              checkInStartTime +
+              ':00',
+          ),
+          7,
+        ),
+        checkInEndTime: checkInEndTime
+          ? addHours(
+              new Date(
+                new Date().toISOString().split('T')[0] +
+                  'T' +
+                  checkInEndTime +
+                  ':00',
+              ),
+              7,
+            )
+          : null,
+        checkOutStartTime: checkOutStartTime
+          ? addHours(
+              new Date(
+                new Date().toISOString().split('T')[0] +
+                  'T' +
+                  checkOutStartTime +
+                  ':00',
+              ),
+              7,
+            )
+          : null,
+        checkOutEndTime: addHours(
+          new Date(
+            new Date().toISOString().split('T')[0] +
+              'T' +
+              checkOutEndTime +
+              ':00',
+          ),
+          7,
+        ),
+        star,
+        slug: newSlug || slug,
+      },
+    })
+
+    if (!updatedProperty)
+      throw { msg: 'Update property general info failed!', status: 500 }
+
+    const updatedPropertyDetail = await prisma.propertyDetail.update({
+      where: {
+        propertyId: isPropertyExist?.id,
+      },
+      data: {
+        phoneNumber,
+        url,
+      },
+    })
+
+    if (!updatedPropertyDetail)
+      throw { msg: 'Update property general info failed!', status: 500 }
+
+    res.status(200).json({
+      error: false,
+      message: 'Update property general info success',
+      data: {
+        updatedProperty,
+        updatedPropertyDetail,
+      },
     })
   } catch (error) {
     next(error)

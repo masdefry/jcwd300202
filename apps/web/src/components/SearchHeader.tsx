@@ -70,7 +70,7 @@ const SearchHeader = ({
           })
         },
         onSuccess: (res: any) => {
-        router.push(`/explore/search${slug}`)
+          router.push(`/explore/search${slug}`)
       },
       onError: (error) => {
         console.log(error)

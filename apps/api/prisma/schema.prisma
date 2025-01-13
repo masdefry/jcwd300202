@@ -454,6 +454,10 @@ model Season {
   name      String
   startDate DateTime
   endDate   DateTime
+  ratesPercentage Int @default(100)
+  availability Boolean @default(true)
+  isPeak Boolean @default(false)
+  roomToRent Int?
 
   seasonalPrice SeasonalPrice[]
 
@@ -472,8 +476,11 @@ model Season {
 
 model SeasonalPrice {
   id               Int      @id @default(autoincrement())
+
   price            Float
   date             DateTime
+  isStartSeason    Boolean @default(false)
+  isEndSeason      Boolean @default(false)
   roomAvailability Boolean  @default(true)
   roomToRent       Int
   isPeak           Boolean  @default(false)

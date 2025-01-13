@@ -5,6 +5,7 @@ import useMutateLoginApi from '../api/useMutateLoginApi'
 import { AxiosError, AxiosResponse } from 'axios'
 import authStore from '@/zustand/authStore'
 import { useRouter } from 'next/navigation'
+import Cookies from 'js-cookie'
 
 interface IUseLoginHookProps {
     endPoint: string,
@@ -31,6 +32,7 @@ const useLoginHook = ({ endPoint, role }: IUseLoginHookProps) => {
                   Login success
                 </span>
               ))
+            Cookies.set('authToken', res?.token, { expires: 7 })
             setAuth({ 
                 isVerified: res?.isVerified,
                 profilePictureUrl: res?.profilePictureUrl,
@@ -45,7 +47,7 @@ const useLoginHook = ({ endPoint, role }: IUseLoginHookProps) => {
                 }, 1500)
             } else {
                 setTimeout(() => {
-                    router.push('/tenant/profile')
+                    router.push('/tenant/property/list')
                 }, 1500)
             }
         }, 

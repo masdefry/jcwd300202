@@ -15,12 +15,12 @@ const PropertyManageRoomDetailsPage = ({ params }: { params: { slug: string } })
     const { data: dataPropertyRoomTypes, isPending: isPendingPropertyRoomTypes } = useQuery({
         queryKey: ['getPropertyRoomTypes'],
         queryFn: async() => {
-            const res = await instance.get(`/room-type/property/${params?.slug}/search`)
+            const res = await instance.get(`/room-type/property/${params?.slug}/search?limit=100`)
             return res?.data?.data
         }
     })
   return (
-    <main className='flex flex-col gap-7'>
+    <main className='flex flex-col gap-7 py-5'>
         <hgroup className='flex flex-col px-5'>
         <h1 className='text-lg font-bold text-gray-800'>Room Details</h1>
         <p className='text-sm font-medium text-slate-600'>Easily Manage Your Space: Update Room Details Anytime, Anywhere</p>
@@ -60,10 +60,10 @@ const PropertyManageRoomDetailsPage = ({ params }: { params: { slug: string } })
                     )
                 })
             }
-            <div className='flex flex-col gap-1 items-center justify-center text-lg font-bold text-gray-900 h-[350px] w-[250px] rounded-2xl overflow-hidden shadow-md border-2 border-slate-800 hover:bg-slate-800 hover:text-white transition duration-100 hover:cursor-pointer active:scale-95'>
+            <Link href={`/tenant/property/manage/${params.slug}/room-details/add-room`} className='flex flex-col gap-1 items-center justify-center text-lg font-bold text-gray-900 h-[350px] w-[250px] rounded-2xl overflow-hidden shadow-md border-2 border-slate-800 hover:bg-slate-800 hover:text-white transition duration-100 hover:cursor-pointer active:scale-95'>
                 <CiCirclePlus className='text-2xl'/>
                 <p>Add a new room</p>
-            </div>
+            </Link>
         </section>
     </main>
   )

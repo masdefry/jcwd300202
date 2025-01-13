@@ -17,6 +17,8 @@ import Image from 'next/image'
 import { FaRegSave } from 'react-icons/fa'
 import { IoCameraOutline } from 'react-icons/io5'
 import toast from 'react-hot-toast'
+import Link from 'next/link'
+import { manageRoomValidationSchema } from '@/features/tenant/property/manage/room-details/edit/schemas/manageRoomValidationSchema'
 
 const PropertyManageRoomDetailsEditPage = ({
   params,
@@ -33,15 +35,19 @@ const PropertyManageRoomDetailsEditPage = ({
       },
     })
 
-  const { mutate: mutateUpdatePropertyRoomTypeGeneral, isPending: isPendingUpdatePropertyRoomTypeGeneral } = useMutation({
-    mutationFn: async(values: any) => {
+  const {
+    mutate: mutateUpdatePropertyRoomTypeGeneral,
+    isPending: isPendingUpdatePropertyRoomTypeGeneral,
+  } = useMutation({
+    mutationFn: async (values: any) => {
       const res = await instance.patch(`/room-type/property/${params?.slug}`, {
         name: values?.name,
         totalRooms: values?.totalRooms,
         rooms: values?.rooms,
         bathrooms: values?.bathrooms,
         capacity: values?.capacity,
-        price: values?.price,        
+        price: values?.price,
+        propertyRoomTypeId: params?.id
       })
       console.log(res)
       return res?.data
@@ -49,19 +55,19 @@ const PropertyManageRoomDetailsEditPage = ({
     onSuccess: (res) => {
       setIsSubmitting(false)
       toast((t) => (
-        <span className='flex gap-2 items-center font-semibold justify-center text-xs'>
+        <span className="flex gap-2 items-center font-semibold justify-center text-xs">
           {res?.message}
         </span>
-      ))     
-    }, 
+      ))
+    },
     onError: (err: any) => {
       toast((t) => (
-        <span className='flex gap-2 items-center font-semibold justify-center text-xs text-red-600'>
+        <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
           {err?.response?.data?.message || 'Connection error!'}
         </span>
       ))
-    }
-  })  
+    },
+  })
   return (
     <main className="flex flex-col gap-7 py-5">
       <hgroup className="flex flex-col px-5">
@@ -72,46 +78,69 @@ const PropertyManageRoomDetailsEditPage = ({
       <section className="flex flex-col gap-5 px-5">
         <div className="flex items-center justify-center w-full h-[150px] lg:h-[420px] overflow-hidden border-2 border-gray-300 border-dashed rounded-lg">
           {Boolean(
-            dataPropertyRoomType?.propertyRoomType[0]?.propertyRoomImage[0]?.directory
+            dataPropertyRoomType?.propertyRoomType[0]?.propertyRoomImage[0]
+              ?.directory,
           ) ? (
-            <figure className="w-full h-full relative">
-              <Image
-                src={`http://localhost:5000/api/${dataPropertyRoomType?.propertyRoomType[0]?.propertyRoomImage[0]?.directory}/${dataPropertyRoomType?.propertyRoomType[0]?.propertyRoomImage[0]?.filename}.${dataPropertyRoomType?.propertyRoomType[0]?.propertyRoomImage[0]?.fileExtension}`}
-                width={1000}
-                height={1000}
-                alt=""
-                className="object-cover w-full h-full"
-              />
-            </figure>
+            <Link
+              href={`/tenant/property/manage/${params.slug}/room-details/edit/${params.id}/photos`}
+              className="w-full h-full relative"
+            >
+              <figure className="w-full h-full relative">
+                <Image
+                  src={`http://localhost:5000/api/${dataPropertyRoomType?.propertyRoomType[0]?.propertyRoomImage[0]?.directory}/${dataPropertyRoomType?.propertyRoomType[0]?.propertyRoomImage[0]?.filename}.${dataPropertyRoomType?.propertyRoomType[0]?.propertyRoomImage[0]?.fileExtension}`}
+                  width={1000}
+                  height={1000}
+                  alt=""
+                  className="object-cover w-full h-full"
+                />
+              </figure>
+            </Link>
           ) : (
-            <label className="flex flex-col items-center justify-center w-full h-full  cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-              <IoCameraOutline className='text-gray-300 text-6xl' />
-            </label>
+            <Link
+              href={`/tenant/property/manage/${params.slug}/room-details/edit/${params.id}/photos`}
+              className="w-full h-full relative"
+            >
+              <label className="flex flex-col items-center justify-center w-full h-full  cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                <IoCameraOutline className="text-gray-300 text-6xl" />
+              </label>
+            </Link>
           )}
         </div>
         <section className="grid grid-cols-4 gap-5">
-          { Array.from({length: 4}).map((item: any, index: number) => {
+          {Array.from({ length: 4 }).map((item: any, index: number) => {
             return (
               <div
                 key={index}
-                className="flex items-center justify-center md:col-span-2 2xl:col-span-1 col-span-4 w-full h-[150px] lg:h-[200px] overflow-hidden border-2 border-gray-300 border-dashed rounded-lg"
+                className="flex items-center justify-center md:col-span-2 2xl:col-span-1 col-span-4 w-full h-[150px] lg:h-[200px] overflow-hidden border-2 border-gray-300 rounded-lg"
               >
                 {Boolean(
-                  dataPropertyRoomType?.propertyRoomType[0]?.propertyRoomImage[index + 1]?.directory
+                  dataPropertyRoomType?.propertyRoomType[0]?.propertyRoomImage[
+                    index + 1
+                  ]?.directory,
                 ) ? (
-                  <figure className="w-full h-full relative">
-                    <Image
-                      src={`http://localhost:5000/api/${dataPropertyRoomType?.propertyRoomType[0]?.propertyRoomImage[index + 1]?.directory}/${dataPropertyRoomType?.propertyRoomType[0]?.propertyRoomImage[index + 1]?.filename}.${dataPropertyRoomType?.propertyRoomType[0]?.propertyRoomImage[index + 1]?.fileExtension}`}
-                      width={1000}
-                      height={1000}
-                      alt=""
-                      className="object-cover w-full h-full"
-                    />
-                  </figure>
+                  <Link
+                    href={`/tenant/property/manage/${params.slug}/room-details/edit/${params.id}/photos`}
+                    className="w-full h-full relative"
+                  >
+                    <figure className="w-full h-full relative">
+                      <Image
+                        src={`http://localhost:5000/api/${dataPropertyRoomType?.propertyRoomType[0]?.propertyRoomImage[index + 1]?.directory}/${dataPropertyRoomType?.propertyRoomType[0]?.propertyRoomImage[index + 1]?.filename}.${dataPropertyRoomType?.propertyRoomType[0]?.propertyRoomImage[index + 1]?.fileExtension}`}
+                        width={1000}
+                        height={1000}
+                        alt=""
+                        className="object-cover w-full h-full"
+                      />
+                    </figure>
+                  </Link>
                 ) : (
-                  <label className="flex flex-col items-center justify-center w-full h-full cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                  <IoCameraOutline className='text-gray-300 text-6xl' />
-                  </label>
+                  <Link
+                    href={`/tenant/property/manage/${params.slug}/room-details/edit/${params.id}/photos`}
+                    className="w-full h-full relative"
+                  >
+                    <label className="flex flex-col items-center justify-center w-full h-full bg-slate-200 dark:bg-gray-700  dark:border-gray-600 ">
+                      <IoCameraOutline className="text-white text-6xl" />
+                    </label>
+                  </Link>
                 )}
               </div>
             )
@@ -121,16 +150,18 @@ const PropertyManageRoomDetailsEditPage = ({
       <Formik
         initialValues={{
           name: dataPropertyRoomType?.propertyRoomType[0]?.name || '',
-          totalRooms: dataPropertyRoomType?.propertyRoomType[0]?.totalRooms || 1,
+          totalRooms:
+            dataPropertyRoomType?.propertyRoomType[0]?.totalRooms || '',
           rooms: dataPropertyRoomType?.propertyRoomType[0]?.rooms || 1,
           bathrooms: dataPropertyRoomType?.propertyRoomType[0]?.bathrooms || 1,
           capacity: dataPropertyRoomType?.propertyRoomType[0]?.capacity || 2,
-          price: dataPropertyRoomType?.propertyRoomType[0]?.price || 0,
+          price: dataPropertyRoomType?.propertyRoomType[0]?.price || '',
         }}
+        validationSchema={manageRoomValidationSchema}
         enableReinitialize={true}
         onSubmit={(values) => {
+          console.log('aaaaaaaaaaaaaaaa')
           mutateUpdatePropertyRoomTypeGeneral(values)
-          console.log(values)
         }}
       >
         <Form className="flex flex-col gap-5 px-5">

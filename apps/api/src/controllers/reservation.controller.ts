@@ -5,9 +5,9 @@ import { getReservationService, updateReservationService } from '@/services/rese
 export const getReservation = async(req: Request, res: Response, next: NextFunction) => {
     try {
 
-        const { tenantId } = req.body
+        const { id } = req.body
 
-        if(!tenantId) {
+        if(!id) {
             return res.status(400).json({
                 message: 'Tenant Id is required',
                 error: true,
@@ -15,7 +15,7 @@ export const getReservation = async(req: Request, res: Response, next: NextFunct
             })
         }
 
-        const transactions = await getReservationService(tenantId)
+        const transactions = await getReservationService(id)
 
         if (!transactions) {
             return res.status(404).json({

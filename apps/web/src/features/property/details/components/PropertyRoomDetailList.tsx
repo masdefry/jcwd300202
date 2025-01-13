@@ -5,7 +5,7 @@ import React from 'react'
 import { IoPerson } from 'react-icons/io5'
 import Link from 'next/link'
 
-const PropertyRoomDetailList = ({ dataPropertyRoomType, isPending, setShowDataRoom, token, searchParams, mutatePropertyRoomType, dataPropertyDetail, }: any) => {
+const PropertyRoomDetailList = ({ dataPropertyRoomType, isPending, setShowDataRoom, token, searchParams, mutatePropertyRoomType, dataPropertyDetail, role }: any) => {
   if(isPending) {
       return (
       
@@ -188,11 +188,11 @@ const PropertyRoomDetailList = ({ dataPropertyRoomType, isPending, setShowDataRo
                                     {
                                         token ? (
                                             <Link href={`/booking/${item?.id}/details?check-in-date=${searchParams['check-in-date']}&check-out-date=${searchParams['check-out-date']}&adult=${searchParams.adult}&children=${searchParams.children}`}>
-                                                <button disabled={item?.totalRoomsLeft <= 0} className='disabled:bg-slate-300 disabled:opacity-100 disabled:text-white disabled:scale-100 my-auto italic text-sm font-bold min-w-max px-8 py-3 rounded-full bg-blue-800 text-white hover:opacity-75 active:scale-95 transition duration-100' type='button'>{item?.totalRoomsLeft <= 0 ? 'Not available' : 'Book now'}</button>
+                                                <button disabled={item?.totalRoomsLeft <= 0 || !item?.isAvailable || role !== 'USER'} className='disabled:bg-slate-300 disabled:opacity-100 disabled:text-white disabled:scale-100 my-auto italic text-sm font-bold min-w-max px-8 py-3 rounded-full bg-blue-800 text-white hover:opacity-75 active:scale-95 transition duration-100' type='button'>{item?.totalRoomsLeft <= 0 ? 'Not available' : 'Book now'}</button>
                                             </Link>
                                         ) : (
                                             <Link href='/auth'>
-                                                <button  disabled={item?.totalRoomsLeft <= 0} className='disabled:bg-slate-300 disabled:opacity-100 disabled:text-white disabled:scale-100 my-auto italic text-sm font-bold min-w-max px-8 py-3 rounded-full bg-blue-800 text-white hover:opacity-75 active:scale-95 transition duration-100' type='button'>{item?.totalRoomsLeft <= 0 ? 'Not available' : 'Book now'}</button>
+                                                <button  disabled={item?.totalRoomsLeft <= 0 || !item?.isAvailable || role !== 'USER'} className='disabled:bg-slate-300 disabled:opacity-100 disabled:text-white disabled:scale-100 my-auto italic text-sm font-bold min-w-max px-8 py-3 rounded-full bg-blue-800 text-white hover:opacity-75 active:scale-95 transition duration-100' type='button'>{item?.totalRoomsLeft <= 0 ? 'Not available' : 'Book now'}</button>
                                             </Link>
                                         )
                                     }

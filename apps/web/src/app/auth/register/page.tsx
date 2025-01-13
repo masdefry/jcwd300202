@@ -14,56 +14,69 @@ import useLoginWithGoogleHook from '@/features/auth/hooks/useLoginWithGoogleHook
 import Link from 'next/link'
 
 const RegisterPage = () => {
-    const { 
-        isPendingOAuth,
-        isPendingReqOAuth,
-        mutateOAuth
-    } = useLoginWithGoogleHook()
+  const { isPendingOAuth, isPendingReqOAuth, mutateOAuth } =
+    useLoginWithGoogleHook()
 
-  const { 
-    mutateRegister,
-    isPendingRegister
-   } = useRegisterHook({
+  const { mutateRegister, isPendingRegister } = useRegisterHook({
     endPoint: '/auth/register',
-    role: 'user'
+    role: 'user',
   })
   return (
-    <main className='flex justify-center'>
-        <section className='md:w-[768px] w-full flex flex-col gap-8'>
-            <AuthHGroup 
-            header1='Create an account'
-            header6='You can create new Roomify account to access our services'
+    <main className="flex justify-center">
+      <section className="md:w-[768px] w-full flex flex-col gap-8">
+        <AuthHGroup
+          header1="Create an account"
+          header6="You can create new Roomify account to access our services"
+        />
+        <Formik
+          initialValues={{
+            email: '',
+          }}
+          validationSchema={emailValidationSchema}
+          onSubmit={(values, { resetForm }) => {
+            mutateRegister(values)
+            resetForm()
+          }}
+        >
+          <Form className="flex flex-col gap-5">
+            <TextInput
+              labelName="Email"
+              name="email"
+              placeholder="example@email.com"
+              type="text"
             />
-            <Formik
-            initialValues={{
-                email: ''
-            }}
-            validationSchema={emailValidationSchema}
-            onSubmit={(values, { resetForm }) => {
-                mutateRegister(values)
-                resetForm()
-            }}
-            >
-                <Form className='flex flex-col gap-5'>
-                    <TextInput labelName='Email' name='email' placeholder='example@email.com' type='email'/>
-                    <AuthButton isPending={Boolean(isPendingOAuth || isPendingRegister || isPendingReqOAuth)} text='Continue with email'/>
-                    <span className='text-sm font-light mt-[-15px] ml-4'>
-                        <span>Have an account?</span>
-                        <Link href='/auth'>
-                            <span className='ml-1 text-sm font-semibold text-blue-600 border-b-2 border-transparent hover:border-blue-600 active:scale-90 transition duration-200 hover:cursor-pointer w-fit'>Login now</span>
-                        </Link>
-                    </span>
-                </Form>
-            </Formik>
-            <div className='flex gap-2 items-center justify-between'>
-                <div className='h-[1px] w-full bg-gray-300'></div>
-                <p className='min-w-max text-center text-sm font-light'>or use of these option</p>
-                <div className='h-[1px] w-full bg-gray-300'></div>
-            </div>
-            <GoogleSignInButton mutateOAuth={mutateOAuth} isPending={Boolean(isPendingOAuth || isPendingRegister || isPendingReqOAuth)} />
-            <Separator />
-            <Footer />
-        </section>
+            <AuthButton
+              isPending={Boolean(
+                isPendingOAuth || isPendingRegister || isPendingReqOAuth,
+              )}
+              text="Continue with email"
+            />
+            <span className="text-sm font-light mt-[-15px] ml-4">
+              <span>Have an account?</span>
+              <Link href="/auth">
+                <span className="ml-1 text-sm font-semibold text-blue-600 border-b-2 border-transparent hover:border-blue-600 active:scale-90 transition duration-200 hover:cursor-pointer w-fit">
+                  Login now
+                </span>
+              </Link>
+            </span>
+          </Form>
+        </Formik>
+        <div className="flex gap-2 items-center justify-between">
+          <div className="h-[1px] w-full bg-gray-300"></div>
+          <p className="min-w-max text-center text-sm font-light">
+            or use of these option
+          </p>
+          <div className="h-[1px] w-full bg-gray-300"></div>
+        </div>
+        <GoogleSignInButton
+          mutateOAuth={mutateOAuth}
+          isPending={Boolean(
+            isPendingOAuth || isPendingRegister || isPendingReqOAuth,
+          )}
+        />
+        <Separator />
+        <Footer />
+      </section>
     </main>
   )
 }

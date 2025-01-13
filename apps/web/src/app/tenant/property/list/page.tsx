@@ -12,11 +12,12 @@ import instance from '@/utils/axiosInstance'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { usePathname } from 'next/navigation'
+import { GiBackwardTime } from 'react-icons/gi'
 
 const PropertyListPage = ({
   searchParams,
 }: {
-  searchParams: { sort: string; limit: string; offset: string, select: string }
+  searchParams: { sort: string; limit: string; offset: string, select: string, period: string }
 }) => {
   const params = new URLSearchParams()
   const [searchParamsInState, setSearchParamsInState] = useState<any>({}) 
@@ -46,7 +47,7 @@ const PropertyListPage = ({
       handleSearchParams('limit', searchParams?.limit ? searchParams?.limit.toString() : '10')
       handleSearchParams('offset', searchParams?.offset ? searchParams?.offset.toString() : '0')
       setSearchParamsInState((state: any) => ({...state, sortBy: value.split('-')[1], order: value.split('-')[0], limit: 10, offset: 0}))
-      const res = await instance.get(`/property/tenant?limit=${searchParams?.limit || 10}&offset=${searchParams?.offset || 0}&sortBy=${value.split('-')[1] || 'name'}&order=${value.split('-')[0] || 'asc'}`)
+      const res = await instance.get(`/property/tenant?limit=${searchParams?.limit || 10}&offset=${searchParams?.offset || 0}&sortBy=${value.split('-')[1] || 'name'}&order=${value.split('-')[0] || 'asc'}&period=${searchParamsInState?.period || '1'}`)
       return res?.data
     },
     onSuccess: (res) => {
@@ -71,7 +72,26 @@ const PropertyListPage = ({
       handleSearchParams('limit', searchParams?.limit ? searchParams?.limit.toString() : '10')
       handleSearchParams('offset', searchParams?.offset ? searchParams?.offset.toString() : '0')
       setSearchParamsInState((state: any) => ({...state, select: value, limit: 10, offset: 0}))
-      const res = await instance.get(`/property/tenant?limit=${searchParams?.limit || 10}&offset=${searchParams?.offset || 0}&sortBy=${searchParamsInState?.sortBy || 'name'}&order=${searchParamsInState?.order || 'asc'}&filterBy=${value}`)
+      const res = await instance.get(`/property/tenant?limit=${searchParams?.limit || 10}&offset=${searchParams?.offset || 0}&sortBy=${searchParamsInState?.sortBy || 'name'}&order=${searchParamsInState?.order || 'asc'}&filterBy=${value}&period=${searchParamsInState?.period || '1'}`)
+      return res?.data
+    },
+    onSuccess: (res) => {
+      setDataProperties(res?.data)
+    },
+    onError: (err: any) => {
+      toast((t) => (
+        <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
+          {err?.response?.data?.message || 'Connection error!'}
+        </span>
+      ))
+    },
+  })
+
+  const { mutate: mutatePeriod, isPending: isPendingPeriod } = useMutation({
+    mutationFn: async({value}: {value: string}) => {
+      handleSearchParams('period', value)
+      const res = await instance.get(`/property/tenant?limit=${searchParams?.limit || 10}&offset=${searchParams?.offset || 0}&sortBy=${searchParamsInState?.sortBy || 'name'}&order=${searchParamsInState?.order || 'asc'}&filterBy=${searchParams.select}&period=${value}`)
+      console.log(res)
       return res?.data
     },
     onSuccess: (res) => {
@@ -88,7 +108,7 @@ const PropertyListPage = ({
 
   const [dataProperties, setDataProperties] = useState<any>({})
   const fetchDataProperties = async() => {
-    const res = await instance.get(`/property/tenant?limit=${searchParams?.limit || 10}&offset=${searchParams?.offset || 0}&sortBy=${searchParams?.sort ? searchParams?.sort.split('-')[1] : 'name'}&order=${searchParams?.sort ? searchParams?.sort.split('-')[0] : 'asc'}&filterBy=${searchParams?.select || ''}`)
+    const res = await instance.get(`/property/tenant?limit=${searchParams?.limit || 10}&offset=${searchParams?.offset || 0}&sortBy=${searchParams?.sort ? searchParams?.sort.split('-')[1] : 'name'}&order=${searchParams?.sort ? searchParams?.sort.split('-')[0] : 'asc'}&filterBy=${searchParams?.select || ''}&period=${searchParams?.period || '1'}`)
       if(res?.status === 200) {
         setDataProperties(res?.data?.data)
       }
@@ -146,7 +166,7 @@ const PropertyListPage = ({
         <div className="grid grid-cols-5 rounded-md py-5 shadow-md bg-white border border-slate-100">
           <div className="flex flex-col gap-2 items-start justify-start border-r border-slate-300 px-5">
             <CiBoxList size={23} className="text-gray-600 ml-[-4px] mb-2" />
-            <p className="text-xl font-bold text-gray-800">0</p>
+            <p className="text-xl font-bold text-gray-800">{dataProperties?.reservation}</p>
             <p className="text-sm font-medium text-blue-700">Reservation</p>
           </div>
           <div className="flex flex-col gap-2 items-start justify-start border-r border-slate-300 px-5">
@@ -154,7 +174,7 @@ const PropertyListPage = ({
               size={23}
               className="text-gray-600 ml-[-4px] mb-2"
             />
-            <p className="text-xl font-bold text-gray-800">0</p>
+            <p className="text-xl font-bold text-gray-800">{dataProperties?.arrival}</p>
             <p className="text-sm font-medium text-blue-700">Arrival</p>
           </div>
           <div className="flex flex-col gap-2 items-start justify-start border-r border-slate-300 px-5">
@@ -162,22 +182,22 @@ const PropertyListPage = ({
               size={23}
               className="text-gray-600 ml-[-4px] mb-2"
             />
-            <p className="text-xl font-bold text-gray-800">0</p>
+            <p className="text-xl font-bold text-gray-800">{dataProperties?.departure}</p>
             <p className="text-sm font-medium text-blue-700">Departure</p>
           </div>
           <div className="flex flex-col gap-2 items-start justify-start border-r border-slate-300 px-5">
             <FaRegStar size={23} className="text-gray-600 ml-[-4px] mb-2" />
-            <p className="text-xl font-bold text-gray-800">0</p>
+            <p className="text-xl font-bold text-gray-800">{dataProperties?.review}</p>
             <p className="text-sm font-medium text-blue-700">Review</p>
           </div>
           <div className="flex flex-col gap-2 items-start justify-start px-5">
             <TbHomeCancel size={23} className="text-gray-600 ml-[-4px] mb-2" />
-            <p className="text-xl font-bold text-gray-800">0</p>
+            <p className="text-xl font-bold text-gray-800">{dataProperties?.cancellation}</p>
             <p className="text-sm font-medium text-blue-700">Cancellation</p>
           </div>
         </div>
       </section>
-      <section className="grid grid-cols-3 gap-3">
+      <section className="grid grid-cols-4 gap-2">
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="sort"
@@ -245,6 +265,27 @@ const PropertyListPage = ({
             className="border border-slate-300 bg-gray-50 placeholder-shown:text-xs font-semibold text-xs text-gray-800 rounded-md h-[3em] p-1.5 px-2 focus:outline-none focus:ring-slate-400 focus:border-slate-400 block w-full dark:bg-gray-700 dark:border-gray-600"
           />
         </div>
+        <div className="flex flex-col gap-1.5">
+          <label
+            htmlFor="filter-period"
+            className="text-xs min-w-max font-bold text-gray-900 flex items-center gap-1.5"
+          >
+            <GiBackwardTime />
+            Period:
+          </label>
+          <select
+            onChange={(e) => mutatePeriod({value: e.target.value})}
+            defaultValue={searchParams?.select || ""}
+            name='filter-period'
+            id="filter-period"
+            className="bg-gray-50 border border-slate-300 text-gray-800 text-xs font-semibold rounded-md h-[3em] p-1.5 px-2 focus:outline-none focus:ring-slate-400 focus:border-slate-400 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          >
+            <option value="">Today</option>
+            <option value="7">Last 7 Days</option>
+            <option value="30">Last 30 Days</option>
+            <option value="365">Last 365 Days</option>
+          </select>
+        </div>
       </section>
       <section>
         <div className="overflow-x-auto flex flex-col gap-4">
@@ -254,7 +295,7 @@ const PropertyListPage = ({
                 <th></th>
                 <th>Name</th>
                 <th>Location</th>
-                <th>Status</th>
+                <th>Status (Today)</th>
                 <th>Booked</th>
                 <th>Review</th>
                 <th>Cancellation</th>

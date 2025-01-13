@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express'
 import { v4 as uuidV4 } from 'uuid'
 import { getRoomTypeService } from '@/services/property.service'
 import { deleteFiles } from '@/utils/deleteFiles'
-import { addDays, addHours, differenceInDays, format } from 'date-fns'
+import { addDays, addHours, differenceInDays, format, subDays } from 'date-fns'
 
 export const createProperty = async (
   req: Request,
@@ -293,6 +293,12 @@ export const getPropertyDetail = async (
       }
     })
 
+    let filteredReviewWithRating = reviews.filter((item) => item?.rating && !isNaN(item?.rating))
+
+    const totalRatings = filteredReviewWithRating
+    .map(item => item?.rating)
+    .reduce((acc: any, curr: any) =>  acc + curr)
+
     const city = await prisma.city.findUnique({
       where: {
         id: property?.cityId as number,
@@ -451,6 +457,7 @@ export const getPropertyDetail = async (
           0,
           8,
         ),
+        avgRating: (totalRatings as number)/filteredReviewWithRating?.length,
         propertyRoomType,
         dateAndPrice: Object.fromEntries(dateAndPrice),
         basePrice: propertyRoomType[0]?.price,
@@ -641,11 +648,11 @@ export const getProperties = async (
 
     let gteDate = new Date();
     gteDate.setHours(0, 0, 0, 0);
-    let ltDate = addDays(gteDate, 2);
+    let ltDate = addDays(gteDate, 1);
     ltDate.setHours(0, 0, 0, 0);
 
     let whereConditionDate ={}
-    
+
     if (isNaN(gteDate.getTime()) || isNaN(ltDate.getTime())) {
       throw { msg: 'Date range invalid!', status: 406 }
     } else {
@@ -917,8 +924,6 @@ export const getProperties = async (
         })
         sortedPropertiesId = sortedProperties?.map((item) => item.propertyId)
       }
-      console.log('CHECKINDATE', addHours(new Date(new Date().setHours(0,0,0,0)).toISOString(), 31))
-      console.log('CHECKINDATE',  addHours(new Date(new Date().setHours(0,0,0,0)).toISOString(), 7))
       properties = await prisma.property.findMany({
         where: {
           // AND: [...whereCondition, ...whereConditionPropertyFacility, ...whereConditionPropertyRoomFacility],
@@ -1451,6 +1456,20 @@ export const getPropertiesByTenant = async (
     if (isTenantExist?.role !== role)
       throw { msg: 'Role unauthorized!', status: 401 }
 
+    let gteDate = subDays(new Date(), Number(period) || 1);
+    gteDate.setHours(0, 0, 0, 0);
+    let ltDate = addDays(gteDate, Number(period) || 1);
+    ltDate.setHours(0, 0, 0, 0);
+
+    let dataPeriod = {}
+    if (isNaN(gteDate.getTime()) || isNaN(ltDate.getTime())) {
+      throw { msg: 'Date range invalid!', status: 406 }
+    } else {
+    dataPeriod = {
+        gte: gteDate.toISOString(),
+        lt: ltDate.toISOString()
+      }
+    }
     let getPropertiesId;
 
     if(sortBy === 'name' || sortBy === 'review') {
@@ -1470,9 +1489,10 @@ export const getPropertiesByTenant = async (
             some: {
                 transactionStatus: {
                   some: {
-                    status: 'PAID'
+                    status: 'PAID',
                   }
                 },
+                // createdAt: dataPeriod
             }
           }
         },
@@ -1490,13 +1510,10 @@ export const getPropertiesByTenant = async (
             some: {
               transactionStatus: {
                 some: {
-                  status: 'PAID'
+                  status: 'CANCELLED',
                 }
               },
-              checkOutDate: {
-                gte: addHours(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0), 7),
-                lt: addDays(addHours(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0), 7), 1)
-              }
+              // createdAt: dataPeriod
             }
           }
         },
@@ -1551,7 +1568,7 @@ export const getPropertiesByTenant = async (
           include: {
             seasonalPrice :{
               where: {
-                date: addHours(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()), 7).toISOString()
+                date: dataPeriod
               }
             } 
           }
@@ -1569,7 +1586,8 @@ export const getPropertiesByTenant = async (
           include: {
             seasonalPrice :{
               where: {
-                date: addHours(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()), 7).toISOString()
+                // date: addHours(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()), 7).toISOString()
+                date: dataPeriod
               }
             } 
           }
@@ -1601,6 +1619,9 @@ export const getPropertiesByTenant = async (
           {
             status: 'PAID',
           },
+          {
+            createdAt: dataPeriod
+          }
         ],
       },
       include: {
@@ -1625,6 +1646,9 @@ export const getPropertiesByTenant = async (
           {
             status: 'CANCELLED',
           },
+          {
+            createdAt: dataPeriod
+          }
         ],
       },
       include: {
@@ -1640,6 +1664,9 @@ export const getPropertiesByTenant = async (
               tenantId: isTenantExist?.id,
             },
           },
+          {
+            createdAt: dataPeriod
+          }
         ],
       },
     })
@@ -1699,6 +1726,71 @@ export const getPropertiesByTenant = async (
       totalPage = Math.ceil(addedDataGetProperties.length / Number(limit))
     }
 
+
+
+    const totalReview = await prisma.review.count({
+      where: {
+        property: {
+          tenantId: isTenantExist?.id
+        },
+        createdAt: dataPeriod
+      }
+    })
+    const reservation = await prisma.transaction.count({
+      where: {
+        property: {
+          tenantId: isTenantExist?.id
+        },
+        transactionStatus: {
+          some: {
+            status: 'PAID',
+            createdAt: dataPeriod
+          }
+        },
+      }
+    })
+    const cancellation = await prisma.transaction.count({
+      where: {
+        property: {
+          tenantId: isTenantExist?.id
+        },
+        transactionStatus: {
+          some: {
+            status: 'CANCELLED'
+          }
+        },
+        updatedAt: dataPeriod
+      }
+    })
+    const arrival = await prisma.transaction.count({
+      where: {
+        property: {
+          tenantId: isTenantExist?.id
+        },
+        transactionStatus: {
+          some: {
+            status: 'PAID'
+          }
+        },
+        checkInDate: dataPeriod
+      }
+    })
+    const departure = await prisma.transaction.count({
+      where: {
+        property: {
+          tenantId: isTenantExist?.id
+        },
+        transactionStatus: {
+          some: {
+            status: 'PAID'
+          }
+        },
+        checkOutDate: dataPeriod
+      }
+    })
+
+    console.log(dataPeriod)
+
     res.status(200).json({
       error: false,
       message: 'Get properties by tenant success',
@@ -1708,6 +1800,11 @@ export const getPropertiesByTenant = async (
         totalPage,
         pageInUse,
         offset,
+        reservation,
+        arrival,
+        departure,
+        totalReview,
+        cancellation
       },
     })
   } catch (error) {

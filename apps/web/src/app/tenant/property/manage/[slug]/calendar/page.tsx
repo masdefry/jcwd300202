@@ -35,6 +35,7 @@ const CalendarPage = ({
         }
   }
   useEffect(() => {
+    setViewMode(searchParams?.view)
     fetchDataSeasonsByProperty()
   }, [])
 
@@ -1459,7 +1460,7 @@ const CalendarPage = ({
                 Default: Rp{dataPropertyRoomTypeSeason?.basePrice}
               </div>
               {isEditRateByPercentage && (
-                <div className="w-full text-xs text-gray-600 bg-slate-300 rounded-full px-2 flex justify-center py-1 font-bold">
+                <div className="w-full text-xs text-amber-400 bg-gray-900 rounded-full px-2 flex justify-center py-1 font-bold">
                   New: Rp{dataPropertyRoomTypeSeason?.roomPrices || dataPropertyRoomTypeSeason?.basePrice}
                 </div>
               )}

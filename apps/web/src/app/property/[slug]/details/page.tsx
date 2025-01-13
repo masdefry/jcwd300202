@@ -60,6 +60,7 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
 
 
     const token = authStore(state => state.token)
+    const role = authStore(state => state.role)
     const router = useRouter()
     const { data: dataPropertyDetail, isPending: isPendingPropertyDetail } = useQuery({
         queryKey: ['getPropertyDetail'],
@@ -104,7 +105,7 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
 
         <Separator />
         <SearchRoomsAvailability handleGuest={handleGuest} dateRange={dateRange} setDateRange={setDateRange} checkInDate={checkInDate} checkOutDate={checkOutDate} dataPropertyDetail={dataPropertyDetail} setShowGuestCounter={setShowGuestCounter} showGuestCounter={showGuestCounter} adult={adult} children={children} isPending={isPendingPropertyDetail}/>
-        <PropertyRoomDetailList dataPropertyRoomType={dataPropertyRoomType} isPending={isPendingPropertyRoomType || isPendingPropertyDetail} setShowDataRoom={setShowDataRoom} token={token} searchParams={searchParams} mutatePropertyRoomType={mutatePropertyRoomType} dataPropertyDetail={dataPropertyDetail} />
+        <PropertyRoomDetailList dataPropertyRoomType={dataPropertyRoomType} isPending={isPendingPropertyRoomType || isPendingPropertyDetail} setShowDataRoom={setShowDataRoom} token={token} searchParams={searchParams} mutatePropertyRoomType={mutatePropertyRoomType} dataPropertyDetail={dataPropertyDetail} role={role} />
         {
             showDataRoom.name && (
             <section className='fixed top-0 left-0 bg-black bg-opacity-25 backdrop-blur-sm w-full h-full z-[53] flex items-center justify-center px-5'>

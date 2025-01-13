@@ -78,24 +78,12 @@ export const createPropertyValidationSchema = Yup.object().shape({
           return file && fileFormatAccepted.includes(file.type.split('/')[1])
         }),
     )
-    .min(1, 'At least one image must be included')
+    .min(5, 'At least 5 image must be included')
     .max(7, 'Maximum 7 image allowed'),
 
-  propertyDescription: Yup.string()
-    .matches(
-      /^([^.,-]*([.,-][^.,-]*){0,20}){0,1}$/,
-      'No more than 20 dots, commas, or hyphens allowed',
-    )
-    .matches(/^[a-zA-Z0-9\s.,-]*$/, 'No special characters allowed')
-    .required('Property description is required'),
+  propertyDescription: Yup.string().required('Property description is required'),
 
-  neighborhoodDescription: Yup.string()
-    .matches(
-      /^([^.,-]*([.,-][^.,-]*){0,20}){0,1}$/,
-      'No more than 20 dots, commas, or hyphens allowed',
-    )
-    .matches(/^[a-zA-Z0-9\s.,-]*$/, 'No special characters allowed')
-    .required('Neighborhood description is required'),
+  neighborhoodDescription: Yup.string().required('Neighborhood description is required'),
 
   phoneNumber: Yup.string()
     .matches(/^[\+0-9\s]*$/, 'Invalid phone number')
@@ -137,13 +125,7 @@ export const createPropertyValidationSchema = Yup.object().shape({
           .min(1, 'Bathrooms must be at least 1')
           .required('Bathrooms are required'),
 
-        description: Yup.string()
-          .matches(
-            /^([^.,-]*([.,-][^.,-]*){0,20}){0,1}$/,
-            'No more than 20 dots, commas, or hyphens allowed',
-          )
-          .matches(/^[a-zA-Z0-9\s.,-]*$/, 'No special characters allowed')
-          .required('Room description are required'),
+        description: Yup.string().required('Room description are required'),
 
         roomFacilities: Yup.array()
           .of(Yup.number().min(1, 'Room facility ID must be greater than 0'))
@@ -168,7 +150,7 @@ export const createPropertyValidationSchema = Yup.object().shape({
                 },
               ),
           )
-          .min(1, 'At least one image must be included')
+          .min(3, 'At least 3 image must be included')
           .max(5, 'Maximum 5 image allowed'),
       }),
     )

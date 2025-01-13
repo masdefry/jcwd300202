@@ -340,11 +340,16 @@ export const getPropertyRoomTypeByProperty = async (
           (itm) => itm?.propertyRoomTypeId === item?.id,
         ).length
         let seasonalPriceByPropertyRoomType = 0
+        let isAvailable = true
         if (seasonalPriceByPropertyRoomTypeLength > 0) {
           seasonalPriceByPropertyRoomType = seasonalPrice
             .filter((itm) => itm?.propertyRoomTypeId === item?.id)
             .map((itm) => itm.price)
             .reduce((acc, curr) => acc + curr)
+            isAvailable = seasonalPrice
+            .filter((itm) => itm?.propertyRoomTypeId === item?.id)
+            .map((itm) => itm.roomAvailability)
+            .every(itm => itm)
         }
         const transactionsByPropertyRoomTypeLength = transactions.filter(
           (itm) => itm?.transaction?.roomId === item?.id,
@@ -367,6 +372,7 @@ export const getPropertyRoomTypeByProperty = async (
           totalDays,
           seasonalPriceByPropertyRoomType,
           normalTotalPrice,
+          isAvailable,
           totalRoomsLeft,
         }
       },

@@ -54,7 +54,8 @@ export const createTransactionService = async({ checkInDate, checkOutDate, total
 
     return await prisma.$transaction(async(tx) => {
         const uuid = v4()
-        const id = `ORDER_${uuid.slice(0, 5)}_${uuid.slice(0, 5)}_${uuid.slice(0, 5)}`
+        const currentDate = new Date().toISOString().split('T')[0].replace(/-/g, '')
+        const id = `ORDER_${uuid.slice(0, 8)}_${uuid.slice(9, 13)}_${currentDate}_${uuid.slice(14, 18)}`
 
 
         const setTransaction = await tx.transaction.create({

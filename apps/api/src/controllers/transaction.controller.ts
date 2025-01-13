@@ -6,7 +6,7 @@ import { Status } from '@/services/transaction.service/types'
 import crypto from 'crypto'
 import axios from 'axios' 
 
-const MIDTRANS_SERVER_KEY = 'Mid-server-Ipcfe--Yy4zWdBzvgsnmQYiw'
+const MIDTRANS_SERVER_KEY = 'SB-Mid-server-_RX4QQiIGu3NfkORVQFO-0Zg'
 
 export const createTransaction = async(req: Request, res: Response, next: NextFunction) => {
     try {
@@ -84,7 +84,6 @@ export const midtransCallback = async (req: Request, res: Response, next: NextFu
         const { transaction_status, order_id, status_code } = notification;
         let status: Status;
 
-        // Determine the transaction status
         switch (transaction_status) {
             case 'settlement':
                 status = Status.WAITING_FOR_CONFIRMATION_PAYMENT;
@@ -101,7 +100,6 @@ export const midtransCallback = async (req: Request, res: Response, next: NextFu
                 break;
         }
 
-        // Prepare the response object
         const transactionStatus = {
             order_id,
             status,
@@ -115,7 +113,6 @@ export const midtransCallback = async (req: Request, res: Response, next: NextFu
             data: transactionStatus,
         });
     } catch (error) {
-        // Pass any unexpected errors to the error handler
         next(error);
         console.log('>>>>>>> DISINI')
     }

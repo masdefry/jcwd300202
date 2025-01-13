@@ -41,63 +41,91 @@ export default function Home() {
 
   if(isPendingDataLandingPage) {
     return (
-      <main className='flex flex-col gap-12 lg:gap-16 lg:p-16 md:p-12 sm:p-8 p-4'>
-      <section className='grid grid-cols-1 lg:grid-cols-2 h-fit gap-6'>
-        {
-          Array.from({length: 2}).map((item, index) => {
-            return(
-              <div key= {index}>
-                <CityRecommendationCard
-                isPending={isPendingDataLandingPage} 
-                imgSrc=''
-                alt='loading'
-                city='loading'
-                country='loading'
-                h1Size='lg:text-5xl text-3xl'
-                />
-              </div>
-            )
-          })
-        }
+      <main className='flex flex-col gap-5 md:gap-12 lg:gap-16 lg:p-16 md:p-12 sm:p-8 p-4'>
+      <section className='m-auto max-w-screen-xl w-full h-full'>
+      <section className='flex flex-col gap-3 md:gap-12 lg:gap-16'>
+        
+        <section className='grid grid-cols-1 lg:grid-cols-2 h-fit gap-3 md:gap-6'>
+          {
+            Array.from({length: 5}).map((item: any, index: number) => {
+              if(index < 2) {
+                return(
+                  <div>
+                    <CityRecommendationCard
+                    isPending={true} 
+                    imgSrc=''
+                    alt={item?.name.toLowerCase().split(' ').join('-')}
+                    city='loading'
+                    country='loading'
+                    h1Size='text-3xl'
+                    />
+                  </div>
+              )
+              }
+            })
+          }
+        </section>
+        <section className='grid grid-cols-1 lg:grid-cols-3 h-fit gap-3 md:gap-6'>
+          {
+            Array.from({length: 5}).map((item: any, index: number) => {
+              if(index >= 2) {
+                return(
+                  <div key={index}>
+                    <CityRecommendationCard
+                    isPending={true} 
+                    imgSrc=''
+                    alt={item?.name.toLowerCase().split(' ').join('-')}
+                    city='loading'
+                    country='loading'
+                    h1Size='text-3xl'
+                    />
+                  </div>
+              )
+              }
+            })
+          }
+        </section>
       </section>
-      <section className='grid grid-cols-1 lg:grid-cols-3 h-fit gap-6 mt-[-20px]'>
-        {
-          Array.from({length: 3}).map((item, index) => {
-            return(
-              <div key={index}>
-                <CityRecommendationCard
-                isPending={isPendingDataLandingPage} 
-                imgSrc=''
-                alt='loading'
-                city='loading'
-                country='loading'
-                h1Size='text-3xl'
-                />
-              </div>
-            )
-          })
-        }
       </section>
       <section className='relative right-4 sm:right-8 md:right-12 lg:right-16'>
-          <Hero isPending={isPendingDataLandingPage}/>
+          <Hero isPending={true}/>
       </section>
-      <section className='flex flex-col gap-5'>
-        <hgroup className='flex flex-col gap-2'>
-          <h1 className={`lg:text-4xl font-bold text-3xl w-fit ${isPendingDataLandingPage && 'skeleton text-transparent'}`}>Loading</h1>
-          <p className={`lg:text-lg text-base font-light w-fit ${isPendingDataLandingPage && 'skeleton text-transparent'}`}>You can book the property you want</p>
-        </hgroup>
-        <div className={`${isPendingDataLandingPage ? 'overflow-hidden' : 'carousel'} rounded-none flex gap-8`}>
-            {
-              Array.from({length: 6}).map((item, index) => {
-                return (
-                <div className="carousel-item" key={index}>
-                  <Card isPending={isPendingDataLandingPage}/>
-                </div>
-                )
-              })
-            }
-        </div>
-      </section>
+      {
+        Array.from({length: 3}).map((_, index) => {
+          return (
+        <section className='m-auto max-w-screen-xl w-full h-full'>
+        <section className='flex flex-col gap-5'>
+          <hgroup className='flex flex-col '>
+            <h1 className='skeleton lg:text-3xl font-bold text-lg md:text-3xl w-fit text-transparent rounded-none bg-slate-300 '>Explore Property</h1>
+            <p className='skeleton md:text-base text-sm font-medium text-transparent rounded-none mt-1 w-fit bg-slate-300 '>See, book, and stay in our partner properties</p>
+          </hgroup>
+          <div className="carousel rounded-none flex gap-3 md:gap-5 h-fit py-2">
+          {
+            Array.from({length: 5}).map((item: any, index: number) => {
+              return (
+              <div className="carousel-item  transition duration-100" key={index}>
+               
+                <Card 
+                        isPending={true}
+                        propertyType='loading'
+                        propertyName='loading'
+                        city='loading'
+                        country='loading'
+                        ratingAvg={100}
+                        totalReviews={100}
+                        price={50000000}
+                        imageUrl=''
+                        />
+              </div>
+              )
+            })
+          }
+          </div>
+        </section>
+        </section>
+          )
+        })
+      }
     </main>
     )
   }
@@ -116,6 +144,7 @@ export default function Home() {
     <main className='flex flex-col gap-5 md:gap-12 lg:gap-16 lg:p-16 md:p-12 sm:p-8 p-4'>
       <section className='m-auto max-w-screen-xl w-full h-full'>
       <section className='flex flex-col gap-3 md:gap-12 lg:gap-16'>
+        
         <section className='grid grid-cols-1 lg:grid-cols-2 h-fit gap-3 md:gap-6'>
           {
             dataLandingPage?.data?.cities?.map((item: any, index: number) => {
@@ -285,40 +314,7 @@ export default function Home() {
       </section>
 
 
-      {/* <section className='flex flex-col gap-5'>
-        <hgroup className='flex flex-col gap-2'>
-          <h1 className='lg:text-4xl font-bold text-3xl'>Last Viewed</h1>
-          <p className='lg:text-lg text-base font-light'>You can book the property you want</p>
-        </hgroup>
-        <div className="carousel rounded-none flex gap-8">
-            {
-              Array.from({length: 6}).map((_, index) => {
-                return (
-                <div className="carousel-item" key={index}>
-                  <Card isPending={isPendingDataLandingPage}/>
-                </div>
-                )
-              })
-            }
-        </div>
-      </section>
-      <section className='flex flex-col gap-5'>
-        <hgroup className='flex flex-col gap-2'>
-          <h1 className='lg:text-4xl font-bold text-3xl'>Top Rated Indonesia Property</h1>
-          <p className='lg:text-lg text-base font-light'>You can stay at the best property</p>
-        </hgroup>
-        <div className="carousel rounded-none flex gap-8">
-            {
-              Array.from({length: 6}).map((_, index) => {
-                return (
-                <div className="carousel-item" key={index}>
-                  <Card isPending={isPendingDataLandingPage}/>
-                </div>
-                )
-              })
-            }
-        </div>
-      </section> */}
+      
     </main>
   )
 }

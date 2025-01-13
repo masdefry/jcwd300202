@@ -36,29 +36,29 @@ const Card = ({isPending, imageUrl = '', propertyType = 'Hotek', propertyName = 
                     )
                 }
             </figure>
-            <div className='text-xs font-semibold text-white bg-gray-900 flex md:hidden p-1.5 gap-1 items-center'>   
+            <div className={`${isPending ? 'rounded-none skeleton text-transparent bg-slate-300' : 'text-white bg-gray-900'} text-xs font-semibold  flex md:hidden p-1.5 gap-1 items-center`}>   
                 <CiBookmarkPlus size={17}/>
                 Book now!
             </div>
         </div>
         <div className='flex flex-col md:gap-2 p-1.5 md:p-3'>
             <div className='hidden md:flex items-center gap-2'>
-                <div className={`${isPending ? 'skeleton text-transparent' : 'bg-blue-700 text-white'} text-xs font-semibold py-1 px-3 rounded-full w-fit flex items-center gap-1.5`}><BsBuildings className='text-sm' />{propertyType}</div>
-                <div className={`${isPending ? 'skeleton text-transparent' : 'bg-white text-gray-900'} text-xs font-semibold py-1 px-3 rounded-full w-fit flex items-center gap-1.5`}><RiBuilding3Fill />Roomify</div>
+                <div className={`${isPending ? 'rounded-none skeleton text-transparent' : 'bg-blue-700 text-white'} text-xs font-semibold py-1 px-3 rounded-full w-fit flex items-center gap-1.5`}><BsBuildings className='text-sm' />{propertyType}</div>
+                <div className={`${isPending ? 'rounded-none skeleton text-transparent' : 'bg-white text-gray-900'} text-xs font-semibold py-1 px-3 rounded-full w-fit flex items-center gap-1.5`}><RiBuilding3Fill />Roomify</div>
             </div>
             <hgroup className='hidden md:flex flex-col '>
-                <h1 className={`text-lg font-bold ${isPending ? 'text-transparent skeleton w-fit' : 'text-gray-800' } h-fit`}>{propertyName.length > 20 ? propertyName.slice(0 ,20) + '...' : propertyName}</h1>
-                <h6 className={`text-sm font-light ${isPending ? 'text-transparent skeleton w-fit' : 'text-gray-600' } h-fit flex items-center gap-1.5`}><IoLocationOutline className='text-red-600 text-base' />{city}, {country}</h6>
+                <h1 className={`text-lg font-bold ${isPending ? 'rounded-none text-transparent skeleton w-fit' : 'text-gray-800' } h-fit`}>{propertyName.length > 20 ? propertyName.slice(0 ,20) + '...' : propertyName}</h1>
+                <h6 className={`text-sm font-light ${isPending ? 'rounded-none text-transparent skeleton w-fit' : 'text-gray-600' } h-fit flex items-center gap-1.5`}>{!isPending && <IoLocationOutline className='text-red-600 text-base' />}{city}, {country}</h6>
             </hgroup>
             <hgroup className='flex md:hidden flex-col '>
-                <h1 className={`text-sm font-bold ${isPending ? 'text-transparent skeleton w-fit' : 'text-gray-900' } h-fit`}>{propertyName.length > 11 ? propertyName.slice(0 ,11) + '...' : propertyName}</h1>
-                <h6 className={`text-sm font-light ${isPending ? 'text-transparent skeleton w-fit' : 'text-gray-600' } h-fit`}>{city.length > 11 ? city.slice(0 ,11) + '...' : city}</h6>
+                <h1 className={`text-sm font-bold ${isPending ? 'rounded-none text-transparent skeleton w-fit' : 'text-gray-900' } h-fit`}>{propertyName.length > 11 ? propertyName.slice(0 ,11) + '...' : propertyName}</h1>
+                <h6 className={`text-sm font-light ${isPending ? 'rounded-none text-transparent skeleton w-fit' : 'text-gray-600' } h-fit`}>{city.length > 11 ? city.slice(0 ,11) + '...' : city}</h6>
             </hgroup>
             {
                 isPending ? (
-                <section className='flex  text-xs md:text-lg items-center text-transparent gap-2 h-fit skeleton w-fit font-medium'>
+                <section className='rounded-none flex  text-xs md:text-lg items-center text-transparent gap-2 h-fit skeleton w-fit font-medium'>
                     <p className=' text-lg font-bold w-fit'>8.9</p>
-                    <div className='h-[2px] w-[2px] rounded-full'></div>
+                    <div className='h-[2px] w-[2px] rounded-none'></div>
                     <p className=''>33 Reviews</p>
                 </section>
                 ) : totalReviews > 0 ? (
@@ -72,15 +72,15 @@ const Card = ({isPending, imageUrl = '', propertyType = 'Hotek', propertyName = 
                 )
             }
             <section className='w-full flex md:hidden justify-start gap-2 mt-1'>
-                <p className={`font-bold text-orange-600 text-sm h-[1em] ${isPending && 'skeleton text-transparent'}`}>Rp{price}</p>
+                <p className={`font-bold text-orange-600 text-sm h-[1em] ${isPending && 'rounded-none skeleton text-transparent'}`}>Rp{price}</p>
             </section>
             <section className='w-full flex md:hidden justify-start gap-2 mt-[7px]'>
-                <p className={`font-light text-gray-400 text-xs h-[1em] ${isPending && 'skeleton text-transparent'}`}>After tax & price</p>
+                <p className={`font-light text-gray-400 text-xs h-[1em] ${isPending && 'rounded-none skeleton text-transparent'}`}>After tax & price</p>
             </section>
         </div>
         <section className='absolute bottom-3 w-full right-3 hidden md:flex justify-end items-center gap-2 mt-14'>
-            <p className={`font-normal text-sm h-[1em] ${isPending ? 'skeleton text-transparent' : 'text-gray-700'}`}>Starts from</p>
-            <p className={`text-orange-600 font-bold text-xl h-[1em] ${isPending && 'skeleton text-transparent'}`}>Rp{price}</p>
+            <p className={`font-normal text-sm h-[1em] ${isPending ? 'skeleton text-transparent rounded-none' : 'text-gray-700'}`}>Starts from</p>
+            <p className={`text-orange-600 font-bold text-xl h-[1em] ${isPending && 'rounded-none skeleton text-transparent'}`}>Rp{price}</p>
         </section>
     </div>
   )

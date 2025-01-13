@@ -288,6 +288,9 @@ export const getPropertyDetail = async (
       where: {
         propertyId: property.id,
       },
+      include: {
+        user: true
+      }
     })
 
     const city = await prisma.city.findUnique({
@@ -634,6 +637,39 @@ export const getProperties = async (
       numberedPropertyStarArr
     let propertyFacilityFromPrisma, propertyRoomFacilityFromPrisma
     let city, country
+
+
+    let gteDate = new Date();
+    gteDate.setHours(0, 0, 0, 0);
+    let ltDate = addDays(gteDate, 2);
+    ltDate.setHours(0, 0, 0, 0);
+
+    let whereConditionDate ={}
+    
+    if (isNaN(gteDate.getTime()) || isNaN(ltDate.getTime())) {
+      throw { msg: 'Date range invalid!', status: 406 }
+    } else {
+      whereConditionDate = {...whereConditionDate,
+        gte: gteDate.toISOString(),
+        lt: ltDate.toISOString()
+      };
+    }
+
+    if(countryId && !isNaN(Number(countryId))) {
+      country = await prisma.country.findUnique({
+        where: {
+          id: Number(countryId)
+        }
+      })
+      if(cityId && !isNaN(Number(cityId))) {
+        city = await prisma.city.findUnique({
+          where: {
+            id: Number(cityId)
+          }
+        })
+      }
+    }
+
     if (!sortBy) throw { msg: 'Sort parameter not found!', status: 406 }
     if (propertyfacilityidarr) {
       const propertyFacilityIdStr = propertyfacilityidarr as string
@@ -685,21 +721,6 @@ export const getProperties = async (
       )
     }
 
-    // cityId && (
-    //     city = await prisma.city.findUnique({
-    //         where: {
-    //             id: Number(cityId)
-    //         }
-    //     })
-    // )
-
-    // countryId && (
-    //     country = await prisma.country.findUnique({
-    //         where: {
-    //             id: Number(countryId)
-    //         }
-    //     })
-    // )
 
     const whereConditionPropertyRoomFacility =
       propertyroomfacilityidarr &&
@@ -823,17 +844,24 @@ export const getProperties = async (
       propertyroomfacilityidarr
     ) {
       propertiesWithoutLimit = await prisma.property.findMany({
-        // where: {
-        //     AND: [...whereConditionGeneral, ...whereConditionPropertyFacility, ...whereConditionPropertyRoomFacility].filter(Boolean),
-        //     OR: [
-        //         cityId: Number(cityId)
-        //     ]
-        // },
         where: whereCondition,
         include: {
-          propertyRoomType: true,
+          propertyRoomType: {
+            orderBy :{
+              price: 'asc'
+            }
+          },
         },
+        orderBy: {
+          name: order === 'desc' ? 'desc' : 'asc'
+        }
       })
+      if(minPrice &&
+        !isNaN(Number(minPrice)) &&
+        maxPrice &&
+        !isNaN(Number(maxPrice))) {
+          propertiesWithoutLimit = propertiesWithoutLimit.filter(item => item.propertyRoomType[0].price >= Number(minPrice))
+        }
       if (sortBy === 'name') {
         sortedProperties = await prisma.property.findMany({
           where: {
@@ -843,6 +871,11 @@ export const getProperties = async (
           },
           select: {
             id: true,
+            propertyRoomType: {
+              orderBy: {
+                price: 'asc'
+              }
+            }
           },
           orderBy: {
             name: order === 'desc' ? 'desc' : 'asc',
@@ -860,13 +893,18 @@ export const getProperties = async (
           },
           select: {
             id: true,
+            propertyRoomType: {
+              orderBy: {
+                price: 'asc'
+              }
+            }
           },
         })
         sortedProperties = await prisma.propertyRoomType.groupBy({
           where: {
             propertyId: {
               in: getPropertiesId.map((item) => item?.id),
-            },
+            }
           },
           by: ['propertyId'],
           orderBy: {
@@ -879,7 +917,8 @@ export const getProperties = async (
         })
         sortedPropertiesId = sortedProperties?.map((item) => item.propertyId)
       }
-
+      console.log('CHECKINDATE', addHours(new Date(new Date().setHours(0,0,0,0)).toISOString(), 31))
+      console.log('CHECKINDATE',  addHours(new Date(new Date().setHours(0,0,0,0)).toISOString(), 7))
       properties = await prisma.property.findMany({
         where: {
           // AND: [...whereCondition, ...whereConditionPropertyFacility, ...whereConditionPropertyRoomFacility],
@@ -892,6 +931,13 @@ export const getProperties = async (
             orderBy: {
               price: 'asc',
             },
+            include: {
+              seasonalPrice :{
+                where: {
+                  date: whereConditionDate
+                }
+              } 
+            }
           },
           propertyType: true,
           propertyHasFacility: {
@@ -915,13 +961,31 @@ export const getProperties = async (
     } else {
       propertiesWithoutLimit = await prisma.property.findMany({
         include: {
-          propertyRoomType: true,
+          propertyRoomType: {
+            orderBy: {
+              price: 'asc'
+            }
+          },
         },
+        orderBy: {
+          name: order === 'desc' ? 'desc' : 'asc'
+        }
       })
+      if(minPrice &&
+        !isNaN(Number(minPrice)) &&
+        maxPrice &&
+        !isNaN(Number(maxPrice))) {
+          propertiesWithoutLimit = propertiesWithoutLimit.filter(item => item.propertyRoomType[0].price >= Number(minPrice))
+        }
       if (sortBy === 'name') {
         sortedProperties = await prisma.property.findMany({
           select: {
             id: true,
+            propertyRoomType: {
+              orderBy: {
+                price: 'asc'
+              }
+            }
           },
           orderBy: {
             name: order === 'desc' ? 'desc' : 'asc',
@@ -930,8 +994,25 @@ export const getProperties = async (
           skip: Number(offset),
         })
         sortedPropertiesId = sortedProperties?.map((item) => item.id)
+        if(minPrice &&
+          !isNaN(Number(minPrice)) &&
+          maxPrice &&
+          !isNaN(Number(maxPrice))) {
+            sortedPropertiesId = sortedProperties.filter((item) => item.propertyRoomType[0].price >= Number(minPrice) ).map(item => item.id)
+          } 
       } else {
+        let whereConditionSortedProperties = {}
+        if(minPrice &&
+          !isNaN(Number(minPrice)) &&
+          maxPrice &&
+          !isNaN(Number(maxPrice))) {
+            whereConditionSortedProperties = {...whereConditionSortedProperties, price: {
+              gte: Number(minPrice),
+              lte: Number(maxPrice)
+            }}
+          }
         sortedProperties = await prisma.propertyRoomType.groupBy({
+          where: whereConditionSortedProperties,
           by: ['propertyId'],
           orderBy: {
             _min: {
@@ -944,6 +1025,7 @@ export const getProperties = async (
         sortedPropertiesId = sortedProperties?.map((item) => item.propertyId)
       }
 
+
       properties = await prisma.property.findMany({
         where: {
           id: {
@@ -955,6 +1037,13 @@ export const getProperties = async (
             orderBy: {
               price: 'asc',
             },
+            include: {
+              seasonalPrice :{
+                where: {
+                  date: whereConditionDate
+                }
+              } 
+            }
           },
           propertyType: true,
           propertyHasFacility: {
@@ -977,6 +1066,8 @@ export const getProperties = async (
       })
     }
 
+    
+
     if (sortBy !== 'price') {
     } else {
       if (order === 'desc') {
@@ -989,6 +1080,27 @@ export const getProperties = async (
         )
       }
     }
+
+    properties = properties.map(item => {
+      let availability = true
+      let checkAvailability = item?.propertyRoomType?.filter((item) => (item?.seasonalPrice[0]?.roomAvailability === false) || item?.seasonalPrice[0]?.roomToRent <= 0)
+
+      if (checkAvailability?.length === item?.propertyRoomType?.length) availability = false 
+      const reviewsByProperty = item?.review?.filter(itm => !isNaN(Number(itm?.rating))).map(itm => itm?.rating)
+      
+      let totalRating;
+      if (reviewsByProperty.length > 0) {
+        totalRating = reviewsByProperty.reduce(
+          (acc: any, curr: any) => acc + curr,
+        )
+      }
+
+      return {
+        ...item,
+        availability,
+        avgRating: totalRating ? Number(totalRating)/reviewsByProperty.length : 0,
+      }
+    })
 
     const propertyAvgRating = await prisma.review.aggregate({
       _avg: {
@@ -1119,6 +1231,9 @@ export const getProperties = async (
       },
     })
 
+    // console.log('CHECKINDATE', addHours(new Date(checkInDate as string).toISOString().split('T')[0], 7))
+    // console.log('CHECKOUTDATE', checkOutDate)
+
     res.status(200).json({
       error: false,
       message: 'Get properties success',
@@ -1152,6 +1267,7 @@ export const getProperties = async (
       },
     })
   } catch (error: any) {
+    console.log(error)
     next(error)
   }
 }

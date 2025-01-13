@@ -1,13 +1,13 @@
 import { prisma } from "@/connection";
 import { Status } from "@/services/transaction.service/types"
 
-export const getReservationService = async(tenantId: string) => {
+export const getReservationService = async(id: string) => {
     let transactions : any = [];
     await prisma.$transaction((async(tx) => {
         transactions = await tx.transaction.findMany({
             where: {
                 property: {
-                    tenantId,
+                    tenantId: id,
                 },
                 transactionStatus: {
                     some: {

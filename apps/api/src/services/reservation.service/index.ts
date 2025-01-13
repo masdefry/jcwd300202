@@ -9,6 +9,11 @@ export const getReservationService = async(tenantId: string) => {
                 property: {
                     tenantId,
                 },
+                transactionStatus: {
+                    some: {
+                        status: 'WAITING_FOR_CONFIRMATION_PAYMENT'
+                    }
+                }
             },
             select: {
                 id: true,
@@ -30,15 +35,16 @@ export const getReservationService = async(tenantId: string) => {
                     }
                 },
                 transactionStatus: {
+                    orderBy: {
+                        createdAt: 'desc'
+                    },
+                    take: 1,
                     select: {
                         status: true,
                         createdAt: true,
                         updatedAt: true
                     }
                 }
-            },
-            orderBy: {
-                checkInDate: 'desc',
             }
         })
     }), {

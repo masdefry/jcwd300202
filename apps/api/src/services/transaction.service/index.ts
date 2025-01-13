@@ -6,6 +6,7 @@ import { v4 } from 'uuid'
 import { addHours } from 'date-fns';
 import { differenceInDays } from 'date-fns'
 
+
 const midtransClient = require("midtrans-client")
 
 const tokenSnap = new midtransClient.Snap({
@@ -31,7 +32,6 @@ export const createTransactionService = async({ checkInDate, checkOutDate, total
         }
     })
 
-
     if (!propertyInTransaction?.id){
         throw new Error(`Could not found property`)
     }
@@ -54,7 +54,8 @@ export const createTransactionService = async({ checkInDate, checkOutDate, total
 
     return await prisma.$transaction(async(tx) => {
         const uuid = v4()
-        const id = `ORDER_${uuid.slice(0, 5)}_${uuid.slice(0, 5)}_${uuid.slice(0, 5)}`
+        const currentDate = new Date().toISOString().split('T')[0].replace(/-/g, '')
+        const id = `ORDER_${uuid.slice(0, 8)}_${uuid.slice(9, 13)}_${currentDate}_${uuid.slice(14, 18)}`
 
 
         const setTransaction = await tx.transaction.create({
@@ -87,10 +88,10 @@ export const createTransactionService = async({ checkInDate, checkOutDate, total
             transaction_details: {
                 order_id: setTransaction.id,
                 gross_amount: setTransaction.total,
-            }
-        }
-
-        
+            },
+            finish_url: 'http://localhost:3000/transaction/all',
+            callback_url: 'http://localhost:5000/transaction/callback'
+        } 
 
         const snapTokenResponse = await tokenSnap.createTransaction(params)
         const snapToken = snapTokenResponse.token; 
@@ -132,6 +133,24 @@ export const createTransactionService = async({ checkInDate, checkOutDate, total
             propertyName: room?.property.name
         }
     })
+}
+
+export const updateTransactionStatusService = async(order_id: string, status: Status) => {
+    
+    const updatedTransaction = await prisma.transaction.update({
+        where: {
+            id: order_id
+        },
+        data: {
+            transactionStatus: {
+                create: {
+                    status: status
+                }
+            }
+        }
+    })
+
+    return updatedTransaction
 }
 
 export const handleExpiredTransaction = async() => {
@@ -210,7 +229,7 @@ export const transactionHistoryService = async(id: string) => {
                 },
                 transactionStatus: {
                     orderBy: {
-                        updatedAt: 'desc'
+                        createdAt: 'desc'
                     },
                     take: 1,
                     select: {

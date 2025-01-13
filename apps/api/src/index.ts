@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import { prisma } from './connection';
 import router from './routers';
 import cron from 'node-cron'
+import bodyParser from 'body-parser';
 // import { handleExpiredTransaction } from '@/services/transaction.service/index'
 
 
@@ -15,8 +16,12 @@ const corsOption = {
   origin: '*',
   credentials: true
 }
+
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors(corsOption))
 app.use('/api', router)
+
 
 // cron.schedule('0 0 * * *', async () => {
 //   console.log('Running cron job: Handling expired transactions...');

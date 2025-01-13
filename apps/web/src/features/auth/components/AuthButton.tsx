@@ -6,13 +6,13 @@ import { useState } from 'react'
 
 interface IAuthButton {
   text: string,
-  isPending: boolean,
+  isPending: boolean
 }
 
 const AuthButton = ({ text, isPending }: IAuthButton) => {
   return (
     <div className='w-full'>
-      <Button className={`w-full p-6 rounded-full text-base ${isPending ? 'bg-slate-600 text-white hover:bg-slate-600' : 'active:scale-95'} transition duration-200`} type='submit' disabled={isPending}>{text}</Button>
+      <button className={`disabled:bg-slate-300 disabled:text-white disabled:scale-100 disabled:opacity-100 w-full p-6 rounded-full text-base active:scale-95 transition duration-200`} type='submit' disabled={isPending }>{text}</button>
     </div>
   )
 }

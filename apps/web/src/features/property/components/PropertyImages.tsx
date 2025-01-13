@@ -9,10 +9,73 @@ interface IPropertyImagesProps {
     dataPropertyDetail: any,
     setShowPropertyImages: any,
     showPropertyImages: boolean
+    isPending?: boolean
 }
 
-const PropertyImages = ({ dataPropertyDetail, setShowPropertyImages, showPropertyImages }: IPropertyImagesProps) => {
-  return (
+const PropertyImages = ({ dataPropertyDetail, setShowPropertyImages, showPropertyImages, isPending = true }: IPropertyImagesProps) => {
+  if(isPending) {
+      return (
+      <section className='flex flex-col gap-7'>
+          <section className='hidden 2xl:grid grid-cols-5 gap-5 w-full h-[700px]'>
+              {
+                  Array.from({length : 8}).map((item: any, index: number) => {
+                      let className
+                      if(index === 0) {
+                          className = 'overflow-hidden relative rounded-md skeleton bg-gray-200 w-full h-full col-span-3  row-span-6'
+                      } else if(index === 1 || index === 2) {
+                          className = 'overflow-hidden relative rounded-md skeleton bg-gray-200 w-full h-full col-span-2  row-span-3'
+                      } else {
+                          className = 'overflow-hidden relative rounded-md skeleton bg-gray-200 w-full h-full col-span-1  row-span-2'
+                      }
+                      if(index === 7) {
+                          return (
+                          <div key={index} className={className}>
+                                      <div className='h-full w-full object-cover skeleton bg-gray-200' >
+                                      </div>
+                              <div className='rounded-md absolute top-0 left-0 w-full h-full  bg-black bg-opacity-10 flex items-center justify-center'>
+                                  <p className='text-xl text-transparent font-bold  transition duration-100'>Photos</p>
+                              </div>
+                          </div>
+                          )
+                      }
+                      return(
+                          <div key={index} className={className}>
+                                      <div className='h-full w-full object-cover skeleton bg-gray-200' >
+                                      </div>
+                          </div>
+                      )
+                  })
+              }
+          </section>
+          {
+              showPropertyImages && (
+              <section className='bg-black bg-opacity-25 backdrop-blur-sm z-[52] fixed top-0 left-0 w-full h-full flex items-center justify-center p-5'>
+                  <div className='w-full max-w-[800px] h-[500px] p-1 flex flex-col gap-3 bg-white rounded-md shadow-md'>
+                      <div className='text-gray-950 text-lg w-full flex justify-end'>
+                          <RiCloseFill onClick={() => setShowPropertyImages(false)} className='hover:opacity-60 transition duration-100 hover:cursor-pointer'/>
+                      </div>
+                      <ImageCarousel imagesArr={dataPropertyDetail?.propertyImages}/>
+                  </div>
+              </section>
+              )
+          }
+          <section className='px-5 pt-8 2xl:hidden'>
+              <div onClick={() => setShowPropertyImages(true)} className='bg-blue-200 w-full md:h-[300px] h-[200px] rounded-xl shadow-md overflow-hidden'>
+                  <Image
+                  src={`http://localhost:5000/api/${dataPropertyDetail?.propertyImages[0]?.directory}/${dataPropertyDetail?.propertyImages[0]?.filename}.${dataPropertyDetail?.propertyImages[0]?.fileExtension}`}
+                  width={1000}
+                  height={1000}
+                  alt=''
+                  className='h-full w-full object-cover '
+                  />
+              </div>
+          </section>
+          </section>
+    )
+
+  }
+  
+    return (
     <section className='flex flex-col gap-7'>
         <section className='hidden 2xl:grid grid-cols-5 gap-5 w-full h-[700px]'>
             {

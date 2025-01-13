@@ -8,8 +8,8 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
     async(req: InternalAxiosRequestConfig) => {
-        const token = Cookies.get('authToken')
-        // const token = authStore.getState().token
+        // const token = Cookies.get('authToken')
+        const token = authStore.getState().token
 
         if(token) req.headers["Authorization"] = `Bearer ${token}`
 
@@ -29,7 +29,7 @@ instance.interceptors.response.use(
         if(error?.response?.data?.message === 'jwt expired') {
             const setLogout = authStore((state) => state.setLogout())
             setLogout()
-            Cookies.remove('authToken')
+            // Cookies.remove('authToken')
             window.location.href = '/login'
         }
         

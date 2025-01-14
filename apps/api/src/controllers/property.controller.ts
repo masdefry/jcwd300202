@@ -2135,7 +2135,7 @@ export const updatePropertyGeneralInfo = async (
 
 export const deleteProperty = async(req: Request, res: Response, next: NextFunction) => {
   try {
-    const { id, role } = req.body
+    const { id, role, password } = req.body
     const { slug } = req.params
 
     const isTenantExist = await prisma.tenant.findUnique({
@@ -2146,8 +2146,10 @@ export const deleteProperty = async(req: Request, res: Response, next: NextFunct
 
     if (!isTenantExist?.id || isTenantExist?.deletedAt)
       throw { msg: 'Tenant not found!', status: 406 }
+    if(isTenantExist?.password !== password) throw { msg: 'Password invalid!', status: 406 }
     if (isTenantExist?.role !== role)
       throw { msg: 'Role unauthorized!', status: 401 }
+
 
     const isPropertyExist = await prisma.property.findFirst({
       where: {
@@ -2194,13 +2196,13 @@ export const deleteProperty = async(req: Request, res: Response, next: NextFunct
     await prisma.$transaction(async(tx) => {
       try {
 
-        const deletedPropertyHasFacilities = await prisma.propertyHasFacility.delete({
+        const deletedPropertyHasFacilities = await tx.propertyHasFacility.deleteMany({
           where: {
             propertyId: isPropertyExist?.id
           }
         })
 
-        const deletedRoomHasFacilities = await prisma.roomHasFacility.delete({
+        const deletedRoomHasFacilities = await tx.roomHasFacilities.deleteMany({
           where: {
             propertyRoomTypeId: {
               in: isPropertyExist?.propertyRoomType?.map(item => item?.id)
@@ -2208,13 +2210,13 @@ export const deleteProperty = async(req: Request, res: Response, next: NextFunct
           }
         })
 
-        const deletedPropertyImages = await prisma.propertyImage.delete({
+        const deletedPropertyImages = await tx.propertyImage.deleteMany({
           where: {
             propertyDetailId: isPropertyExist?.propertyDetail?.id
           }
         })
 
-        const deletedPropertyRoomImages = await prisma.propertyRoomImage.delete({
+        const deletedPropertyRoomImages = await tx.propertyRoomImage.deleteMany({
           where: {
             propertyRoomTypeId: {
               in: isPropertyExist?.propertyRoomType?.map(item => item?.id)
@@ -2222,13 +2224,13 @@ export const deleteProperty = async(req: Request, res: Response, next: NextFunct
           }
         })
 
-        const deletedPropertyDetail = await prisma.propertyDetail.delete({
+        const deletedPropertyDetail = await tx.propertyDetail.delete({
           where: {
             propertyId: isPropertyExist?.id
           }
         })
 
-        const softDeletePropertyRoomType = await prisma.propertyRoomType.updateMany({
+        const softDeletePropertyRoomType = await tx.propertyRoomType.updateMany({
           where: {
             propertyId: isPropertyExist?.id
           },
@@ -2237,7 +2239,7 @@ export const deleteProperty = async(req: Request, res: Response, next: NextFunct
           }
         })
 
-        const softDeleteProperty = await prisma.property.update({
+        const softDeleteProperty = await tx.property.update({
           where: {
             id: isPropertyExist?.id
           },
@@ -2249,11 +2251,18 @@ export const deleteProperty = async(req: Request, res: Response, next: NextFunct
         throw { msg: 'Delete property failed!', status: 500 }
       }
 
-      delete
     },
-  {
-    timeout: 15000
-  })
+    {
+      timeout: 15000
+    })
+
+    deleteFiles({ imagesUploaded: [...propertyImagesToDelete, ...propertyRoomImagesToDelete] })
+
+    res.status(200).json({
+      error: false,
+      message: 'Delete property success',
+      data: {}
+    })
 
   } catch (err) {
     next(err)

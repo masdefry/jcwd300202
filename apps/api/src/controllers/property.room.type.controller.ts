@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { prisma } from '@/connection'
 import { addDays, differenceInDays } from 'date-fns'
+import { deleteFiles } from '@/utils/deleteFiles'
 
 export const getPropertyRoomType = async (
   req: Request,
@@ -578,5 +579,113 @@ export const createPropertyRoomType = async (
     })
   } catch (error) {
     next(error)
+  }
+}
+
+export const deletePropertyRoomType = async(req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id, role, password } = req.body
+    const { slug } = req.params
+    const { propertyRoomTypeId } = req.query
+
+    const isTenantExist = await prisma.tenant.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!isTenantExist?.id || isTenantExist?.deletedAt)
+      throw { msg: 'Tenant not found!', status: 406 }
+    if(isTenantExist?.password !== password) throw { msg: 'Password invalid!', status: 406 }
+    if (isTenantExist?.role !== role)
+      throw { msg: 'Role unauthorized!', status: 401 }
+
+
+    const isPropertyExist = await prisma.property.findFirst({
+      where: {
+        slug,
+      },
+      include: {
+        propertyDetail: true,
+        propertyRoomType: true
+      },
+    })
+
+    if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+    if (isPropertyExist?.tenantId !== id)
+      throw { msg: 'Actions not permitted!', status: 406 }
+
+    const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
+      where: {
+        id: Number(propertyRoomTypeId),
+      },
+    })
+
+    if (!isPropertyRoomTypeExist?.id || isPropertyRoomTypeExist?.deletedAt)
+      throw { msg: 'Property room type not found!', status: 406 }
+
+    const getPropertyRoomImages = await prisma.propertyRoomImage.findMany({
+      where: {
+        propertyRoomTypeId: {
+          in: isPropertyExist?.propertyRoomType?.map(item => item?.id)
+        }
+      }
+    })
+    
+    const propertyRoomImagesToDelete = getPropertyRoomImages.map(item => {
+      return {
+        destination: item?.directory,
+        filename: `${item?.filename}.${item?.fileExtension}`
+      }
+    })
+
+    await prisma.$transaction(async(tx) => {
+      try {
+
+        const deletedRoomHasFacilities = await tx.roomHasFacilities.deleteMany({
+          where: {
+            propertyRoomTypeId: {
+              in: isPropertyExist?.propertyRoomType?.map(item => item?.id)
+            }
+          }
+        })
+
+        const deletedPropertyRoomImages = await tx.propertyRoomImage.deleteMany({
+          where: {
+            propertyRoomTypeId: {
+              in: isPropertyExist?.propertyRoomType?.map(item => item?.id)
+            }
+          }
+        })
+
+
+        const softDeletePropertyRoomType = await tx.propertyRoomType.updateMany({
+          where: {
+            propertyId: isPropertyExist?.id
+          },
+          data: {
+            deletedAt: new Date().toISOString()
+          }
+        })
+
+      } catch (err) {
+        throw { msg: 'Delete room type failed!', status: 500 }
+      }
+
+    },
+    {
+      timeout: 15000
+    })
+
+    deleteFiles({ imagesUploaded: [...propertyRoomImagesToDelete] })
+
+    res.status(200).json({
+      error: false,
+      message: 'Delete room type success',
+      data: {}
+    })
+
+  } catch (err) {
+    next(err)
   }
 }

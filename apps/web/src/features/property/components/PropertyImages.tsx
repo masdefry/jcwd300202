@@ -60,14 +60,8 @@ const PropertyImages = ({ dataPropertyDetail, setShowPropertyImages, showPropert
               )
           }
           <section className='px-5 pt-8 2xl:hidden'>
-              <div onClick={() => setShowPropertyImages(true)} className='bg-blue-200 w-full md:h-[300px] h-[200px] rounded-xl shadow-md overflow-hidden'>
-                  <Image
-                  src={`http://localhost:5000/api/${dataPropertyDetail?.propertyImages[0]?.directory}/${dataPropertyDetail?.propertyImages[0]?.filename}.${dataPropertyDetail?.propertyImages[0]?.fileExtension}`}
-                  width={1000}
-                  height={1000}
-                  alt=''
-                  className='h-full w-full object-cover '
-                  />
+              <div className='bg-slate-200 skeleton w-full md:h-[300px] h-[200px] rounded-xl shadow-md overflow-hidden'>
+
               </div>
           </section>
           </section>
@@ -145,7 +139,7 @@ const PropertyImages = ({ dataPropertyDetail, setShowPropertyImages, showPropert
             )
         }
         <section className='px-5 pt-8 2xl:hidden'>
-            <div onClick={() => setShowPropertyImages(true)} className='bg-blue-200 w-full md:h-[300px] h-[200px] rounded-xl shadow-md overflow-hidden'>
+            <div onClick={() => setShowPropertyImages(true)} className='bg-slate-200 w-full md:h-[300px] h-[200px] rounded-xl shadow-md overflow-hidden'>
                 <Image
                 src={`http://localhost:5000/api/${dataPropertyDetail?.propertyImages[0]?.directory}/${dataPropertyDetail?.propertyImages[0]?.filename}.${dataPropertyDetail?.propertyImages[0]?.fileExtension}`}
                 width={1000}

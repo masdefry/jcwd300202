@@ -79,7 +79,7 @@ const ProfileTenantLayout = ({  children }: { children: ReactNode }) => {
                 <ul className="flex gap-8 items-center">
                   {
                     token && (
-                      <li><IoLogOutOutline onClick={() => setShowConfirmationToLogout(true)} size={23} className="text-red-700 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-100"/></li>
+                      <li className="text-red-700 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-100 flex items-center gap-1.5 text-sm font-bold" onClick={() => setShowConfirmationToLogout(true)}>Sign out<IoLogOutOutline  size={23} /></li>
                     )
                   }
                   {

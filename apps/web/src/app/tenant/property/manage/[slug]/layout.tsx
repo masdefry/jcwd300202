@@ -68,7 +68,7 @@ const TenantManagePropertyLayout = ({ children }: { children: ReactNode }) => {
             Property Statistic
         </div>
         </Link>
-        <Link href={`#`}>
+        <Link href={`/tenant/property/manage/${pathname.split('/')[4]}/settings`}>
         <div className='text-[10px] font-base flex flex-col gap-1.5 p-4 items-center justify-center hover:border-white hover:scale-105 active:opacity-75 transition duration-100 border-b-4 border-transparent'>
         <IoSettingsOutline className='text-2xl' />
             Settings

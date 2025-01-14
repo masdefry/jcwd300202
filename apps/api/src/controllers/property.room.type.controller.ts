@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { prisma } from '@/connection'
 import { addDays, differenceInDays } from 'date-fns'
+import { deleteFiles } from '@/utils/deleteFiles'
 
 export const getPropertyRoomType = async (
   req: Request,
@@ -76,7 +77,7 @@ export const getPropertyRoomTypeByProperty = async (
 ) => {
   try {
     const { slug } = req.params
-    const { limit = 2, offset = 0, checkInDate, checkOutDate } = req.query
+    const { limit = 2, offset = 0, checkInDate, checkOutDate, capacity } = req.query
 
     const isPropertyExist = await prisma.property.findFirst({
       where: {
@@ -87,6 +88,20 @@ export const getPropertyRoomTypeByProperty = async (
     if (!isPropertyExist?.id || isPropertyExist?.deletedAt)
       throw { msg: 'Property not found!', status: 406 }
 
+let gteDate = checkInDate ? new Date(checkInDate as string) : new Date();
+    gteDate.setHours(0, 0, 0, 0);
+    let ltDate = checkOutDate ? new Date(checkOutDate as string) : addDays(gteDate, 1);
+    ltDate.setHours(0, 0, 0, 0);
+
+    let dataPeriod = {}
+    if (isNaN(gteDate.getTime()) || isNaN(ltDate.getTime())) {
+      throw { msg: 'Date range invalid!', status: 406 }
+    } else {
+    dataPeriod = {
+        gte: gteDate.toISOString(),
+        lt: ltDate.toISOString()
+      }
+    }
     // const whereCondition = [
     //     date && new Date(date as string) ? {
     //         seasonalPrice: {
@@ -106,10 +121,18 @@ export const getPropertyRoomTypeByProperty = async (
     //         }
     //     }: null
     // ].filter(item => item !== null)
-
+    const whereCondition = []
+    if(capacity) {
+      whereCondition.push({
+        capacity: {
+          gte: Number(capacity)
+        }
+      })
+    }
     const propertyRoomType = await prisma.propertyRoomType.findMany({
       where: {
         propertyId: isPropertyExist?.id,
+        AND: whereCondition
         // OR: [
         //     {
         //         seasonalPrice: {
@@ -159,6 +182,7 @@ export const getPropertyRoomTypeByProperty = async (
     const countAllRooms = await prisma.propertyRoomType.count({
       where: {
         propertyId: isPropertyExist?.id,
+        AND: whereCondition
       },
     })
 
@@ -196,34 +220,6 @@ export const getPropertyRoomTypeByProperty = async (
 
     const pageInUse = Number(offset) / 2 + 1
 
-    // let seasonalPrice = await prisma.property.findMany({
-    //     where: {
-    //         id: isPropertyExist?.id
-    //     },
-    //     include: {
-    //         propertyRoomType: {
-    //             include: {
-    //                 season: {
-    //                     include: {
-    //                         seasonalPrice: true
-    //                     }
-    //                 },
-    //                 seasonalPrice: true
-    //             }
-    //         }
-    //     }
-    // })
-
-    // const isPropertyExist = await prisma.property.findFirst({
-    //     where: {
-    //         slug
-    //     },
-    //     select: {
-    //         id: true,
-    //         tenantId: true,
-    //         deletedAt: true
-    //     }
-    // })
 
     const seasonalPriceListView = propertyRoomType.map((room, roomIdx) => {
       return {
@@ -237,38 +233,29 @@ export const getPropertyRoomTypeByProperty = async (
       }
     })
 
-    // let tes, tesfind
-    // propertyRoomType.forEach((item, index) => {
-    //      tesfind = item.seasonalPrice.find(season => season.date === new Date(2024, 11, 28))
-    //      tes = item.seasonalPrice.findIndex(season => season.date === new Date(2024, 11, 28))
-    //     if(tes > -1) {
-    //         console.log('>>>>:', tes)
-    //         console.log('tesFind:', tesfind)
-    //     }
-    // })
-
     const seasonalPrice = await prisma.seasonalPrice.findMany({
       where: {
         propertyId: isPropertyExist?.id,
-        date: {
-          gte: checkInDate
-            ? new Date(checkInDate as string).toISOString()
-            : new Date(
-                new Date().getFullYear(),
-                new Date().getMonth(),
-                new Date().getDate(),
-              ).toISOString(),
-          lt: checkOutDate
-            ? new Date(checkOutDate as string).toISOString()
-            : addDays(
-                new Date(
-                  new Date().getFullYear(),
-                  new Date().getMonth(),
-                  new Date().getDate(),
-                ),
-                1,
-              ).toISOString(),
-        },
+        // date: {
+        //   gte: checkInDate
+        //     ? new Date(checkInDate as string).toISOString()
+        //     : new Date(
+        //         new Date().getFullYear(),
+        //         new Date().getMonth(),
+        //         new Date().getDate(),
+        //       ).toISOString(),
+        //   lt: checkOutDate
+        //     ? new Date(checkOutDate as string).toISOString()
+        //     : addDays(
+        //         new Date(
+        //           new Date().getFullYear(),
+        //           new Date().getMonth(),
+        //           new Date().getDate(),
+        //         ),
+        //         1,
+        //       ).toISOString(),
+        // },
+        date: dataPeriod  
       },
     })
 
@@ -306,21 +293,22 @@ export const getPropertyRoomTypeByProperty = async (
         ],
         roomFilled: {
           some: {
-            date: {
-              gte: new Date(
-                new Date().getFullYear(),
-                new Date().getMonth(),
-                new Date().getDate(),
-              ).toISOString(),
-              lte: addDays(
-                new Date(
-                  new Date().getFullYear(),
-                  new Date().getMonth(),
-                  new Date().getDate(),
-                ),
-                1,
-              ).toISOString(),
-            },
+            date: dataPeriod
+            // date: {
+            //   gte: new Date(
+            //     new Date().getFullYear(),
+            //     new Date().getMonth(),
+            //     new Date().getDate(),
+            //   ).toISOString(),
+            //   lte: addDays(
+            //     new Date(
+            //       new Date().getFullYear(),
+            //       new Date().getMonth(),
+            //       new Date().getDate(),
+            //     ),
+            //     1,
+            //   ).toISOString(),
+            // },
           },
         },
       },
@@ -340,11 +328,16 @@ export const getPropertyRoomTypeByProperty = async (
           (itm) => itm?.propertyRoomTypeId === item?.id,
         ).length
         let seasonalPriceByPropertyRoomType = 0
+        let isAvailable = true
         if (seasonalPriceByPropertyRoomTypeLength > 0) {
           seasonalPriceByPropertyRoomType = seasonalPrice
             .filter((itm) => itm?.propertyRoomTypeId === item?.id)
             .map((itm) => itm.price)
             .reduce((acc, curr) => acc + curr)
+            isAvailable = seasonalPrice
+            .filter((itm) => itm?.propertyRoomTypeId === item?.id)
+            .map((itm) => itm.roomAvailability)
+            .every(itm => itm)
         }
         const transactionsByPropertyRoomTypeLength = transactions.filter(
           (itm) => itm?.transaction?.roomId === item?.id,
@@ -367,7 +360,9 @@ export const getPropertyRoomTypeByProperty = async (
           totalDays,
           seasonalPriceByPropertyRoomType,
           normalTotalPrice,
+          isAvailable,
           totalRoomsLeft,
+          totalNights: differenceInDays(ltDate, gteDate)
         }
       },
     )
@@ -383,6 +378,7 @@ export const getPropertyRoomTypeByProperty = async (
       },
     })
   } catch (error) {
+    console.log(error)
     next(error)
   }
 }
@@ -583,5 +579,113 @@ export const createPropertyRoomType = async (
     })
   } catch (error) {
     next(error)
+  }
+}
+
+export const deletePropertyRoomType = async(req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id, role, password } = req.body
+    const { slug } = req.params
+    const { propertyRoomTypeId } = req.query
+
+    const isTenantExist = await prisma.tenant.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!isTenantExist?.id || isTenantExist?.deletedAt)
+      throw { msg: 'Tenant not found!', status: 406 }
+    if(isTenantExist?.password !== password) throw { msg: 'Password invalid!', status: 406 }
+    if (isTenantExist?.role !== role)
+      throw { msg: 'Role unauthorized!', status: 401 }
+
+
+    const isPropertyExist = await prisma.property.findFirst({
+      where: {
+        slug,
+      },
+      include: {
+        propertyDetail: true,
+        propertyRoomType: true
+      },
+    })
+
+    if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+    if (isPropertyExist?.tenantId !== id)
+      throw { msg: 'Actions not permitted!', status: 406 }
+
+    const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
+      where: {
+        id: Number(propertyRoomTypeId),
+      },
+    })
+
+    if (!isPropertyRoomTypeExist?.id || isPropertyRoomTypeExist?.deletedAt)
+      throw { msg: 'Property room type not found!', status: 406 }
+
+    const getPropertyRoomImages = await prisma.propertyRoomImage.findMany({
+      where: {
+        propertyRoomTypeId: {
+          in: isPropertyExist?.propertyRoomType?.map(item => item?.id)
+        }
+      }
+    })
+    
+    const propertyRoomImagesToDelete = getPropertyRoomImages.map(item => {
+      return {
+        destination: item?.directory,
+        filename: `${item?.filename}.${item?.fileExtension}`
+      }
+    })
+
+    await prisma.$transaction(async(tx) => {
+      try {
+
+        const deletedRoomHasFacilities = await tx.roomHasFacilities.deleteMany({
+          where: {
+            propertyRoomTypeId: {
+              in: isPropertyExist?.propertyRoomType?.map(item => item?.id)
+            }
+          }
+        })
+
+        const deletedPropertyRoomImages = await tx.propertyRoomImage.deleteMany({
+          where: {
+            propertyRoomTypeId: {
+              in: isPropertyExist?.propertyRoomType?.map(item => item?.id)
+            }
+          }
+        })
+
+
+        const softDeletePropertyRoomType = await tx.propertyRoomType.updateMany({
+          where: {
+            propertyId: isPropertyExist?.id
+          },
+          data: {
+            deletedAt: new Date().toISOString()
+          }
+        })
+
+      } catch (err) {
+        throw { msg: 'Delete room type failed!', status: 500 }
+      }
+
+    },
+    {
+      timeout: 15000
+    })
+
+    deleteFiles({ imagesUploaded: [...propertyRoomImagesToDelete] })
+
+    res.status(200).json({
+      error: false,
+      message: 'Delete room type success',
+      data: {}
+    })
+
+  } catch (err) {
+    next(err)
   }
 }

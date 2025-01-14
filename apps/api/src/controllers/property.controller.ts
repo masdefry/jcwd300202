@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express'
 import { v4 as uuidV4 } from 'uuid'
 import { getRoomTypeService } from '@/services/property.service'
 import { deleteFiles } from '@/utils/deleteFiles'
-import { addDays, addHours, differenceInDays, format } from 'date-fns'
+import { addDays, addHours, differenceInDays, format, subDays } from 'date-fns'
 
 export const createProperty = async (
   req: Request,
@@ -233,11 +233,30 @@ export const getPropertyDetail = async (
       },
       include: {
         propertyDetail: true,
-        propertyRoomType: true,
+        propertyRoomType: {
+          include: {
+            seasonalPrice: true
+          }
+        },
       },
     })
 
     if (!property?.id) throw { msg: 'Property not found!', status: 406 }
+
+    let gteDate = checkInDate ? new Date(checkInDate as string) : new Date();
+    gteDate.setHours(0, 0, 0, 0);
+    let ltDate = checkOutDate ? new Date(checkOutDate as string) : addDays(gteDate, 365);
+    ltDate.setHours(0, 0, 0, 0);
+
+    let dataPeriod = {}
+    if (isNaN(gteDate.getTime()) || isNaN(ltDate.getTime())) {
+      throw { msg: 'Date range invalid!', status: 406 }
+    } else {
+    dataPeriod = {
+        gte: gteDate.toISOString(),
+        lt: ltDate.toISOString()
+      }
+    }
 
     const propertyHasFacilities = await prisma.propertyHasFacility.findMany({
       where: {
@@ -292,6 +311,14 @@ export const getPropertyDetail = async (
         user: true
       }
     })
+
+    let filteredReviewWithRating = reviews.filter((item) => item?.rating && !isNaN(item?.rating))
+    let totalRatings: number | null = 0
+    if(filteredReviewWithRating.length > 0) {
+      totalRatings = filteredReviewWithRating
+      .map(item => item?.rating)
+      .reduce((acc: any, curr: any) =>  acc + curr)
+    }
 
     const city = await prisma.city.findUnique({
       where: {
@@ -396,6 +423,59 @@ export const getPropertyDetail = async (
         },
       },
     })
+        // const transactions = await prisma.transactionStatus.findMany({
+        //   where: {
+        //     AND: [
+        //       {
+        //         transaction: {
+        //           propertyId: property?.id,
+        //         },
+        //       },
+        //       {
+        //         status: {
+        //           in: ['PAID', 'WAITING_FOR_CONFIRMATION_PAYMENT'],
+        //         },
+        //       },
+        //     ],
+        //     roomFilled: {
+        //       some: {
+        //         date: dataPeriod
+        //       },
+        //     },
+        //   },
+        //   include: {
+        //     transaction: {
+        //       include: {
+        //         room: true,
+        //       },
+        //     },
+        //   },
+        // })
+    const countReservedRooms = await prisma.roomFilled.groupBy({
+      where: {
+        propertyId: property?.id
+      },
+      by: ['date', 'propertyRoomTypeId'],
+      _count: {
+        propertyRoomTypeId: true
+      }
+    })
+
+    let excludeDate: any = []
+    property.propertyRoomType[0].seasonalPrice.forEach((season) => {
+      countReservedRooms.forEach(item => {
+        item.date
+      })
+      let isAllRoomAvailable = true
+      if(!season.roomAvailability) {
+        property.propertyRoomType.forEach(room => {
+            const findIdx = room.seasonalPrice.findIndex(item => item.date === season.date && !(item.roomAvailability))
+            if(findIdx > -1) isAllRoomAvailable = false
+          })
+      }
+      if(!isAllRoomAvailable) excludeDate.push(season.date)
+    })
+      // property.propertyRoomType
 
     const getAllSeasonalPriceByCheapestRoomType =
       await prisma.seasonalPrice.findMany({
@@ -438,7 +518,7 @@ export const getPropertyDetail = async (
         }
       },
     )
-
+    console.log('countReservedRooms', countReservedRooms)
     res.status(200).json({
       error: false,
       message: 'Get property detail success',
@@ -451,6 +531,7 @@ export const getPropertyDetail = async (
           0,
           8,
         ),
+        avgRating: (totalRatings as number)/filteredReviewWithRating?.length,
         propertyRoomType,
         dateAndPrice: Object.fromEntries(dateAndPrice),
         basePrice: propertyRoomType[0]?.price,
@@ -461,6 +542,7 @@ export const getPropertyDetail = async (
         tenant,
         isIncludeBreakfast,
         seasonalPrice,
+        excludeDate
       },
     })
   } catch (error) {
@@ -641,11 +723,11 @@ export const getProperties = async (
 
     let gteDate = new Date();
     gteDate.setHours(0, 0, 0, 0);
-    let ltDate = addDays(gteDate, 2);
+    let ltDate = addDays(gteDate, 1);
     ltDate.setHours(0, 0, 0, 0);
 
     let whereConditionDate ={}
-    
+
     if (isNaN(gteDate.getTime()) || isNaN(ltDate.getTime())) {
       throw { msg: 'Date range invalid!', status: 406 }
     } else {
@@ -917,8 +999,6 @@ export const getProperties = async (
         })
         sortedPropertiesId = sortedProperties?.map((item) => item.propertyId)
       }
-      console.log('CHECKINDATE', addHours(new Date(new Date().setHours(0,0,0,0)).toISOString(), 31))
-      console.log('CHECKINDATE',  addHours(new Date(new Date().setHours(0,0,0,0)).toISOString(), 7))
       properties = await prisma.property.findMany({
         where: {
           // AND: [...whereCondition, ...whereConditionPropertyFacility, ...whereConditionPropertyRoomFacility],
@@ -1451,6 +1531,20 @@ export const getPropertiesByTenant = async (
     if (isTenantExist?.role !== role)
       throw { msg: 'Role unauthorized!', status: 401 }
 
+    let gteDate = subDays(new Date(), Number(period) || 1);
+    gteDate.setHours(0, 0, 0, 0);
+    let ltDate = addDays(gteDate, Number(period) || 1);
+    ltDate.setHours(0, 0, 0, 0);
+
+    let dataPeriod = {}
+    if (isNaN(gteDate.getTime()) || isNaN(ltDate.getTime())) {
+      throw { msg: 'Date range invalid!', status: 406 }
+    } else {
+    dataPeriod = {
+        gte: gteDate.toISOString(),
+        lt: ltDate.toISOString()
+      }
+    }
     let getPropertiesId;
 
     if(sortBy === 'name' || sortBy === 'review') {
@@ -1470,9 +1564,10 @@ export const getPropertiesByTenant = async (
             some: {
                 transactionStatus: {
                   some: {
-                    status: 'PAID'
+                    status: 'PAID',
                   }
                 },
+                // createdAt: dataPeriod
             }
           }
         },
@@ -1490,13 +1585,10 @@ export const getPropertiesByTenant = async (
             some: {
               transactionStatus: {
                 some: {
-                  status: 'PAID'
+                  status: 'CANCELLED',
                 }
               },
-              checkOutDate: {
-                gte: addHours(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0), 7),
-                lt: addDays(addHours(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0), 7), 1)
-              }
+              // createdAt: dataPeriod
             }
           }
         },
@@ -1551,7 +1643,7 @@ export const getPropertiesByTenant = async (
           include: {
             seasonalPrice :{
               where: {
-                date: addHours(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()), 7).toISOString()
+                date: dataPeriod
               }
             } 
           }
@@ -1569,7 +1661,8 @@ export const getPropertiesByTenant = async (
           include: {
             seasonalPrice :{
               where: {
-                date: addHours(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()), 7).toISOString()
+                // date: addHours(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()), 7).toISOString()
+                date: dataPeriod
               }
             } 
           }
@@ -1601,6 +1694,9 @@ export const getPropertiesByTenant = async (
           {
             status: 'PAID',
           },
+          {
+            createdAt: dataPeriod
+          }
         ],
       },
       include: {
@@ -1625,6 +1721,9 @@ export const getPropertiesByTenant = async (
           {
             status: 'CANCELLED',
           },
+          {
+            createdAt: dataPeriod
+          }
         ],
       },
       include: {
@@ -1640,6 +1739,9 @@ export const getPropertiesByTenant = async (
               tenantId: isTenantExist?.id,
             },
           },
+          {
+            createdAt: dataPeriod
+          }
         ],
       },
     })
@@ -1699,6 +1801,71 @@ export const getPropertiesByTenant = async (
       totalPage = Math.ceil(addedDataGetProperties.length / Number(limit))
     }
 
+
+
+    const totalReview = await prisma.review.count({
+      where: {
+        property: {
+          tenantId: isTenantExist?.id
+        },
+        createdAt: dataPeriod
+      }
+    })
+    const reservation = await prisma.transaction.count({
+      where: {
+        property: {
+          tenantId: isTenantExist?.id
+        },
+        transactionStatus: {
+          some: {
+            status: 'PAID',
+            createdAt: dataPeriod
+          }
+        },
+      }
+    })
+    const cancellation = await prisma.transaction.count({
+      where: {
+        property: {
+          tenantId: isTenantExist?.id
+        },
+        transactionStatus: {
+          some: {
+            status: 'CANCELLED'
+          }
+        },
+        updatedAt: dataPeriod
+      }
+    })
+    const arrival = await prisma.transaction.count({
+      where: {
+        property: {
+          tenantId: isTenantExist?.id
+        },
+        transactionStatus: {
+          some: {
+            status: 'PAID'
+          }
+        },
+        checkInDate: dataPeriod
+      }
+    })
+    const departure = await prisma.transaction.count({
+      where: {
+        property: {
+          tenantId: isTenantExist?.id
+        },
+        transactionStatus: {
+          some: {
+            status: 'PAID'
+          }
+        },
+        checkOutDate: dataPeriod
+      }
+    })
+
+    console.log(dataPeriod)
+
     res.status(200).json({
       error: false,
       message: 'Get properties by tenant success',
@@ -1708,6 +1875,11 @@ export const getPropertiesByTenant = async (
         totalPage,
         pageInUse,
         offset,
+        reservation,
+        arrival,
+        departure,
+        totalReview,
+        cancellation
       },
     })
   } catch (error) {
@@ -1734,10 +1906,17 @@ export const getPropertiesByUser = async (
       throw { msg: 'User not found!', status: 406 }
     if (isUserExist?.role !== role)
       throw { msg: 'Role unauthorized!', status: 401 }
-
+    const transactionGroupByPropertyAndUser = await prisma.transaction.groupBy({
+      where: {
+        userId: id
+      },
+      by: ['propertyId']
+    })
     const propertyIdByRecentBooks = await prisma.transaction.findMany({
       where: {
-        userId: id,
+        propertyId: {
+          in: transactionGroupByPropertyAndUser.map(item => item?.propertyId)
+        }
       },
       include: {
         property: {
@@ -1951,5 +2130,141 @@ export const updatePropertyGeneralInfo = async (
     })
   } catch (error) {
     next(error)
+  }
+}
+
+export const deleteProperty = async(req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id, role, password } = req.body
+    const { slug } = req.params
+
+    const isTenantExist = await prisma.tenant.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!isTenantExist?.id || isTenantExist?.deletedAt)
+      throw { msg: 'Tenant not found!', status: 406 }
+    if(isTenantExist?.password !== password) throw { msg: 'Password invalid!', status: 406 }
+    if (isTenantExist?.role !== role)
+      throw { msg: 'Role unauthorized!', status: 401 }
+
+
+    const isPropertyExist = await prisma.property.findFirst({
+      where: {
+        slug,
+      },
+      include: {
+        propertyDetail: true,
+        propertyRoomType: true
+      },
+    })
+
+    if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+    if (isPropertyExist?.tenantId !== id)
+      throw { msg: 'Actions not permitted!', status: 406 }
+
+    const getPropertyImages = await prisma.propertyImage.findMany({
+      where: {
+        propertyDetailId: isPropertyExist?.propertyDetail?.id
+      }
+    })
+
+    const propertyImagesToDelete = getPropertyImages.map(item => {
+      return {
+        destination: item?.directory,
+        filename: `${item?.filename}.${item?.fileExtension}`
+      }
+    })
+    
+    const getPropertyRoomImages = await prisma.propertyRoomImage.findMany({
+      where: {
+        propertyRoomTypeId: {
+          in: isPropertyExist?.propertyRoomType?.map(item => item?.id)
+        }
+      }
+    })
+    
+    const propertyRoomImagesToDelete = getPropertyRoomImages.map(item => {
+      return {
+        destination: item?.directory,
+        filename: `${item?.filename}.${item?.fileExtension}`
+      }
+    })
+
+    await prisma.$transaction(async(tx) => {
+      try {
+
+        const deletedPropertyHasFacilities = await tx.propertyHasFacility.deleteMany({
+          where: {
+            propertyId: isPropertyExist?.id
+          }
+        })
+
+        const deletedRoomHasFacilities = await tx.roomHasFacilities.deleteMany({
+          where: {
+            propertyRoomTypeId: {
+              in: isPropertyExist?.propertyRoomType?.map(item => item?.id)
+            }
+          }
+        })
+
+        const deletedPropertyImages = await tx.propertyImage.deleteMany({
+          where: {
+            propertyDetailId: isPropertyExist?.propertyDetail?.id
+          }
+        })
+
+        const deletedPropertyRoomImages = await tx.propertyRoomImage.deleteMany({
+          where: {
+            propertyRoomTypeId: {
+              in: isPropertyExist?.propertyRoomType?.map(item => item?.id)
+            }
+          }
+        })
+
+        const deletedPropertyDetail = await tx.propertyDetail.delete({
+          where: {
+            propertyId: isPropertyExist?.id
+          }
+        })
+
+        const softDeletePropertyRoomType = await tx.propertyRoomType.updateMany({
+          where: {
+            propertyId: isPropertyExist?.id
+          },
+          data: {
+            deletedAt: new Date().toISOString()
+          }
+        })
+
+        const softDeleteProperty = await tx.property.update({
+          where: {
+            id: isPropertyExist?.id
+          },
+          data: {
+            deletedAt: new Date().toISOString()
+          }
+        })
+      } catch (err) {
+        throw { msg: 'Delete property failed!', status: 500 }
+      }
+
+    },
+    {
+      timeout: 15000
+    })
+
+    deleteFiles({ imagesUploaded: [...propertyImagesToDelete, ...propertyRoomImagesToDelete] })
+
+    res.status(200).json({
+      error: false,
+      message: 'Delete property success',
+      data: {}
+    })
+
+  } catch (err) {
+    next(err)
   }
 }

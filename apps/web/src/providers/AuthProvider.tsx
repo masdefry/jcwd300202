@@ -64,7 +64,6 @@ export default function AuthProvider({children}: IAuthProviderProps){
         queryKey: ['keepAuth'],
         queryFn: async() => {
             let res = await instance.get('/auth/keep-auth')
-            // Cookies.set('authToken', token, { expires: 7, secure: process.env.NODE_ENV === 'production' })
             setKeepAuth({
                 username: res?.data?.data?.username,
                 isVerified: res?.data?.data?.isVerified,

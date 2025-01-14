@@ -7,21 +7,14 @@ import instance from '@/utils/axiosInstance'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { LucideBedDouble, LucideShowerHead } from 'lucide-react'
 import Image from 'next/image'
-import React, { useRef, useState } from 'react'
-import { CiLocationOn, CiSignpostR1 } from 'react-icons/ci'
-import { FaCheck, FaStar, FaWifi } from 'react-icons/fa'
-import { GoChecklist } from 'react-icons/go'
+import React, { useEffect, useRef, useState } from 'react'
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io'
-import { IoPerson, IoPersonOutline, IoSearchOutline, IoTimeOutline } from 'react-icons/io5'
 import { MdAttachMoney, MdKeyboardArrowDown, MdOutlineEmojiFoodBeverage, MdOutlineMeetingRoom } from 'react-icons/md'
-import ImageCarousel from '@/features/property/components/ImageCarousel'
 import Link from 'next/link'
 import authStore from '@/zustand/authStore' 
 import { useRouter } from 'next/navigation' 
-import toast from 'react-hot-toast'
 import { RiCloseFill } from 'react-icons/ri'
 import { MdPeopleOutline } from "react-icons/md";
-import DatePickerWithPrices from '@/features/property/components/DatePickerWithPrices'
 import useFilterRoomHook from '@/features/property/details/hooks/useFilterRoomHook'
 import useShowRoomDetailHook from '@/features/property/details/hooks/useShowRoomDetailHook'
 import PropertyImages from '@/features/property/components/PropertyImages'
@@ -31,11 +24,14 @@ import HGroupPropertyDetail from '@/features/property/details/components/HGroupP
 import PropertyRoomDetailList from '@/features/property/details/components/PropertyRoomDetailList'
 import PropertyDetailFacilities from '@/features/property/details/components/PropertyDetailFacilities'
 import PropertyDetailPolicies from '@/features/property/details/components/PropertyDetailPolicies'
+import { addDays } from 'date-fns'
+import NotFoundMain from '@/app/not-found'
 
 const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, searchParams: any}) => {
     const [ showMoreDescription, setShowMoreDescription ] = useState(false)
     const [ showPropertyImages, setShowPropertyImages ] = useState(false)
     const [ dataPropertyRoomType, setDataPropertyRoomType ] = useState<any>([])
+    const [ isError, setIsError ] = useState(false)
     const {
         checkInDate,
         checkOutDate,
@@ -57,43 +53,100 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
         prevRoomImage, 
         nextRoomImage
     } = useShowRoomDetailHook()
-
+    const urlParams = new URLSearchParams({})
+    const handleSearchParams = (orderBy: string, value: string) => {
+        const currParams = window.location.href.includes('/search?')
+          ? window.location.href.split('?')[1].split('&')
+          : null
+        currParams &&
+          currParams.forEach((item: any) => {
+            urlParams.set(item.split('=')[0], decodeURIComponent(item.split('=')[1]))
+          })
+        urlParams.set(orderBy, value)
+        window.history.pushState({}, '', '?' + urlParams.toString())
+      }
 
     const token = authStore(state => state.token)
+    const role = authStore(state => state.role)
     const router = useRouter()
-    const { data: dataPropertyDetail, isPending: isPendingPropertyDetail } = useQuery({
-        queryKey: ['getPropertyDetail'],
-        queryFn: async() => {
+    const [ dataPropertyDetail, setDataPropertyDetail ] = useState<any>()
+    const [ isPendingPropertyDetail, setIsPendingPropertyDetail ] = useState(true)
+    const fetchDataPropertyDetail = async() => {
+        try {
             const res = await instance.get(`/property/${params?.slug}/search`)
-            mutatePropertyRoomType({ limit: 2, offset: 0, propertyId: res?.data?.data?.property?.id })
-
-            return res?.data?.data
+            mutatePropertyRoomType({ limit: 2, offset: 0 })
+            if(res?.status === 200) {
+                setDataPropertyDetail(res?.data?.data)
+                console.log(res?.data?.data)
+                setIsPendingPropertyDetail(false)
+            } else {
+                setIsError(true)
+            }
+        } catch (err) {
+            console.log(err)
         }
-      })
-
-    useQuery({
-        queryKey: ['createHistoryView'],
-        queryFn: async() => {
+    }
+    
+    const createHistory = async() => {
+        try {
             const res = await instance.post(`/history/${params?.slug}`)
-            console.log(res)
-            
-            return res?.data?.data
+            if(res?.status === 200) {
+                console.log(res?.data?.data)
+            }
+        } catch (err) {
+            console.log(err)
         }
-      })
-  
+    }
+    // const { data: dataPropertyDetail, isPending: isPendingPropertyDetail } = useQuery({
+    //     queryKey: ['getPropertyDetail'],
+    //     queryFn: async() => {
+    //         const res = await instance.get(`/property/${params?.slug}/search`)
+    //         mutatePropertyRoomType({ limit: 2, offset: 0 })
+
+    //         return res?.data?.data
+    //     }
+    //   })
+    useEffect(() => {
+        if(searchParams['check-in-date'] && searchParams['check-out-date']) {
+            setDateRange([ new Date(searchParams['check-in-date']), new Date(searchParams['check-out-date'])])
+        }
+        fetchDataPropertyDetail()
+        createHistory()
+    }, [])
+
   const { mutate: mutatePropertyRoomType, isPending: isPendingPropertyRoomType } = useMutation({
-    mutationFn: async({ limit, offset, propertyId }: { limit: number, offset: number, propertyId: string }) => {
-        const res = await instance.get(`/room-type/property/${params?.slug}/search?limit=${limit}&offset=${offset}`)
+    mutationFn: async({ limit, offset, checkInDate, checkOutDate }: { limit?: number, offset?: number, checkInDate?: Date, checkOutDate?: Date }) => {
+        if(limit && offset) {
+            handleSearchParams('limit', limit.toString())
+            handleSearchParams('offset', offset.toString()) 
+            if(searchParams['check-in-date'] && searchParams['check-out-date']) {
+                handleSearchParams('check-in-date', searchParams['check-in-date'])
+                handleSearchParams('check-out-date', searchParams['check-out-date'])
+                handleSearchParams('capacity', searchParams?.capacity)
+            }
+        } else if(checkInDate && checkOutDate) {
+            handleSearchParams('check-in-date', checkInDate.toISOString())
+            handleSearchParams('check-out-date', checkOutDate.toISOString())
+            handleSearchParams('capacity', (adult + children).toString())
+        }
+        const res = await instance.get(`/room-type/property/${params?.slug}/search?limit=${limit || '2'}&offset=${offset || '0'}&checkInDate=${checkInDate || searchParams['check-in-date'] || new Date().toISOString()}&checkOutDate=${checkOutDate || searchParams['check-out-date'] || addDays(new Date(), 1).toISOString()}&capacity=${adult + children || searchParams['capacity'] || 1}`)
         return res?.data
     },
     onSuccess: (res) => {
         setDataPropertyRoomType(res?.data)
-        console.log(res?.message)
     },
     onError: (err: any) => {
         console.log(err?.response?.data?.message)
     }
   })
+
+  if(isError) {
+    return (
+        <div>
+            <NotFoundMain />
+        </div>
+    )
+  }
  
   return (
     <main className='w-full min-h-min 2xl:py-5 pb-5'>
@@ -103,8 +156,8 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
         <PropertyDetailDescription showMoreDescription={showMoreDescription} setShowMoreDescription={setShowMoreDescription} dataPropertyDetail={dataPropertyDetail}  isPending={isPendingPropertyDetail}/>
 
         <Separator />
-        <SearchRoomsAvailability handleGuest={handleGuest} dateRange={dateRange} setDateRange={setDateRange} checkInDate={checkInDate} checkOutDate={checkOutDate} dataPropertyDetail={dataPropertyDetail} setShowGuestCounter={setShowGuestCounter} showGuestCounter={showGuestCounter} adult={adult} children={children} isPending={isPendingPropertyDetail}/>
-        <PropertyRoomDetailList dataPropertyRoomType={dataPropertyRoomType} isPending={isPendingPropertyRoomType || isPendingPropertyDetail} setShowDataRoom={setShowDataRoom} token={token} searchParams={searchParams} mutatePropertyRoomType={mutatePropertyRoomType} dataPropertyDetail={dataPropertyDetail} />
+        <SearchRoomsAvailability mutatePropertyRoomType={mutatePropertyRoomType} handleGuest={handleGuest} dateRange={dateRange} setDateRange={setDateRange} checkInDate={checkInDate} checkOutDate={checkOutDate} dataPropertyDetail={dataPropertyDetail} setShowGuestCounter={setShowGuestCounter} showGuestCounter={showGuestCounter} adult={adult} children={children} isPending={isPendingPropertyDetail}/>
+        <PropertyRoomDetailList dataPropertyRoomType={dataPropertyRoomType} isPending={isPendingPropertyRoomType || isPendingPropertyDetail} setShowDataRoom={setShowDataRoom} token={token} searchParams={searchParams} mutatePropertyRoomType={mutatePropertyRoomType} dataPropertyDetail={dataPropertyDetail} role={role} checkInDate={checkInDate} checkOutDate={checkOutDate} />
         {
             showDataRoom.name && (
             <section className='fixed top-0 left-0 bg-black bg-opacity-25 backdrop-blur-sm w-full h-full z-[53] flex items-center justify-center px-5'>

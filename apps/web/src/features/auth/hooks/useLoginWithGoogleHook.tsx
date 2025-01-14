@@ -15,6 +15,7 @@ const useLoginWithGoogleHook = () => {
 
     const onSuccessReqOAuth = (res: AxiosResponse) => {
         Cookies.set('authToken', res?.data?.data?.token, { expires: 7 })
+        Cookies.set('authRole', res?.data?.data?.role, { expires: 7 })
         setAuth({
             isGoogleRegistered: res?.data?.data?.isGoogleRegistered,
             isVerified: res?.data?.data?.isVerified,

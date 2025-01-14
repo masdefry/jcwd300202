@@ -17,9 +17,10 @@ interface IDatePickerWithPricesProps {
   setDateRange: any,
   checkInDate: Date,
   checkOutDate: Date,
+  excludeDateList: any
 }
 
-const DatePickerWithPrices = ({ dateAndPrice = {}, basePrice = 0, dateRange, setDateRange, checkInDate, checkOutDate }: IDatePickerWithPricesProps) => {
+const DatePickerWithPrices = ({ dateAndPrice = {}, basePrice = 0, dateRange, setDateRange, checkInDate, checkOutDate, excludeDateList }: IDatePickerWithPricesProps) => {
 
   
   const formatPrice = (price: number): string => {
@@ -44,7 +45,6 @@ const DatePickerWithPrices = ({ dateAndPrice = {}, basePrice = 0, dateRange, set
           </div>
         );
   }
-
   const renderDayContents = (day: number, date: Date) => {
     const dateString = format(date, "yyyy-MM-dd");
     const editedBasePrice = Number(basePrice) >= 1000000
@@ -59,6 +59,8 @@ const DatePickerWithPrices = ({ dateAndPrice = {}, basePrice = 0, dateRange, set
     );
   };
 
+  const excludeDates = excludeDateList.map((item: string) => new Date(item))
+
   return (
     <div>
       <DatePicker
@@ -68,8 +70,10 @@ const DatePickerWithPrices = ({ dateAndPrice = {}, basePrice = 0, dateRange, set
       onChange={(update) => {
         setDateRange(update);
       }}
+      minDate={new Date()}
       withPortal
       monthsShown={1}
+      excludeDates={excludeDates}
       renderDayContents={renderDayContents}
       renderMonthContent={renderMonthContents}
       placeholderText="Select your period"

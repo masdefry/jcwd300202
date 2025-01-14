@@ -192,6 +192,37 @@ export default function Home() {
       <section className='relative right-4 sm:right-8 md:right-12 lg:right-16'>
           <Hero isPending={isPendingDataLandingPage}/>
       </section>
+      <section className='m-auto max-w-screen-xl w-full h-full'>
+      <section className='flex flex-col gap-5'>
+        <hgroup className='flex flex-col'>
+          <h1 className='lg:text-3xl font-bold text-lg md:text-3xl text-gray-900'>Explore Property</h1>
+          <p className='md:text-base text-sm font-medium text-gray-600'>See, book, and stay in our partner properties</p>
+        </hgroup>
+        <div className="carousel rounded-none flex gap-3 md:gap-5 h-fit py-2">
+        {
+          dataLandingPage?.data?.properties.map((item: any, index: number) => {
+            return (
+            <div className="carousel-item hover:cursor-pointer md:hover:translate-y-2 transition duration-100 active:opacity-75" key={index}>
+              <Link href={`/property/${item?.slug}/details`}>
+                <Card 
+                isPending={isPendingDataLandingPage}
+                propertyType={item?.propertyType?.name}
+                propertyName={item?.name}
+                city={item?.city?.name}
+                country={item?.country?.name}
+                ratingAvg={0}
+                totalReviews={item?.review?.length}
+                price={item?.propertyRoomType[0]?.price}
+                imageUrl={`http://localhost:5000/api/${item.propertyDetail.propertyImage[0].directory}/${item.propertyDetail.propertyImage[0].filename}.jpg`}
+                />
+              </Link>
+            </div>
+            )
+          })
+        }
+        </div>
+      </section>
+      </section>
       {
         (token && (role === 'USER')) && (
         <section className='m-auto max-w-screen-xl w-full h-full'>
@@ -281,37 +312,7 @@ export default function Home() {
 
         )
       }
-      <section className='m-auto max-w-screen-xl w-full h-full'>
-      <section className='flex flex-col gap-5'>
-        <hgroup className='flex flex-col'>
-          <h1 className='lg:text-3xl font-bold text-lg md:text-3xl text-gray-900'>Explore Property</h1>
-          <p className='md:text-base text-sm font-medium text-gray-600'>See, book, and stay in our partner properties</p>
-        </hgroup>
-        <div className="carousel rounded-none flex gap-3 md:gap-5 h-fit py-2">
-        {
-          dataLandingPage?.data?.properties.map((item: any, index: number) => {
-            return (
-            <div className="carousel-item hover:cursor-pointer md:hover:translate-y-2 transition duration-100 active:opacity-75" key={index}>
-              <Link href={`/property/${item?.slug}/details`}>
-                <Card 
-                isPending={isPendingDataLandingPage}
-                propertyType={item?.propertyType?.name}
-                propertyName={item?.name}
-                city={item?.city?.name}
-                country={item?.country?.name}
-                ratingAvg={0}
-                totalReviews={item?.review?.length}
-                price={item?.propertyRoomType[0]?.price}
-                imageUrl={`http://localhost:5000/api/${item.propertyDetail.propertyImage[0].directory}/${item.propertyDetail.propertyImage[0].filename}.jpg`}
-                />
-              </Link>
-            </div>
-            )
-          })
-        }
-        </div>
-      </section>
-      </section>
+
 
 
       

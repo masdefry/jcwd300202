@@ -1,4 +1,4 @@
-import { createProperty, dataForFilteringProperty, getProperties, getPropertiesByTenant, getPropertiesByUser, getPropertyDescriptions, getPropertyDetail, getPropertyRoomTypeByProperty, getRoomType, updatePropertyDescriptions, updatePropertyGeneralInfo } from "@/controllers/property.controller";
+import { createProperty, dataForFilteringProperty, deleteProperty, getProperties, getPropertiesByTenant, getPropertiesByUser, getPropertyDescriptions, getPropertyDetail, getPropertyRoomTypeByProperty, getRoomType, updatePropertyDescriptions, updatePropertyGeneralInfo } from "@/controllers/property.controller";
 import { uploader } from "@/middlewares/uploader";
 import { verifyToken } from "@/middlewares/verify.token";
 import { Router } from "express";
@@ -16,6 +16,7 @@ propertyRouter.get('/rooms/:propertyId/search', getPropertyRoomTypeByProperty)
 propertyRouter.get('/nav/filter', dataForFilteringProperty)
 // propertyRouter.get('/:propertyRoomTypeId', getRoomType)
 propertyRouter.post('/', verifyToken, uploader, createProperty)
+propertyRouter.patch('/delete/:slug', verifyToken, deleteProperty)
 
 
 export default propertyRouter

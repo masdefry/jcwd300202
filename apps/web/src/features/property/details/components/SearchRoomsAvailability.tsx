@@ -6,7 +6,7 @@ import DatePickerWithPrices from '../../components/DatePickerWithPrices'
 import { IoPersonOutline, IoSearchOutline } from 'react-icons/io5'
 import { RiCloseFill } from 'react-icons/ri'
 
-const SearchRoomsAvailability = ({ handleGuest, dateRange, setDateRange, checkInDate, checkOutDate, dataPropertyDetail, setShowGuestCounter, showGuestCounter, adult, children, isPending }: any) => {
+const SearchRoomsAvailability = ({  checkInDate, checkOutDate, mutatePropertyRoomType, handleGuest, dateRange, setDateRange, dataPropertyDetail, setShowGuestCounter, showGuestCounter, adult, children, isPending }: any) => {
   if(isPending) {
       return (
       <div className='flex flex-col gap-5 2xl:p-0 px-5'>
@@ -42,10 +42,10 @@ const SearchRoomsAvailability = ({ handleGuest, dateRange, setDateRange, checkIn
                 <div className='p-4 overflow-x-auto'>
                     <div className=' flex items-center justify-center bg-amber-400 rounded-md p-[1px]'>
                         <div>
-                            <DatePickerWithPrices dateRange={dateRange} setDateRange={setDateRange} checkInDate={checkInDate} checkOutDate={checkOutDate} basePrice={dataPropertyDetail?.basePrice} dateAndPrice={dataPropertyDetail?.dateAndPrice} />
+                            <DatePickerWithPrices excludeDateList={dataPropertyDetail?.excludeDate} dateRange={dateRange} setDateRange={setDateRange} checkInDate={checkInDate} checkOutDate={checkOutDate} basePrice={dataPropertyDetail?.basePrice} dateAndPrice={dataPropertyDetail?.dateAndPrice} />
                         </div>
                         <button onClick={() => setShowGuestCounter(true)} className='min-w-max bg-white text-xs font-semibold text-gray-800 px-2 py-2 pr-5 flex items-center gap-3 border-2 border-amber-400 '><IoPersonOutline />{adult} Adult . {children} Children . 1 Room</button>
-                        <button className='bg-blue-800 hover:opacity-75 transition duration-100 text-xs font-semibold text-white px-2 py-2 pr-5 flex items-center gap-3 rounded-r-md border-2 border-amber-400 '><IoSearchOutline />Search</button>
+                        <button onClick={() => mutatePropertyRoomType({ checkInDate, checkOutDate })} disabled={!checkInDate && !checkOutDate} className='disabled:bg-slate-300 disabled:text-white disabled:scale-100 disabled:opacity-100 bg-blue-800 hover:opacity-75 transition duration-100 text-xs font-semibold text-white px-2 py-2 pr-5 flex items-center gap-3 rounded-r-md border-2 border-amber-400 '><IoSearchOutline />Search</button>
                     </div>
                 </div>
                 {

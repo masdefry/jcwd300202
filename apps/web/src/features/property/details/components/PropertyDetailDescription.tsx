@@ -146,7 +146,7 @@ const PropertyDetailDescription = ({ dataPropertyDetail, isPending = true, showM
                (dataPropertyDetail?.reviews && dataPropertyDetail?.reviews.length > 0) && (
                    <section id='review' className='h-fit max-h-[400px] flex flex-col gap-5 col-span-1 row-span-3 rounded-md drop-shadow-md bg-white w-full p-5'>
                        <hgroup className='flex items-center gap-3 w-full'>
-                           <p className='text-xl font-bold text-white bg-gray-800 shadow-md rounded-2xl p-3 border border-slate-300'>{dataPropertyDetail?.avgRating}</p>
+                           <p className='text-xl font-bold text-white bg-gray-800 shadow-md rounded-2xl p-3 border border-slate-300'>{dataPropertyDetail?.avgRating.toFixed(1)}</p>
                            <div className='flex flex-col gap-1 w-full'>
                                <p className='text-lg font-bold'>{dataPropertyDetail?.avgRating >= 9
                     ? 'Sensational'

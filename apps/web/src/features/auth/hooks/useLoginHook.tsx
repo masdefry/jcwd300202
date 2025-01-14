@@ -33,6 +33,7 @@ const useLoginHook = ({ endPoint, role }: IUseLoginHookProps) => {
                 </span>
               ))
             Cookies.set('authToken', res?.token, { expires: 7 })
+            Cookies.set('authRole', res?.role, { expires: 7 })
             setAuth({ 
                 isVerified: res?.isVerified,
                 profilePictureUrl: res?.profilePictureUrl,

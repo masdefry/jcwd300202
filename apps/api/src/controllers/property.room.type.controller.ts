@@ -76,7 +76,7 @@ export const getPropertyRoomTypeByProperty = async (
 ) => {
   try {
     const { slug } = req.params
-    const { limit = 2, offset = 0, checkInDate, checkOutDate } = req.query
+    const { limit = 2, offset = 0, checkInDate, checkOutDate, capacity } = req.query
 
     const isPropertyExist = await prisma.property.findFirst({
       where: {
@@ -87,6 +87,20 @@ export const getPropertyRoomTypeByProperty = async (
     if (!isPropertyExist?.id || isPropertyExist?.deletedAt)
       throw { msg: 'Property not found!', status: 406 }
 
+let gteDate = checkInDate ? new Date(checkInDate as string) : new Date();
+    gteDate.setHours(0, 0, 0, 0);
+    let ltDate = checkOutDate ? new Date(checkOutDate as string) : addDays(gteDate, 1);
+    ltDate.setHours(0, 0, 0, 0);
+
+    let dataPeriod = {}
+    if (isNaN(gteDate.getTime()) || isNaN(ltDate.getTime())) {
+      throw { msg: 'Date range invalid!', status: 406 }
+    } else {
+    dataPeriod = {
+        gte: gteDate.toISOString(),
+        lt: ltDate.toISOString()
+      }
+    }
     // const whereCondition = [
     //     date && new Date(date as string) ? {
     //         seasonalPrice: {
@@ -106,10 +120,18 @@ export const getPropertyRoomTypeByProperty = async (
     //         }
     //     }: null
     // ].filter(item => item !== null)
-
+    const whereCondition = []
+    if(capacity) {
+      whereCondition.push({
+        capacity: {
+          gte: Number(capacity)
+        }
+      })
+    }
     const propertyRoomType = await prisma.propertyRoomType.findMany({
       where: {
         propertyId: isPropertyExist?.id,
+        AND: whereCondition
         // OR: [
         //     {
         //         seasonalPrice: {
@@ -159,6 +181,7 @@ export const getPropertyRoomTypeByProperty = async (
     const countAllRooms = await prisma.propertyRoomType.count({
       where: {
         propertyId: isPropertyExist?.id,
+        AND: whereCondition
       },
     })
 
@@ -196,34 +219,6 @@ export const getPropertyRoomTypeByProperty = async (
 
     const pageInUse = Number(offset) / 2 + 1
 
-    // let seasonalPrice = await prisma.property.findMany({
-    //     where: {
-    //         id: isPropertyExist?.id
-    //     },
-    //     include: {
-    //         propertyRoomType: {
-    //             include: {
-    //                 season: {
-    //                     include: {
-    //                         seasonalPrice: true
-    //                     }
-    //                 },
-    //                 seasonalPrice: true
-    //             }
-    //         }
-    //     }
-    // })
-
-    // const isPropertyExist = await prisma.property.findFirst({
-    //     where: {
-    //         slug
-    //     },
-    //     select: {
-    //         id: true,
-    //         tenantId: true,
-    //         deletedAt: true
-    //     }
-    // })
 
     const seasonalPriceListView = propertyRoomType.map((room, roomIdx) => {
       return {
@@ -237,38 +232,29 @@ export const getPropertyRoomTypeByProperty = async (
       }
     })
 
-    // let tes, tesfind
-    // propertyRoomType.forEach((item, index) => {
-    //      tesfind = item.seasonalPrice.find(season => season.date === new Date(2024, 11, 28))
-    //      tes = item.seasonalPrice.findIndex(season => season.date === new Date(2024, 11, 28))
-    //     if(tes > -1) {
-    //         console.log('>>>>:', tes)
-    //         console.log('tesFind:', tesfind)
-    //     }
-    // })
-
     const seasonalPrice = await prisma.seasonalPrice.findMany({
       where: {
         propertyId: isPropertyExist?.id,
-        date: {
-          gte: checkInDate
-            ? new Date(checkInDate as string).toISOString()
-            : new Date(
-                new Date().getFullYear(),
-                new Date().getMonth(),
-                new Date().getDate(),
-              ).toISOString(),
-          lt: checkOutDate
-            ? new Date(checkOutDate as string).toISOString()
-            : addDays(
-                new Date(
-                  new Date().getFullYear(),
-                  new Date().getMonth(),
-                  new Date().getDate(),
-                ),
-                1,
-              ).toISOString(),
-        },
+        // date: {
+        //   gte: checkInDate
+        //     ? new Date(checkInDate as string).toISOString()
+        //     : new Date(
+        //         new Date().getFullYear(),
+        //         new Date().getMonth(),
+        //         new Date().getDate(),
+        //       ).toISOString(),
+        //   lt: checkOutDate
+        //     ? new Date(checkOutDate as string).toISOString()
+        //     : addDays(
+        //         new Date(
+        //           new Date().getFullYear(),
+        //           new Date().getMonth(),
+        //           new Date().getDate(),
+        //         ),
+        //         1,
+        //       ).toISOString(),
+        // },
+        date: dataPeriod  
       },
     })
 
@@ -306,21 +292,22 @@ export const getPropertyRoomTypeByProperty = async (
         ],
         roomFilled: {
           some: {
-            date: {
-              gte: new Date(
-                new Date().getFullYear(),
-                new Date().getMonth(),
-                new Date().getDate(),
-              ).toISOString(),
-              lte: addDays(
-                new Date(
-                  new Date().getFullYear(),
-                  new Date().getMonth(),
-                  new Date().getDate(),
-                ),
-                1,
-              ).toISOString(),
-            },
+            date: dataPeriod
+            // date: {
+            //   gte: new Date(
+            //     new Date().getFullYear(),
+            //     new Date().getMonth(),
+            //     new Date().getDate(),
+            //   ).toISOString(),
+            //   lte: addDays(
+            //     new Date(
+            //       new Date().getFullYear(),
+            //       new Date().getMonth(),
+            //       new Date().getDate(),
+            //     ),
+            //     1,
+            //   ).toISOString(),
+            // },
           },
         },
       },
@@ -374,6 +361,7 @@ export const getPropertyRoomTypeByProperty = async (
           normalTotalPrice,
           isAvailable,
           totalRoomsLeft,
+          totalNights: differenceInDays(ltDate, gteDate)
         }
       },
     )
@@ -389,6 +377,7 @@ export const getPropertyRoomTypeByProperty = async (
       },
     })
   } catch (error) {
+    console.log(error)
     next(error)
   }
 }

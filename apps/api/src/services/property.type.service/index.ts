@@ -30,7 +30,7 @@ export const getPropertyTypes = async(req: Request, res: Response, next: NextFun
     }
 }
 
-export const createPropertyTypeService = async(req: Request, res: Response, next: NextFunction) => {
+export const createPropertyType = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const { id, role, name, description } = req.body
 
@@ -58,8 +58,7 @@ export const createPropertyTypeService = async(req: Request, res: Response, next
         const createdPropertyType = await prisma.propertyType.create({
             data: {
                 name,
-                description,
-                isCustom: true
+                description
             }
         })
 
@@ -72,8 +71,4 @@ export const createPropertyTypeService = async(req: Request, res: Response, next
     } catch (error) {
         next(error)
     }
-}
-
-export const deletePropertyTypeService = async(req: Request, res: Response, next: NextFunction) => {
-
 }

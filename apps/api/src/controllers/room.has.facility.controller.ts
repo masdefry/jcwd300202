@@ -33,7 +33,6 @@ export const getGeneralRoomHasFacilitiesByProperty = async(req: Request, res: Re
         const { name = '' } = req.query
 
         const getGeneralRoomHasFacilitiesByPropertyProcess = await getGeneralRoomHasFacilitiesByPropertyService({ id, role, slug, name: name as string })
-
         
         res.status(200).json({
             error: false,

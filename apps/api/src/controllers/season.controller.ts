@@ -42,6 +42,7 @@ export const createSeasonalPrice = async (
             id: Number(propertyRoomTypeId),
           },
         },
+        deletedAt: null
       },
       select: {
         id: true,
@@ -56,6 +57,7 @@ export const createSeasonalPrice = async (
     const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
       where: {
         id: Number(propertyRoomTypeId),
+        deletedAt: null
       },
     })
 
@@ -167,6 +169,7 @@ export const getBulkSeasonalPriceAndAvailability = async (
             id: Number(propertyRoomTypeId),
           },
         },
+        deletedAt: null
       },
       select: {
         id: true,
@@ -181,6 +184,7 @@ export const getBulkSeasonalPriceAndAvailability = async (
     const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
       where: {
         id: Number(propertyRoomTypeId),
+        deletedAt: null
       },
     })
 
@@ -232,6 +236,7 @@ export const getSingleSeasonalPriceAndAvailability = async (
     const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
       where: {
         id: Number(propertyRoomTypeId),
+        deletedAt: null
       },
     })
 
@@ -313,6 +318,7 @@ export const updateSeasonalPrice = async (
             id: Number(propertyRoomTypeId),
           },
         },
+        deletedAt: null
       },
       select: {
         id: true,
@@ -327,6 +333,7 @@ export const updateSeasonalPrice = async (
     const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
       where: {
         id: Number(propertyRoomTypeId),
+        deletedAt: null
       },
     })
 
@@ -489,6 +496,7 @@ export const getSeasonsByProperty = async (
     const isPropertyExist = await prisma.property.findFirst({
       where: {
         slug,
+        deletedAt: null
       },
       include: {
         propertyRoomType: {
@@ -598,6 +606,7 @@ export const createSeasonalAvailabiltyByProperty = async (
     const isPropertyExist = await prisma.property.findFirst({
       where: {
         slug,
+        deletedAt: null
       },
       include: {
         propertyRoomType: true,
@@ -737,6 +746,7 @@ export const updateManySeasonsByPropertySeason = async (
     const isPropertyExist = await prisma.property.findFirst({
       where: {
         slug,
+        deletedAt: null
       },
       include: {
         propertyRoomType: {
@@ -905,6 +915,7 @@ export const deletePropertySeason = async (
     const isPropertyExist = await prisma.property.findFirst({
       where: {
         slug,
+        deletedAt: null
       },
       include: {
         propertyRoomType: {
@@ -1013,6 +1024,7 @@ export const deleteSeasonalPrice = async (
             id: Number(propertyRoomTypeId),
           },
         },
+        deletedAt: null
       },
       select: {
         id: true,
@@ -1027,6 +1039,7 @@ export const deleteSeasonalPrice = async (
     const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
       where: {
         id: Number(propertyRoomTypeId),
+        deletedAt: null
       },
     })
 
@@ -1090,6 +1103,7 @@ export const getSeasonsByPropertyRoomType = async (
             id: Number(propertyRoomTypeId),
           },
         },
+        deletedAt: null
       },
       include: {
         propertyRoomType: {
@@ -1196,6 +1210,7 @@ export const updateSingleSeason = async (
             id: Number(propertyRoomTypeId),
           },
         },
+        deletedAt: null
       },
       include: {
         propertyRoomType: {
@@ -1350,6 +1365,7 @@ export const createOneSeason = async (
             id: Number(propertyRoomTypeId),
           },
         },
+        deletedAt: null
       },
       include: {
         propertyRoomType: {
@@ -1475,6 +1491,7 @@ export const deleteSingleSeason = async(req: Request, res: Response, next: NextF
             id: Number(propertyRoomTypeId),
           },
         },
+        deletedAt: null
       },
       select: {
         id: true,
@@ -1489,6 +1506,7 @@ export const deleteSingleSeason = async(req: Request, res: Response, next: NextF
     const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
       where: {
         id: Number(propertyRoomTypeId),
+        deletedAt: null
       },
     })
 
@@ -1561,6 +1579,7 @@ export const getSingleSeason = async (
             id: Number(seasonId)
           }
         },
+        deletedAt: null
       },
       include: {
         propertyRoomType: {

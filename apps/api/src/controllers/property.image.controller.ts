@@ -60,6 +60,7 @@ export const createPropertyImagesByProperty = async (
     const isPropertyExist = await prisma.property.findFirst({
       where: {
         slug,
+        deletedAt: null
       },
       include: {
         propertyDetail: true,

@@ -59,6 +59,7 @@ export const createUserHistoryView = async (
     const getProperty = await prisma.property.findFirst({
       where: {
         slug,
+        deletedAt: null
       },
     })
 

@@ -4,6 +4,7 @@ import { v4 as uuidV4 } from 'uuid'
 import { getRoomTypeService } from '@/services/property.service'
 import { deleteFiles } from '@/utils/deleteFiles'
 import { addDays, addHours, differenceInDays, format, subDays } from 'date-fns'
+import { comparePassword } from '@/utils/hashPassword'
 
 export const createProperty = async (
   req: Request,
@@ -230,6 +231,7 @@ export const getPropertyDetail = async (
     const property = await prisma.property.findFirst({
       where: {
         slug: slug as string,
+        deletedAt: null
       },
       include: {
         propertyDetail: true,
@@ -242,10 +244,10 @@ export const getPropertyDetail = async (
     })
 
     if (!property?.id) throw { msg: 'Property not found!', status: 406 }
-
-    let gteDate = checkInDate ? new Date(checkInDate as string) : new Date();
+    console.log('checkInDate', checkInDate)
+    let gteDate = checkInDate && checkInDate !== 'undefined' ? new Date(checkInDate as string) : new Date();
     gteDate.setHours(0, 0, 0, 0);
-    let ltDate = checkOutDate ? new Date(checkOutDate as string) : addDays(gteDate, 365);
+    let ltDate = checkOutDate && checkOutDate !== 'undefined' ? new Date(checkOutDate as string) : addDays(gteDate, 365);
     ltDate.setHours(0, 0, 0, 0);
 
     let dataPeriod = {}
@@ -289,6 +291,7 @@ export const getPropertyDetail = async (
     const propertyRoomType = await prisma.propertyRoomType.findMany({
       where: {
         propertyId: property?.id,
+        deletedAt: null
       },
       include: {
         propertyRoomImage: true,
@@ -338,6 +341,7 @@ export const getPropertyDetail = async (
         id: {
           not: property?.id,
         },
+        deletedAt: null
       },
       include: {
         country: true,
@@ -563,6 +567,7 @@ export const getPropertyRoomTypeByProperty = async (
     const propertyRoomType = await prisma.propertyRoomType.findMany({
       where: {
         propertyId,
+        deletedAt: null
       },
       include: {
         propertyRoomImage: true,
@@ -582,6 +587,7 @@ export const getPropertyRoomTypeByProperty = async (
     const getAllRooms = await prisma.propertyRoomType.findMany({
       where: {
         propertyId,
+        deletedAt: null
       },
     })
 
@@ -849,6 +855,9 @@ export const getProperties = async (
             cityId: Number(cityId),
           }
         : null,
+        {
+          deletedAt: null
+        },
       minPrice &&
       !isNaN(Number(minPrice)) &&
       maxPrice &&
@@ -901,7 +910,6 @@ export const getProperties = async (
       .filter((item) => item?.countryId !== null)
       .filter((item) => item?.cityId !== null)
 
-    console.log(Number(countryId))
 
     const whereCondition =
       [
@@ -950,6 +958,7 @@ export const getProperties = async (
             id: {
               in: propertiesWithoutLimit.map((item) => item?.id),
             },
+            deletedAt: null
           },
           select: {
             id: true,
@@ -972,6 +981,7 @@ export const getProperties = async (
             id: {
               in: propertiesWithoutLimit.map((item) => item?.id),
             },
+            deletedAt: null
           },
           select: {
             id: true,
@@ -1005,6 +1015,7 @@ export const getProperties = async (
           id: {
             in: sortedPropertiesId,
           },
+          deletedAt: null
         },
         include: {
           propertyRoomType: {
@@ -1040,6 +1051,9 @@ export const getProperties = async (
       })
     } else {
       propertiesWithoutLimit = await prisma.property.findMany({
+        where: {
+          deletedAt: null
+        },
         include: {
           propertyRoomType: {
             orderBy: {
@@ -1059,6 +1073,9 @@ export const getProperties = async (
         }
       if (sortBy === 'name') {
         sortedProperties = await prisma.property.findMany({
+          where: {
+            deletedAt: null
+          },
           select: {
             id: true,
             propertyRoomType: {
@@ -1111,6 +1128,7 @@ export const getProperties = async (
           id: {
             in: sortedPropertiesId,
           },
+          deletedAt: null
         },
         include: {
           propertyRoomType: {
@@ -1274,6 +1292,7 @@ export const getProperties = async (
             (item) => item?.id,
           ),
         },
+        deletedAt: null,
         star: 2
       },
     })
@@ -1285,6 +1304,7 @@ export const getProperties = async (
             (item) => item?.id,
           ),
         },
+        deletedAt: null,
         star: 3
       },
     })
@@ -1296,6 +1316,7 @@ export const getProperties = async (
             (item) => item?.id,
           ),
         },
+        deletedAt: null,
         star: 4
       },
     })
@@ -1307,6 +1328,7 @@ export const getProperties = async (
             (item) => item?.id,
           ),
         },
+        deletedAt: null,
         star: 5
       },
     })
@@ -1375,6 +1397,7 @@ export const getPropertyDescriptions = async (
     const getProperty = await prisma.property.findFirst({
       where: {
         slug,
+        deletedAt: null
       },
       include: {
         propertyDetail: true,
@@ -1388,6 +1411,7 @@ export const getPropertyDescriptions = async (
     const getPropertyRoomType = await prisma.propertyRoomType.findMany({
       where: {
         propertyId: getProperty?.id,
+        deletedAt: null
       },
     })
 
@@ -1439,6 +1463,7 @@ export const updatePropertyDescriptions = async (
     const isPropertyExist = await prisma.property.findFirst({
       where: {
         slug,
+        deletedAt: null
       },
       include: {
         propertyDetail: true,
@@ -1551,6 +1576,7 @@ export const getPropertiesByTenant = async (
       getPropertiesId = await prisma.property.findMany({
         where: {
           tenantId: isTenantExist?.id,
+          deletedAt: null
         },
         orderBy: {
           name: order === 'desc' ? 'desc' : 'asc',
@@ -1560,6 +1586,7 @@ export const getPropertiesByTenant = async (
      getPropertiesId = await prisma.property.findMany({
         where: {
           tenantId: isTenantExist?.id,
+          deletedAt: null,
           transaction: {
             some: {
                 transactionStatus: {
@@ -1581,6 +1608,7 @@ export const getPropertiesByTenant = async (
       getPropertiesId = await prisma.property.findMany({
         where: {
           tenantId: isTenantExist?.id,
+          deletedAt: null,
           transaction: {
             some: {
               transactionStatus: {
@@ -1602,6 +1630,7 @@ export const getPropertiesByTenant = async (
       getPropertiesId = await prisma.property.findMany({
         where: {
           tenantId: isTenantExist?.id,
+          deletedAt: null,
         },
         orderBy: {
           name: 'asc',
@@ -1631,6 +1660,7 @@ export const getPropertiesByTenant = async (
     const getLeftProperties = await prisma.property.findMany({
       where: {
         tenantId: isTenantExist?.id,
+        deletedAt: null,
         id: {
           notIn: getPropertiesId.map(item => item?.id)
         }
@@ -1654,7 +1684,8 @@ export const getPropertiesByTenant = async (
       where: {
         id: {
           in: getPropertiesId.map(item => item?.id)
-        }
+        },
+        deletedAt: null
       },
       include: {
         propertyRoomType: {
@@ -1707,6 +1738,7 @@ export const getPropertiesByTenant = async (
     const countPropertiesByTenant = await prisma.property.count({
       where: {
         tenantId: id,
+        deletedAt: null,
       },
     })
 
@@ -1739,9 +1771,6 @@ export const getPropertiesByTenant = async (
               tenantId: isTenantExist?.id,
             },
           },
-          {
-            createdAt: dataPeriod
-          }
         ],
       },
     })
@@ -1863,8 +1892,7 @@ export const getPropertiesByTenant = async (
         checkOutDate: dataPeriod
       }
     })
-
-    console.log(dataPeriod)
+    console.log('period', period)
 
     res.status(200).json({
       error: false,
@@ -1878,7 +1906,7 @@ export const getPropertiesByTenant = async (
         reservation,
         arrival,
         departure,
-        totalReview,
+        totalReview: totalReview || 0,
         cancellation
       },
     })
@@ -2033,6 +2061,7 @@ export const updatePropertyGeneralInfo = async (
     const isPropertyExist = await prisma.property.findFirst({
       where: {
         slug,
+        deletedAt: null
       },
       include: {
         propertyDetail: true,
@@ -2146,7 +2175,8 @@ export const deleteProperty = async(req: Request, res: Response, next: NextFunct
 
     if (!isTenantExist?.id || isTenantExist?.deletedAt)
       throw { msg: 'Tenant not found!', status: 406 }
-    if(isTenantExist?.password !== password) throw { msg: 'Password invalid!', status: 406 }
+        const comparingPassword = await comparePassword(password, isTenantExist?.password as string)
+        if(!comparingPassword) throw { msg: 'Password invalid!', status: 406 }
     if (isTenantExist?.role !== role)
       throw { msg: 'Role unauthorized!', status: 401 }
 
@@ -2154,6 +2184,7 @@ export const deleteProperty = async(req: Request, res: Response, next: NextFunct
     const isPropertyExist = await prisma.property.findFirst({
       where: {
         slug,
+        deletedAt: null
       },
       include: {
         propertyDetail: true,
@@ -2210,6 +2241,18 @@ export const deleteProperty = async(req: Request, res: Response, next: NextFunct
           }
         })
 
+        const deletedSeason = await tx.season.deleteMany({
+          where: {
+            propertyId: isPropertyExist?.id
+          }
+        })
+
+        const deletedSeasonalPrice = await tx.seasonalPrice.deleteMany({
+          where: {
+            propertyId: isPropertyExist?.id
+          }
+        })
+
         const deletedPropertyImages = await tx.propertyImage.deleteMany({
           where: {
             propertyDetailId: isPropertyExist?.propertyDetail?.id
@@ -2256,7 +2299,10 @@ export const deleteProperty = async(req: Request, res: Response, next: NextFunct
       timeout: 15000
     })
 
-    deleteFiles({ imagesUploaded: [...propertyImagesToDelete, ...propertyRoomImagesToDelete] })
+
+    deleteFiles({ imagesUploaded: {
+      images: [...propertyImagesToDelete, ...propertyRoomImagesToDelete]
+    } })
 
     res.status(200).json({
       error: false,

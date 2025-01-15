@@ -60,6 +60,7 @@ export const createPropertyRoomImagesByProperty = async (
     const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
       where: {
         id: Number(roomId),
+        deletedAt: null
       },
       include: {
         property: {

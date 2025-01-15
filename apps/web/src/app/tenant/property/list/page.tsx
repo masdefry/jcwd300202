@@ -47,7 +47,7 @@ const PropertyListPage = ({
       handleSearchParams('limit', searchParams?.limit ? searchParams?.limit.toString() : '10')
       handleSearchParams('offset', searchParams?.offset ? searchParams?.offset.toString() : '0')
       setSearchParamsInState((state: any) => ({...state, sortBy: value.split('-')[1], order: value.split('-')[0], limit: 10, offset: 0}))
-      const res = await instance.get(`/property/tenant?limit=${searchParams?.limit || 10}&offset=${searchParams?.offset || 0}&sortBy=${value.split('-')[1] || 'name'}&order=${value.split('-')[0] || 'asc'}&period=${searchParamsInState?.period || '1'}`)
+      const res = await instance.get(`/property/tenant?limit=${searchParams?.limit || 10}&offset=${searchParams?.offset || 0}&sortBy=${value.split('-')[1] || 'name'}&order=${value.split('-')[0] || 'asc'}&period=${searchParamsInState?.period || searchParams?.period || '1'}`)
       return res?.data
     },
     onSuccess: (res) => {
@@ -72,7 +72,7 @@ const PropertyListPage = ({
       handleSearchParams('limit', searchParams?.limit ? searchParams?.limit.toString() : '10')
       handleSearchParams('offset', searchParams?.offset ? searchParams?.offset.toString() : '0')
       setSearchParamsInState((state: any) => ({...state, select: value, limit: 10, offset: 0}))
-      const res = await instance.get(`/property/tenant?limit=${searchParams?.limit || 10}&offset=${searchParams?.offset || 0}&sortBy=${searchParamsInState?.sortBy || 'name'}&order=${searchParamsInState?.order || 'asc'}&filterBy=${value}&period=${searchParamsInState?.period || '1'}`)
+      const res = await instance.get(`/property/tenant?limit=${searchParams?.limit || 10}&offset=${searchParams?.offset || 0}&sortBy=${searchParamsInState?.sortBy || 'name'}&order=${searchParamsInState?.order || 'asc'}&filterBy=${value}&period=${searchParamsInState?.period || searchParams?.period || '1'}`)
       return res?.data
     },
     onSuccess: (res) => {
@@ -139,7 +139,7 @@ const PropertyListPage = ({
         offset: number
       }) => {
         setSearchParamsInState((state: any) => ({...state, limit, offset}))
-        const res = await instance.get(`/property/tenant?limit=${limit || 10}&offset=${offset || 0}&sortBy=${searchParamsInState?.sortBy || 'name'}&order=${searchParamsInState?.order ||  'asc'}&filterBy=${searchParamsInState?.filterBy}`)
+        const res = await instance.get(`/property/tenant?limit=${limit || 10}&offset=${offset || 0}&sortBy=${searchParamsInState?.sortBy || 'name'}&order=${searchParamsInState?.order ||  'asc'}&filterBy=${searchParamsInState?.filterBy}&period=${searchParams?.period || '1'}`)
         return res?.data
       },
       onSuccess: (res) => {
@@ -187,7 +187,7 @@ const PropertyListPage = ({
           </div>
           <div className="flex flex-col gap-2 items-start justify-start border-r border-slate-300 px-5">
             <FaRegStar size={23} className="text-gray-600 ml-[-4px] mb-2" />
-            <p className="text-xl font-bold text-gray-800">{dataProperties?.review}</p>
+            <p className="text-xl font-bold text-gray-800">{dataProperties?.totalReview}</p>
             <p className="text-sm font-medium text-blue-700">Review</p>
           </div>
           <div className="flex flex-col gap-2 items-start justify-start px-5">
@@ -225,8 +225,8 @@ const PropertyListPage = ({
             <option value="desc-booked">
               Highest to Lowest Booked
             </option>
-            <option value="asc-review">Lowest to Highest Review</option>
-            <option value="desc-review">Highest to Lowest Review</option>
+            <option value="asc-review">Lowest to Highest Ratings</option>
+            <option value="desc-review">Highest to Lowest Ratings</option>
             <option value="asc-cancellation">Lowest to Highest Cancellation</option>
             <option value="desc-cancellation">Highest to Lowest Cancellation</option>
           </select>
@@ -297,7 +297,7 @@ const PropertyListPage = ({
                 <th>Location</th>
                 <th>Status (Today)</th>
                 <th>Booked</th>
-                <th>Review</th>
+                <th>Ratings (Accumulation)</th>
                 <th>Cancellation</th>
               </tr>
             </thead>
@@ -314,7 +314,7 @@ const PropertyListPage = ({
                     <td>{item?.address}</td>
                     <td className={`${item?.availability ? 'text-green-700' : 'text-red-600'}`}>{item?.availability ? 'Open' : 'Close'}</td>
                     <td>{item?.totalBooked}</td>
-                    <td>{item?.avgRating}</td>
+                    <td>{item?.avgRating.toFixed(1)}</td>
                     <td>{item?.totalCancelled}</td>
                   </tr>
                 )
@@ -322,15 +322,16 @@ const PropertyListPage = ({
             </tbody>
           </table>
           <div className="flex items-center justify-center w-full">
-            <div className="join">
+            <div className="flex items-center gap-1.5">
               {Array.from({ length: dataProperties?.totalPage }).map(
                 (_, index) => {
                   return (
                     <button
+                      disabled={dataProperties?.pageInUse === index + 1}
                       onClick={() =>
                         handleMutateRefreshPage({ limit: 10, offset: 10 * index })
                       }
-                      className={`join-item btn btn-sm scale:90 ${dataProperties?.pageInUse === index + 1 && 'btn-active'}`}
+                      className={`rounded-full flex items-center justify-center h-8 w-8 btn btn-sm scale:90 text-xs disabled:bg-gray-400 disabled:cursor-default ${dataProperties?.pageInUse === index + 1 && 'btn-active'}`}
                     >
                       {index + 1}
                     </button>

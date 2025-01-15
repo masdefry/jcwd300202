@@ -34,7 +34,6 @@ export default function Home() {
     queryKey: ['getPropertiesByUser'],
     queryFn: async() => {
       const res = await instance.get('/property/user')
-      console.log('resss', res)
       return res?.data?.data
     }
   })
@@ -163,7 +162,7 @@ export default function Home() {
                   </div>
                 </Link>
               )
-              }
+            }
             })
           }
         </section>
@@ -172,6 +171,7 @@ export default function Home() {
             dataLandingPage?.data?.cities?.map((item: any, index: number) => {
               if(index >= 2) {
                 return(
+                <Link key={index} href={`/explore/search?city=${item?.id}`}>
                   <div key={index}>
                     <CityRecommendationCard
                     isPending={isPendingDataLandingPage} 
@@ -182,6 +182,7 @@ export default function Home() {
                     h1Size='text-3xl'
                     />
                   </div>
+                </Link>
               )
               }
             })

@@ -273,7 +273,7 @@ const CardForExplore = ({ item, searchParams, isPending }: any) => {
           </div>
           {item?.availability ? (
             <Link
-              href={`/property/${item?.slug}/details?check-in-date=${searchParams['check-in-date']}&check-out-date=${searchParams['check-out-date']}&adult=${searchParams.adult}&children=${searchParams.children}`}
+              href={`/property/${item?.slug}/details${ (searchParams['check-in-date'] && searchParams['check-out-date']) ? `?check-in-date=${searchParams['check-in-date']}&check-out-date=${searchParams['check-out-date']}&adult=${searchParams.adult}&children=${searchParams.children}` : ''}`}
               className="min-w-max rounded-full bg-black text-base font-bold text-white px-6 py-3 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200 mt-3 flex items-center gap-2"
             >
               <CiBookmarkPlus size={23} />
@@ -281,7 +281,7 @@ const CardForExplore = ({ item, searchParams, isPending }: any) => {
             </Link>
           ) : (
             <Link
-              href={`/property/${item?.slug}/details?check-in-date=${searchParams['check-in-date']}&check-out-date=${searchParams['check-out-date']}&adult=${searchParams.adult}&children=${searchParams.children}`}
+              href={`/property/${item?.slug}/details${ (searchParams['check-in-date'] && searchParams['check-out-date']) ? `?check-in-date=${searchParams['check-in-date']}&check-out-date=${searchParams['check-out-date']}&adult=${searchParams.adult}&children=${searchParams.children}` : ''}`}
               className="min-w-max rounded-full bg-slate-300 text-base font-bold text-white px-6 py-3 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200 mt-3 flex items-center gap-2"
             >
               <CgUnavailable size={23} />

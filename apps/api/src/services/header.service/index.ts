@@ -15,12 +15,18 @@ export const createSearchService = async({country, city , checkInDate, checkOutD
             {
                 countryId: country
             },
+            {
+                deletedAt: null
+            }
         ]    
     } else {
         whereCondition = [
             {
                 countryId: country
             },
+            {
+                deletedAt: null
+            }
         ]
     }
 

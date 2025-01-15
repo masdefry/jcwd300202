@@ -686,7 +686,7 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
           >
             <input type="checkbox" />
             <div className="collapse-title text-sm font-bold text-gray-800 bg-white">
-              Stars
+              Hotel Stars
             </div>
             <div className="collapse-content pt-3">
               <ul className="flex flex-col gap-4 text-sm font-semibold">

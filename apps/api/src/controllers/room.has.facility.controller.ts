@@ -19,7 +19,8 @@ export const getRoomHasFacilities = async(req: Request, res: Response, next: Nex
         
         const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
             where: {
-                id: Number(propertyRoomTypeId)
+                id: Number(propertyRoomTypeId),
+                deletedAt: null
             }
         })
 
@@ -30,6 +31,11 @@ export const getRoomHasFacilities = async(req: Request, res: Response, next: Nex
                 AND: [
                     {
                         propertyRoomTypeId: Number(propertyRoomTypeId)
+                    },
+                    {
+                        propertyRoomType: {
+                            deletedAt: null
+                        }
                     },
                     {
                         propertyRoomFacility: {
@@ -71,7 +77,11 @@ export const getRoomHasFacilities = async(req: Request, res: Response, next: Nex
                 id: isPropertyRoomTypeExist?.propertyId
             },
             include: {
-                propertyRoomType: true
+                propertyRoomType: {
+                    where: {
+                        deletedAt: null
+                    }
+                }
             }
         })
         res.status(200).json({
@@ -108,10 +118,15 @@ export const getGeneralRoomHasFacilitiesByProperty = async(req: Request, res: Re
         
         const isPropertyExist = await prisma.property.findFirst({
             where: {
-                slug
+                slug,
+                deletedAt: null
             },
             include: {
-                propertyRoomType: true
+                propertyRoomType: {
+                    where: {
+                        deletedAt: null
+                    }
+                }
             }
         })
 
@@ -124,7 +139,8 @@ export const getGeneralRoomHasFacilitiesByProperty = async(req: Request, res: Re
                         propertyRoomType: {
                             property: {
                                 slug
-                            }
+                            },
+                            deletedAt: null
                         }
                     },
                     {
@@ -207,7 +223,8 @@ export const updateRoomHasFacilities = async(req: Request, res: Response, next: 
 
         const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
             where: {
-                id: Number(propertyRoomTypeId)
+                id: Number(propertyRoomTypeId),
+                deletedAt: null
             },
             include: {
                 property: true
@@ -272,7 +289,8 @@ export const updateRoomHasFacilitiesByProperty = async(req: Request, res: Respon
 
         const isPropertyExist = await prisma.property.findUnique({
             where: {
-                slug
+                slug,
+                deletedAt: null
             },
             include: {
                 propertyRoomType: true

@@ -40,6 +40,9 @@ export const getLandingPageData = async(req: Request, res: Response, next: NextF
         // }
         
         const properties = await prisma.property.findMany({
+            where: {
+                deletedAt: null
+            },
             take: 20,
             include: {
                 city: true,

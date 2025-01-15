@@ -54,6 +54,6 @@ export const manageAddRoomValidationSchema = Yup.object().shape({
           return file && fileFormatAccepted.includes(file.type.split('/')[1])
         }),
     )
-    .min(1, 'At least one image must be included')
+    .min(3, 'At least 3 image must be included')
     .max(5, 'Maximum 5 image allowed'),
 })

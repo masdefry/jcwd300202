@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import { prisma } from '@/connection'
 import { addDays, differenceInDays } from 'date-fns'
 import { deleteFiles } from '@/utils/deleteFiles'
+import { comparePassword } from '@/utils/hashPassword'
 
 export const getPropertyRoomType = async (
   req: Request,
@@ -14,6 +15,7 @@ export const getPropertyRoomType = async (
     const propertyRoomType = await prisma.propertyRoomType.findMany({
       where: {
         id: Number(id),
+        deletedAt: null
       },
       include: {
         propertyRoomImage: true,
@@ -82,15 +84,16 @@ export const getPropertyRoomTypeByProperty = async (
     const isPropertyExist = await prisma.property.findFirst({
       where: {
         slug,
+        deletedAt: null
       },
     })
 
     if (!isPropertyExist?.id || isPropertyExist?.deletedAt)
       throw { msg: 'Property not found!', status: 406 }
 
-let gteDate = checkInDate ? new Date(checkInDate as string) : new Date();
+let gteDate = checkInDate && checkInDate != 'undefined' ? new Date(checkInDate as string) : new Date();
     gteDate.setHours(0, 0, 0, 0);
-    let ltDate = checkOutDate ? new Date(checkOutDate as string) : addDays(gteDate, 1);
+    let ltDate = checkOutDate && checkOutDate != 'undefined' ? new Date(checkOutDate as string) : addDays(gteDate, 1);
     ltDate.setHours(0, 0, 0, 0);
 
     let dataPeriod = {}
@@ -132,6 +135,7 @@ let gteDate = checkInDate ? new Date(checkInDate as string) : new Date();
     const propertyRoomType = await prisma.propertyRoomType.findMany({
       where: {
         propertyId: isPropertyExist?.id,
+        deletedAt: null,
         AND: whereCondition
         // OR: [
         //     {
@@ -182,6 +186,7 @@ let gteDate = checkInDate ? new Date(checkInDate as string) : new Date();
     const countAllRooms = await prisma.propertyRoomType.count({
       where: {
         propertyId: isPropertyExist?.id,
+        deletedAt: null,
         AND: whereCondition
       },
     })
@@ -416,6 +421,7 @@ export const updatePropertyRoomTypeGeneral = async (
     const isPropertyExist = await prisma.property.findFirst({
       where: {
         slug,
+        deletedAt: null
       },
     })
 
@@ -427,6 +433,7 @@ export const updatePropertyRoomTypeGeneral = async (
     const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
       where: {
         id: Number(propertyRoomTypeId),
+        deletedAt: null
       },
     })
 
@@ -501,6 +508,7 @@ export const createPropertyRoomType = async (
     const isPropertyExist = await prisma.property.findFirst({
       where: {
         slug,
+        deletedAt: null
       },
     })
 
@@ -587,7 +595,6 @@ export const deletePropertyRoomType = async(req: Request, res: Response, next: N
     const { id, role, password } = req.body
     const { slug } = req.params
     const { propertyRoomTypeId } = req.query
-
     const isTenantExist = await prisma.tenant.findUnique({
       where: {
         id,
@@ -596,7 +603,8 @@ export const deletePropertyRoomType = async(req: Request, res: Response, next: N
 
     if (!isTenantExist?.id || isTenantExist?.deletedAt)
       throw { msg: 'Tenant not found!', status: 406 }
-    if(isTenantExist?.password !== password) throw { msg: 'Password invalid!', status: 406 }
+    const comparingPassword = await comparePassword(password, isTenantExist?.password as string)
+    if(!comparingPassword) throw { msg: 'Password invalid!', status: 406 }
     if (isTenantExist?.role !== role)
       throw { msg: 'Role unauthorized!', status: 401 }
 
@@ -604,6 +612,7 @@ export const deletePropertyRoomType = async(req: Request, res: Response, next: N
     const isPropertyExist = await prisma.property.findFirst({
       where: {
         slug,
+        deletedAt: null
       },
       include: {
         propertyDetail: true,
@@ -618,6 +627,7 @@ export const deletePropertyRoomType = async(req: Request, res: Response, next: N
     const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
       where: {
         id: Number(propertyRoomTypeId),
+        deletedAt: null
       },
     })
 
@@ -626,58 +636,68 @@ export const deletePropertyRoomType = async(req: Request, res: Response, next: N
 
     const getPropertyRoomImages = await prisma.propertyRoomImage.findMany({
       where: {
-        propertyRoomTypeId: {
-          in: isPropertyExist?.propertyRoomType?.map(item => item?.id)
-        }
+        propertyRoomTypeId: Number(propertyRoomTypeId)
       }
     })
     
-    const propertyRoomImagesToDelete = getPropertyRoomImages.map(item => {
-      return {
-        destination: item?.directory,
-        filename: `${item?.filename}.${item?.fileExtension}`
-      }
-    })
+    const propertyRoomImagesToDelete = {
+      images: getPropertyRoomImages.map(item => {
+        return {
+          destination: item?.directory,
+          filename: `${item?.filename}.${item?.fileExtension}`
+        }
+      }) 
+    }
+
+        console.log('>>>>>>', propertyRoomImagesToDelete)
 
     await prisma.$transaction(async(tx) => {
       try {
 
         const deletedRoomHasFacilities = await tx.roomHasFacilities.deleteMany({
           where: {
-            propertyRoomTypeId: {
-              in: isPropertyExist?.propertyRoomType?.map(item => item?.id)
-            }
+            propertyRoomTypeId: Number(propertyRoomTypeId)
+          }
+        })
+
+        const deletedSeasonalPrice = await tx.seasonalPrice.deleteMany({
+          where: {
+            propertyRoomTypeId: Number(propertyRoomTypeId)
+          }
+        })
+
+        const deletedSeason = await tx.season.deleteMany({
+          where: {
+            propertyRoomTypeId: Number(propertyRoomTypeId)
           }
         })
 
         const deletedPropertyRoomImages = await tx.propertyRoomImage.deleteMany({
           where: {
-            propertyRoomTypeId: {
-              in: isPropertyExist?.propertyRoomType?.map(item => item?.id)
-            }
+            propertyRoomTypeId: Number(propertyRoomTypeId)
           }
         })
 
 
-        const softDeletePropertyRoomType = await tx.propertyRoomType.updateMany({
+        const softDeletePropertyRoomType = await tx.propertyRoomType.update({
           where: {
-            propertyId: isPropertyExist?.id
+            id: Number(propertyRoomTypeId)
           },
           data: {
             deletedAt: new Date().toISOString()
           }
         })
 
+        deleteFiles({ imagesUploaded: propertyRoomImagesToDelete })
       } catch (err) {
         throw { msg: 'Delete room type failed!', status: 500 }
       }
 
     },
     {
-      timeout: 15000
+      timeout: 25000
     })
 
-    deleteFiles({ imagesUploaded: [...propertyRoomImagesToDelete] })
 
     res.status(200).json({
       error: false,
@@ -686,6 +706,7 @@ export const deletePropertyRoomType = async(req: Request, res: Response, next: N
     })
 
   } catch (err) {
+    console.log(err)
     next(err)
   }
 }

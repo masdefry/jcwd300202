@@ -3,7 +3,7 @@ import { prisma } from "@/connection";
 export const getRoomTypeService = async(propertyRoomTypeId: number) => {
     const room = await prisma.propertyRoomType.findUnique({
         where: {
-            id: Number(propertyRoomTypeId)
+            id: Number(propertyRoomTypeId),
         },
         select: {
             name: true,

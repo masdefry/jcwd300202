@@ -28,7 +28,7 @@ export const createTransactionService = async({ checkInDate, checkOutDate, total
     
     const propertyInTransaction = await prisma.property.findUnique({
         where: {
-            id: propertyId
+            id: propertyId,
         }
     })
 

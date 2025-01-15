@@ -27,15 +27,21 @@ const CalendarPage = ({
   const [ selectedPropertyRoomType, setSelectedPropertyRoomType ] = useState<any>()
   const [ dataSeasonsByProperty, setDataSeasonsByProperty] = useState<any>()
   const [ propertyRoomTypes, setPropertyRoomTypes] = useState<any>()
+  const [ isPendingSeasons, setIsPendingSeasons ] = useState(true)
   const fetchDataSeasonsByProperty = async() => {
-    const res = await instance.get(`season/property/${params?.slug}`)
-        if(res?.status === 200) {
-          setDataSeasonsByProperty(res?.data?.data)
-          setPropertyRoomTypes(res?.data?.data?.property?.propertyRoomType)
-        }
+    try {
+      const res = await instance.get(`season/property/${params?.slug}`)
+          if(res?.status === 200) {
+            setDataSeasonsByProperty(res?.data?.data)
+            setPropertyRoomTypes(res?.data?.data?.property?.propertyRoomType)
+            setIsPendingSeasons(false)
+          }
+    } catch (err) {
+      console.log(err)
+    }
   }
   useEffect(() => {
-    setViewMode(searchParams?.view)
+    setViewMode(searchParams?.view || 'monthly-view')
     fetchDataSeasonsByProperty()
   }, [])
 
@@ -315,8 +321,6 @@ const CalendarPage = ({
         isPeak: res?.data?.propertySeason?.isPeak ? res?.data?.propertySeason?.isPeak : false,
       })
       setDataRoomPerDate(res?.data)
-      // setRoomAvailability(res?.data?.seasonalPrice?.roomAvailability)
-      // setIsPeakSeason(res?.data?.seasonalPrice?.isPeak)
       setRatesPercentage(
         Math.floor(
           (res?.data?.seasonalPrice?.price /
@@ -804,7 +808,7 @@ const CalendarPage = ({
 
   const [month, setMonth] = useState(new Date().getMonth())
   const [year, setYear] = useState(new Date().getFullYear())
-  const [viewMode, setViewMode] = useState('list-view')
+  const [viewMode, setViewMode] = useState('monthly-view')
   const [selectRoom, setSelectRoom] = useState('all-rooms')
 
   const { mutate: mutateDataSeasonsByPropertyRoomType, isPending: isPendingDataSeasonsByPropertyRoomType } = useMutation({
@@ -840,7 +844,7 @@ const CalendarPage = ({
     }
   }
   return (
-    <main className="flex flex-col gap-10 relative min-h-screen p-5">
+    <main className="flex flex-col gap-10 relative min-h-screen 2xl:p-5">
       <div className="flex flex-col">
         <h1 className="text-lg font-bold text-gray-800">Season Calendar</h1>
         <p className="text-sm font-medium text-slate-600">
@@ -848,6 +852,7 @@ const CalendarPage = ({
           Season.
         </p>
       </div>
+      <section className='overflow-x-auto py-1'>
       <section className="flex items-center gap-5">
         <span className="w-fit flex gap-2 items-center">
           <label
@@ -866,8 +871,8 @@ const CalendarPage = ({
             id="view"
             className="hover:cursor-pointer bg-gray-50 border border-slate-300 text-gray-800 text-xs font-semibold rounded-full h-[3em] p-1.5 px-2 focus:outline-none focus:ring-slate-400 focus:border-slate-400 block w-[200px] min-w-max dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
-            <option value="list-view">List View</option>
             <option value="monthly-view">Monthly View</option>
+            <option value="list-view">List View</option>
           </select>
         </span>
         
@@ -934,17 +939,29 @@ const CalendarPage = ({
           </span>
         )}
       </section>
+      </section>
       {viewMode === 'list-view' &&
         dataSeasonsByProperty?.property?.propertyRoomType?.map(
           (item: any, index: number) => {
             return (
               <section className="flex flex-col gap-5">
-                <hgroup className="text-xl font-bold text-gray-900 flex flex-col">
-                  <h1>{item?.name}</h1>
-                  <p className="text-sm font-medium text-gray-500">
-                    {dataSeasonsByProperty?.property?.name}
-                  </p>
-                </hgroup>
+                {
+                  isPendingSeasons ? (
+                  <hgroup className="text-xl font-bold text-gray-900 flex flex-col gap-1">
+                    <h1 className='text-transparent skeleton rounded-none bg-slate-300 w-fit'>Pan Pacific</h1>
+                    <p className="text-sm font-medium text-transparent skeleton rounded-none bg-slate-300 w-fit">
+                      Pan Pacific Jakarta
+                    </p>
+                  </hgroup>
+                  ) : (
+                  <hgroup className="text-xl font-bold text-gray-900 flex flex-col">
+                    <h1>{item?.name}</h1>
+                    <p className="text-sm font-medium text-gray-500">
+                      {dataSeasonsByProperty?.property?.name}
+                    </p>
+                  </hgroup>
+                  )
+                }
                 <Separator />
                 <div className="overflow-x-scroll scrollbar-thumb-rounded-full scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-300">
                   <div className="overflow-hidden flex items-center w-fit bg-white">
@@ -1094,7 +1111,16 @@ const CalendarPage = ({
           },
         )}
       {viewMode === 'monthly-view' && (
-        <div className="w-full flex flex-col gap-5">
+        <section className="w-screen-lg flex flex-col overflow-x-scroll">
+        <div className="w-screen-lg flex flex-col gap-5 h-screen">
+          {
+                  isPendingSeasons ? (
+          <hgroup className="text-xl font-bold text-gray-900 flex items-center gap-1">
+            <h1 className=" flex items-center gap-1 skeleton text-transparent bg-slate-300 rounded-none w-fit">
+              Pan Pacific Jakarta Property
+            </h1>
+          </hgroup>
+                  ) : (
           <hgroup className="text-xl font-bold text-gray-900 flex items-center gap-1">
             <h1 className=" flex items-center gap-1">
               {selectRoom === 'all-rooms'
@@ -1102,8 +1128,11 @@ const CalendarPage = ({
                 : selectedPropertyRoomType?.name + ' Room Type'}
             </h1>
           </hgroup>
-          <div className="w-full flex items-center">
+                  )
+                }
+          <div className="absolute left-0 w-screen-lg top-[230px] min-w-screen flex items-center z-40">
             <Calendar
+            className='w-full h-full'
               onSelect={(date) => {
                 let seasonStartDate: any
                 let seasonEndDate: any
@@ -1281,6 +1310,19 @@ const CalendarPage = ({
                   dataSeasonsByProperty?.propertySeasons[
                     seasonIdxPropertySeason
                   ]?.name
+                if(isPendingSeasons) {
+                  return (
+                    <div className="w-full h-fit flex flex-col items-center justify-center text-xs font-medium text-gray-500">
+                        <div className="w-full h-fit flex flex-col items-center justify-center p-1.5">
+                          <p className='skeleton rounded-none bg-slate-300 w-fit text-transparent'>
+                            10M
+                            30M
+                            20M
+                          </p>
+                        </div>
+                    </div>
+                  )
+                }  
                 return (
                   <div className="w-full h-fit flex flex-col items-center justify-center text-xs font-medium text-gray-500">
                     {isStartSeason && isEndSeason && seasonName && (
@@ -1364,6 +1406,7 @@ const CalendarPage = ({
             />
           </div>
         </div>
+        </section>
       )}
       <section
         className={`${(activeRoomSetter?.startDate && !isPendingGetSeasonalPrice ) || (dataPropertyRoomTypeSeason?.startDate && dataPropertyRoomTypeSeason?.endDate  ) || dataPropertyRoomTypeSeason?.isBulk ? 'flex' : 'hidden'} w-full backdrop-blur-sm bg-black bg-opacity-25 h-full top-0 left-0 fixed items-center justify-center z-[51]`}

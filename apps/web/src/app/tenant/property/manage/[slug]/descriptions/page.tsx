@@ -50,7 +50,7 @@ const PropertyManageDescriptionPage = ({ params }: { params: { slug: string } })
   })
   const [ isSubmitting, setIsSubmitting ] = useState(false)
   return (
-    <main className='flex flex-col gap-5 p-5'>
+    <main className='flex flex-col gap-5 2xl:p-5'>
       <div className='flex flex-col'>
         <h1 className='text-lg font-bold text-gray-800'>Property Descriptions</h1>
         <p className='text-sm font-medium text-slate-600'>Easily Update Your Property Description – Keep it Fresh, Keep it Yours!</p>

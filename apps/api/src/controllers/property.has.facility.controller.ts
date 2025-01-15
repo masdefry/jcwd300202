@@ -25,6 +25,7 @@ export const getPropertyHasFacilities = async (
     const isPropertyExist = await prisma.property.findFirst({
       where: {
         slug,
+        deletedAt: null
       },
     })
 
@@ -118,6 +119,7 @@ export const updatePropertyHasFacilities = async (
     const isPropertyExist = await prisma.property.findFirst({
       where: {
         slug,
+        deletedAt: null
       },
     })
 

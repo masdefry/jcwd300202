@@ -48,6 +48,6 @@ export const createCountryService = async ({ name, description, id, role, images
       throw { msg: 'Create country failed!', status: 500 }
 
     return {
-        data: createdCountry,
+        createdCountry,
     }
 }

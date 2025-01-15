@@ -10,7 +10,6 @@ export interface IProperty {
     checkOutEndTime: Date;
     slug: string;
     star?: number;
-  
     propertyTypeId?: number;
   
     tenantId?: string;
@@ -22,5 +21,23 @@ export interface IProperty {
     createdAt: Date;
     updatedAt: Date;
     deletedAt?: Date | null;
+  }
+  
+
+  export interface IPropertyDetail {
+    id: number;
+    propertyDescription: string;
+    neighborhoodDescription: string;
+    phoneNumber: string;
+    url?: string;
+    totalRooms: number;
+  
+    
+    propertyId: string;
+    property: IProperty;
+  
+    createdAt: Date;
+    updatedAt: Date;
+    deletedAt?: Date;
   }
   

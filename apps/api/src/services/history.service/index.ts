@@ -31,7 +31,7 @@ export const createUserHistoryViewService = async ({ id, role, slug }: Pick<IUse
     })
 
     return {
-        data: createdUserHistoryView,
+        createdUserHistoryView,
     }
 
 }

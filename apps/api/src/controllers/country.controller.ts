@@ -1,4 +1,4 @@
-import prisma from '@/prisma'
+import { createCountryService, getCountriesService } from '@/services/country.service'
 import { NextFunction, Request, Response } from 'express'
 
 export const getCountries = async (
@@ -9,24 +9,13 @@ export const getCountries = async (
   try {
     const { countryName, limit = 8 } = req.query
 
-    const countries = await prisma.country.findMany({
-      where: {
-        name: {
-          contains: countryName as string,
-          mode: 'insensitive',
-        },
-      },
-      orderBy: {
-        name: 'asc',
-      },
-      take: Number(limit),
-    })
-
+    const getCountriesProcess = await getCountriesService({ countryName: countryName as string, limit: limit as string | number })
+    
     res.status(200).json({
       error: false,
       message: 'Get countries success',
       data: {
-        countries,
+        countries: getCountriesProcess?.countries,
       },
     })
   } catch (error) {
@@ -46,34 +35,12 @@ export const createCountry = async (
       throw { msg: 'Images not found!', status: 406 }
     const imagesUploaded: any = req?.files?.images
 
-    const isTenantExist = await prisma.tenant.findUnique({
-      where: {
-        id,
-      },
-    })
-
-    if (!isTenantExist?.id || isTenantExist?.deletedAt)
-      throw { msg: 'Tenant not found!', status: 406 }
-    if (isTenantExist.role !== role)
-      throw { msg: 'Role unauthorized!', status: 401 }
-
-    const createdCountry = await prisma.country.create({
-      data: {
-        name: name,
-        description,
-        directory: imagesUploaded[0].destination,
-        filename: imagesUploaded[0].filename.split('.')[0],
-        fileExtension: imagesUploaded[0].filename.split('.')[0],
-      },
-    })
-
-    if (!createdCountry?.id)
-      throw { msg: 'Create country failed!', status: 500 }
-
+    const createCountryProcess = await createCountryService({ name, description, id, role, imagesUploaded })
+    
     res.status(201).json({
       error: false,
       message: 'Create country success',
-      data: createdCountry,
+      data: createCountryProcess?.data,
     })
   } catch (error) {
     next(error)

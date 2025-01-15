@@ -28,12 +28,26 @@ instance.interceptors.response.use(
         return res
     },
     (error) => {
-        if(error?.response?.data?.message === 'jwt expired') {
-            const setLogout = authStore((state) => state.setLogout())
-            setLogout()
+        console.log(error)
+        if(error?.message === 'Token not found!') {
             Cookies.remove('authToken')
             Cookies.remove('authRole')
-            window.location.href = '/login'
+            if(window.location.href.includes('/tenant')) {
+                window.location.href = '/tenant/auth'    
+            } else {
+                window.location.href = '/auth'    
+            }
+        }
+        if(error?.response?.data?.message === 'jwt expired') {
+            authStore.getState().setLogout()
+            
+            Cookies.remove('authToken')
+            Cookies.remove('authRole')
+            if(window.location.href.includes('/tenant')) {
+                window.location.href = '/tenant/auth'    
+            } else {
+                window.location.href = '/auth'    
+            }
         }
         
         return Promise.reject(error)

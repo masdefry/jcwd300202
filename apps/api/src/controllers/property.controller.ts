@@ -238,6 +238,9 @@ export const getPropertyDetail = async (
         propertyRoomType: {
           include: {
             seasonalPrice: true
+          },
+          where: {
+            deletedAt: null
           }
         },
       },
@@ -285,6 +288,9 @@ export const getPropertyDetail = async (
         propertyRoomTypeId: {
           in: property.propertyRoomType.map((item) => item.id),
         },
+        propertyRoomType: {
+          deletedAt: null
+        }
       },
     })
 
@@ -522,7 +528,6 @@ export const getPropertyDetail = async (
         }
       },
     )
-    console.log('countReservedRooms', countReservedRooms)
     res.status(200).json({
       error: false,
       message: 'Get property detail success',
@@ -1542,7 +1547,7 @@ export const getPropertiesByTenant = async (
 ) => {
   try {
     const { id, role } = req.body
-    const { limit = 10, offset = 0, sortBy = 'name', order='asc', filterBy, filterValue, period } = req.query
+    const { limit = 10, offset = 0, sortBy = 'name', order='asc', filterBy, filterValue, period, name } = req.query
     
     const isTenantExist = await prisma.tenant.findUnique({
       where: {
@@ -1556,9 +1561,9 @@ export const getPropertiesByTenant = async (
     if (isTenantExist?.role !== role)
       throw { msg: 'Role unauthorized!', status: 401 }
 
-    let gteDate = subDays(new Date(), Number(period) || 1);
+    let gteDate = subDays(new Date(), Number(period) || 30);
     gteDate.setHours(0, 0, 0, 0);
-    let ltDate = addDays(gteDate, Number(period) || 1);
+    let ltDate = addDays(gteDate, Number(period) || 30);
     ltDate.setHours(0, 0, 0, 0);
 
     let dataPeriod = {}
@@ -1576,7 +1581,11 @@ export const getPropertiesByTenant = async (
       getPropertiesId = await prisma.property.findMany({
         where: {
           tenantId: isTenantExist?.id,
-          deletedAt: null
+          deletedAt: null,
+          name: {
+            contains: name as string || '',
+            mode: 'insensitive'
+          }
         },
         orderBy: {
           name: order === 'desc' ? 'desc' : 'asc',
@@ -1587,6 +1596,10 @@ export const getPropertiesByTenant = async (
         where: {
           tenantId: isTenantExist?.id,
           deletedAt: null,
+          name: {
+            contains: name as string || '',
+            mode: 'insensitive'
+          },
           transaction: {
             some: {
                 transactionStatus: {
@@ -1609,6 +1622,10 @@ export const getPropertiesByTenant = async (
         where: {
           tenantId: isTenantExist?.id,
           deletedAt: null,
+          name: {
+            contains: name as string || '',
+            mode: 'insensitive'
+          },
           transaction: {
             some: {
               transactionStatus: {
@@ -1631,6 +1648,10 @@ export const getPropertiesByTenant = async (
         where: {
           tenantId: isTenantExist?.id,
           deletedAt: null,
+          name: {
+            contains: name as string || '',
+            mode: 'insensitive'
+          }
         },
         orderBy: {
           name: 'asc',
@@ -1661,6 +1682,10 @@ export const getPropertiesByTenant = async (
       where: {
         tenantId: isTenantExist?.id,
         deletedAt: null,
+        name: {
+          contains: name as string || '',
+          mode: 'insensitive'
+        },
         id: {
           notIn: getPropertiesId.map(item => item?.id)
         }

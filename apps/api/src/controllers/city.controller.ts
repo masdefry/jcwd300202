@@ -1,4 +1,4 @@
-import prisma from '@/prisma'
+import { createCityService, getCitiesService } from '@/services/city.service'
 import { NextFunction, Request, Response } from 'express'
 
 export const getCities = async (
@@ -9,24 +9,13 @@ export const getCities = async (
   try {
     const { cityName, limit = 8 } = req.query
 
-    const cities = await prisma.city.findMany({
-      where: {
-        name: {
-          contains: cityName as string,
-          mode: 'insensitive',
-        },
-      },
-      orderBy: {
-        name: 'asc',
-      },
-      take: Number(limit),
-    })
+    const getCitiesProcess = await getCitiesService({ cityName: cityName as string, limit: limit as string })
 
     res.status(200).json({
       error: false,
       message: 'Get cities success',
       data: {
-        cities,
+        cities: getCitiesProcess?.cities,
       },
     })
   } catch (error) {
@@ -46,33 +35,12 @@ export const createCity = async (
       throw { msg: 'Images not found!', status: 406 }
     const imagesUploaded: any = req?.files?.images
 
-    const isTenantExist = await prisma.tenant.findUnique({
-      where: {
-        id,
-      },
-    })
-
-    if (!isTenantExist?.id || isTenantExist?.deletedAt)
-      throw { msg: 'Tenant not found!', status: 406 }
-    if (isTenantExist.role !== role)
-      throw { msg: 'Role unauthorized!', status: 401 }
-
-    const createdCity = await prisma.city.create({
-      data: {
-        name: cityName,
-        countryId: Number(countryId),
-        directory: imagesUploaded[0].destination,
-        filename: imagesUploaded[0].filename.split('.')[0],
-        fileExtension: imagesUploaded[0].filename.split('.')[0],
-      },
-    })
-
-    if (!createdCity?.id) throw { msg: 'Create city failed!', status: 500 }
+    const createCityProcess = await createCityService({ cityName, countryId, id, role, imagesUploaded })
 
     res.status(201).json({
       error: false,
       message: 'Create city success',
-      data: createdCity,
+      data: createCityProcess?.data,
     })
   } catch (error) {
     next(error)

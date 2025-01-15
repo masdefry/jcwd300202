@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import jwt from 'jsonwebtoken'
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const token = req.cookies.get('authToken')?.value
   const role = req.cookies.get('authRole')?.value
   const pathname = req.nextUrl.pathname
@@ -10,6 +10,8 @@ export function middleware(req: NextRequest) {
   if (pathname.includes('/auth')) {
     return NextResponse.next()
   }
+
+
 
   if (!token) {
     if(pathname.startsWith('/tenant') && !pathname.includes('/auth')) return NextResponse.redirect(new URL('/tenant/auth', req.url)) 

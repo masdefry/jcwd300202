@@ -74,6 +74,7 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
     const fetchDataPropertyDetail = async() => {
         try {
             const res = await instance.get(`/property/${params?.slug}/search`)
+            console.log(res)
             mutatePropertyRoomType({ limit: 2, offset: 0 })
             if(res?.status === 200) {
                 setDataPropertyDetail(res?.data?.data)

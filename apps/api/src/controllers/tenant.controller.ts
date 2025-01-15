@@ -1,10 +1,5 @@
-import prisma from '@/prisma'
-import { createTokenExpiresIn1H } from '@/utils/jwt'
-import { transporter } from '@/utils/transporter'
-import { format } from 'date-fns'
+import { deleteTenantProfileService, getTenantProfileService, updateTenantEmailService, updateTenantProfilePictureService, updateTenantProfileService } from '@/services/tenant.service'
 import { NextFunction, Request, Response } from 'express'
-import fs from 'fs'
-import { compile } from 'handlebars'
 
 export const getTenantProfile = async (
   req: Request,
@@ -14,30 +9,19 @@ export const getTenantProfile = async (
   try {
     const { id, role } = req.body
 
-    const isTenantExist = await prisma.tenant.findUnique({
-      where: {
-        id,
-      },
-    })
-
-    if (!isTenantExist?.id || isTenantExist?.deletedAt)
-      throw { msg: 'Tenant not found!', status: 406 }
-    if (isTenantExist?.role !== role)
-      throw { msg: 'Role unauthorized!', status: 401 }
+    const getTenantProfileProcess = await getTenantProfileService({ id, role })
 
     res.status(200).json({
       error: false,
       message: 'Get Tenant profile success',
       data: {
-        pic: isTenantExist?.pic,
-        phoneNumber: isTenantExist?.phoneNumber,
-        isVerified: isTenantExist?.isVerified,
-        companyName: isTenantExist?.companyName,
-        email: isTenantExist?.email,
-        address: isTenantExist?.address,
-        profilePictureUrl: isTenantExist?.directory
-          ? `http://localhost:5000/api/${isTenantExist?.directory}/${isTenantExist?.filename}.${isTenantExist.fileExtension}`
-          : '',
+        pic: getTenantProfileProcess?.pic,
+        phoneNumber: getTenantProfileProcess?.phoneNumber,
+        isVerified: getTenantProfileProcess?.isVerified,
+        companyName: getTenantProfileProcess?.companyName,
+        email: getTenantProfileProcess?.email,
+        address: getTenantProfileProcess?.address,
+        profilePictureUrl: getTenantProfileProcess?.profilePictureUrl,
       },
     })
   } catch (error) {
@@ -53,38 +37,17 @@ export const updateTenantProfile = async (
   try {
     const { id, role, email, pic, phoneNumber, companyName, address } = req.body
 
-    const isTenantExist = await prisma.tenant.findUnique({
-      where: {
-        id,
-      },
-    })
-
-    if (!isTenantExist?.id || isTenantExist?.deletedAt)
-      throw { msg: 'Tenant not found!', status: 406 }
-    if (isTenantExist?.role !== role)
-      throw { msg: 'Role unauthorized!', status: 401 }
-
-    const updatedTenantProfile = await prisma.tenant.update({
-      where: {
-        id,
-      },
-      data: {
-        pic,
-        phoneNumber,
-        address,
-        companyName,
-      },
-    })
-
+    const updateTenantProfileProcess = await updateTenantProfileService({ id, role, email, pic, phoneNumber, companyName, address })
+    
     res.status(200).json({
       error: false,
       message: 'Update Tenant profile success',
       data: {
-        email: updatedTenantProfile?.email,
-        pic: updatedTenantProfile?.pic,
-        phoneNumber: updatedTenantProfile?.phoneNumber,
-        address: updatedTenantProfile?.address,
-        companyName: updatedTenantProfile?.companyName,
+        email: updateTenantProfileProcess?.email,
+        pic: updateTenantProfileProcess?.pic,
+        phoneNumber: updateTenantProfileProcess?.phoneNumber,
+        address: updateTenantProfileProcess?.address,
+        companyName: updateTenantProfileProcess?.companyName,
       },
     })
   } catch (error) {
@@ -99,41 +62,15 @@ export const updateTenantProfilePicture = async (
 ) => {
   try {
     const { id, role } = req.body
-
-    const isTenantExist = await prisma.tenant.findUnique({
-      where: {
-        id,
-      },
-    })
-
-    if (!isTenantExist?.id || isTenantExist?.deletedAt)
-      throw { msg: 'Tenant not found!', status: 406 }
-    if (isTenantExist?.role !== role)
-      throw { msg: 'Role unauthorized!', status: 401 }
-
     const imagesUploaded: any = req.files
 
-    const directory = imagesUploaded?.images[0].destination
-    let filename = imagesUploaded?.images[0].filename.split('.')[0]
-    let fileExtension = imagesUploaded?.images[0].filename.split('.')
-    fileExtension = fileExtension[fileExtension.length - 1]
-
-    const updatedTenantProfilePicture = await prisma.tenant.update({
-      where: {
-        id,
-      },
-      data: {
-        filename,
-        directory,
-        fileExtension,
-      },
-    })
+    const updateTenantProfilePictureProcess = await updateTenantProfilePictureService({id, role, imagesUploaded})
 
     res.status(200).json({
       error: false,
       message: 'Update Tenant profile picture success',
       data: {
-        profilePictureUrl: `http://localhost:5000/api/${updatedTenantProfilePicture?.directory}/${updatedTenantProfilePicture?.filename}.${updatedTenantProfilePicture.fileExtension}`,
+        profilePictureUrl: updateTenantProfilePictureProcess?.profilePictureUrl
       },
     })
   } catch (error) {
@@ -149,67 +86,8 @@ export const updateTenantEmail = async (
   try {
     const { id, role, email } = req.body
 
-    const isTenantExist = await prisma.tenant.findUnique({
-      where: {
-        id,
-      },
-    })
-
-    if (!isTenantExist?.id || isTenantExist?.deletedAt)
-      throw { msg: 'Tenant not found!', status: 406 }
-    if (isTenantExist?.role !== role)
-      throw { msg: 'Role unauthorized!', status: 401 }
-    if (isTenantExist?.email === email)
-      throw {
-        msg: 'The new email cannot be the same as your current email!',
-        status: 406,
-      }
-
-    const token = await createTokenExpiresIn1H({
-      id: isTenantExist?.id,
-      role: isTenantExist?.role,
-    })
-
-    await prisma.$transaction(
-      async (tx) => {
-        try {
-          const updatedEmail = await tx.tenant.update({
-            where: {
-              id,
-            },
-            data: {
-              email,
-              isVerified: false,
-              token,
-            },
-          })
-
-          if (!updatedEmail?.email)
-            throw { msg: 'Update tenant email failed!', status: 500 }
-
-          const link = `http://localhost:3000/tenant/auth/verify/email/${token}`
-
-          const emailBody = fs.readFileSync(
-            './src/public/body.email/verify.change.email.tenant.html',
-            'utf-8',
-          )
-          let compiledEmailBody: any = await compile(emailBody)
-          compiledEmailBody = compiledEmailBody({ url: link })
-
-          await transporter.sendMail({
-            to: email,
-            subject: 'Verify New Email [Roomify]',
-            html: compiledEmailBody,
-          })
-        } catch (err) {
-          throw { msg: 'Send email for verification failed!', status: 500 }
-        }
-      },
-      {
-        timeout: 50000,
-      },
-    )
-
+    const updateTenantEmailProcess = await updateTenantEmailService({ id, role, email })
+   
     res.status(200).json({
       error: false,
       message: 'Update tenant email success',
@@ -230,26 +108,8 @@ export const deleteTenantProfile = async (
   try {
     const { id, role } = req.body
 
-    const isTenantExist = await prisma.tenant.findUnique({
-      where: {
-        id,
-      },
-    })
-
-    if (!isTenantExist?.id || isTenantExist?.deletedAt)
-      throw { msg: 'Tenant not found!', status: 406 }
-    if (isTenantExist?.role !== role)
-      throw { msg: 'Role unauthorized!', status: 401 }
-
-    await prisma.tenant.update({
-      where: {
-        id,
-      },
-      data: {
-        deletedAt: new Date().toISOString(),
-      },
-    })
-
+    const deleteTenantProfileProcess = await deleteTenantProfileService({id, role})
+  
     res.status(200).json({
       error: false,
       message: 'Delete account success',

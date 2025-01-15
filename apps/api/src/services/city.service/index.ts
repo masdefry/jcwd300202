@@ -50,6 +50,6 @@ export const createCityService = async ({ cityName, countryId, id, role, imagesU
     if (!createdCity?.id) throw { msg: 'Create city failed!', status: 500 }
 
   return {
-      data: createdCity
+      createdCity
     }
 }

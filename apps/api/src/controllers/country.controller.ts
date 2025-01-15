@@ -40,7 +40,7 @@ export const createCountry = async (
     res.status(201).json({
       error: false,
       message: 'Create country success',
-      data: createCountryProcess?.data,
+      data: createCountryProcess?.createdCountry,
     })
   } catch (error) {
     next(error)

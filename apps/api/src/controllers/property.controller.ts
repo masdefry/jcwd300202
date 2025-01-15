@@ -1,7 +1,7 @@
 import prisma from '@/prisma'
 import { NextFunction, Request, Response } from 'express'
 import { v4 as uuidV4 } from 'uuid'
-import { getRoomTypeService } from '@/services/property.service'
+import { getRoomTypeService } from '@/services/property.service/index.bak'
 import { deleteFiles } from '@/utils/deleteFiles'
 import { addDays, addHours, differenceInDays, format, subDays } from 'date-fns'
 import { comparePassword } from '@/utils/hashPassword'

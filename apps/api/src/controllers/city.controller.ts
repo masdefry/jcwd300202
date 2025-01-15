@@ -40,7 +40,7 @@ export const createCity = async (
     res.status(201).json({
       error: false,
       message: 'Create city success',
-      data: createCityProcess?.data,
+      data: createCityProcess?.createdCity,
     })
   } catch (error) {
     next(error)

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import prisma from '@/prisma'
+import { createPropertyFacilityService, getPropertyFacilityService } from '@/services/property.facility.service'
 
 export const getPropertyFacility = async (
   req: Request,
@@ -8,22 +9,13 @@ export const getPropertyFacility = async (
 ) => {
   try {
     const { name } = req.query
-    const propertyFacility = await prisma.propertyFacility.findMany({
-      where: {
-        name: {
-          contains: name as string,
-          mode: 'insensitive',
-        },
-      },
-      orderBy: {
-        name: 'asc',
-      },
-    })
+    
+    const getPropertyFacilityProcess = await getPropertyFacilityService({ name: name as string })
 
     res.status(200).json({
       error: false,
       message: 'Get property facility success',
-      data: propertyFacility,
+      data: getPropertyFacilityProcess?.propertyFacility,
     })
   } catch (error) {
     next(error)
@@ -42,45 +34,11 @@ export const createPropertyFacility = async (
       throw { msg: 'Images not found!', status: 406 }
     const imagesUploaded: any = req?.files?.images
 
-    const isTenantExist = await prisma.tenant.findUnique({
-      where: {
-        id,
-      },
-    })
-
-    if (!isTenantExist?.id || isTenantExist?.deletedAt)
-      throw { msg: 'Tenant not found!', status: 406 }
-    if (isTenantExist.role !== role)
-      throw { msg: 'Role unauthorized!', status: 401 }
-
-    const isFacilityExist = await prisma.propertyFacility.findMany({
-      where: {
-        name: {
-          equals: name,
-          mode: 'insensitive'
-        }
-      }
-    })
-
-    if (isFacilityExist.length > 0)
-      throw { msg: 'Property facility already exist!', status: 406 }
-
-    const createdPropertyFacility = await prisma.propertyFacility.create({
-      data: {
-        name,
-        iconDirectory: imagesUploaded[0].destination,
-        iconFilename: imagesUploaded[0].filename.split('.')[0],
-        iconFileExtension: imagesUploaded[0].filename.split('.')[1],
-      },
-    })
-
-    if (!createdPropertyFacility?.id)
-      throw { msg: 'Create property facility failed!', status: 500 }
-
+    const createdPropertyFacilityProcess = await createPropertyFacilityService({ id, role, name, imagesUploaded })
     res.status(201).json({
       error: false,
       message: 'Create property facility success',
-      data: createdPropertyFacility,
+      data: createdPropertyFacilityProcess?.createdPropertyFacility,
     })
   } catch (error) {
     next(error)

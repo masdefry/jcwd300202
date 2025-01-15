@@ -14,7 +14,7 @@ export const createUserHistoryView = async (
     res.status(201).json({
       error: false,
       message: 'Create user history view success',
-      data: createdUserHistoryViewProcess?.data,
+      data: createdUserHistoryViewProcess?.createdUserHistoryView,
     })
   } catch (error) {
     next(error)

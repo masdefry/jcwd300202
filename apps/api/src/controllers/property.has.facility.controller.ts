@@ -1,4 +1,5 @@
 import prisma from '@/prisma'
+import { getPropertyHasFacilitiesService, updatePropertyHasFacilitiesService } from '@/services/property.has.facility.service'
 import { Request, Response, NextFunction } from 'express'
 
 export const getPropertyHasFacilities = async (
@@ -11,81 +12,16 @@ export const getPropertyHasFacilities = async (
     const { slug } = req.params
     const { name = '' } = req.query
 
-    const isTenantExist = await prisma.tenant.findUnique({
-      where: {
-        id,
-      },
-    })
-
-    if (!isTenantExist?.id || isTenantExist?.deletedAt)
-      throw { msg: 'Tenant not found!', status: 406 }
-    if (isTenantExist.role !== role)
-      throw { msg: 'Role unauthorized!', status: 401 }
-
-    const isPropertyExist = await prisma.property.findFirst({
-      where: {
-        slug,
-        deletedAt: null
-      },
-    })
-
-    if (!isPropertyExist?.id || isPropertyExist?.deletedAt)
-      throw { msg: 'Property not found!', status: 406 }
-
-    const propertyHasFacility = await prisma.propertyHasFacility.findMany({
-      where: {
-        AND: [
-          {
-            property: {
-              slug,
-              tenantId: id,
-            },
-          },
-          {
-            propertyFacility: {
-              name: {
-                contains: name as string,
-                mode: 'insensitive',
-              },
-            },
-          },
-        ],
-      },
-      include: {
-        propertyFacility: true,
-      },
-      orderBy: {
-        propertyFacility: {
-          name: 'asc',
-        },
-      },
-    })
-
-    const propertyNotHasFacility = await prisma.propertyFacility.findMany({
-      where: {
-        id: {
-          notIn: propertyHasFacility?.map((item) => item?.propertyFacilityId),
-        },
-        name: {
-          contains: name as string,
-          mode: 'insensitive',
-        },
-      },
-      orderBy: {
-        name: 'asc',
-      },
-    })
-
+    const getPropertyHasFacilitiesProcess = await getPropertyHasFacilitiesService({ id, role, slug, name: name as string })
+    
     res.status(200).json({
       error: false,
       message: 'Get property has facilites success',
       data: {
-        propertyHasFacility,
-        propertyNotHasFacility,
-        propertyFacilitiesId: propertyHasFacility.map(
-          (item) => item?.propertyFacilityId,
-        ),
-        property: isPropertyExist,
+        propertyHasFacility: getPropertyHasFacilitiesProcess?.propertyHasFacility,
+        propertyNotHasFacility: getPropertyHasFacilitiesProcess?.propertyNotHasFacility,
+        propertyFacilitiesId: getPropertyHasFacilitiesProcess?.propertyFacilitiesId,
+        property: getPropertyHasFacilitiesProcess?.property
       },
     })
   } catch (error) {
@@ -105,61 +41,12 @@ export const updatePropertyHasFacilities = async (
     if (!Array.isArray(propertyFacilitiesId))
       throw { msg: 'Property facilities id invalid!', status: 406 }
 
-    const isTenantExist = await prisma.tenant.findUnique({
-      where: {
-        id,
-      },
-    })
-
-    if (!isTenantExist?.id || isTenantExist?.deletedAt)
-      throw { msg: 'Tenant not found!', status: 406 }
-    if (isTenantExist.role !== role)
-      throw { msg: 'Role unauthorized!', status: 401 }
-
-    const isPropertyExist = await prisma.property.findFirst({
-      where: {
-        slug,
-        deletedAt: null
-      },
-    })
-
-    if (!isPropertyExist?.id || isPropertyExist?.deletedAt)
-      throw { msg: 'Property not found!', status: 406 }
-    if (isPropertyExist?.tenantId !== id)
-      throw { msg: 'Actions not permitted!', status: 406 }
-
-    let dataCreateManyPropertyHasFacilities
-    await prisma.$transaction(async(tx) => {
-        const deletePropertyHasFacilities =
-          await tx.propertyHasFacility.deleteMany({
-            where: {
-              propertyId: isPropertyExist?.id,
-            },
-          })
-    
-        dataCreateManyPropertyHasFacilities = propertyFacilitiesId.map(
-          (itm: string | number) => {
-            return {
-              propertyId: isPropertyExist?.id,
-              propertyFacilityId: Number(itm),
-            }
-          },
-        )
-    
-        const createPropertyHasFacilities =
-          await tx.propertyHasFacility.createMany({
-            data: dataCreateManyPropertyHasFacilities,
-          })
-
-        if(!createPropertyHasFacilities) throw { msg: 'Update property facility failed!', status: 500 }  
-    }, {
-        timeout: 15000
-    })
+    const updatePropertyHasFacilitiesProcess = await updatePropertyHasFacilitiesService({ propertyFacilitiesId, id, role, slug })
 
     res.status(200).json({
       error: false,
       message: 'Update property facility success',
-      data: dataCreateManyPropertyHasFacilities,
+      data: updatePropertyHasFacilitiesProcess?.dataCreateManyPropertyHasFacilities,
     })
   } catch (error) {
     next(error)

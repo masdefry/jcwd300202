@@ -1,3 +1,5 @@
+import { IPropertyRoomType } from "../property.room.type.service/types";
+
 export interface IProperty {
     id: string;
     name: string;
@@ -11,6 +13,9 @@ export interface IProperty {
     slug: string;
     star?: number;
     propertyTypeId?: number;
+
+    propertyRoomType: IPropertyRoomType[]
+    propertyDetail: IPropertyDetail[]
   
     tenantId?: string;
   

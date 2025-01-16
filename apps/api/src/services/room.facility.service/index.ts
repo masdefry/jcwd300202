@@ -26,6 +26,7 @@ export const createPropertyRoomFacilityService = async ({ id, role, name, images
     const isTenantExist = await prisma.tenant.findUnique({
       where: {
         id,
+        deletedAt: null
       },
     })
 

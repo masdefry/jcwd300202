@@ -1,72 +1,32 @@
 import { Response, Request, NextFunction } from 'express'
-import prisma from '@/prisma'
+import { createPropertyTypeService, deletePropertyTypeService, getPropertyTypesService } from '@/services/property.type.service'
 
 export const getPropertyTypes = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const { name } = req.query
 
-        // if(isNaN(Number(limit))) throw { msg: 'Limit type invalid!', status: 406 }
-        // if(isNaN(Number(offset))) throw { msg: 'Offset type invalid!', status: 406 }
-
-        const propertyType = await prisma.propertyType.findMany({
-            where: {
-                name: {
-                    contains: name as string || '',
-                    mode: 'insensitive'
-                }
-            },
-            orderBy: {
-                name: 'asc'
-            },
-        })
+        const getPropertyTypesProcess = await getPropertyTypesService({name: name as string})
 
         res.status(200).json({
             error: false,
             message: 'Get property types success',
-            data: propertyType
+            data: getPropertyTypesProcess?.propertyType
         })
     } catch (error) {
         next(error)
     }
 }
 
-export const createPropertyTypeService = async(req: Request, res: Response, next: NextFunction) => {
+export const createPropertyType = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const { id, role, name, description } = req.body
 
-
-        const isTenantExist = await prisma.tenant.findUnique({
-            where: {
-                id
-            }
-        })
-
-        if(!isTenantExist?.id || isTenantExist?.deletedAt) throw { msg: 'Tenant not found!', status: 406 }
-        if(!isTenantExist.isVerified)  throw { msg: 'Tenant not verified!', status: 406 }
-        
-        const isPropertyTypeExist = await prisma.propertyType.findFirst({
-            where: {
-                name: {
-                    equals: name,
-                    mode: 'insensitive'
-                }
-            }
-        })
-
-        if(isPropertyTypeExist?.id) throw { msg: 'Property type already exist!', status: 406 }
-        
-        const createdPropertyType = await prisma.propertyType.create({
-            data: {
-                name,
-                description,
-                isCustom: true
-            }
-        })
+        const createPropertyTypeProcess = await createPropertyTypeService({ id, role, name, description }) 
 
         res.status(201).json({
             error: false,
             message: 'Create property type success',
-            data: createdPropertyType
+            data: createPropertyTypeProcess?.createdPropertyType
         })
 
     } catch (error) {
@@ -74,6 +34,18 @@ export const createPropertyTypeService = async(req: Request, res: Response, next
     }
 }
 
-export const deletePropertyTypeService = async(req: Request, res: Response, next: NextFunction) => {
+export const deletePropertyType = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id, role, propertyTypeId } = req.body
 
+        const deletePropertyTypeProcess = await deletePropertyTypeService({ id, role, propertyTypeId })
+
+        res.status(201).json({
+            error: false,
+            message: 'Delete property type success',
+            data: {}
+        })
+    } catch (error) {
+        next(error)
+    }
 }

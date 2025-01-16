@@ -26,6 +26,7 @@ export const createCountryService = async ({ name, description, id, role, images
     const isTenantExist = await prisma.tenant.findUnique({
       where: {
         id,
+        deletedAt: null
       },
     })
 

@@ -26,6 +26,7 @@ export const createPropertyFacilityService = async ({ id, role, name, imagesUplo
     const isTenantExist = await prisma.tenant.findUnique({
       where: {
         id,
+        deletedAt: null
       },
     })
 

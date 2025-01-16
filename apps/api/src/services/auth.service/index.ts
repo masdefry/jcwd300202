@@ -13,6 +13,7 @@ export const loginTenantService = async ({ email, password }: Pick<IUser, 'email
     const isEmailExist = await prisma.tenant.findUnique({
       where: {
         email,
+        deletedAt: null
       },
     })
 
@@ -51,6 +52,7 @@ export const loginUserService = async ({ email, password }: Pick<IUser, 'email' 
       where: {
         email,
         isGoogleRegistered: false,
+        deletedAt: null
       },
       include: {
         country: true,
@@ -88,6 +90,7 @@ export const registerUserService = async ({ email }: Pick<IUser, 'email' >) => {
     const isUserExist = await prisma.user.findUnique({
       where: {
         email,
+        deletedAt: null
       },
     })
 
@@ -145,6 +148,7 @@ export const registerTenantService = async ({ email }: Pick<IUser, 'email' >) =>
     const isEmailExist = await prisma.tenant.findUnique({
       where: {
         email,
+        deletedAt: null
       },
     })
 
@@ -153,6 +157,7 @@ export const registerTenantService = async ({ email }: Pick<IUser, 'email' >) =>
     const isTenantExist = await prisma.tenant.findUnique({
       where: {
         email,
+        deletedAt: null
       },
     })
 
@@ -214,6 +219,7 @@ export const verifyEmailRequestUserService = async ({ email }: Pick<IUser, 'emai
     const isUserExist = await prisma.user.findUnique({
       where: {
         email,
+        deletedAt: null
       },
     })
 
@@ -274,6 +280,7 @@ export const verifyChangeEmailRequestUserService = async ({ id, role }: Pick<IUs
     const isUserExist = await prisma.user.findUnique({
       where: {
         id,
+        deletedAt: null
       },
     })
 
@@ -327,6 +334,7 @@ export const verifyChangeEmailRequestTenantService = async ({ id, role }: Pick<I
     const isTenantExist = await prisma.tenant.findUnique({
       where: {
         id,
+        deletedAt: null
       },
     })
 
@@ -379,6 +387,7 @@ export const verifyEmailRequestTenantService = async ({ email }: Pick<IUser, 'em
     const isTenantExist = await prisma.tenant.findUnique({
       where: {
         email,
+        deletedAt: null
       },
     })
 
@@ -438,6 +447,7 @@ export const verifyEmailUserService = async ({ id, token, password } : Pick<IUse
     const isUserExist = await prisma.user.findUnique({
       where: {
         id,
+        deletedAt: null
       },
     })
 
@@ -464,6 +474,7 @@ export const verifyEmailTenantService = async ({ id, token, password } : Pick<IU
     const isTenantExist = await prisma.tenant.findUnique({
       where: {
         id,
+        deletedAt: null
       },
     })
 
@@ -474,6 +485,7 @@ export const verifyEmailTenantService = async ({ id, token, password } : Pick<IU
       where: {
         id,
         token,
+        deletedAt: null
       },
     })
 
@@ -497,6 +509,7 @@ export const signInWithGoogleService = async ({ email } : Pick<IUser, 'email'>) 
     const checkUser = await prisma.user.findUnique({
       where: {
         email,
+        deletedAt: null
       },
       include: {
         country: true,
@@ -562,6 +575,7 @@ export const sendEmailResetPasswordUserService = async ({ email } : Pick<IUser, 
       where: {
         email,
         isGoogleRegistered: false,
+        deletedAt: null
       },
     })
 
@@ -615,6 +629,7 @@ export const sendEmailResetPasswordTenantService = async ({ email } : Pick<IUser
     const isTenantExist = await prisma.tenant.findUnique({
       where: {
         email,
+        deletedAt: null
       },
     })
 
@@ -669,6 +684,7 @@ export const resetPasswordUserService = async ({ password, token, id }: Pick<IUs
       where: {
         id,
         isGoogleRegistered: false,
+        deletedAt: null
       },
     })
 
@@ -701,6 +717,7 @@ export const resetPasswordTenantService = async ({ password, token, id }: Pick<I
     const isTenantExist = await prisma.tenant.findUnique({
       where: {
         id,
+        deletedAt: null
       },
     })
 
@@ -741,6 +758,7 @@ export const keepAuthService = async ({ id, role, token }: Pick<IUser, 'role' | 
       isAccountExist = await prisma.user.findUnique({
         where: {
           id,
+          deletedAt: null
         },
         include: {
           country: true,
@@ -760,6 +778,7 @@ export const keepAuthService = async ({ id, role, token }: Pick<IUser, 'role' | 
       isAccountExist = await prisma.tenant.findUnique({
         where: {
           id,
+          deletedAt: null
         },
       })
 
@@ -793,6 +812,7 @@ export const verifyChangeEmailTenantService = async ({ id, role, token }: Pick<I
     const isTenantExist = await prisma.tenant.findUnique({
       where: {
         id,
+        deletedAt: null
       },
     })
 
@@ -818,6 +838,7 @@ export const verifyChangeEmailUserService = async ({ id, role, token }: Pick<IUs
     const isUserExist = await prisma.user.findUnique({
       where: {
         id,
+        deletedAt: null
       },
     })
 

@@ -9,7 +9,8 @@ export const getRoomHasFacilitiesService = async({ id, role, propertyRoomTypeId,
 
         const isTenantExist = await prisma.tenant.findUnique({
             where: {
-                id
+                id,
+                deletedAt: null
             }
         })
 
@@ -96,7 +97,8 @@ export const getGeneralRoomHasFacilitiesByPropertyService = async({ id, role, sl
 
         const isTenantExist = await prisma.tenant.findUnique({
             where: {
-                id
+                id,
+                deletedAt: null
             }
         })
 
@@ -190,7 +192,8 @@ export const updateRoomHasFacilitiesService = async({ propertyRoomFacilitiesId, 
 
         const isTenantExist = await prisma.tenant.findUnique({
             where: {
-                id
+                id,
+                deletedAt: null
             }
         })
 
@@ -245,7 +248,8 @@ export const updateRoomHasFacilitiesByPropertyService = async({ propertyRoomFaci
 
         const isTenantExist = await prisma.tenant.findUnique({
             where: {
-                id
+                id,
+                deletedAt: null
             }
         })
 

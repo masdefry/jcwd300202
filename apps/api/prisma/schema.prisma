@@ -109,6 +109,7 @@ model Tenant {
 
   property    Property[]
   transaction Transaction[]
+  propertyType PropertyType[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -206,6 +207,8 @@ model PropertyType {
   description String @db.Text
   isCustom    Boolean @default(false)
 
+  tenantId String?
+  tenant Tenant? @relation(fields: [tenantId], references: [id])
 
   property Property[]
 

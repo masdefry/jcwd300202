@@ -1,11 +1,6 @@
-import prisma from '@/prisma'
 import { NextFunction, Request, Response } from 'express'
-import { v4 as uuidV4 } from 'uuid'
-import { getRoomTypeService } from '@/services/property.service/index.bak'
 import { deleteFiles } from '@/utils/deleteFiles'
-import { addDays, addHours, differenceInDays, format, subDays } from 'date-fns'
-import { comparePassword } from '@/utils/hashPassword'
-import { createPropertyService, dataForFilteringPropertyService, deletePropertyService, getPropertiesByTenantService, getPropertiesByUserService, getPropertiesService, getPropertyDescriptionsService, getPropertyDetailService, getPropertyRoomTypeByPropertyService, updatePropertyDescriptionsService, updatePropertyGeneralInfoService } from '@/services/property.service'
+import { createPropertyService, getRoomTypeService, dataForFilteringPropertyService, deletePropertyService, getPropertiesByTenantService, getPropertiesByUserService, getPropertiesService, getPropertyDescriptionsService, getPropertyDetailService, getPropertyRoomTypeByPropertyService, updatePropertyDescriptionsService, updatePropertyGeneralInfoService } from '@/services/property.service'
 
 export const createProperty = async (
   req: Request,
@@ -29,8 +24,6 @@ export const createProperty = async (
       countPropertyImages,
       propertyTypeId,
       propertyFacilitiesId,
-      propertyFacilitiesName,
-      propertyImages,
       propertyDescription,
       neighborhoodDescription,
       phoneNumber,
@@ -275,7 +268,7 @@ export const getRoomType = async (
   try {
     const { propertyRoomTypeId } = req.params
 
-    const result = await getRoomTypeService(Number(propertyRoomTypeId))
+    const result = await getRoomTypeService({propertyRoomTypeId: Number(propertyRoomTypeId)})
 
     res.status(200).json({
       message: 'Succesfully fetch Room Type',

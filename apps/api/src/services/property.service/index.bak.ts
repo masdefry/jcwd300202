@@ -17,5 +17,4 @@ export const getRoomTypeService = async(propertyRoomTypeId: number) => {
 
     })
 
-    console.log('room>>>', room)
 }

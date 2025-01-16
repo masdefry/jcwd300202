@@ -655,7 +655,7 @@ export const getPropertiesService = async ({
       propertyfacilityidarr = '',
       propertyroomfacilityidarr = '',
       propertystararr = '',
-  }: Pick<ITransaction, 'checkInDate' | 'checkOutDate' | 'adult' | 'children'>) => {
+  }:  {checkInDate: string, checkOutDate: string, minPrice: string | number, maxPrice: string | number, limit: number, offset: number, sortBy: string, order: string, ratings: string, propertytypeidarr: string, propertyfacilityidarr: string, propertyroomfacilityidarr: string, propertystararr: string} & Pick<ITransaction, 'adult' | 'children'> & Pick<IProperty, 'cityId' | 'countryId'>) => {
 
     let numberedPropertyFacilityIdArr,
       numberedPropertyRoomFacilityIdArr,
@@ -1302,7 +1302,7 @@ export const getPropertiesService = async ({
       }
 }
 
-export const getPropertyDescriptionsService = async ({ id, role, slug }: IPick<IUser, 'id' | 'role'> & Pick<IProperty, 'slug'>) => {
+export const getPropertyDescriptionsService = async ({ id, role, slug }: Pick<IUser, 'id' | 'role'> & Pick<IProperty, 'slug'>) => {
  
 
     const isTenantExist = await prisma.tenant.findUnique({
@@ -1353,7 +1353,7 @@ export const updatePropertyDescriptionsService = async ({
     neighborhoodDescription,
     propertyRoomType,
     slug
-  }: IPick<IUser, 'id' | 'role'> & Pick<IProperty, 'slug'> & Pick<IPropertyDetail, 'propertyDescription' | 'neighborhoodDescription'> & { propertyRoomType: any }) => {
+  }: Pick<IUser, 'id' | 'role'> & Pick<IProperty, 'slug'> & Pick<IPropertyDetail, 'propertyDescription' | 'neighborhoodDescription'> & { propertyRoomType: any }) => {
  
     if (!Array.isArray(propertyRoomType))
       throw { msg: 'Property room type description is missing!', status: 406 }
@@ -1436,7 +1436,7 @@ export const getRoomTypeService = async(propertyRoomTypeId: number) => {
 
 }
 
-export const getPropertiesByTenantService = async ({ limit, offset, sortBy, order, filterBy, filterValue, period, name, id, role }: Pick<IUser, 'id' | 'role'> & {limit: string, offset: string, sortBy: string, order: string, filterBy: string, filterValue: string, period: string, name: string}) => {
+export const getPropertiesByTenantService = async ({ limit, offset, sortBy, order, filterBy, filterValue, period, name, id, role }: Pick<IUser, 'id' | 'role'> & {limit: number, offset: number, sortBy: string, order: string, filterBy: string, filterValue: string, period: string, name: string}) => {
  
     const isTenantExist = await prisma.tenant.findUnique({
       where: {
@@ -1933,7 +1933,7 @@ export const updatePropertyGeneralInfoService = async ({
     phoneNumber,
     url,
     slug
-  }: Partial<IProperty> & Partial<IPropertyDetail>) => {
+  }: Pick<IProperty, 'cityId' | 'countryId' | 'name' | 'star' | 'slug' | 'address' | 'location' | 'checkInStartTime' | 'checkInEndTime' | 'checkOutStartTime' |  'zipCode' | 'checkOutEndTime' > & Pick<IPropertyDetail, 'phoneNumber' | 'url'> & Pick<IUser, 'role' | 'id'>) => {
  
 
     const isTenantExist = await prisma.tenant.findUnique({
@@ -1972,9 +1972,9 @@ export const updatePropertyGeneralInfoService = async ({
       },
       data: {
         name,
-        address,
-        zipCode,
-        location,
+        address: address as string,
+        zipCode: zipCode as string,
+        location: location as string,
         cityId,
         countryId,
         checkInStartTime: addHours(
@@ -2054,7 +2054,7 @@ export const deletePropertyService = async({ id, role, password, slug }: Pick<IP
 
     if (!isTenantExist?.id || isTenantExist?.deletedAt)
       throw { msg: 'Tenant not found!', status: 406 }
-        const comparingPassword = await comparePassword(password, isTenantExist?.password as string)
+        const comparingPassword = await comparePassword(password as string, isTenantExist?.password as string)
         if(!comparingPassword) throw { msg: 'Password invalid!', status: 406 }
     if (isTenantExist?.role !== role)
       throw { msg: 'Role unauthorized!', status: 401 }
@@ -2169,6 +2169,10 @@ export const deletePropertyService = async({ id, role, password, slug }: Pick<IP
             deletedAt: new Date().toISOString()
           }
         })
+        
+            deleteFiles({ imagesUploaded: {
+              images: [...propertyImagesToDelete, ...propertyRoomImagesToDelete]
+            } })
       } catch (err) {
         throw { msg: 'Delete property failed!', status: 500 }
       }
@@ -2178,9 +2182,5 @@ export const deletePropertyService = async({ id, role, password, slug }: Pick<IP
       timeout: 15000
     })
 
-
-    deleteFiles({ imagesUploaded: {
-      images: [...propertyImagesToDelete, ...propertyRoomImagesToDelete]
-    } })
 
 }

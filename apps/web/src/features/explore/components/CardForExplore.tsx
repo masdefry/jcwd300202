@@ -1,6 +1,8 @@
 'use client'
 
 import Separator from '@/features/auth/components/Separator'
+import { differenceInDays } from 'date-fns'
+import { difference } from 'next/dist/build/utils'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
@@ -210,7 +212,7 @@ const CardForExplore = ({ item, searchParams, isPending }: any) => {
                 </p>
               </div>
               <p className="w-full text-xs pr-1 font-semibold text-gray-400 text-right sm:flex 2xl:hidden justify-end hidden">
-                1 Nights | 1 Adults | 1 children
+                {Math.abs(differenceInDays(searchParams['check-in-date'], searchParams['check-out-date']))} Nights | {searchParams?.adult} Adults | {searchParams?.children} children
               </p>
             </div>
             {item?.availability ? (
@@ -232,7 +234,7 @@ const CardForExplore = ({ item, searchParams, isPending }: any) => {
             )}
           </div>
           <p className="w-full text-xs pr-1 font-semibold text-gray-400 text-right 2xl:flex justify-end items-end hidden">
-            1 Nights | 1 Adults | 1 children
+            {differenceInDays(searchParams['check-out-date'], searchParams['check-in-date']) || 1} Nights | 1 Adults | 1 children
           </p>
         </div>
       </div>

@@ -26,8 +26,9 @@ import PropertyDetailFacilities from '@/features/property/details/components/Pro
 import PropertyDetailPolicies from '@/features/property/details/components/PropertyDetailPolicies'
 import { addDays } from 'date-fns'
 import NotFoundMain from '@/app/not-found'
+import NotFoundPropertyDetails from '@/app/property/not-found'
 
-const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, searchParams: any}) => {
+const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, searchParams: { limit: string, offset: string, adult: string, children: string, 'check-in-date': string, 'check-out-date': string }}) => {
     const [ showMoreDescription, setShowMoreDescription ] = useState(false)
     const [ showPropertyImages, setShowPropertyImages ] = useState(false)
     const [ dataPropertyRoomType, setDataPropertyRoomType ] = useState<any>([])
@@ -76,15 +77,13 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
             const res = await instance.get(`/property/${params?.slug}/search`)
             console.log(res)
             mutatePropertyRoomType({ limit: 2, offset: 0 })
-            if(res?.status === 200) {
+                if(searchParams?.adult) setAdult(Number(searchParams?.adult))
+                if(searchParams?.children) setChildren(Number(searchParams?.children))
+                
                 setDataPropertyDetail(res?.data?.data)
-                console.log(res?.data?.data)
                 setIsPendingPropertyDetail(false)
-            } else {
-                setIsError(true)
-            }
         } catch (err) {
-            console.log(err)
+            setIsError(true)
         }
     }
     
@@ -92,21 +91,11 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
         try {
             const res = await instance.post(`/history/${params?.slug}`)
             if(res?.status === 200) {
-                console.log(res?.data?.data)
             }
         } catch (err) {
             console.log(err)
         }
     }
-    // const { data: dataPropertyDetail, isPending: isPendingPropertyDetail } = useQuery({
-    //     queryKey: ['getPropertyDetail'],
-    //     queryFn: async() => {
-    //         const res = await instance.get(`/property/${params?.slug}/search`)
-    //         mutatePropertyRoomType({ limit: 2, offset: 0 })
-
-    //         return res?.data?.data
-    //     }
-    //   })
     useEffect(() => {
         if(searchParams['check-in-date'] && searchParams['check-out-date']) {
             setDateRange([ new Date(searchParams['check-in-date']), new Date(searchParams['check-out-date'])])
@@ -117,20 +106,23 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
 
   const { mutate: mutatePropertyRoomType, isPending: isPendingPropertyRoomType } = useMutation({
     mutationFn: async({ limit, offset, checkInDate, checkOutDate }: { limit?: number, offset?: number, checkInDate?: Date, checkOutDate?: Date }) => {
+        
         if(limit && offset) {
             handleSearchParams('limit', limit.toString())
             handleSearchParams('offset', offset.toString()) 
             if(searchParams['check-in-date'] && searchParams['check-out-date']) {
                 handleSearchParams('check-in-date', searchParams['check-in-date'])
                 handleSearchParams('check-out-date', searchParams['check-out-date'])
-                handleSearchParams('capacity', searchParams?.capacity)
+                handleSearchParams('adult', searchParams?.adult)
+                handleSearchParams('children', searchParams?.children)
             }
         } else if(checkInDate && checkOutDate) {
             handleSearchParams('check-in-date', checkInDate.toISOString())
             handleSearchParams('check-out-date', checkOutDate.toISOString())
-            handleSearchParams('capacity', (adult + children).toString())
+            handleSearchParams('adult', (adult).toString())
+            handleSearchParams('children', (children).toString())
         }
-        const res = await instance.get(`/room-type/property/${params?.slug}/search?limit=${limit || '2'}&offset=${offset || '0'}&checkInDate=${checkInDate || searchParams['check-in-date'] || new Date().toISOString()}&checkOutDate=${checkOutDate || searchParams['check-out-date'] || addDays(new Date(), 1).toISOString()}&capacity=${adult + children || searchParams['capacity'] || 1}`)
+        const res = await instance.get(`/room-type/property/${params?.slug}/search?limit=${limit || '2'}&offset=${offset || '0'}&checkInDate=${checkInDate ? checkInDate : searchParams['check-in-date'] ? searchParams['check-in-date'] : new Date().toISOString()}&checkOutDate=${checkOutDate ? checkOutDate : searchParams['check-out-date'] ? searchParams['check-out-date'] : addDays(new Date(), 1).toISOString() }&adult=${adult ? adult : searchParams.adult ? searchParams.adult : 1}&children=${children ? children : searchParams.children ? searchParams.children : 0}`)
         return res?.data
     },
     onSuccess: (res) => {
@@ -144,7 +136,7 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
   if(isError) {
     return (
         <div>
-            <NotFoundMain />
+            <NotFoundPropertyDetails />
         </div>
     )
   }
@@ -157,7 +149,7 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
         <PropertyDetailDescription showMoreDescription={showMoreDescription} setShowMoreDescription={setShowMoreDescription} dataPropertyDetail={dataPropertyDetail}  isPending={isPendingPropertyDetail}/>
 
         <Separator />
-        <SearchRoomsAvailability mutatePropertyRoomType={mutatePropertyRoomType} handleGuest={handleGuest} dateRange={dateRange} setDateRange={setDateRange} checkInDate={checkInDate} checkOutDate={checkOutDate} dataPropertyDetail={dataPropertyDetail} setShowGuestCounter={setShowGuestCounter} showGuestCounter={showGuestCounter} adult={adult} children={children} isPending={isPendingPropertyDetail}/>
+        <SearchRoomsAvailability searchParams={searchParams} mutatePropertyRoomType={mutatePropertyRoomType} handleGuest={handleGuest} dateRange={dateRange} setDateRange={setDateRange} checkInDate={checkInDate} checkOutDate={checkOutDate} dataPropertyDetail={dataPropertyDetail} setShowGuestCounter={setShowGuestCounter} showGuestCounter={showGuestCounter} adult={adult} children={children} isPending={isPendingPropertyDetail}/>
         <PropertyRoomDetailList dataPropertyRoomType={dataPropertyRoomType} isPending={isPendingPropertyRoomType || isPendingPropertyDetail} setShowDataRoom={setShowDataRoom} token={token} searchParams={searchParams} mutatePropertyRoomType={mutatePropertyRoomType} dataPropertyDetail={dataPropertyDetail} role={role} checkInDate={checkInDate} checkOutDate={checkOutDate} />
         {
             showDataRoom.name && (
@@ -176,18 +168,18 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                             bathrooms: 0,
                             price: 0
                             })} className='hover:opacity-60 transition duration-100 hover:cursor-pointer'/></div>
-                        <div className='h-[300px] w-full bg-blue-200 rounded-md relative overflow-hidden'>
-                            <div className={`flex items-center h-full w-[${showDataRoom?.roomImages.length * 100}] transition-transform ease-in-out duration-1000`} style={{transform: `translateX(-${currSlideRoomImages/showDataRoom?.roomImages.length * 100}%)`}}>
+                        <div className='h-[300px] w-full bg-slate-200 rounded-md relative overflow-hidden'>
+                            <div className={`flex items-center h-full min-w-max transition-transform ease-in-out duration-1000`} style={{transform: `translateX(-${currSlideRoomImages/showDataRoom?.roomImages.length * 100}%)`}}>
                                 {
                                     showDataRoom?.roomImages.map((itm: any, idx: number) => {
                                         return (
-                                            <figure className={`w-full h-full`} key={idx}>
+                                            <figure className={`min-w-max h-full`} key={idx}>
                                                 <Image
                                                 src={`http://localhost:5000/api/${itm?.directory}/${itm?.filename}.${itm?.fileExtension}`}
-                                                width={500}
+                                                width={600}
                                                 height={500}
                                                 alt=''
-                                                className='h-full w-full object-cover'
+                                                className='h-full min-w-max object-cover'
                                                 />    
                                             </figure>
                                         )

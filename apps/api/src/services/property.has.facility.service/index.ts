@@ -12,12 +12,12 @@ export const getPropertyHasFacilitiesService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
 
@@ -29,7 +29,7 @@ export const getPropertyHasFacilitiesService = async ({
   })
 
   if (!isPropertyExist?.id || isPropertyExist?.deletedAt)
-    throw { msg: 'Property not found!', status: 406 }
+    throw { msg: 'Property not found!', status: 404 }
 
   const propertyHasFacility = await prisma.propertyHasFacility.findMany({
     where: {
@@ -98,12 +98,12 @@ export const updatePropertyHasFacilitiesService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
 
@@ -115,7 +115,7 @@ export const updatePropertyHasFacilitiesService = async ({
   })
 
   if (!isPropertyExist?.id || isPropertyExist?.deletedAt)
-    throw { msg: 'Property not found!', status: 406 }
+    throw { msg: 'Property not found!', status: 404 }
   if (isPropertyExist?.tenantId !== id)
     throw { msg: 'Actions not permitted!', status: 403 }
 

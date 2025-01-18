@@ -52,6 +52,7 @@ const SearchHeader = ({
       totalGuest,
       allGuest,
       setAllGuest,
+      setTotalGuest,
       searchResults
     } = useSearchHook()
 
@@ -71,7 +72,6 @@ const SearchHeader = ({
         },
         onSuccess: (res: any) => {
           window.location.href = `/explore/search${slug}`
-          // router.push(`/explore/search${slug}`)
       },
       onError: (error) => {
         console.log(error)
@@ -99,8 +99,6 @@ const SearchHeader = ({
           values.adult = totalGuest.adult
           values.children = totalGuest.children
           mutateSearch(values)
-          // console.log(values.adult, 'adultt'); 
-          // console.log(values.children, 'childrennn');
         }}
       >
         {({
@@ -127,7 +125,10 @@ const SearchHeader = ({
                   searchValues.countryName && (
                     <div className="absolute shadow-sm top-[28px] left-[15px] 2xl:left-[25px] flex items-center gap-3 px-3 py-1 text-xs rounded-full bg-white-600 font-bold text-gray-900 border-2 border-gray-800">
                       <p className='flex items-center gap-1.5'><FaMapLocationDot />{searchValues.cityName && searchValues.cityName + ', '}{searchValues.countryName}</p>
-                      <IoMdClose className='hover:cursor-pointer' size={17} onClick={() => {setSearchValues({countryId: '', cityId: '', countryName: '', cityName: ''})}}/>
+                      <IoMdClose className='hover:cursor-pointer' size={17} onClick={() => {
+                        setSearchValues({countryId: '', cityId: '', countryName: '', cityName: ''})
+                        setSearchLocation({countryId: '', cityId: '', countryName: '', cityName: ''})
+                        }}/>
                     </div>
                   )
                 }
@@ -208,14 +209,14 @@ const SearchHeader = ({
                 {
                   showGuestAndRoomCounter && (
                   <div className="absolute top-[75px] left-0 z-[50] w-full">
-                    <GuestAndRoomCounter setFieldValue={setFieldValue} allGuest={allGuest} setAllGuest={setAllGuest} setShowGuestAndRoomCounter={setShowGuestAndRoomCounter} />
+                    <GuestAndRoomCounter setTotalGuest={setTotalGuest} totalGuest={totalGuest} setFieldValue={setFieldValue} allGuest={allGuest} setAllGuest={setAllGuest} setShowGuestAndRoomCounter={setShowGuestAndRoomCounter} />
                   </div>
                   )
                 }
                 <ErrorMessage name="adult" component="div" />
               </div>
               <div className="2xl:w-[10%] w-full flex 2xl:justify-end 2xl:absolute right-2">
-                <button className={`${isPendingSearch ? 'opacity-75' : 'hover:bg-gray-600 active:scale-90 transition duration-200'} py-3 md:py-5 px-12 rounded-md 2xl:rounded-full bg-black font-semibold text-sm md:text-base text-white w-full`} type='submit' disabled={isPendingSearch}>Search</button>
+                <button className={`disabled:bg-slate-300 disabled:text-white disabled:scale-100 disabled:opacity-100 hover:bg-gray-600 active:scale-90 transition duration-200 py-3 md:py-5 px-12 rounded-md 2xl:rounded-full bg-black font-semibold text-sm md:text-base text-white w-full`} type='submit' disabled={isPendingSearch || !searchLocation?.countryId}>Search</button>
               </div>
           </Form>
         )}

@@ -86,7 +86,7 @@ export default function Home() {
         </section>
       </section>
       </section>
-      <section className='relative right-4 sm:right-8 md:right-12 lg:right-16'>
+      <section className='relative'>
           <Hero isPending={true}/>
       </section>
       {
@@ -190,7 +190,7 @@ export default function Home() {
         </section>
       </section>
       </section>
-      <section className='relative right-4 sm:right-8 md:right-12 lg:right-16'>
+      <section className='relative '>
           <Hero isPending={isPendingDataLandingPage}/>
       </section>
       <section className='m-auto max-w-screen-xl w-full h-full'>
@@ -239,7 +239,7 @@ export default function Home() {
               <p className='text-gray-300 md:text-base text-xs font-medium'>Explore Roomify and book any properties you want</p>
             </div>
             ):(
-            <div className="carousel rounded-none flex gap-5 h-fit py-2">
+            <div className="carousel rounded-none flex gap-3 md:gap-5 h-fit py-2">
                 { 
                   dataPropertiesByUser?.propertyByRecentBooks.map((item: any, index: number) => {
                     return (
@@ -283,7 +283,7 @@ export default function Home() {
               <p className='text-gray-300 md:text-base text-xs font-medium'>Explore Roomify and look any properties you want</p>
             </div>
             ):(
-            <div className="carousel rounded-none flex gap-5 h-fit py-2">
+            <div className="carousel rounded-none flex gap-3 md:gap-5 h-fit py-2">
                 { 
                   dataPropertiesByUser?.propertyByHistoryView.map((item: any, index: number) => {
                     return (

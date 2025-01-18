@@ -6,6 +6,7 @@ import { IoPerson } from 'react-icons/io5'
 import Link from 'next/link'
 import { differenceInDays } from 'date-fns'
 import { usePathname } from 'next/navigation'
+import { IoIosSearch } from 'react-icons/io'
 
 const PropertyRoomDetailList = ({ dataPropertyRoomType, isPending, setShowDataRoom, token, searchParams, mutatePropertyRoomType, dataPropertyDetail, role, checkInDate, checkOutDate }: any) => {
   
@@ -97,12 +98,12 @@ const PropertyRoomDetailList = ({ dataPropertyRoomType, isPending, setShowDataRo
     </section>
     )
 
-  }
+    }
   
     return (
     
     <section className='flex flex-col gap-5 2xl:p-0 px-5'>
-    { 
+    { dataPropertyRoomType?.propertyRoomTypeWithSeasonalPrice?.length > 0 ? (
         dataPropertyRoomType?.propertyRoomTypeWithSeasonalPrice?.map((item: any, index: number) => {
             return (
             <section key={index} className='w-full grid grid-cols-3 gap-5 2xl:gap-10 items-center rounded-md bg-white shadow-md p-3'>
@@ -209,6 +210,11 @@ const PropertyRoomDetailList = ({ dataPropertyRoomType, isPending, setShowDataRo
             </section>
             )
         })
+    ) : (
+            <section className='w-full flex justify-center items-center rounded-md bg-white shadow-md p-3 py-12'>
+                <p className='text-center w-full text-slate-300 text-base justify-center 2xl:text-lg font-bold flex items-center gap-1.5'><IoIosSearch size={30}/>Room type not found! Maybe it's on vacation.</p>
+            </section>
+    )
     }
     <div id='pagination-button' className='w-full flex justify-center'>
         <div className="join">

@@ -28,12 +28,12 @@ export const createSeasonalPriceService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
   if (!isTenantExist?.isVerified)
@@ -54,7 +54,7 @@ export const createSeasonalPriceService = async ({
     },
   })
 
-  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 404 }
   if (isPropertyExist?.tenantId !== id)
     throw { msg: 'Actions not permitted!', status: 403 }
 
@@ -66,7 +66,7 @@ export const createSeasonalPriceService = async ({
   })
 
   if (!isPropertyRoomTypeExist?.id || isPropertyRoomTypeExist?.deletedAt)
-    throw { msg: 'Room type not found!', status: 406 }
+    throw { msg: 'Room type not found!', status: 404 }
   if (Number(roomsToSell) > isPropertyRoomTypeExist?.totalRooms)
     throw {
       msg: 'The number of rooms exceeds the total rooms limit! Change capacity first.',
@@ -148,12 +148,12 @@ export const getBulkSeasonalPriceAndAvailabilityService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
   if (!isTenantExist?.isVerified)
@@ -174,7 +174,7 @@ export const getBulkSeasonalPriceAndAvailabilityService = async ({
     },
   })
 
-  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 404 }
   if (isPropertyExist?.tenantId !== id)
     throw { msg: 'Actions not permitted!', status: 403 }
 
@@ -186,7 +186,7 @@ export const getBulkSeasonalPriceAndAvailabilityService = async ({
   })
 
   if (!isPropertyRoomTypeExist?.id || isPropertyRoomTypeExist?.deletedAt)
-    throw { msg: 'Room type not found!', status: 406 }
+    throw { msg: 'Room type not found!', status: 404 }
 
   const season = await prisma.season.findFirst({
     where: {
@@ -200,7 +200,7 @@ export const getBulkSeasonalPriceAndAvailabilityService = async ({
     },
   })
 
-  if (!season?.id) throw { msg: 'Season not found!', status: 406 }
+  if (!season?.id) throw { msg: 'Season not found!', status: 404 }
 
   return {
     season: {
@@ -227,8 +227,8 @@ export const getSingleSeasonalPriceAndAvailabilityService = async ({
   })
 
   if (!isPropertyRoomTypeExist?.id || isPropertyRoomTypeExist?.deletedAt)
-    throw { msg: 'Room type not found!', status: 406 }
-  if (!date) throw { msg: 'Date not found!', status: 406 }
+    throw { msg: 'Room type not found!', status: 404 }
+  if (!date) throw { msg: 'Date not found!', status: 404 }
 
   let dateForSearch = date as string
   const seasonalPrice = await prisma.seasonalPrice.findFirst({
@@ -282,12 +282,12 @@ export const updateSeasonalPriceService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
   if (!isTenantExist?.isVerified)
@@ -308,7 +308,7 @@ export const updateSeasonalPriceService = async ({
     },
   })
 
-  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 404 }
   if (isPropertyExist?.tenantId !== id)
     throw { msg: 'Actions not permitted!', status: 403 }
 
@@ -320,7 +320,7 @@ export const updateSeasonalPriceService = async ({
   })
 
   if (!isPropertyRoomTypeExist?.id || isPropertyRoomTypeExist?.deletedAt)
-    throw { msg: 'Room type not found!', status: 406 }
+    throw { msg: 'Room type not found!', status: 404 }
   if (Number(roomsToSell) > isPropertyRoomTypeExist?.totalRooms)
     throw {
       msg: 'The number of rooms exceeds the total rooms limit! Edit total room first.',
@@ -460,11 +460,11 @@ export const getSeasonsByPropertyService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
   if (!isTenantExist?.isVerified)
@@ -487,7 +487,7 @@ export const getSeasonsByPropertyService = async ({
     },
   })
 
-  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 404 }
   if (isPropertyExist?.tenantId !== id)
     throw { msg: 'Actions not permitted!', status: 403 }
 
@@ -562,12 +562,12 @@ export const createSeasonalAvailabiltyByPropertyService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
   if (!isTenantExist?.isVerified)
@@ -583,7 +583,7 @@ export const createSeasonalAvailabiltyByPropertyService = async ({
     },
   })
 
-  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 404 }
   if (isPropertyExist?.tenantId !== id)
     throw { msg: 'Actions not permitted!', status: 403 }
 
@@ -692,12 +692,12 @@ export const updateManySeasonsByPropertySeasonService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
   if (!isTenantExist?.isVerified)
@@ -717,7 +717,7 @@ export const updateManySeasonsByPropertySeasonService = async ({
     },
   })
 
-  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 404 }
   if (isPropertyExist?.tenantId !== id)
     throw { msg: 'Actions not permitted!', status: 403 }
 
@@ -731,7 +731,7 @@ export const updateManySeasonsByPropertySeasonService = async ({
   })
 
   if (isPropertyRoomTypesExist.length <= 0)
-    throw { msg: 'Room type not found!', status: 406 }
+    throw { msg: 'Room type not found!', status: 404 }
 
   const isSeasonExist = await prisma.season.findUnique({
     where: {
@@ -739,7 +739,7 @@ export const updateManySeasonsByPropertySeasonService = async ({
     },
   })
 
-  if (!isSeasonExist?.id) throw { msg: 'Season not found!', status: 406 }
+  if (!isSeasonExist?.id) throw { msg: 'Season not found!', status: 404 }
 
   const getSeasons = await prisma.season.findMany({
     where: {
@@ -850,12 +850,12 @@ export const deletePropertySeasonService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
   if (!isTenantExist?.isVerified)
@@ -875,7 +875,7 @@ export const deletePropertySeasonService = async ({
     },
   })
 
-  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 404 }
   if (isPropertyExist?.tenantId !== id)
     throw { msg: 'Actions not permitted!', status: 403 }
 
@@ -889,7 +889,7 @@ export const deletePropertySeasonService = async ({
   })
 
   if (isPropertyRoomTypesExist.length <= 0)
-    throw { msg: 'Room type not found!', status: 406 }
+    throw { msg: 'Room type not found!', status: 404 }
 
   const isSeasonExist = await prisma.season.findUnique({
     where: {
@@ -897,7 +897,7 @@ export const deletePropertySeasonService = async ({
     },
   })
 
-  if (!isSeasonExist?.id) throw { msg: 'Season not found!', status: 406 }
+  if (!isSeasonExist?.id) throw { msg: 'Season not found!', status: 404 }
 
   const getSeasons = await prisma.season.findMany({
     where: {
@@ -942,12 +942,12 @@ export const deleteSeasonalPriceService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
   if (!isTenantExist?.isVerified)
@@ -968,7 +968,7 @@ export const deleteSeasonalPriceService = async ({
     },
   })
 
-  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 404 }
   if (isPropertyExist?.tenantId !== id)
     throw { msg: 'Actions not permitted!', status: 403 }
 
@@ -980,7 +980,7 @@ export const deleteSeasonalPriceService = async ({
   })
 
   if (!isPropertyRoomTypeExist?.id || isPropertyRoomTypeExist?.deletedAt)
-    throw { msg: 'Room type not found!', status: 406 }
+    throw { msg: 'Room type not found!', status: 404 }
 
   const isSeasonalPriceExist = await prisma.seasonalPrice.findUnique({
     where: {
@@ -1012,11 +1012,11 @@ export const getSeasonsByPropertyRoomTypeService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
   if (!isTenantExist?.isVerified)
@@ -1046,11 +1046,11 @@ export const getSeasonsByPropertyRoomTypeService = async ({
     },
   })
 
-  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 404 }
   if (isPropertyExist?.tenantId !== id)
     throw { msg: 'Actions not permitted!', status: 403 }
   if (isPropertyExist?.propertyRoomType.length <= 0)
-    throw { msg: 'Room type not found!', status: 406 }
+    throw { msg: 'Room type not found!', status: 404 }
 
   const startDate = new Date(Number(year), Number(month), 0)
   const endDate = addYears(new Date(Number(year), Number(month), 0), 1)
@@ -1113,12 +1113,12 @@ export const updateSingleSeasonService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
   if (!isTenantExist?.isVerified)
@@ -1143,7 +1143,7 @@ export const updateSingleSeasonService = async ({
   })
 
   if (!isPropertyExist?.id || isPropertyExist?.deletedAt)
-    throw { msg: 'Property not found!', status: 406 }
+    throw { msg: 'Property not found!', status: 404 }
   if (isPropertyExist?.tenantId !== id)
     throw { msg: 'Actions not permitted!', status: 403 }
 
@@ -1155,7 +1155,7 @@ export const updateSingleSeasonService = async ({
   })
 
   if (isPropertyRoomTypesExist.length <= 0)
-    throw { msg: 'Room type not found!', status: 406 }
+    throw { msg: 'Room type not found!', status: 404 }
 
   const isSeasonExist = await prisma.season.findUnique({
     where: {
@@ -1163,7 +1163,7 @@ export const updateSingleSeasonService = async ({
     },
   })
 
-  if (!isSeasonExist?.id) throw { msg: 'Season not found!', status: 406 }
+  if (!isSeasonExist?.id) throw { msg: 'Season not found!', status: 404 }
 
   let createdSeason: any, createdSeasonalPrices
   await prisma.$transaction(async (tx) => {
@@ -1255,12 +1255,12 @@ export const createOneSeasonService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
   if (!isTenantExist?.isVerified)
@@ -1285,7 +1285,7 @@ export const createOneSeasonService = async ({
   })
 
   if (!isPropertyExist?.id || isPropertyExist?.deletedAt)
-    throw { msg: 'Property not found!', status: 406 }
+    throw { msg: 'Property not found!', status: 404 }
   if (isPropertyExist?.tenantId !== id)
     throw { msg: 'Actions not permitted!', status: 403 }
 
@@ -1297,7 +1297,7 @@ export const createOneSeasonService = async ({
   })
 
   if (isPropertyRoomTypesExist.length <= 0)
-    throw { msg: 'Room type not found!', status: 406 }
+    throw { msg: 'Room type not found!', status: 404 }
 
   let createdSeason: any, createdSeasonalPrices
   await prisma.$transaction(async (tx) => {
@@ -1365,12 +1365,12 @@ export const deleteSingleSeasonService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
   if (!isTenantExist?.isVerified)
@@ -1391,7 +1391,7 @@ export const deleteSingleSeasonService = async ({
     },
   })
 
-  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 404 }
   if (isPropertyExist?.tenantId !== id)
     throw { msg: 'Actions not permitted!', status: 403 }
 
@@ -1403,7 +1403,7 @@ export const deleteSingleSeasonService = async ({
   })
 
   if (!isPropertyRoomTypeExist?.id || isPropertyRoomTypeExist?.deletedAt)
-    throw { msg: 'Room type not found!', status: 406 }
+    throw { msg: 'Room type not found!', status: 404 }
 
   const isSeasonExist = await prisma.season.findUnique({
     where: {
@@ -1411,7 +1411,7 @@ export const deleteSingleSeasonService = async ({
     },
   })
 
-  if (!isSeasonExist?.id) throw { msg: 'Season not found!', status: 406 }
+  if (!isSeasonExist?.id) throw { msg: 'Season not found!', status: 404 }
 
   await prisma.$transaction(async (tx) => {
     try {
@@ -1440,11 +1440,11 @@ export const getSingleSeasonService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
   if (!isTenantExist?.isVerified)
@@ -1471,7 +1471,7 @@ export const getSingleSeasonService = async ({
     },
   })
 
-  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 404 }
   if (isPropertyExist?.tenantId !== id)
     throw { msg: 'Actions not permitted!', status: 403 }
 

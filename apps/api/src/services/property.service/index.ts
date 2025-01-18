@@ -43,12 +43,12 @@ export const createPropertyService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
 
@@ -234,7 +234,7 @@ export const getPropertyDetailService = async ({
     },
   })
 
-  if (!property?.id) throw { msg: 'Property not found!', status: 406 }
+  if (!property?.id) throw { msg: 'Property not found!', status: 404 }
   console.log('checkInDate', checkInDate)
   let gteDate =
     checkInDate && checkInDate !== 'undefined'
@@ -366,7 +366,7 @@ export const getPropertyDetailService = async ({
   const tenant = await prisma.tenant.findUnique({
     where: {
       id: property?.tenantId as string,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
@@ -631,6 +631,9 @@ export const getPropertyRoomTypeByPropertyService = async ({
 
 export const dataForFilteringPropertyService = async () => {
   const propertyType = await prisma.propertyType.findMany({
+    where: {
+      deletedAt: null,
+    },
     include: {
       _count: {
         select: {
@@ -674,20 +677,20 @@ export const getPropertiesService = async ({
   checkOutDate,
   minPrice,
   maxPrice,
-  adult = 1,
-  children = 0,
-  limit = 5,
-  offset = 0,
-  sortBy = 'price',
-  order = 'asc',
+  adult,
+  children,
+  limit,
+  offset,
+  sortBy,
+  order,
   ratings,
-  propertytypeidarr = '',
-  propertyfacilityidarr = '',
-  propertyroomfacilityidarr = '',
-  propertystararr = '',
+  propertytypeidarr,
+  propertyfacilityidarr,
+  propertyroomfacilityidarr,
+  propertystararr,
 }: {
-  checkInDate: string
-  checkOutDate: string
+  checkInDate: string | null
+  checkOutDate: string | null
   minPrice: string | number
   maxPrice: string | number
   limit: number
@@ -740,7 +743,7 @@ export const getPropertiesService = async ({
     }
   }
 
-  if (!sortBy) throw { msg: 'Sort parameter not found!', status: 406 }
+  if (!sortBy) throw { msg: 'Sort parameter not found!', status: 404 }
   if (propertyfacilityidarr) {
     const propertyFacilityIdStr = propertyfacilityidarr as string
     numberedPropertyFacilityIdArr = propertyFacilityIdStr.split(',')
@@ -1214,6 +1217,7 @@ export const getPropertiesService = async ({
 
   const propertyType = await prisma.propertyType.findMany({
     where: {
+      deletedAt: null,
       id: {
         in: propertiesWithoutLimit.map(
           (item) => item.propertyTypeId,
@@ -1323,7 +1327,6 @@ export const getPropertiesService = async ({
       star: 5,
     },
   })
-
   return {
     whereConditionGeneral,
     numberedPropertyFacilityIdArr,
@@ -1362,12 +1365,12 @@ export const getPropertyDescriptionsService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
 
@@ -1383,7 +1386,7 @@ export const getPropertyDescriptionsService = async ({
       country: true,
     },
   })
-  if (!getProperty?.id) throw { msg: 'Property not found!', status: 406 }
+  if (!getProperty?.id) throw { msg: 'Property not found!', status: 404 }
 
   const getPropertyRoomType = await prisma.propertyRoomType.findMany({
     where: {
@@ -1393,7 +1396,7 @@ export const getPropertyDescriptionsService = async ({
   })
 
   if (getPropertyRoomType.length <= 0)
-    throw { msg: 'Property room type not found!', status: 406 }
+    throw { msg: 'Property room type not found!', status: 404 }
 
   return {
     property: getProperty,
@@ -1419,12 +1422,12 @@ export const updatePropertyDescriptionsService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
 
@@ -1438,7 +1441,7 @@ export const updatePropertyDescriptionsService = async ({
     },
   })
 
-  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 404 }
   if (isPropertyExist?.tenantId !== id)
     throw { msg: 'Actions not permitted!', status: 403 }
 
@@ -1521,14 +1524,14 @@ export const getPropertiesByTenantService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
   if (order !== 'asc' && order !== 'desc')
     throw { msg: 'Order by value invalid!', status: 406 }
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
 
@@ -1924,12 +1927,12 @@ export const getPropertiesByUserService = async ({
   const isUserExist = await prisma.user.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isUserExist?.id || isUserExist?.deletedAt)
-    throw { msg: 'User not found!', status: 406 }
+    throw { msg: 'User not found!', status: 404 }
   if (isUserExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
   const transactionGroupByPropertyAndUser = await prisma.transaction.groupBy({
@@ -1938,41 +1941,31 @@ export const getPropertiesByUserService = async ({
     },
     by: ['propertyId'],
   })
-  const propertyIdByRecentBooks = await prisma.transaction.findMany({
+  const propertyByRecentBooks = await prisma.property.findMany({
     where: {
-      propertyId: {
+      id: {
         in: transactionGroupByPropertyAndUser.map((item) => item?.propertyId),
       },
     },
     include: {
-      property: {
-        include: {
-          city: true,
-          country: true,
-          propertyRoomType: {
-            orderBy: {
-              price: 'asc',
-            },
-          },
-          propertyDetail: {
-            include: {
-              propertyImage: true,
-            },
-          },
-          propertyType: true,
-          review: true,
+      city: true,
+      country: true,
+      propertyRoomType: {
+        orderBy: {
+          price: 'asc',
         },
       },
-    },
-    orderBy: {
-      createdAt: 'desc',
+      propertyDetail: {
+        include: {
+          propertyImage: true,
+        },
+      },
+      propertyType: true,
+      review: true,
     },
     take: 10,
   })
 
-  const propertyByRecentBooks = propertyIdByRecentBooks.map((item) => {
-    return item.property
-  })
 
   const propertyIdByHistoryView = await prisma.historyView.findMany({
     where: {
@@ -2008,6 +2001,8 @@ export const getPropertiesByUserService = async ({
     return item.property
   })
 
+
+  console.log('>>>>>>>>>>>>>>', transactionGroupByPropertyAndUser)
   return {
     propertyByRecentBooks,
     propertyByHistoryView,
@@ -2051,12 +2046,12 @@ export const updatePropertyGeneralInfoService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
 
@@ -2070,7 +2065,7 @@ export const updatePropertyGeneralInfoService = async ({
     },
   })
 
-  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 404 }
   if (isPropertyExist?.tenantId !== id)
     throw { msg: 'Actions not permitted!', status: 403 }
 
@@ -2166,12 +2161,12 @@ export const deletePropertyService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   const comparingPassword = await comparePassword(
     password as string,
     isTenantExist?.password as string,
@@ -2191,7 +2186,7 @@ export const deletePropertyService = async ({
     },
   })
 
-  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 404 }
   if (isPropertyExist?.tenantId !== id)
     throw { msg: 'Actions not permitted!', status: 403 }
 

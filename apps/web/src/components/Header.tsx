@@ -69,11 +69,6 @@ export default function Header() {
                 <p>Explore</p>
               </div>
             </Link>
-            {/* <Link href="#">
-              <div className="border-b-4 border-transparent hover:border-blue-800 p-5 h-full text-base font-bold text-gray-800 hover:cursor-pointer active:bg-slate-200 transition duration-100">
-                <p>Our Tenant</p>
-              </div>
-            </Link> */}
           </div>
           <nav className="text-base font-medium py-5">
             <ul className="flex gap-8 items-center">

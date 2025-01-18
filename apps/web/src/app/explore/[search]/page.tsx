@@ -2,8 +2,6 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-// import searchStore  from '@/zustand/searchStore'
-// import { headerStore } from '@/zustand/headerStore'
 import { differenceInDays } from 'date-fns'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import useSearchHook from '@/hooks/useSearchHook'
@@ -32,8 +30,10 @@ import { IoFilter } from 'react-icons/io5'
 import RangeSlider from 'rsuite/RangeSlider'
 import 'rsuite/RangeSlider/styles/index.css'
 import CardForExplore from '@/features/explore/components/CardForExplore'
+import CardForNotFound from '@/features/explore/components/CardForNotFound'
+import { useDebouncedCallback } from 'use-debounce'
 
-const ExplorePage = ({ searchParams }: { searchParams: any }) => {
+const ExplorePage = ({ searchParams }: { searchParams: {name: string, city: string, country: string, type: string, order: string, sort: string, limit: string, offset: string, children: string, adult: string, 'min-price': string, 'max-price': string, 'check-in-date': string, 'check-out-date': string, } }) => {
   const [priceRange, setPriceRange] = useState([300000, 1000000])
   const pathname = usePathname()
   const router = useRouter()
@@ -43,14 +43,17 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
   const [propertyRoomFacilityIdArr, setPropertyRoomFacilityIdArr] = useState<
     any[]
   >([])
+  const [paramMutateExplore, setParamMutateExplore] = useState({sort: 'price', order: 'asc', limit: 5, offset: 0, minPrice: 0, maxPrice: searchParams['max-price'] || 100000000, name: ''})
   const [propertyTypeIdArr, setPropertyTypeIdArr] = useState<any[]>([])
   const [propertyStarArr, setPropertyStarArr] = useState<any[]>([])
   const [filterMobileMode, setFilterMobileMode] = useState(false)
+  const [searchName, setSearchName ] = useState(searchParams?.name || '')
   const [sortMobileMode, setSortMobileMode] = useState(false)
   const [ isLoading, setIsLoading ] = useState(true)
   // const [ priceRange, setPriceRange ] = useState({ minPrice: 0, maxPrice: 3000000 })
   const [minPrice, setMinPrice] = useState(0)
-  const [maxPrice, setMaxPrice] = useState(1000000)
+  const [maxPrice, setMaxPrice] = useState(10000000)
+  const [changeParameter, setChangeParameter] = useState(false)
   const urlParams = new URLSearchParams({})
   const handleSearchParams = (orderBy: string, value: string) => {
     const currParams = window.location.href.includes('/search?')
@@ -91,6 +94,20 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
     }
   }
   
+  const handlePriceFilterSubmit = () => {
+    handlePagination({ limit: 5, offset: 0 })
+    setParamMutateExplore(state => {
+        state.limit = 5
+        state.offset = 0
+        state.minPrice = minPrice || 0
+        state.maxPrice = maxPrice
+        return state
+    })
+    handleSearchParams('min-price', minPrice.toString())
+    handleSearchParams('max-price', maxPrice.toString())
+    mutateExploreFilterAndSort()
+  }
+
   const handlePropertyFacilityFilter = (
     isChecked: boolean,
     value: string | number,
@@ -102,7 +119,7 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
         state.filter((item) => item !== value),
       )
     }
-    mutateExplorePagination({})
+    mutateExploreFilterAndSort()
   }
   const handlePropertyRoomFacilityFilter = (
     isChecked: boolean,
@@ -115,7 +132,7 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
         state.filter((item) => item !== value),
       )
     }
-    mutateExplorePagination({})
+    mutateExploreFilterAndSort()
   }
   const handlePropertyTypeIdFilter = (
     isChecked: boolean,
@@ -126,7 +143,7 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
     } else {
       setPropertyTypeIdArr((state) => state.filter((item) => item !== value))
     }
-    mutateExplorePagination({})
+    mutateExploreFilterAndSort()
   }
   const handlePropertyStarFilter = (
     isChecked: boolean,
@@ -137,7 +154,7 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
     } else {
       setPropertyStarArr((state) => state.filter((item) => item !== value))
     }
-    mutateExplorePagination({})
+    mutateExploreFilterAndSort()
   }
   const [showFilterPropertyFacility, setShowFilterPropertyFacility] =
     useState(false)
@@ -162,7 +179,7 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
     const fetchDataProperties = async() => {
       try {
         const res = await instance.get(
-            `/property?countryId=${searchParams.country}&cityId=${searchParams.city}&checkInDate=${searchParams['check-in-date']}&checkOutDate=${searchParams['check-out-date']}&adult=${searchParams.adult}&children=${searchParams.children}&offset=0&limit=5&order=asc&sortBy=price`,
+            `/property?countryId=${searchParams.country}&cityId=${searchParams.city}&name=${searchParams.name || ''}&checkInDate=${searchParams['check-in-date']}&checkOutDate=${searchParams['check-out-date']}&adult=${searchParams.adult}&children=${searchParams.children}&offset=${searchParams.offset || 0}&limit=${searchParams.limit || 5}&order=${searchParams.order || 'asc'}&sortBy=${searchParams.sort || 'price'}&type=${searchParams.type}&minPrice=${searchParams['min-price']}&maxPrice=${searchParams['max-price']}`,
             {
               headers: {
                 propertyFacilityIdArr: [],
@@ -205,27 +222,55 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
 //     },
 //   })
 
+const handlePagination = ({ limit, offset }: { limit: number, offset: number }) => {
+    handleSearchParams('limit', limit.toString())
+    handleSearchParams('offset', offset.toString())
+    setParamMutateExplore(state => {
+        state.limit = limit
+        state.offset = offset
+        return state
+    })
+    mutateExplorePagination()
+}
+
+const handleFilterName = (name: string) => {
+  handleSearchParams('name', name)
+  handlePagination({ limit: 5, offset: 0 })
+  setParamMutateExplore(state => {
+      state.name = name
+      state.limit = 5
+      state.offset = 0
+      return state
+  })
+  debouncedMutateFilter()
+}
+
+const debouncedMutateFilter = useDebouncedCallback(() => {
+  mutateExploreFilterAndSort()
+}, 500)
+
+const handleSort = ({ sortBy, order }: { sortBy: string, order: string }) => {
+    handleSearchParams('sort', sortBy)
+    handleSearchParams('order', order)
+    handlePagination({ limit: 5, offset: 0 })
+    setParamMutateExplore(state => {
+        state.sort = sortBy
+        state.order = order
+        state.limit = 5
+        state.offset = 0
+        return state
+    })
+    mutateExploreFilterAndSort()
+}
   const {
     mutate: mutateExplorePagination,
     isPending: isPendingExplorePagination,
   } = useMutation({
-    mutationFn: async ({
-      limit = 5,
-      offset = 0,
-      sortBy,
-      order,
-    }: {
-      limit?: number
-      offset?: number
-      sortBy?: string
-      order?: string
-    }) => {
-        handleSearchParams('limit', limit.toString() || searchParams.limit || '5')
-        handleSearchParams('offset', offset.toString() || searchParams.offset || '0')
-        handleSearchParams('sort', sortBy || searchParams.sort || '')
-        handleSearchParams('order', order || searchParams.order || '')
+    mutationFn: async () => {
+      setFilterMobileMode(false)
+      setSortMobileMode(false)
       const res = await instance.get(
-        `/property?countryId=${searchParams.country}&cityId=${searchParams.city}&checkInDate=${searchParams['check-in-date']}&checkOutDate=${searchParams['check-out-date']}&adult=${searchParams.adult}&children=${searchParams.children}&offset=${offset || searchParams.offset || 0}&limit=${limit || searchParams.limit || 5}&order=${order || searchParams.order || 'asc'}&sortBy=${sortBy || searchParams.sort|| 'price'}&minPrice=${searchParams.minPrice || searchParams['min-price'] || 0}&maxPrice=${searchParams.maxPrice || searchParams['max-price'] || null}`,
+        `/property?countryId=${searchParams.country}&cityId=${searchParams.city}&name=${ paramMutateExplore?.name ? paramMutateExplore?.name : searchParams.name ? searchParams.name : ''}&checkInDate=${searchParams['check-in-date']}&checkOutDate=${searchParams['check-out-date']}&adult=${searchParams.adult}&children=${searchParams.children}&offset=${ paramMutateExplore?.offset ? paramMutateExplore?.offset : searchParams.offset ? searchParams.offset : 0}&limit=${ paramMutateExplore?.limit ? paramMutateExplore?.limit : searchParams.limit ? searchParams.limit : 5}&order=${ paramMutateExplore?.order ? paramMutateExplore?.order : searchParams.order ? searchParams.order : 'asc'}&sortBy=${ paramMutateExplore?.sort ? paramMutateExplore?.sort : searchParams.sort ? searchParams.sort : 'price'}&minPrice=${paramMutateExplore?.minPrice ? paramMutateExplore?.minPrice : searchParams['min-price'] ? searchParams['min-price'] : 0}&maxPrice=${paramMutateExplore?.maxPrice ? paramMutateExplore?.maxPrice : searchParams['max-price'] ? searchParams['max-price'] : 0}&type=${searchParams.type}`,
         {
           headers: {
             propertyFacilityIdArr,
@@ -236,7 +281,38 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
         },
       )
 
-      console.log(res)
+      setDataProperties(res?.data?.data)
+      return res?.data
+    },
+    onSuccess: (res) => {
+        
+    },
+    onError: (err) => {
+      console.log(err)
+    },
+  })
+
+  const {
+    mutate: mutateExploreFilterAndSort,
+    isPending: isPendingExploreFilterAndSort,
+  } = useMutation({
+    mutationFn: async () => {
+      handleSearchParams('limit', '5')
+      handleSearchParams('offset', '0')
+      setFilterMobileMode(false)
+      setSortMobileMode(false)
+      const res = await instance.get(
+        `/property?countryId=${searchParams.country}&cityId=${searchParams.city}&name=${ paramMutateExplore?.name ? paramMutateExplore?.name : searchParams.name ? searchParams.name : ''}&checkInDate=${searchParams['check-in-date']}&checkOutDate=${searchParams['check-out-date']}&adult=${searchParams.adult}&children=${searchParams.children}&offset=0&limit=5&order=${ paramMutateExplore?.order ? paramMutateExplore?.order : searchParams.order ? searchParams.order : 'asc'}&sortBy=${ paramMutateExplore?.sort ? paramMutateExplore?.sort : searchParams.sort ? searchParams.sort : 'price'}&minPrice=${paramMutateExplore?.minPrice ? paramMutateExplore?.minPrice : searchParams['min-price'] ? searchParams['min-price'] : 0}&maxPrice=${paramMutateExplore?.maxPrice ? paramMutateExplore?.maxPrice : searchParams['max-price'] ? searchParams['max-price'] : 0}&type=${searchParams.type}`,
+        {
+          headers: {
+            propertyFacilityIdArr,
+            propertyRoomFacilityIdArr,
+            propertyTypeIdArr,
+            propertyStarArr,
+          },
+        },
+      )
+
       setDataProperties(res?.data?.data)
       return res?.data
     },
@@ -290,11 +366,11 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
             <span className="text-xs font-bold">Sort</span>
           </div>
           <section
-            className={`${sortMobileMode ? 'fixed' : 'hidden'} top-0 left-0 bg-black w-full h-full bg-opacity-30 backdrop-blur-sm  z-[90]`}
+            className={`${sortMobileMode ? 'fixed' : 'hidden'} top-0 left-0 w-full h-full   z-[90]`}
           >
             <div
               id="sort-mobile"
-              className={`${sortMobileMode ? 'scale-y-100' : 'scale-y-0'} absolute bottom-0 flex flex-col bg-white shadow-md w-full left-0 rounded-t-md transition duration-300`}
+              className={`${sortMobileMode ? 'scale-y-100' : 'scale-y-0'} border-t border-slate-200 absolute bottom-0 flex flex-col bg-white shadow-md w-full left-0 rounded-t-md transition duration-300`}
             >
               <div className="flex justify-center w-full p-2">
                 <span
@@ -305,17 +381,17 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
               <div className="p-5 hover:bg-slate-300 text-gray-800 text-sm font-bold">
                 Sort by:
               </div>
-              <div onClick={() => mutateExplorePagination({ sortBy: 'name', order: 'asc' })} className="p-5 hover:bg-slate-300 text-gray-800 text-sm font-medium border-t border-slate-500">
+              <div onClick={() => handleSort({ sortBy: 'name', order: 'asc' })} className="p-5 hover:bg-slate-300 text-gray-800 text-sm font-medium border-t border-slate-500">
                 Ascending by Name
               </div>
-              <div onClick={() => mutateExplorePagination({ sortBy: 'name', order: 'desc' })} className="p-5 hover:bg-slate-300 text-gray-800 text-sm font-medium border-t border-slate-300">
+              <div onClick={() => handleSort({ sortBy: 'name', order: 'desc' })} className="p-5 hover:bg-slate-300 text-gray-800 text-sm font-medium border-t border-slate-300">
                 Descending by Name
               </div>
-              <div onClick={() => mutateExplorePagination({ sortBy: 'price', order: 'asc' })} className="p-5 hover:bg-slate-300 text-gray-800 text-sm font-medium border-t border-slate-300">
-                Ascending by Price
+              <div onClick={() => handleSort({ sortBy: 'price', order: 'asc' })} className="p-5 hover:bg-slate-300 text-gray-800 text-sm font-medium border-t border-slate-300">
+                Lowest to Highest by Price
               </div>
-              <div onClick={() => mutateExplorePagination({ sortBy: 'price', order: 'desc' })} className="p-5 hover:bg-slate-300 text-gray-800 text-sm font-medium border-t border-slate-300">
-                Ascending by Price
+              <div onClick={() => handleSort({ sortBy: 'price', order: 'desc' })} className="p-5 hover:bg-slate-300 text-gray-800 text-sm font-medium border-t border-slate-300">
+                Highest to Lowest by Price
               </div>
             </div>
           </section>
@@ -419,9 +495,8 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
               <div className="flex items-center gap-1 mt-3">
                 <button
                   onClick={() => {
-                    searchParams.minPrice = minPrice
-                    searchParams.maxPrice = maxPrice
-                    mutateExplorePagination({})
+                    handlePriceFilterSubmit()
+                    mutateExploreFilterAndSort()
                   }}
                   className="w-full text-xs font-bold hover:opacity-75 transition duration-100 active:scale-90 text-white bg-gray-900 rounded-full py-2 px-3 shadow-md"
                   type="button"
@@ -760,7 +835,7 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
         </section>
         <div className="2xl:col-span-3 w-full min-h-min flex flex-col gap-3 px-3">
           <div className="hidden grid-cols-4 gap-4 2xl:grid">
-            <span className="flex items-center gap-5 col-span-2">
+            <span className="flex items-center gap-5 col-span-4">
               <div className="w-1/3 text-sm font-bold">
                 {dataProperties?.country?.name ? (
                   <p className="text-gray-800">
@@ -786,13 +861,7 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                 <select
                   name="sort"
                   onChange={(e) => {
-                    searchParams['sort'] = e.target.value.split('-')[1]
-                    searchParams.order = e.target.value.split('-')[0]
-                    // router.push(`?sort-by=${e.target.value.split('-')[1]}&order=${e.target.value.split('-')[0]}`)
-                    mutateExplorePagination({
-                      sortBy: e.target.value.split('-')[1],
-                      order: e.target.value.split('-')[0],
-                    })
+                    handleSort({ sortBy: e.target.value.split('-')[1], order: e.target.value.split('-')[0] })
                   }}
                   defaultValue={`${searchParams?.order || 'asc'}-${searchParams['sort'] || 'price'}`}
                   id="sort"
@@ -804,45 +873,77 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                   <option value="desc-name">Descending by Name</option>
                 </select>
               </span>
+              <span className="w-2/3 flex gap-2 items-center">
+                <label
+                  htmlFor="name"
+                  className="text-xs min-w-max font-bold text-gray-500"
+                >
+                  Filter by name:
+                </label>
+                <input
+                  name="name"
+                  onChange={(e) => {
+                    setSearchName(state => {
+                      state = e.target.value
+                      return state
+                    })
+                    handleFilterName(e.target.value)
+                  }}
+
+                  value={searchName}
+                  placeholder='Pan Pacific Jakarta'
+                  id="name"
+                  className="bg-gray-50 border border-slate-300 text-gray-800 text-xs font-medium placeholder-shown:text:xs rounded-full h-[3em] p-1.5 px-2 focus:outline-none focus:ring-amber-400 focus:border-amber-400 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                />
+              </span>
             </span>
-            <span className="col-span-2 bg-blue-900 flex items-center gap-2 p-3 px-5 text-white text-sm font-bold rounded-md">
+          </div>
+          <span className="sm:hidden mt-[-10px] mb-[10px] flex gap-2 items-center">
+                <label
+                  htmlFor="name"
+                  className="text-xs min-w-max font-bold text-gray-500"
+                >
+                  Filter by name:
+                </label>
+                <input
+                  name="name"
+                  onChange={(e) => {
+                    setSearchName(state => {
+                      state = e.target.value
+                      return state
+                    })
+                    handleFilterName(e.target.value)
+                  }}
+
+                  value={searchName}
+                  placeholder='Pan Pacific Jakarta'
+                  id="name"
+                  className="bg-gray-50 border border-slate-300 text-gray-800 text-xs font-medium placeholder-shown:text:xs rounded-full h-[3em] p-1.5 px-2 focus:outline-none focus:ring-amber-400 focus:border-amber-400 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                />
+              </span>
+            <span className="sm:flex bg-blue-900 hidden items-center gap-2 p-3 px-5 text-white text-sm font-bold rounded-md">
               <div className="text-green-900 bg-green-200 p-1 rounded-full">
                 <TbConfetti size={19} />
               </div>
-              <p>40% off for accomodation in Medan City region</p>
+              <p>40% off for selected accomodation in Jakarta City region</p>
             </span>
-          </div>
-          {/* {dataProperties?.data?.data?.map((item: any, index: any) => {
-                    return(
-                        <div key={index} className='bg-white !w-[50rem] h-[17rem] border rounded-lg flex items-start gap-3 p-3 shadow'>
-                            <div className='bg-blue-200 w-[25rem] h-full rounded'>
-
-                            </div>
-                            <div className='w-[45rem] h-full flex flex-col'>
-                                <div className='flex flex-col'>
-                                    <p className='text-xl font-bold'>{item.name}</p>
-                                </div>
-                                <div className='flex flex-col items-end justify-end gap-1 h-full'>
-                                    <p className='text-xs'>from <span className='font-bold text-xl pr-1'>{item.propertyRoomType[0].price}</span></p>
-                                    <p className='text-sm pr-1'>{totalDays} {nights} | {totalGuest.adult} {adults} {totalGuest.children > 0 && ` | ${totalGuest.children} children`}</p>
-                                    <Link href={`/property/${item.name}`} className='rounded-full bg-black text-white px-7 py-3 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200 mt-3'>Book this room</Link>
-                                </div>
-                            </div>
-                        </div>
-                    )
-                })} */}
-
+        {
+            (dataProperties?.properties && Array.isArray(dataProperties?.properties) && dataProperties?.properties?.length <= 0) && (
+                <CardForNotFound />
+            )
+            }
           {
             dataProperties?.properties && Array.isArray(dataProperties?.properties) ? (
               dataProperties?.properties.map((item: any, index: number) => {
                 return (
-                  <CardForExplore item={item} searchParams={searchParams} isPending={isPendingExplorePagination || isLoading}/>
+                  <CardForExplore item={item} searchParams={searchParams} isPending={isPendingExploreFilterAndSort || isPendingExplorePagination || isLoading}/>
                 )
               })
-            ) : (
+            ) : 
+            (
               Array.from({length: 5}).map((item: any, index: number) => {
                 return (
-                  <CardForExplore item={item} searchParams={searchParams} isPending={isPendingExplorePagination || isLoading}/>
+                  <CardForExplore item={item} searchParams={searchParams} isPending={isPendingExploreFilterAndSort || isPendingExplorePagination || isLoading}/>
                 )
               })
             )
@@ -866,7 +967,7 @@ const ExplorePage = ({ searchParams }: { searchParams: any }) => {
                     <button
                       key={index}
                       onClick={() =>
-                        mutateExplorePagination({ limit: 5, offset: index * 5 })
+                        handlePagination({ limit: 5, offset: index * 5 })
                       }
                       className="join-item btn btn-sm"
                     >

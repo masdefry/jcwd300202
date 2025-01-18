@@ -60,7 +60,6 @@ const PropertyManageGeneralInfoPage = ({
   const [propertyTypeId, setPropertyTypeId] = useState<null | number>(null)
   const [dataPropertyTypes, setDataPropertyTypes] = useState<any>([])
 
-
   const [cityList, setCityList] = useState([])
   const [countryList, setCountryList] = useState([])
   const [propertyTypes, setPropertyTypes] = useState([])
@@ -431,7 +430,7 @@ const PropertyManageGeneralInfoPage = ({
                             </span>
                           </p>
                           <p className="text-xs text-gray-500 dark:text-gray-400">
-                            JPG, PNG or JPEG (MAX. 2MB)
+                            JPG, PNG or JPEG (MAX. 1MB)
                           </p>
                         </div>
                         <input
@@ -605,7 +604,7 @@ const PropertyManageGeneralInfoPage = ({
                             </span>
                           </p>
                           <p className="text-xs text-gray-500 dark:text-gray-400">
-                            JPG, PNG or JPEG (MAX. 2MB)
+                            JPG, PNG or JPEG (MAX. 1MB)
                           </p>
                         </div>
                         <input

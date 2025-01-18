@@ -15,12 +15,12 @@ export const getTenantProfileService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
 
@@ -52,12 +52,12 @@ export const updateTenantProfileService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
 
@@ -90,12 +90,12 @@ export const updateTenantProfilePictureService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
 
@@ -128,12 +128,12 @@ export const updateTenantEmailService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
   if (isTenantExist?.email === email)
@@ -204,7 +204,7 @@ export const deleteTenantProfileService = async ({
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
 

@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from 'express'
 import prisma from '@/prisma'
-import { createPropertyFacilityService, getPropertyFacilityService } from '@/services/property.facility.service'
+import {
+  createPropertyFacilityService,
+  getPropertyFacilityService,
+} from '@/services/property.facility.service'
 
 export const getPropertyFacility = async (
   req: Request,
@@ -9,8 +12,10 @@ export const getPropertyFacility = async (
 ) => {
   try {
     const { name } = req.query
-    
-    const getPropertyFacilityProcess = await getPropertyFacilityService({ name: name as string })
+
+    const getPropertyFacilityProcess = await getPropertyFacilityService({
+      name: name as string,
+    })
 
     res.status(200).json({
       error: false,
@@ -31,10 +36,15 @@ export const createPropertyFacility = async (
     const { id, role, name } = req.body
 
     if (Array.isArray(req.files))
-      throw { msg: 'Images not found!', status: 406 }
+      throw { msg: 'Images not found!', status: 404 }
     const imagesUploaded: any = req?.files?.images
 
-    const createdPropertyFacilityProcess = await createPropertyFacilityService({ id, role, name, imagesUploaded })
+    const createdPropertyFacilityProcess = await createPropertyFacilityService({
+      id,
+      role,
+      name,
+      imagesUploaded,
+    })
     res.status(201).json({
       error: false,
       message: 'Create property facility success',

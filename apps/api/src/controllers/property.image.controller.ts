@@ -1,5 +1,8 @@
-
-import { createPropertyImagesByPropertyService, deletePropertyImagesByPropertyService, getPropertyImagesByPropertyService } from '@/services/property.image.service'
+import {
+  createPropertyImagesByPropertyService,
+  deletePropertyImagesByPropertyService,
+  getPropertyImagesByPropertyService,
+} from '@/services/property.image.service'
 import { deleteFiles } from '@/utils/deleteFiles'
 import { Request, Response, NextFunction } from 'express'
 
@@ -11,7 +14,8 @@ export const getPropertyImagesByProperty = async (
   try {
     const { slug } = req.params
 
-    const getPropertyImagesByPropertyProcess = await getPropertyImagesByPropertyService({slug})
+    const getPropertyImagesByPropertyProcess =
+      await getPropertyImagesByPropertyService({ slug })
 
     res.status(200).json({
       error: false,
@@ -32,16 +36,23 @@ export const createPropertyImagesByProperty = async (
     const { id, role } = req.body
     const { slug } = req.params
     if (Array.isArray(req.files))
-      throw { msg: 'Images not found!', status: 406 }
+      throw { msg: 'Images not found!', status: 404 }
     const imagesUploaded: any = req?.files?.images
 
-    const createPropertyImagesByPropertyProcess = await createPropertyImagesByPropertyService({ id, role, slug, imagesUploaded })
+    const createPropertyImagesByPropertyProcess =
+      await createPropertyImagesByPropertyService({
+        id,
+        role,
+        slug,
+        imagesUploaded,
+      })
 
     res.status(201).json({
       error: false,
       message: 'Create property images success',
       data: {
-        createdPropertyImages: createPropertyImagesByPropertyProcess?.createdPropertyImages,
+        createdPropertyImages:
+          createPropertyImagesByPropertyProcess?.createdPropertyImages,
       },
     })
   } catch (error) {
@@ -61,7 +72,8 @@ export const deletePropertyImagesByProperty = async (
     const { id, role } = req.body
     const { propertyImageId } = req.params
 
-    const deletedPropertyImagesByPropertyProcess = await deletePropertyImagesByPropertyService({id, role, propertyImageId })
+    const deletedPropertyImagesByPropertyProcess =
+      await deletePropertyImagesByPropertyService({ id, role, propertyImageId })
 
     res.status(200).json({
       error: false,

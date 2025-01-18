@@ -9,7 +9,10 @@ export const getCities = async (
   try {
     const { cityName, limit = 8 } = req.query
 
-    const getCitiesProcess = await getCitiesService({ cityName: cityName as string, limit: limit as string })
+    const getCitiesProcess = await getCitiesService({
+      cityName: cityName as string,
+      limit: limit as string,
+    })
 
     res.status(200).json({
       error: false,
@@ -29,13 +32,18 @@ export const createCity = async (
   next: NextFunction,
 ) => {
   try {
-    const { cityName, countryId, description, id, role } = req.body
-
+    const { cityName, countryId, id, role } = req.body
     if (Array.isArray(req.files))
-      throw { msg: 'Images not found!', status: 406 }
+      throw { msg: 'Images not found!', status: 404 }
     const imagesUploaded: any = req?.files?.images
 
-    const createCityProcess = await createCityService({ cityName, countryId, id, role, imagesUploaded })
+    const createCityProcess = await createCityService({
+      cityName,
+      countryId,
+      id,
+      role,
+      imagesUploaded,
+    })
 
     res.status(201).json({
       error: false,
@@ -43,6 +51,7 @@ export const createCity = async (
       data: createCityProcess?.createdCity,
     })
   } catch (error) {
+    console.log(error)
     next(error)
   }
 }

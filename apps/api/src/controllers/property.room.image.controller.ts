@@ -1,5 +1,9 @@
 import prisma from '@/prisma'
-import { createPropertyRoomImagesByPropertyService, deletePropertyRoomImagesByPropertyService, getPropertyRoomImagesByPropertyService } from '@/services/property.room.images.service'
+import {
+  createPropertyRoomImagesByPropertyService,
+  deletePropertyRoomImagesByPropertyService,
+  getPropertyRoomImagesByPropertyService,
+} from '@/services/property.room.images.service'
 import { deleteFiles } from '@/utils/deleteFiles'
 import { Request, Response, NextFunction } from 'express'
 import fs from 'fs'
@@ -12,7 +16,8 @@ export const getPropertyRoomImagesByProperty = async (
   try {
     const { roomId } = req.params
 
-    const getPropertyRoomImagesByPropertyProcess = await getPropertyRoomImagesByPropertyService({roomId})
+    const getPropertyRoomImagesByPropertyProcess =
+      await getPropertyRoomImagesByPropertyService({ roomId })
 
     res.status(200).json({
       error: false,
@@ -34,16 +39,23 @@ export const createPropertyRoomImagesByProperty = async (
     const { id, role } = req.body
     const { roomId } = req.params
     if (Array.isArray(req.files))
-      throw { msg: 'Images not found!', status: 406 }
+      throw { msg: 'Images not found!', status: 404 }
     const imagesUploaded: any = req?.files?.images
 
-    const createPropertyRoomImagesByPropertyProcess = await createPropertyRoomImagesByPropertyService({id, role, roomId, imagesUploaded})
+    const createPropertyRoomImagesByPropertyProcess =
+      await createPropertyRoomImagesByPropertyService({
+        id,
+        role,
+        roomId,
+        imagesUploaded,
+      })
 
     res.status(201).json({
       error: false,
       message: 'Create room images success',
       data: {
-        createdPropertyRoomImages: createPropertyRoomImagesByPropertyProcess?.createdPropertyRoomImages,
+        createdPropertyRoomImages:
+          createPropertyRoomImagesByPropertyProcess?.createdPropertyRoomImages,
       },
     })
   } catch (error) {
@@ -63,8 +75,9 @@ export const deletePropertyRoomImagesByProperty = async (
     const { id, role } = req.body
     const { propertyRoomImageId } = req.params
 
-    const deletePropertyRoomImagesByPropertyProcess = await deletePropertyRoomImagesByPropertyService
-    
+    const deletePropertyRoomImagesByPropertyProcess =
+      await deletePropertyRoomImagesByPropertyService
+
     res.status(200).json({
       error: false,
       message: 'Delete room image success',

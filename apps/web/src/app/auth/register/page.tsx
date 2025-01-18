@@ -38,28 +38,32 @@ const RegisterPage = () => {
             resetForm()
           }}
         >
-          <Form className="flex flex-col gap-5">
-            <TextInput
-              labelName="Email"
-              name="email"
-              placeholder="example@email.com"
-              type="text"
-            />
-            <AuthButton
-              isPending={Boolean(
-                isPendingOAuth || isPendingRegister || isPendingReqOAuth,
-              )}
-              text="Continue with email"
-            />
-            <span className="text-sm font-light mt-[-15px] ml-4">
-              <span>Have an account?</span>
-              <Link href="/auth">
-                <span className="ml-1 text-sm font-semibold text-blue-600 border-b-2 border-transparent hover:border-blue-600 active:scale-90 transition duration-200 hover:cursor-pointer w-fit">
-                  Login now
-                </span>
-              </Link>
-            </span>
-          </Form>
+          {
+            ({values}) => (
+            <Form className="flex flex-col gap-5">
+              <TextInput
+                labelName="Email"
+                name="email"
+                placeholder="example@email.com"
+                type="text"
+              />
+              <AuthButton
+                isPending={Boolean(
+                  isPendingOAuth || isPendingRegister || isPendingReqOAuth || !values.email,
+                )}
+                text="Continue with email"
+              />
+              <span className="text-sm font-light mt-[-15px] ml-4">
+                <span>Have an account?</span>
+                <Link href="/auth">
+                  <span className="ml-1 text-sm font-semibold text-blue-600 border-b-2 border-transparent hover:border-blue-600 active:scale-90 transition duration-200 hover:cursor-pointer w-fit">
+                    Login now
+                  </span>
+                </Link>
+              </span>
+            </Form>
+            )
+          }
         </Formik>
         <div className="flex gap-2 items-center justify-between">
           <div className="h-[1px] w-full bg-gray-300"></div>

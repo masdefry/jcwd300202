@@ -18,7 +18,7 @@ export const getPropertyRoomImagesByPropertyService = async ({
   })
 
   if (propertyRoomImagesByProperty.length < 0)
-    throw { msg: 'Room images not found!', status: 406 }
+    throw { msg: 'Room images not found!', status: 404 }
 
   return { propertyRoomImagesByProperty }
 }
@@ -35,12 +35,12 @@ export const createPropertyRoomImagesByPropertyService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
 
@@ -62,7 +62,7 @@ export const createPropertyRoomImagesByPropertyService = async ({
     !isPropertyRoomTypeExist?.property?.id ||
     isPropertyRoomTypeExist?.property?.deletedAt
   )
-    throw { msg: 'Property room type not found!', status: 406 }
+    throw { msg: 'Property room type not found!', status: 404 }
   if (isPropertyRoomTypeExist?.property?.tenantId !== id)
     throw { msg: 'Actions not permitted!', status: 403 }
 
@@ -95,12 +95,12 @@ export const deletePropertyRoomImagesByPropertyService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
 
@@ -129,12 +129,12 @@ export const deletePropertyRoomImagesByPropertyService = async ({
     !getPropertyRoomImage?.propertyRoomType?.id ||
     getPropertyRoomImage?.propertyRoomType?.deletedAt
   )
-    throw { msg: 'Property room type not found!', status: 406 }
+    throw { msg: 'Property room type not found!', status: 404 }
   if (getPropertyRoomImage?.propertyRoomType?.property?.tenantId !== id)
     throw { msg: 'Actions not permitted!', status: 403 }
 
   if (!getPropertyRoomImage?.propertyRoomType?.property?.id)
-    throw { msg: 'Room image not found!', status: 406 }
+    throw { msg: 'Room image not found!', status: 404 }
 
   await prisma.$transaction(
     async (tx) => {

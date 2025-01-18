@@ -1,27 +1,48 @@
 'use client'
 
-import React from 'react'
-import { useQuery } from '@tanstack/react-query'
+import React, { useEffect, useState } from 'react'
 import instance from '@/utils/axiosInstance'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import authStore from '@/zustand/authStore'
 import toast from 'react-hot-toast'
 
 const VerifyEmailUserPage = ({ params }: { params: { token: string } }) => {
-  const router = useRouter()
-  const setLogout = authStore(state => state.setLogout)
-  const { isPending: isPendingVerifyEmailUser, isError: isErrorVerifyEmailUser, isSuccess: isSuccessVerifyEmailUser, error: errorVerifyEmailUser } = useQuery({
-    queryKey: ['verifyUser'],
-    queryFn: async() => {
+  const [isPendingVerifyEmailUser, setIsPendingVerifyEmailUser] = useState(true)
+  const [isErrorVerifyEmailUser, setIsErrorVerifyEmailUser] = useState(false)
+  const [isSuccessVerifyEmailUser, setIsSuccessVerifyEmailUser] = useState(false)
+
+  const fetchVerifyEmail = async() => {
+    try {
       const res = await instance.patch(`/auth/verify-change-email/${params?.token}`, {}, {
         headers: {
           authorization: `Bearer ${params.token}`
         }
       })
-      return res?.data?.data
-    },
-  })
+      console.log('res', res)
+      console.log('err', res)
+      setIsSuccessVerifyEmailUser(true)
+    } catch (error) {
+      console.log('err', error)
+      setIsErrorVerifyEmailUser(true)
+    } finally {
+      console.log('final', '>>>>>>>>>>>>>>>>>>>>>>>')
+      setIsPendingVerifyEmailUser(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchVerifyEmail()
+  }, [])
+  // const { isPending: isPendingVerifyEmailUser, isError: isErrorVerifyEmailUser, isSuccess: isSuccessVerifyEmailUser, error: errorVerifyEmailUser } = useQuery({
+  //   queryKey: ['verifyUser'],
+  //   queryFn: async() => {
+      // const res = await instance.patch(`/auth/verify-change-email/${params?.token}`, {}, {
+      //   headers: {
+      //     authorization: `Bearer ${params.token}`
+      //   }
+      // })
+  //     return res?.data?.data
+  //   },
+  // })
 
   if(isPendingVerifyEmailUser) {
     return (
@@ -36,7 +57,6 @@ const VerifyEmailUserPage = ({ params }: { params: { token: string } }) => {
   }
 
   if(isErrorVerifyEmailUser) {
-    console.log(errorVerifyEmailUser)
     return (
       <div className="flex items-center justify-center h-screen bg-white text-gray-900 p-5">
         <div className="text-center">
@@ -69,7 +89,9 @@ const VerifyEmailUserPage = ({ params }: { params: { token: string } }) => {
   }
 
   return (
-    <></>
+    <main>
+      Verify Email Success
+    </main>
   )
 }
 

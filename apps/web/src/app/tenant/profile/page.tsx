@@ -145,7 +145,7 @@ const ProfileTenantPage = () => {
       >
         {({ setFieldValue }) => (
           <Form className="flex flex-col gap-5">
-            <section className="flex items-center gap-10 rounded-md p-5 border border-slate-300">
+            <section className="flex sm:flex-row flex-col items-center gap-10 rounded-md p-5 border border-slate-300">
               <div className="flex flex-col gap-3 items-center">
                 <figure className="overflow-hidden rounded-full h-[150px] w-[150px] bg-blue-300 border-2 border-slate-300">
                   <Image
@@ -201,7 +201,7 @@ const ProfileTenantPage = () => {
             </section>
             <section className="flex flex-col gap-5">
               <div className="flex items-end gap-3">
-                <div className="flex flex-col gap-1 w-full">
+                <div className="flex flex-col gap-1 w-full justify-center">
                   <label
                     htmlFor="email"
                     className="text-sm font-bold text-black ml-5 flex items-center gap-1"
@@ -221,18 +221,32 @@ const ProfileTenantPage = () => {
                     placeholder="mfauzi@gmail.com"
                     className="placeholder-shown:text-sm placeholder-shown:text-slate-300 focus:outline-none text-sm font-medium text-gray-900 focus:ring-slate-600 border border-slate-300 rounded-full px-5 py-2"
                   />
+                  <div
+                    className="text-slate-600 px-5 text-xs italic font-medium mt-[-5px] p-1 rounded-full z-20"
+                  >
+                    If you change your email address, a verification link will be sent to the new email. Please check your inbox (and spam folder) to verify the change and complete the process.
+                  </div>
                   <ErrorMessage
                     name="email"
                     component={'div'}
                     className="text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full z-20"
                   />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowChangeEmail(true)
+                  }}
+                  className="2xl:hidden w-full flex px-5 py-2 font-bold hover:opacity-70 active:scale-90 transition duration-100 text-sm bg-gray-900 text-white border border-gray-900 rounded-full"
+                >
+                  Change
+                </button>
                 </div>
                 <button
                   type="button"
                   onClick={() => {
                     setShowChangeEmail(true)
                   }}
-                  className="px-5 py-2 font-bold hover:opacity-70 active:scale-90 transition duration-100 text-sm bg-gray-900 text-white w-fit border border-gray-900 rounded-full"
+                  className="2xl:flex hidden mb-5 px-5 py-2 font-bold hover:opacity-70 active:scale-90 transition duration-100 text-sm bg-gray-900 text-white w-fit border border-gray-900 rounded-full"
                 >
                   Change
                 </button>
@@ -390,7 +404,7 @@ const ProfileTenantPage = () => {
                 type="button"
                 onClick={() => setIsSubmitting(true)}
                 disabled={isPendingUpdateTenantProfile}
-                className="transition duration-100 disabled:bg-slate-300 disabled:hover:opacity-100 disabled:active:scale-100 disabled:text-slate-500 flex items-center gap-1.5 rounded-full hover:opacity-75 active:scale-95 bg-blue-600 text-white text-sm font-bold px-5 py-3 shadow-md w-full justify-center"
+                className="transition duration-100 disabled:bg-slate-300 disabled:hover:opacity-100 disabled:active:scale-100 disabled:text-slate-500 flex items-center gap-1.5 rounded-full hover:opacity-75 active:scale-95 bg-blue-800 text-white text-sm font-bold px-5 py-3 shadow-md w-full justify-center"
               >
                 <FaRegSave size={23} />
                 Save Profile

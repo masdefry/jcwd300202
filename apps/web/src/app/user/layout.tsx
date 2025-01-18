@@ -18,6 +18,7 @@ import authStore from '@/zustand/authStore'
 import { RiBuilding3Fill, RiCloseCircleFill } from 'react-icons/ri'
 import Image from 'next/image'
 import useHamburgerMenuHook from '@/hooks/useHamburgerMenuHook'
+import Cookies from 'js-cookie'
 
 const ProfileUserLayout = ({ children }: { children: ReactNode }) => {
   const {
@@ -147,6 +148,16 @@ const ProfileUserLayout = ({ children }: { children: ReactNode }) => {
                 </Link>
               )
             })}
+            {
+              token && (
+                <div
+                onClick={() => setShowConfirmationToLogout(true)}
+                className="border-b-4 border-transparent hover:border-blue-800 p-5 h-full text-base font-bold text-gray-800 hover:cursor-pointer active:scale-90 origin-bottom transition duration-100"
+              >
+                <p>Sign out</p>
+              </div>
+              )
+            }
           </div>
           <nav
             className={`2xl:hidden origin-top ${showHamburgerNav} transition duration-300 ease-in absolute left-0  top-[77px] bg-white border-b border-slate-200 shadow-md w-full h-fit z-50`}
@@ -201,6 +212,8 @@ const ProfileUserLayout = ({ children }: { children: ReactNode }) => {
                 onClick={() => {
                   setShowConfirmationToLogout(false)
                   setLogout()
+                  Cookies.remove('authToken')
+                  Cookies.remove('authRole')
                   window.location.href = '/'
                 }}
                 className="disabled:bg-slate-300 disabled:text-white disabled:scale-100 disabled:opacity-100 px-5 hover:opacity-75 transition duration-100 active:scale-90 py-1.5 text-white text-sm font-bold rounded-full shadow-md border bg-red-700 border-slate-100"

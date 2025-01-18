@@ -40,6 +40,7 @@ export const createPropertyService = async ({
     propertyRoomTypes: any
     imagesUploaded: any
   }) => {
+    console.log("SERVICEEEEEEEEEEEEEEEEEEEEEEEE")
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
@@ -130,6 +131,7 @@ export const createPropertyService = async ({
 
       const copiedImagesUploaded = [...imagesUploaded]
       const imagesForProperty: any = []
+      console.log(countPropertyImages)
       for (let i = 0; i < Number(countPropertyImages); i++) {
         imagesForProperty.push({
           propertyDetailId: createdPropertyDetail?.id,
@@ -137,8 +139,8 @@ export const createPropertyService = async ({
           fileExtension: copiedImagesUploaded[i]?.filename.split('.')[1],
           directory: copiedImagesUploaded[i]?.destination,
         })
-        copiedImagesUploaded.shift()
       }
+      copiedImagesUploaded.splice(0, Number(countPropertyImages))
 
       createdPropertyRoomTypes = await tx.propertyRoomType.createManyAndReturn({
         data: JSON.parse(propertyRoomTypes).map((item: any) => {

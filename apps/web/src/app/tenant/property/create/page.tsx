@@ -244,7 +244,6 @@ const CreatePropertyPage = () => {
         fd.append('images', dataCreateCountry?.file[0])
         const res = await instance.post('/country', fd)
 
-        console.log(res)
         return res?.data
       },
       onSuccess: (res) => {
@@ -260,6 +259,7 @@ const CreatePropertyPage = () => {
         }, 1500)
       },
       onError: (err: any) => {
+        setDataCreateCountry({ name: '', file: [], description: '' })
         toast((t) => (
           <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
             {err?.response?.data?.message || 'Connection error!'}
@@ -270,7 +270,7 @@ const CreatePropertyPage = () => {
   const { isPending: isPendingCities } = useQuery({
     queryKey: ['getCities'],
     queryFn: async () => {
-      const res = await instance.get('/city')
+      const res = await instance.get('/city?limit=10000')
       const dataForCityList = res?.data?.data?.cities?.map((item: any) => {
         return {
           label: item?.name,
@@ -284,7 +284,7 @@ const CreatePropertyPage = () => {
   const { isPending: isPendingCountries } = useQuery({
     queryKey: ['getCountries'],
     queryFn: async () => {
-      const res = await instance.get('/country')
+      const res = await instance.get('/country?limit=10000')
       const dataForCountryList = res?.data?.data?.countries?.map(
         (item: any) => {
           return {
@@ -338,6 +338,7 @@ const CreatePropertyPage = () => {
       }, 1500)
     },
     onError: (err: any) => {
+      setPropertyType({ name: '', id: '' })
       toast((t) => (
         <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
           {err?.response?.data?.message || 'Connection error!'}
@@ -345,44 +346,7 @@ const CreatePropertyPage = () => {
       ))
     },
   })
-  // const { mutate: mutateGetCities } = useMutation({
-  //   mutationFn: async (value: string) => {
-  //     const res = await instance.get(`/city?cityName=${value}`)
-  //     console.log(res)
-  //     return res
-  //   },
-  //   onSuccess: (res) => {
-  //     if (res?.data?.data?.cities.length > 0) {
-  //       setDataCities(res?.data?.data?.cities)
-  //     } else {
-  //       const notFound = [{ name: 'City not found', id: '' }]
-  //       setDataCities(notFound)
-  //     }
-  //   },
-  //   onError: (err: any) => {
-  //     console.log(err?.response?.data?.message || 'Connection error!')
-  //   },
-  // })
-
-  // const { mutate: mutateGetCountries } = useMutation({
-  //   mutationFn: async (value: string) => {
-  //     const res = await instance.get(`/country?countryName=${value}`)
-  //     console.log(res)
-  //     return res
-  //   },
-  //   onSuccess: (res) => {
-  //     if (res?.data?.data?.countries.length > 0) {
-  //       setDataCountries(res?.data?.data?.countries)
-  //     } else {
-  //       const notFound = [{ name: 'Country not found', id: '' }]
-  //       setDataCountries(notFound)
-  //     }
-  //   },
-  //   onError: (err: any) => {
-  //     console.log(err?.response?.data?.message || 'Connection error!')
-  //   },
-  // })
-
+  
   const { mutate: mutateCreateCity, isPending: isPendingCreateCity } =
     useMutation({
       mutationFn: async () => {
@@ -411,6 +375,11 @@ const CreatePropertyPage = () => {
         }, 1500)
       },
       onError: (err: any) => {
+        setDataCreateCity({
+          name: '',
+          file: [] as File[],
+          countryId: null,
+        })
         toast((t) => (
           <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
             {err?.response?.data?.message || 'Connection error!'}
@@ -422,8 +391,8 @@ const CreatePropertyPage = () => {
   const { mutate: mutateCreateProperty, isPending: isPendingCreateProperty } =
     useMutation({
       mutationFn: async (fd: FormData) => {
-        const res = await instance.post('/property', fd)
         console.log('MUTATIONCREATEPROPERTY')
+        const res = await instance.post('/property', fd)
         return res?.data
       },
       onSuccess: (res) => {
@@ -442,6 +411,10 @@ const CreatePropertyPage = () => {
         }, 1500)
       },
       onError: (err: any) => {
+        setDataCreatePropertyFacility({
+          name: '',
+          file: [],
+        })
         toast((t) => (
           <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
             {err?.response?.data?.message || 'Connection error!'}
@@ -494,10 +467,12 @@ const CreatePropertyPage = () => {
             }}
             validationSchema={createPropertyValidationSchema}
             onSubmit={(values) => {
+              console.log('>>>>>>>>>>>')
               const fd = new FormData()
               fd.append('cityId', values?.cityId.toString())
               fd.append('countryId', values?.countryId.toString())
               fd.append('name', values?.name)
+              fd.append('star', values?.star.toString())
               fd.append('zipCode', values?.zipCode)
               fd.append('address', values?.address)
               fd.append('location', values?.location)
@@ -582,11 +557,11 @@ const CreatePropertyPage = () => {
                       placeholder="Pan Pacific / Westin Hotel"
                     />
                     <section className="flex flex-col gap-1.5 w-full">
-                      <section className="flex items-center gap-8">
+                      <section className="flex sm:flex-row flex-col items-start sm:items-center gap-8">
                         {values?.propertyTypeName
                           ?.toLowerCase()
                           .includes('hotel') && (
-                          <div className="grid items-center gap-1.5 min-w-max relative">
+                          <div className="flex justify-center items-start flex-col gap-1.5 min-w-max relative">
                             <label
                               htmlFor="propertyType"
                               className="text-sm font-bold text-gray-900"
@@ -1203,7 +1178,7 @@ const CreatePropertyPage = () => {
                       labelName="Property URL"
                       name="url"
                       type="text"
-                      placeholder="www.myhotel.com"
+                      placeholder="https://www.myhotel.com"
                     />
                   </section>
                   <Separator />
@@ -1928,7 +1903,7 @@ const CreatePropertyPage = () => {
                                           >
                                             {({ push: pushRoomFacility }) => (
                                               <section className="flex flex-col gap-10 w-full">
-                                                <section className="grid grid-cols-3 w-full gap-6">
+                                                <section className="grid sm:grid-cols-2 grid-cols-1 lg:grid-cols-3 w-full gap-6">
                                                   {dataRoomFacilities?.map(
                                                     (
                                                       roomFacility: any,

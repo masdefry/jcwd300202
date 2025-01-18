@@ -13,7 +13,6 @@ interface IAuthLayout {
 }
 
 const AuthLayout = ({ children }: IAuthLayout) => {
-
   return (
     <main className='p-10 pb-28 relative h-screen'>
       <div className='fixed bottom-0 right-0 w-full p-10 flex justify-end flex-wrap items-center gap-5'>

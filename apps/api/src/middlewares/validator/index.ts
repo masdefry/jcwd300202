@@ -5,8 +5,8 @@ export const createCountryValidator = [
     body(['id', 'role', 'name', 'description']).notEmpty().withMessage('Id, Role, Name, and Description Name field required!'),
     body('id').isString().escape(),
     body('role').isString().escape(),
-    body('name').isString().isLength({min: 8, max: 180}).withMessage('Name length must between 8 and 180 characters!').escape(),
-    body('description').isString().isLength({min: 8, max: 180}).withMessage('Description length must between 8 and 180 characters!').escape(),
+    body('name').isString().isLength({min: 3, max: 180}).withMessage('Name length must between 3 and 180 characters!').escape(),
+    body('description').isString().isLength({min: 10, max: 180}).withMessage('Description length must between 10 and 180 characters!').escape(),
     (req: Request, res: Response, next: NextFunction) => {
         try {
             const errorResult = validationResult(req)
@@ -27,7 +27,7 @@ export const createCityValidator = [
     body('id').isString().escape(),
     body('role').isString().escape(),
     body('countryId').isString().escape(),
-    body('cityName').isString().isLength({min: 8, max: 180}).withMessage('Name length must between 8 and 180 characters!').escape(),
+    body('cityName').isString().isLength({min: 3, max: 180}).withMessage('Name length must between 3 and 180 characters!').escape(),
     (req: Request, res: Response, next: NextFunction) => {
         try {
             const errorResult = validationResult(req)
@@ -68,12 +68,12 @@ export const createPropertyValidator = [
     body('zipCode').isString().escape(),
     body('address').isString().escape(),
     body('location').isString().escape(),
-    body('star').isInt({ min: 0, max: 5 }).escape(),
+    body('star').optional().isString().escape(),
     
-    body('checkInStartTime').isString().matches(/^([01]?[0-9]|2[0-3]):([0-5][0-9])$/).withMessage('Invalid check-in start time format (HH:mm)').escape(),
-    body('checkInEndTime').optional().isString().matches(/^([01]?[0-9]|2[0-3]):([0-5][0-9])$/).withMessage('Invalid check-in end time format (HH:mm)').escape(),
-    body('checkOutStartTime').optional().isString().matches(/^([01]?[0-9]|2[0-3]):([0-5][0-9])$/).withMessage('Invalid check-out start time format (HH:mm)').escape(),
-    body('checkOutEndTime').isString().matches(/^([01]?[0-9]|2[0-3]):([0-5][0-9])$/).withMessage('Invalid check-out end time format (HH:mm)').escape(),
+    body('checkInStartTime').isString().matches(/^([01]?[0-9]|2[0-3]):([0-5][0-9])$/).escape(),
+    body('checkInEndTime').optional().isString().escape(),
+    body('checkOutStartTime').optional().isString().escape(),
+    body('checkOutEndTime').isString().matches(/^([01]?[0-9]|2[0-3]):([0-5][0-9])$/).escape(),
     
     body('totalRooms').isString().escape(),
     body('propertyTypeId').isString().escape(),
@@ -83,13 +83,14 @@ export const createPropertyValidator = [
     
     body('phoneNumber').isString().isLength({ min: 10, max: 15 }).withMessage('Phone number should be between 10 and 15 characters!').escape(),
 
-    body('url').optional().isURL().withMessage('Invalid URL format').escape(),
+    body('url').optional().isString().withMessage('Invalid URL format').escape(),
 
     (req: Request, res: Response, next: NextFunction) => {
         try {
             const errorResult = validationResult(req);
-
+            console.log('ERORRRRRRRRRRRRRRRRR')
             if (errorResult.isEmpty() === false) {
+                console.log(errorResult)
                 throw { msg: errorResult.array()[0].msg, status: 406 };
             } else {
                 next();

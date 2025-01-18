@@ -51,7 +51,7 @@ export const createProperty = async (
       throw { msg: 'Images not found!', status: 404 }
 
     const imagesUploaded: any = req?.files?.images
-
+    console.log('CONTROLLERRRRRRR>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
     const createPropertyProcess = await createPropertyService({
       id,
       role,
@@ -92,6 +92,8 @@ export const createProperty = async (
       },
     })
   } catch (error) {
+    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+    console.log(error)
     if (!Array.isArray(req.files)) {
       deleteFiles({ imagesUploaded: req.files })
     }
@@ -140,7 +142,6 @@ export const getPropertyDetail = async (
       },
     })
   } catch (error) {
-    console.log(error)
     next(error)
   }
 }

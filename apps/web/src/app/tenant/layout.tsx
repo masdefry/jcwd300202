@@ -16,6 +16,7 @@ import authStore from '@/zustand/authStore'
 import { RiBuilding3Fill, RiCloseCircleFill } from 'react-icons/ri'
 import HamburgerMenu from '@/features/tenant/components/HamburgerMenu'
 import useHamburgerMenuHook from '@/hooks/useHamburgerMenuHook'
+import Cookies from 'js-cookie'
 
 const ProfileTenantLayout = ({ children }: { children: ReactNode }) => {
   const {
@@ -229,6 +230,8 @@ const ProfileTenantLayout = ({ children }: { children: ReactNode }) => {
                 onClick={() => {
                   setShowConfirmationToLogout(false)
                   setLogout()
+                  Cookies.remove('authToken')
+                  Cookies.remove('authRole')
                   window.location.href = '/'
                 }}
                 className="disabled:bg-slate-300 disabled:text-white disabled:scale-100 disabled:opacity-100 px-5 hover:opacity-75 transition duration-100 active:scale-90 py-1.5 text-white text-sm font-bold rounded-full shadow-md border bg-red-700 border-slate-100"

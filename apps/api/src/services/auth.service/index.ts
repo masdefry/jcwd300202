@@ -8,6 +8,7 @@ import { compile } from 'handlebars'
 import { JwtPayload } from 'jsonwebtoken'
 import { text } from 'stream/consumers'
 import { IUser } from './types'
+import { addHours } from 'date-fns'
 
 export const loginTenantService = async ({
   email,
@@ -125,6 +126,7 @@ export const registerUserService = async ({ email }: Pick<IUser, 'email'>) => {
       },
       data: {
         token: tokenForVerifyEmail,
+        tokenExpiry: addHours(new Date(), 1)
       },
     })
   })
@@ -203,6 +205,7 @@ export const registerTenantService = async ({
         },
         data: {
           token: tokenForVerifyEmail,
+          tokenExpiry: addHours(new Date(), 1)
         },
       })
     },
@@ -250,6 +253,7 @@ export const verifyEmailRequestUserService = async ({
         },
         data: {
           token: tokenForVerifyEmail,
+          tokenExpiry: addHours(new Date(), 1)
         },
       })
 
@@ -314,6 +318,7 @@ export const verifyChangeEmailRequestUserService = async ({
         },
         data: {
           token: tokenForVerifyEmail,
+          tokenExpiry: addHours(new Date(), 1)
         },
       })
 
@@ -369,6 +374,7 @@ export const verifyChangeEmailRequestTenantService = async ({
         },
         data: {
           token: tokenForVerifyEmail,
+          tokenExpiry: addHours(new Date(), 1)
         },
       })
 
@@ -421,6 +427,7 @@ export const verifyEmailRequestTenantService = async ({
         },
         data: {
           token: tokenForVerifyEmail,
+          tokenExpiry: addHours(new Date(), 1)
         },
       })
 
@@ -618,6 +625,7 @@ export const sendEmailResetPasswordUserService = async ({
         },
         data: {
           token,
+          tokenExpiry: addHours(new Date(), 1)
         },
       })
 
@@ -674,6 +682,7 @@ export const sendEmailResetPasswordTenantService = async ({
         },
         data: {
           token,
+          tokenExpiry: addHours(new Date(), 1)
         },
       })
 
@@ -852,6 +861,11 @@ export const verifyChangeEmailTenantService = async ({
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
     throw { msg: 'Tenant not found!', status: 404 }
+
+  const decodedToken = await decodeToken(token as string)
+  if (!decodedToken)
+    throw { msg: 'Session expired!', status: 406 }
+
   if (isTenantExist?.token !== token)
     throw { msg: 'Session expired!', status: 406 }
 
@@ -880,6 +894,11 @@ export const verifyChangeEmailUserService = async ({
 
   if (!isUserExist?.id || isUserExist?.deletedAt)
     throw { msg: 'User not found!', status: 404 }
+
+  const decodedToken = await decodeToken(token as string)
+  if (!decodedToken)
+    throw { msg: 'Session expired!', status: 406 }
+
   if (isUserExist?.token !== token)
     throw { msg: 'Session expired!', status: 406 }
 

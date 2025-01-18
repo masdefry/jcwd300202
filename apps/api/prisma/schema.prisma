@@ -19,6 +19,7 @@ model User {
   role               Role      @default(USER)
   isGoogleRegistered Boolean   @default(false)
   token              String?   @db.Text
+  tokenExpiry        DateTime?
   username           String?   @default("Roomify friend")
   phoneNumber        String?
   birthDate          DateTime?
@@ -100,6 +101,7 @@ model Tenant {
   isVerified    Boolean @default(false)
   companyName   String?
   token         String? @db.Text
+  tokenExpiry   DateTime?
   pic           String? @default("Roomify partner")
   phoneNumber   String?
   address       String?

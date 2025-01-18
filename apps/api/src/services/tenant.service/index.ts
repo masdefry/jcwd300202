@@ -349,6 +349,15 @@ export const deleteTenantProfileService = async ({
             },
           })
 
+          const softDeleteTenant = await tx.tenant.update({
+            where: {
+              id: isTenantExist?.id
+            },
+            data: {
+              deletedAt: new Date().toISOString(),
+            },
+          })
+
           deleteFiles({
             imagesUploaded: {
               images: [
@@ -358,7 +367,30 @@ export const deleteTenantProfileService = async ({
             },
           })
         } catch (err) {
-          throw { msg: 'Delete property by tenant failed!', status: 500 }
+          throw { msg: 'Delete tenant failed!', status: 500 }
+        }
+      },
+      {
+        timeout: 50000,
+      },
+    )
+  } else {
+    
+    await prisma.$transaction(
+      async (tx) => {
+        try {
+
+          const softDeleteTenant = await tx.tenant.update({
+            where: {
+              id: isTenantExist?.id
+            },
+            data: {
+              deletedAt: new Date().toISOString(),
+            },
+          })
+
+        } catch (err) {
+          throw { msg: 'Delete tenant failed!', status: 500 }
         }
       },
       {

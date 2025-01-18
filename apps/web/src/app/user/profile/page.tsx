@@ -295,7 +295,7 @@ const ProfileUserPage = () => {
                   onClick={() => {
                     setShowChangeEmail(true)
                   }}
-                  className="2xl:flex hidden px-5 py-2 font-bold hover:opacity-70 active:scale-90 transition duration-100 text-sm bg-gray-900 text-white w-fit border border-gray-900 rounded-full"
+                  className="2xl:flex hidden mb-5 px-5 py-2 font-bold hover:opacity-70 active:scale-90 transition duration-100 text-sm bg-gray-900 text-white w-fit border border-gray-900 rounded-full"
                 >
                   Change
                 </button>

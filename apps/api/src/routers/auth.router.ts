@@ -33,8 +33,6 @@ authRouter.patch('/reset-password', verifyToken, resetPasswordValidator, resetPa
 authRouter.post('/tenant/send-email-reset-password', sendEmailResetPasswordValidator, sendEmailResetPasswordTenant)
 authRouter.patch('/tenant/reset-password', verifyToken, resetPasswordValidator, resetPasswordTenant)
 
-authRouter.patch('/tenant/reset-password', verifyToken, resetPasswordValidator, resetPasswordTenant)
-
 authRouter.post('/o-auth', registerValidator, signInWithGoogle)
 authRouter.get('/keep-auth', verifyToken, keepAuth)
 

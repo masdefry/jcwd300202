@@ -58,15 +58,18 @@ export const getPropertyRoomTypeByPropertyService = async ({
   offset,
   checkInDate,
   checkOutDate,
-  capacity,
+  children,
+  adult,
   slug,
 }: {
   limit: string | number
   offset: string | number
   checkInDate: string
   checkOutDate: string
-  capacity: string
+  children: string
+  adult: string
 } & Pick<IProperty, 'slug'>) => {
+  const capacity = Number(adult) + Number(children)
   const isPropertyExist = await prisma.property.findFirst({
     where: {
       slug,
@@ -75,7 +78,7 @@ export const getPropertyRoomTypeByPropertyService = async ({
   })
 
   if (!isPropertyExist?.id || isPropertyExist?.deletedAt)
-    throw { msg: 'Property not found!', status: 406 }
+    throw { msg: 'Property not found!', status: 404 }
 
   let gteDate =
     checkInDate && checkInDate != 'undefined'
@@ -391,12 +394,12 @@ export const updatePropertyRoomTypeGeneralService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
 
@@ -408,7 +411,7 @@ export const updatePropertyRoomTypeGeneralService = async ({
   })
 
   if (!isPropertyExist?.id || isPropertyExist?.deletedAt)
-    throw { msg: 'Property not found!', status: 406 }
+    throw { msg: 'Property not found!', status: 404 }
   if (isPropertyExist?.tenantId !== id)
     throw { msg: 'Actions not permitted!', status: 403 }
 
@@ -420,7 +423,7 @@ export const updatePropertyRoomTypeGeneralService = async ({
   })
 
   if (!isPropertyRoomTypeExist?.id || isPropertyRoomTypeExist?.deletedAt)
-    throw { msg: 'Property room type not found!', status: 406 }
+    throw { msg: 'Property room type not found!', status: 404 }
 
   const updatedPropertyRoomTypeGeneral = await prisma.propertyRoomType.update({
     where: {
@@ -473,12 +476,12 @@ export const createPropertyRoomTypeService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
 
@@ -490,7 +493,7 @@ export const createPropertyRoomTypeService = async ({
   })
 
   if (!isPropertyExist?.id || isPropertyExist?.deletedAt)
-    throw { msg: 'Property not found!', status: 406 }
+    throw { msg: 'Property not found!', status: 404 }
   if (isPropertyExist?.tenantId !== id)
     throw { msg: 'Actions not permitted!', status: 403 }
 
@@ -572,12 +575,12 @@ export const deletePropertyRoomTypeService = async ({
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
-      deletedAt: null
+      deletedAt: null,
     },
   })
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
-    throw { msg: 'Tenant not found!', status: 406 }
+    throw { msg: 'Tenant not found!', status: 404 }
   const comparingPassword = await comparePassword(
     password as string,
     isTenantExist?.password as string,
@@ -597,7 +600,7 @@ export const deletePropertyRoomTypeService = async ({
     },
   })
 
-  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 406 }
+  if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 404 }
   if (isPropertyExist?.tenantId !== id)
     throw { msg: 'Actions not permitted!', status: 403 }
 
@@ -609,7 +612,7 @@ export const deletePropertyRoomTypeService = async ({
   })
 
   if (!isPropertyRoomTypeExist?.id || isPropertyRoomTypeExist?.deletedAt)
-    throw { msg: 'Property room type not found!', status: 406 }
+    throw { msg: 'Property room type not found!', status: 404 }
 
   const getPropertyRoomImages = await prisma.propertyRoomImage.findMany({
     where: {

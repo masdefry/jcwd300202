@@ -14,7 +14,11 @@ import { Formik, Form, Field, ErrorMessage } from 'formik'
 import { FaRegTrashCan } from 'react-icons/fa6'
 import { manageRoomPhotosValidationSchema } from '@/features/tenant/property/manage/room-details/edit/photos/schemas/manageRoomPhotosValidationSchema'
 
-const PropertyManageRoomPhotosPage = ({ params }: { params: { slug: string, id: string } }) => {
+const PropertyManageRoomPhotosPage = ({
+  params,
+}: {
+  params: { slug: string; id: string }
+}) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showPhoto, setShowPhoto] = useState({
     id: 0,
@@ -37,7 +41,9 @@ const PropertyManageRoomPhotosPage = ({ params }: { params: { slug: string, id: 
     isPending: isPendingDeletePropertyImage,
   } = useMutation({
     mutationFn: async () => {
-      const res = await instance.delete(`/property-room-images/${showPhoto?.id}`)
+      const res = await instance.delete(
+        `/property-room-images/${showPhoto?.id}`,
+      )
 
       return res?.data
     },
@@ -95,7 +101,7 @@ const PropertyManageRoomPhotosPage = ({ params }: { params: { slug: string, id: 
       <hgroup className="flex flex-col px-5">
         <h1 className="text-lg font-bold text-gray-800">Room Photos</h1>
         <p className="text-sm font-medium text-slate-600">
-        Empower Your Space: Effortlessly Update Your Room Images Anytime!
+          Empower Your Space: Effortlessly Update Your Room Images Anytime!
         </p>
       </hgroup>
       <div className="w-full flex justify-end px-5">
@@ -103,7 +109,8 @@ const PropertyManageRoomPhotosPage = ({ params }: { params: { slug: string, id: 
           type="button"
           onClick={() => setShowAddPhoto(true)}
           disabled={
-            Array.isArray(dataPropertyRoomImages) && dataPropertyRoomImages.length >= 5
+            Array.isArray(dataPropertyRoomImages) &&
+            dataPropertyRoomImages.length >= 5
           }
           className="disabled:bg-slate-300 disabled:text-white disabled:border-none disabled:scale-100 disabled:cursor-not-allowed flex items-center gap-1.5 text-sm px-4 py-2 rounded-md text-gray-800 font-bold border-2 border-gray-800 bg-white hover:bg-gray-800 hover:text-white transition duration-100 active:scale-90"
         >
@@ -205,85 +212,100 @@ const PropertyManageRoomPhotosPage = ({ params }: { params: { slug: string, id: 
           </div>
         </section>
       )}
-      <section className={` p-5 fixed w-full h-full top-0 left-0 bg-black bg-opacity-25 backdrop-blur-sm ${showAddPhoto ? 'flex' : 'hidden'} flex-col gap-1 items-center justify-center`}>
+      <section
+        className={` p-5 fixed w-full h-full top-0 left-0 bg-black bg-opacity-25 backdrop-blur-sm ${showAddPhoto ? 'flex' : 'hidden'} flex-col gap-1 items-center justify-center`}
+      >
         <Formik
-        initialValues={{
-          file: [] as File[]
-        }}
-        validationSchema={manageRoomPhotosValidationSchema}
-        onSubmit={(values) => {
-          const fd = new FormData()
-          fd.append('images', values?.file[0])
-          mutateCreatePropertyRoomImage(fd)
-          console.log(values)
-        }}
+          initialValues={{
+            file: [] as File[],
+          }}
+          validationSchema={manageRoomPhotosValidationSchema}
+          onSubmit={(values) => {
+            const fd = new FormData()
+            fd.append('images', values?.file[0])
+            mutateCreatePropertyRoomImage(fd)
+            console.log(values)
+          }}
         >
-          {
-            ({ setFieldValue, values }) => (
-          <Form className=' flex flex-col gap-1 items-center justify-center w-full'>
-            <div className="w-[400px] flex justify-end">
-              <div
-                onClick={() => {
-                  setFieldValue('file[0]', null)
-                  setShowAddPhoto(false)
-                }}
-                className="bg-white rounded-full flex items-center text-lg text-gray-800 justify-center h-7 w-7 hover:bg-slate-100 hover:cursor-pointer transition duration-100 active:scale-90"
-              >
-                <IoClose />
+          {({ setFieldValue, values }) => (
+            <Form className=" flex flex-col gap-1 items-center justify-center w-full">
+              <div className="w-[400px] flex justify-end">
+                <div
+                  onClick={() => {
+                    setFieldValue('file[0]', null)
+                    setShowAddPhoto(false)
+                  }}
+                  className="bg-white rounded-full flex items-center text-lg text-gray-800 justify-center h-7 w-7 hover:bg-slate-100 hover:cursor-pointer transition duration-100 active:scale-90"
+                >
+                  <IoClose />
+                </div>
               </div>
-            </div>
-            <div className="bg-white  flex flex-col gap-3 shadow-md p-1 pb-2 w-[400px] rounded-md h-[300px]">
-              {values?.file[0]?.name ? (
-                <figure className="w-full h-full relative overflow-hidden">
-                  <Image
-                    src={URL.createObjectURL(values?.file[0])}
-                    width={1000}
-                    height={1000}
-                    alt=""
-                    className="object-cover w-full h-full"
-                  />
-                  <div className="hover:cursor-pointer text-lg absolute right-4 bottom-4 bg-white shadow-md text-red-600 hover:text-opacity-75 active:scale-90 transition duration-100 h-10 w-10 flex items-center justify-center rounded-2xl">
-                    <FaRegTrashCan
-                      onClick={() => setFieldValue('file[0]', null)}
+              <div className="bg-white  flex flex-col gap-3 shadow-md p-1 pb-2 w-[400px] rounded-md h-[300px]">
+                {values?.file[0]?.name ? (
+                  <figure className="w-full h-full relative overflow-hidden">
+                    <Image
+                      src={URL.createObjectURL(values?.file[0])}
+                      width={1000}
+                      height={1000}
+                      alt=""
+                      className="object-cover w-full h-full"
                     />
-                  </div>
-                </figure>
-              ) : (
-                <label className="border-2 border-gray-300 border-dashed flex flex-col items-center justify-center w-full h-full cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <IoCloudUploadOutline size={24} />
-                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                      <span className="font-semibold">Click to upload</span>
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      JPG, PNG or JPEG (MAX. 2MB)
-                    </p>
-                  </div>
-                  <input
-                    type='file'
-                    className="hidden"
-                    name='file'
-                    onChange={(e: any) => {
-                      if (e.currentTarget.files[0]) {
-                        setFieldValue( "file[0]", e.currentTarget.files[0] )
-                      }
+                    <div className="hover:cursor-pointer text-lg absolute right-4 bottom-4 bg-white shadow-md text-red-600 hover:text-opacity-75 active:scale-90 transition duration-100 h-10 w-10 flex items-center justify-center rounded-2xl">
+                      <FaRegTrashCan
+                        onClick={() => setFieldValue('file[0]', null)}
+                      />
+                    </div>
+                  </figure>
+                ) : (
+                  <label className="border-2 border-gray-300 border-dashed flex flex-col items-center justify-center w-full h-full cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <IoCloudUploadOutline size={24} />
+                      <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                        <span className="font-semibold">Click to upload</span>
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        JPG, PNG or JPEG (MAX. 1MB)
+                      </p>
+                    </div>
+                    <input
+                      type="file"
+                      className="hidden"
+                      name="file"
+                      onChange={(e: any) => {
+                        if (e.currentTarget.files[0]) {
+                          setFieldValue('file[0]', e.currentTarget.files[0])
+                        }
+                      }}
+                    />
+                  </label>
+                )}
+                <ErrorMessage
+                  name="file"
+                  component={'div'}
+                  className="text-red-600 text-xs font-bold bg-red-200 rounded-full p-1 px-5"
+                />
+                <div className="flex items-center justify-between w-full gap-1.5">
+                  <button
+                    onClick={() => {
+                      setShowAddPhoto(false)
+                      setFieldValue('file[0]', null)
                     }}
-                  />
-                </label>
-              )}
-              <ErrorMessage name="file" component={'div'} className='text-red-600 text-xs font-bold bg-red-200 rounded-full p-1 px-5'/>
-              <div className='flex items-center justify-between w-full gap-1.5'>
-                <button onClick={() => {
-                  setShowAddPhoto(false)
-                  setFieldValue('file[0]', null)
-                  }} 
-                  type='button' className='text-sm font-bold rounded-md p-2 w-full shadow-md text-gray-800 bg-white border border-slate-100 hover:opacity-75 active:scale-95 transition duration-100'>Cancel</button>
-                <button disabled={!values?.file[0]?.name} type='submit' className='disabled:text-white disabled:bg-slate-300 disabled:scale-100 disabled:cursor-not-allowed text-sm font-bold rounded-md p-2 w-full shadow-md text-white bg-gray-800 hover:opacity-75 active:scale-95 transition duration-100'>Add image</button>
+                    type="button"
+                    className="text-sm font-bold rounded-md p-2 w-full shadow-md text-gray-800 bg-white border border-slate-100 hover:opacity-75 active:scale-95 transition duration-100"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    disabled={!values?.file[0]?.name}
+                    type="submit"
+                    className="disabled:text-white disabled:bg-slate-300 disabled:scale-100 disabled:cursor-not-allowed text-sm font-bold rounded-md p-2 w-full shadow-md text-white bg-gray-800 hover:opacity-75 active:scale-95 transition duration-100"
+                  >
+                    Add image
+                  </button>
+                </div>
               </div>
-            </div>
-          </Form>
-            )
-          }
+            </Form>
+          )}
         </Formik>
       </section>
     </main>

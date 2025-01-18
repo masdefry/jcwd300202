@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import React from 'react'
+import { FiSearch } from 'react-icons/fi'
 
 const TablePropertyList = ({ dataProperties, handleMutateRefreshPage, isPending }: any) => {
     if(isPending) {
@@ -71,23 +72,32 @@ const TablePropertyList = ({ dataProperties, handleMutateRefreshPage, isPending 
               </tr>
             </thead>
             <tbody>
-              {dataProperties?.properties?.map((item: any, index: number) => {
-                return (
-                  <tr>
-                    <th>{Number(dataProperties?.offset) + index + 1}</th>
-                    <td className="hover:text-blue-800 transition duration-100 underline active:text-blue-500">
-                      <Link href={`/tenant/property/manage/${item?.slug}`}>
-                        {item?.name}
-                      </Link>
-                    </td>
-                    <td>{item?.address}</td>
-                    <td className={`${item?.availability ? 'text-green-700' : 'text-red-600'}`}>{item?.availability ? 'Open' : 'Close'}</td>
-                    <td>{item?.totalBooked}</td>
-                    <td>{item?.avgRating.toFixed(1)}</td>
-                    <td>{item?.totalCancelled}</td>
-                  </tr>
-                )
-              })}
+              {Array.isArray(dataProperties?.properties) && dataProperties?.properties?.length > 0 ? (
+                dataProperties?.properties?.map((item: any, index: number) => {
+                  return (
+                    <tr>
+                      <th>{Number(dataProperties?.offset) + index + 1}</th>
+                      <td className="hover:text-blue-800 transition duration-100 underline active:text-blue-500">
+                        <Link href={`/tenant/property/manage/${item?.slug}`}>
+                          {item?.name}
+                        </Link>
+                      </td>
+                      <td>{item?.address}</td>
+                      <td className={`${item?.availability ? 'text-green-700' : 'text-red-600'}`}>{item?.availability ? 'Open' : 'Close'}</td>
+                      <td>{item?.totalBooked}</td>
+                      <td>{item?.avgRating.toFixed(1)}</td>
+                      <td>{item?.totalCancelled}</td>
+                    </tr>
+                  )
+                })
+              ) : (
+                    <tr>
+                      <td colSpan={8} className='text-center text-slate-300 font-bold p-3'>Oops! We Couldn't Find the Property You're Looking For</td>
+                    </tr>
+
+              )
+            }
+              
             </tbody>
           </table>
           <div className="flex items-center justify-center w-full">

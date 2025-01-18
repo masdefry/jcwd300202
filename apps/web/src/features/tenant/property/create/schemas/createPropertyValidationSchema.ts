@@ -68,9 +68,9 @@ export const createPropertyValidationSchema = Yup.object().shape({
   propertyImages: Yup.array()
     .of(
       Yup.mixed<File>()
-      .required('Image is required')
-      .test('fileSize', 'Maximum 2MB file size allowed', (file) => {
-          const limitFileSize = 2000000
+        .required('Image is required')
+        .test('fileSize', 'Maximum 1MB file size allowed', (file) => {
+          const limitFileSize = 1000000
           return file && file.size <= limitFileSize
         })
         .test('fileFormat', 'File format must be png, jpg, or jpeg', (file) => {
@@ -81,9 +81,13 @@ export const createPropertyValidationSchema = Yup.object().shape({
     .min(5, 'At least 5 image must be included')
     .max(7, 'Maximum 7 image allowed'),
 
-  propertyDescription: Yup.string().required('Property description is required'),
+  propertyDescription: Yup.string().required(
+    'Property description is required',
+  ),
 
-  neighborhoodDescription: Yup.string().required('Neighborhood description is required'),
+  neighborhoodDescription: Yup.string().required(
+    'Neighborhood description is required',
+  ),
 
   phoneNumber: Yup.string()
     .matches(/^[\+0-9\s]*$/, 'Invalid phone number')
@@ -134,9 +138,9 @@ export const createPropertyValidationSchema = Yup.object().shape({
         roomImages: Yup.array()
           .of(
             Yup.mixed<File>()
-            .required('Image is required')
-            .test('fileSize', 'Maximum 2MB file size allowed', (file) => {
-                const limitFileSize = 2000000
+              .required('Image is required')
+              .test('fileSize', 'Maximum 1MB file size allowed', (file) => {
+                const limitFileSize = 1000000
                 return file && file.size <= limitFileSize
               })
               .test(

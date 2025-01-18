@@ -31,6 +31,7 @@ const ProfileUserPage = () => {
     queryKey: ['getUserProfile'],
     queryFn: async () => {
       const res = await instance.get('/user')
+      console.log('query', res?.data?.data)
       return res?.data?.data
     },
   })
@@ -66,6 +67,9 @@ const ProfileUserPage = () => {
       onSuccess: (res) => {
         setShowChangeEmail(false)
         setNewEmail('')
+        setTimeout(() => {
+          window.location.reload()
+        }, 1000)
         toast((t) => (
           <span className="flex gap-2 items-center font-semibold justify-center text-xs">
             {res?.message}
@@ -90,24 +94,17 @@ const ProfileUserPage = () => {
       username,
       gender,
       phoneNumber,
-      // cityName,
-      // countryName,
-      // cityId,
-      // countryId,
       date,
       month,
       year,
       address,
     }: any) => {
+      console.log(date)
       const res = await instance.patch('/user', {
         email,
         username,
         gender,
         phoneNumber,
-        // cityName,
-        // countryName,
-        // cityId,
-        // countryId,
         date,
         month,
         year,
@@ -171,10 +168,6 @@ const ProfileUserPage = () => {
           username: dataUserProfile?.username || '',
           gender: dataUserProfile?.gender || '',
           phoneNumber: dataUserProfile?.phoneNumber || '',
-          // cityName: dataUserProfile?.cityName || '',
-          // countryName: dataUserProfile?.countryName || '',
-          // cityId: dataUserProfile?.cityId || 0,
-          // countryId: dataUserProfile?.countryId || 0,
           date: dataUserProfile?.date ? dataUserProfile?.date : null,
           month: dataUserProfile?.month ? dataUserProfile?.month : null,
           year: dataUserProfile?.year ? dataUserProfile?.year : null,
@@ -192,10 +185,6 @@ const ProfileUserPage = () => {
             username: values.username,
             gender: values.gender,
             phoneNumber: values.phoneNumber,
-            // cityName: values.cityName,
-            // countryName: values.countryName,
-            // cityId: values.cityId,
-            // countryId: values.countryId,
             date: values.date,
             month: values.month,
             year: values.year,
@@ -205,9 +194,9 @@ const ProfileUserPage = () => {
       >
         {({ setFieldValue }) => (
           <Form className="flex flex-col gap-5">
-            <section className="flex items-center gap-10 rounded-md p-5 px-10 border border-slate-300">
+            <section className="flex sm:flex-row flex-col items-center gap-10 rounded-md p-5 px-10 border border-slate-300">
               <div className="flex flex-col gap-3 items-center">
-                <figure className="overflow-hidden rounded-full h-[150px] w-[150px] bg-blue-300 border-2 border-slate-300">
+                <figure className="overflow-hidden rounded-full h-[150px] w-[150px] bg-slate-200 border-2 border-slate-300">
                   <Image
                     src={imagePreview || dataUserProfile?.profilePictureUrl}
                     width={500}
@@ -278,26 +267,40 @@ const ProfileUserPage = () => {
                     name="email"
                     type="email"
                     disabled
-                    placeholder="mfauzi@gmail.com"
+                    placeholder="example@gmail.com"
                     className="placeholder-shown:text-sm placeholder-shown:text-slate-300 focus:outline-none text-sm font-medium text-gray-900 focus:ring-slate-600 border border-slate-300 rounded-full px-5 py-2"
                   />
+                  <div
+                    className="text-slate-600 px-5 text-xs italic font-medium mt-[-5px] p-1 rounded-full z-20"
+                  >
+                    If you change your email address, a verification link will be sent to the new email. Please check your inbox (and spam folder) to verify the change and complete the process.
+                  </div>
                   <ErrorMessage
                     name="email"
                     component={'div'}
                     className="text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full z-20"
                   />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowChangeEmail(true)
+                    }}
+                    className="2xl:hidden w-full flex justify-center  px-5 py-2 font-bold hover:opacity-70 active:scale-90 transition duration-100 text-sm bg-gray-900 text-white border border-gray-900 rounded-full"
+                  >
+                    Change
+                  </button>
                 </div>
                 <button
                   type="button"
                   onClick={() => {
                     setShowChangeEmail(true)
                   }}
-                  className="px-5 py-2 font-bold hover:opacity-70 active:scale-90 transition duration-100 text-sm bg-gray-900 text-white w-fit border border-gray-900 rounded-full"
+                  className="2xl:flex hidden px-5 py-2 font-bold hover:opacity-70 active:scale-90 transition duration-100 text-sm bg-gray-900 text-white w-fit border border-gray-900 rounded-full"
                 >
                   Change
                 </button>
                 {showChangeEmail && (
-                  <section className="fixed bg-black bg-opacity-20 backdrop-blur-sm w-full h-full z-[51] top-0 left-0 flex items-center justify-center">
+                  <section className="fixed p-5 bg-black bg-opacity-20 backdrop-blur-sm w-full h-full z-[51] top-0 left-0 flex items-center justify-center">
                     <div className="bg-white border border-slate-200 shadow-md p-5 rounded-md flex flex-col gap-7">
                       <div className="flex items-center justify-end">
                         <IoClose
@@ -517,122 +520,6 @@ const ProfileUserPage = () => {
                   </div>
                 </div>
               </div>
-              {/* <div className='flex flex-col gap-1 relative'>
-                  <label htmlFor="cityId" className='text-sm font-bold text-black ml-5'>City</label>
-                  { 
-                    ((updatedCity || dataUserProfile?.cityName) && cityChip) && (
-                      <div className='absolute top-[29px] left-[6px] rounded-full px-3 py-1 text-gray-800 text-sm font-bold bg-gray-200 flex items-center gap-1.5'><PiCityLight size={20}/>{updatedCity || dataUserProfile?.cityName}
-                      <IoIosCloseCircleOutline onClick={() => {
-                        setCityChip(false)
-                        setUpdatedCity('')
-                        setDataCityList([])
-                        }} size={19} className='ml-3 hover:cursor-pointer'/>
-                      </div>
-                    )
-                  }
-                  <div className='flex items-center w-full'>
-                    <input value={updatedCityInput} onChange={(e) => {
-                      setUpdatedCityInput(e.target.value)
-                      debounceCityList(e.target.value)
-                      setDataCountryList([])
-                      }} 
-                      disabled={cityChip && dataUserProfile?.cityName} id='cityId' name='cityId' type="text" placeholder={cityChip ? '' : 'Jakarta'} className='placeholder-shown:text-sm w-full placeholder-shown:text-slate-300 focus:outline-none text-sm font-medium text-gray-900 focus:ring-slate-600 border border-slate-300 rounded-l-full px-5 py-2' />
-                    <button onClick={() => {
-                      if(updatedCityInput) {
-                        setCityChip(true)
-                        setUpdatedCity(updatedCityInput)
-                        setFieldValue('cityName', updatedCityInput)
-                        setDataCityList([])
-                        setUpdatedCityInput('')
-                      }
-                      }} 
-                      type='button' className='text-white border hover:opacity-75 border-black bg-black min-w-max text-sm font-bold px-5 py-2 rounded-r-full'>Set</button>
-                  </div>
-                  {
-                    (dataCityList && dataCityList.length > 0) && (
-                    <div className='absolute top-16 w-full rounded-md hover:cursor-pointer bg-white shadow-md border border-slate-100 flex flex-col overflow-hidden z-30'>
-                      {
-                        dataCityList?.map((item: any, index: number) => {
-                          return(
-                            <p 
-                            key={index} 
-                            onClick={() => {
-                              setFieldValue('cityId', item?.id)
-                              setUpdatedCity(item?.name)
-                              setCityChip(true)
-                              setDataCityList([])
-                              setUpdatedCityInput('')
-                            }} 
-                            className='px-5 py-2 text-sm font-bold text-gray-800 hover:bg-blue-600 hover:text-white rounded-md'>
-                              {item?.name}
-                            </p>
-                          )
-                        })
-                      }
-
-                    </div>
-                    )
-                   }
-                   <ErrorMessage name='cityName' component={'div'} className='text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full z-20'/>
-                </div>
-                <div className='flex flex-col gap-1 relative'>
-                  <label htmlFor="countryId" className='text-sm font-bold text-black ml-5'>Country</label>
-                  { 
-                    ((updatedCountry || dataUserProfile?.countryName) && countryChip) && (
-                      <div className='absolute top-[29px] left-[6px] rounded-full px-3 py-1 text-gray-800 text-sm font-bold bg-gray-200 flex items-center gap-1.5'><IoBusinessOutline size={20}/>{updatedCountry || dataUserProfile?.countryName}
-                      <IoIosCloseCircleOutline onClick={() => {
-                        setCountryChip(false)
-                        setUpdatedCountry('')
-                        setDataCountryList([])
-                        }} size={19} className='ml-3 hover:cursor-pointer'/>
-                      </div>
-                    )
-                  }
-                  <div className='flex items-center w-full'>
-                    <input value={updatedCountryInput} onChange={(e) => {
-                      setUpdatedCountryInput(e.target.value)
-                      debounceCountryList(e.target.value)
-                      setDataCityList([])
-                      }} 
-                      disabled={countryChip && dataUserProfile?.countryName} id='countryId' name='countryId' type="text" placeholder={countryChip ? '' : 'Jakarta'} className='placeholder-shown:text-sm w-full placeholder-shown:text-slate-300 focus:outline-none text-sm font-medium text-gray-900 focus:ring-slate-600 border border-slate-300 rounded-l-full px-5 py-2' />
-                    <button onClick={() => {
-                      if(updatedCountryInput) {
-                        setCountryChip(true)
-                        setUpdatedCountry(updatedCountryInput)
-                        setFieldValue('countryName', updatedCountryInput)
-                        setDataCountryList([])
-                        setUpdatedCountryInput('')
-                      }
-                      }} 
-                      type='button' className='text-white border hover:opacity-75 border-black bg-black min-w-max text-sm font-bold px-5 py-2 rounded-r-full'>Set</button>
-                  </div>
-                  {
-                    (dataCountryList && dataCountryList.length > 0) && (
-                    <div className='absolute top-16 w-full rounded-md hover:cursor-pointer bg-white shadow-md border border-slate-100 flex flex-col overflow-hidden z-30'>
-                      {
-                        dataCountryList?.map((item: any, index: number) => {
-                          return(
-                            <p 
-                            key={index} 
-                            onClick={() => {
-                              setFieldValue('countryId', item?.id)
-                              setUpdatedCountry(item?.name)
-                              setCountryChip(true)
-                              setDataCountryList([])
-                              setUpdatedCountryInput('')
-                            }} 
-                            className='px-5 py-2 text-sm font-bold text-gray-800 hover:bg-blue-600 hover:text-white rounded-md'>
-                              {item?.name}
-                            </p>
-                          )
-                        })
-                      }
-
-                    </div>
-                    )
-                   }
-                   <ErrorMessage name='countryName' component={'div'} className='text-red-600 px-4 text-xs font-bold mt-[-10px] ml-5 bg-red-200 p-1 rounded-full z-20'/>
-                </div> */}
               <div className="flex flex-col gap-1 ">
                 <label
                   htmlFor="address"
@@ -655,13 +542,13 @@ const ProfileUserPage = () => {
                 />
               </div>
               <div
-                className={`${!isSubmitting && 'hidden'} backdrop-blur-sm fixed top-0 left-0 w-screen h-screen shadow-sm bg-black bg-opacity-20 z-[51] flex items-center justify-center`}
+                className={`${!isSubmitting && 'hidden'} p-5 backdrop-blur-sm fixed top-0 left-0 w-screen h-screen shadow-sm bg-black bg-opacity-20 z-[51] flex items-center justify-center`}
               >
                 <div className="bg-white rounded-3xl flex flex-col justify-between gap-3 p-5">
-                  <h1 className="text-lg font-bold text-gray-800 pb-2 border-b border-b-slate-300">
+                  <h1 className='text-lg font-bold text-slate-800 pb-2 border-b border-slate-300'>
                     Are you sure you want to update your profile?
                   </h1>
-                  <article className="text-base font-light text-gray-700">
+                  <article className='text-sm font-medium text-gray-500'>
                     Please review your information before submitting. Your
                     changes cannot be undone once saved.
                   </article>
@@ -686,7 +573,7 @@ const ProfileUserPage = () => {
                 type="button"
                 onClick={() => setIsSubmitting(true)}
                 disabled={isPendingUpdateUserProfile}
-                className="transition duration-100 disabled:bg-slate-300 disabled:hover:opacity-100 disabled:active:scale-100 disabled:text-slate-500 flex items-center gap-1.5 rounded-full hover:opacity-75 active:scale-95 bg-blue-600 text-white text-sm font-bold px-5 py-3 shadow-md w-full justify-center"
+                className="transition duration-100 disabled:bg-slate-300 disabled:hover:opacity-100 disabled:active:scale-100 disabled:text-slate-500 flex items-center gap-1.5 rounded-full hover:opacity-75 active:scale-95 bg-blue-800 text-white text-sm font-bold px-5 py-3 shadow-md w-full justify-center"
               >
                 <FaRegSave size={23} />
                 Save Profile

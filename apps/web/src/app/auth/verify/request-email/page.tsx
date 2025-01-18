@@ -63,19 +63,23 @@ const RequestVerifyEmailPage = () => {
           onSubmit={(values) => {
             mutateRequestEmailResetPassword(values)
           }}
-        >
-          <Form className="flex flex-col gap-5">
-            <TextInput
-              labelName="Email"
-              name="email"
-              placeholder="example123"
-              type="text"
-            />
-            <AuthButton
-              isPending={isPendingRequestEmailResetPassword}
-              text="Continue"
-            />
-          </Form>
+        > 
+        {
+          ({values}) => (
+            <Form className="flex flex-col gap-5">
+              <TextInput
+                labelName="Email"
+                name="email"
+                placeholder="example123"
+                type="text"
+              />
+              <AuthButton
+                isPending={isPendingRequestEmailResetPassword || !values.email}
+                text="Continue"
+              />
+            </Form>
+          )
+        }
         </Formik>
       </section>
     </main>

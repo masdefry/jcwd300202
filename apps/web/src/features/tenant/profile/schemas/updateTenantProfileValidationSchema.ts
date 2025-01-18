@@ -22,8 +22,8 @@ export const updateTenantProfileValidationSchema = Yup.object().shape({
     .nullable(),
   file: Yup.array().of(
     Yup.mixed<File>()
-      .test('fileSize', 'Maximum 2MB file size allowed!', (file) => {
-        const limitFileSize = 2000000
+      .test('fileSize', 'Maximum 1MB file size allowed!', (file) => {
+        const limitFileSize = 1000000
         return file && file.size <= limitFileSize
       })
       .test('fileFormat', 'File format must be png, jpg, or jpeg', (file) => {

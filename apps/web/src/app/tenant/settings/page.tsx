@@ -6,6 +6,7 @@ import React, { useState } from 'react'
 import { RiDeleteBin6Line } from 'react-icons/ri'
 import toast from 'react-hot-toast'
 import { IoIosSend } from "react-icons/io";
+import { PiCity } from 'react-icons/pi'
 
 const UserSettingsPage = () => {
     

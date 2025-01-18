@@ -70,6 +70,9 @@ export const getLandingPageDataService = async({ id, role }: Pick<IUser, 'id' | 
         })
 
         const propertyTypes = await prisma.propertyType.findMany({
+            where: {
+                deletedAt: null
+            },
             take: 10
         })
 

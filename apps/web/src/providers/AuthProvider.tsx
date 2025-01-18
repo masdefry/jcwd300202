@@ -8,6 +8,7 @@ import { IAuthProviderProps } from './types'
 import { useQuery } from '@tanstack/react-query';
 import LoadingMain from '@/app/loading';
 import Cookies from 'js-cookie';
+import ButtonGoToTop from '@/components/ButtonGoToTop';
 
 export default function AuthProvider({children}: IAuthProviderProps){
     const router = useRouter()
@@ -133,8 +134,11 @@ export default function AuthProvider({children}: IAuthProviderProps){
     // // )
 
     return(
-        <>
+        <main className='relative w-full h-full'>
             {children}
-        </>
+            <div className='absolute bottom-10 right-10'>
+            <ButtonGoToTop />
+            </div>
+        </main>
     )
 }

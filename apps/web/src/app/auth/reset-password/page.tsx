@@ -62,7 +62,9 @@ const ResetPasswordUserPage = () => {
           onSubmit={(values) => {
             mutateRequestEmailResetPassword(values)
           }}
-        >
+        > 
+        {
+          ({values}) => (
           <Form className="flex flex-col gap-5">
             <TextInput
               labelName="Email"
@@ -71,10 +73,13 @@ const ResetPasswordUserPage = () => {
               type="text"
             />
             <AuthButton
-              isPending={isPendingRequestEmailResetPassword}
+              isPending={isPendingRequestEmailResetPassword || !values.email}
               text="Continue"
             />
           </Form>
+
+          )
+        }
         </Formik>
       </section>
     </main>

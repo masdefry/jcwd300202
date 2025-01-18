@@ -88,7 +88,7 @@ const PropertyManageFacilitiesPage = ({ params, searchParams }: { params: { slug
           } else {
             debounceSearchPropertyFacility('')
           }}
-          } type="text" placeholder='Search facility ( minimum 2 or more characters )' className='px-5 rounded-full py-3 text-sm font-medium font-gray-800 w-full border-2 border-slate-300 bg-white placeholder-shown:text-sm' />
+          } type="text" placeholder='Search facility ( minimum 3 or more characters )' className='px-5 rounded-full py-3 text-sm font-medium font-gray-800 w-full border-2 border-slate-300 bg-white placeholder-shown:text-sm' />
       </div>
       <Formik
       initialValues={{

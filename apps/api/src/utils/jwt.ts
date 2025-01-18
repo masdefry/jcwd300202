@@ -10,7 +10,7 @@ interface ICreateToken {
 // const privateKeyJsonWebToken = process.env.JWT_PASSWORD as string
 
 export const createToken = async({ id, role }: ICreateToken) => {
-    return jwt.sign({data: {id, role}}, 'jwt123token#', { expiresIn: '2m' })
+    return jwt.sign({data: {id, role}}, 'jwt123token#', { expiresIn: '1d' })
 }
 
 // console.log(createToken)

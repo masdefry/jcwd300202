@@ -24,6 +24,8 @@ const CalendarPage = ({
   params: { slug: string }
   searchParams: { view: string }
 }) => {
+  const [ showDeletePropertySeasonConfirmation, setShowDeletePropertySeasonConfirmation ] = useState(false)
+  const [ showDeleteSingleSeasonConfirmation, setShowDeleteSingleSeasonConfirmation ] = useState(false)
   const [ selectedPropertyRoomType, setSelectedPropertyRoomType ] = useState<any>()
   const [ dataSeasonsByProperty, setDataSeasonsByProperty] = useState<any>()
   const [ propertyRoomTypes, setPropertyRoomTypes] = useState<any>()
@@ -833,10 +835,7 @@ const CalendarPage = ({
       dataSeasonsByProperty?.property?.propertyRoomType?.findIndex(
         (item: any) => Number(item?.id) === Number(value),
       )
-    setRoomName(
-      dataSeasonsByProperty?.property?.propertyRoomType[Number(findIndex)]
-        ?.name,
-    )
+    setRoomName(dataSeasonsByProperty?.property?.propertyRoomType[Number(findIndex)]?.name)
     if(value === 'all-rooms') {
       mutateDataSeasonsByProperty()
     } else {
@@ -844,7 +843,8 @@ const CalendarPage = ({
     }
   }
   return (
-    <main className="flex flex-col gap-10 relative min-h-screen 2xl:p-5">
+    <main className="overflow-x-auto w-screen-lg relative min-h-screen 2xl:p-5  pb-5">
+      <div className='flex flex-col gap-10 min-w-[1080px] h-full'>
       <div className="flex flex-col">
         <h1 className="text-lg font-bold text-gray-800">Season Calendar</h1>
         <p className="text-sm font-medium text-slate-600">
@@ -852,7 +852,7 @@ const CalendarPage = ({
           Season.
         </p>
       </div>
-      <section className='overflow-x-auto py-1'>
+      <section className='min-w-max'>
       <section className="flex items-center gap-5">
         <span className="w-fit flex gap-2 items-center">
           <label
@@ -1111,8 +1111,8 @@ const CalendarPage = ({
           },
         )}
       {viewMode === 'monthly-view' && (
-        <section className="w-screen-lg flex flex-col overflow-x-scroll">
-        <div className="w-screen-lg flex flex-col gap-5 h-screen">
+        <section className="w-full flex flex-col ">
+        <div className="w-full flex flex-col gap-5 h-screen">
           {
                   isPendingSeasons ? (
           <hgroup className="text-xl font-bold text-gray-900 flex items-center gap-1">
@@ -1130,7 +1130,7 @@ const CalendarPage = ({
           </hgroup>
                   )
                 }
-          <div className="absolute left-0 w-screen-lg top-[230px] min-w-screen flex items-center z-40">
+          <div className="w-full h-full flex items-center z-40">
             <Calendar
             className='w-full h-full'
               onSelect={(date) => {
@@ -1800,19 +1800,43 @@ const CalendarPage = ({
             <button
               type="button"
               onClick={() => {
-                if(viewMode === 'monthly-view') {
-                  mutateDeleteSingleSeason()
-                } else {
-                  mutateDeleteSeason()
-                }
+                setShowDeleteSingleSeasonConfirmation(true)
+                
               }}
-              disabled={isPendingDeleteSeason}
+              disabled={isPendingDeleteSingleSeason || isPendingDeleteSeason}
               className="disabled:text-white disabled:bg-slate-300 disabled:scale-100 disabled:cursor-not-allowed text-xs font-bold rounded-full px-5 py-3 w-full hover:opacity-75 transition duration-100 active:scale-90 bg-red-700 text-white shadow-md"
             >
               Delete Season
             </button>
           )}
         </div>
+        {
+          showDeleteSingleSeasonConfirmation && (
+              <div className={` backdrop-blur-sm fixed top-0 left-0 w-screen h-screen shadow-sm bg-black bg-opacity-25 z-[51] flex items-center justify-center`}>
+                    <div className='bg-white rounded-3xl flex flex-col justify-between gap-3 p-5'>
+                      <h1 className='text-lg font-bold text-slate-800 pb-2 border-b border-slate-300'>
+                      Are you sure you want to delete this season?
+                      </h1>
+                      <article className='text-sm font-medium text-gray-500'>
+                      This action will permanently remove the season details from your rental. You won't be able to recover it afterward.
+                      </article>
+                      <div className='flex items-center justify-end gap-2'>
+                        <button type='button' onClick={() => setShowDeleteSingleSeasonConfirmation(false)} className='border border-slate-100 box-border flex items-center gap-1.5 rounded-full hover:opacity-75 hover:bg-slate-200 active:scale-90 transition duration-100 bg-white text-gray-800 text-sm font-bold px-5 py-3 shadow-md justify-center'>No, keep season</button>
+                        <button type='button' 
+                        onClick={() => {
+                          setShowDeleteSingleSeasonConfirmation(false)
+                          if(viewMode === 'monthly-view') {
+                            mutateDeleteSingleSeason()
+                          } else {
+                            mutateDeleteSeason()
+                          }
+                          }} 
+                        className='z-20 flex items-center gap-1.5 rounded-full hover:opacity-75 active:scale-90 transition duration-100 bg-red-600 text-white text-sm font-bold px-5 py-3 shadow-md justify-center'>Yes, delete season</button>
+                      </div>
+                    </div>
+              </div>
+          )
+        }
       </section>
       <section
         className={`${dataBulkSeason?.startDate && dataBulkSeason?.endDate ? 'flex' : 'hidden'} w-full backdrop-blur-sm bg-black bg-opacity-25 h-full top-0 left-0 fixed items-center justify-center z-[51]`}
@@ -2024,7 +2048,8 @@ const CalendarPage = ({
             <button
               type="button"
               onClick={() => {
-                mutateDeletePropertySeason()
+                setShowDeletePropertySeasonConfirmation(true)
+                // mutateDeletePropertySeason()
               }}
               disabled={isPendingDeletePropertySeason}
               className="disabled:text-white disabled:bg-slate-300 disabled:scale-100 disabled:cursor-not-allowed text-xs font-bold rounded-full px-5 py-3 w-full hover:opacity-75 transition duration-100 active:scale-90 bg-red-700 text-white shadow-md"
@@ -2033,7 +2058,31 @@ const CalendarPage = ({
             </button>
           )}
         </div>
+        {
+          showDeletePropertySeasonConfirmation && (
+              <div className={` backdrop-blur-sm fixed top-0 left-0 w-screen h-screen shadow-sm bg-black bg-opacity-25 z-[51] flex items-center justify-center`}>
+                    <div className='bg-white rounded-3xl flex flex-col justify-between gap-3 p-5'>
+                      <h1 className='text-lg font-bold text-slate-800 pb-2 border-b border-slate-300'>
+                      Are you sure you want to delete this season?
+                      </h1>
+                      <article className='text-sm font-medium text-gray-500'>
+                      This action will permanently remove the season details from your rental. You won't be able to recover it afterward.
+                      </article>
+                      <div className='flex items-center justify-end gap-2'>
+                        <button type='button' onClick={() => setShowDeletePropertySeasonConfirmation(false)} className='border border-slate-100 box-border flex items-center gap-1.5 rounded-full hover:opacity-75 hover:bg-slate-200 active:scale-90 transition duration-100 bg-white text-gray-800 text-sm font-bold px-5 py-3 shadow-md justify-center'>No, keep season</button>
+                        <button type='button' 
+                        onClick={() => {
+                          setShowDeletePropertySeasonConfirmation(false)
+                          mutateDeletePropertySeason()
+                          }} 
+                        className='z-20 flex items-center gap-1.5 rounded-full hover:opacity-75 active:scale-90 transition duration-100 bg-red-600 text-white text-sm font-bold px-5 py-3 shadow-md justify-center'>Yes, delete season</button>
+                      </div>
+                    </div>
+              </div>
+          )
+        }
       </section>
+      </div>
     </main>
   )
 }

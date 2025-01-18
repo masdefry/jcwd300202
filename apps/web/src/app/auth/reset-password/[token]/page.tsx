@@ -13,6 +13,11 @@ import { useRouter } from 'next/navigation'
 
 const SetResetPasswordUserPage = ({ params }: { params: { token: string } }) => {
     const router = useRouter()
+
+    const handleClearSearchParams = () => {
+        const url = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        window.history.replaceState({}, "", url)
+      }
     interface IValuesMutateResetPassword {
         setPassword: string
     }
@@ -63,17 +68,23 @@ const SetResetPasswordUserPage = ({ params }: { params: { token: string } }) => 
             }}
             validationSchema={verifyEmailValidationSchema}
             onSubmit={(values, {resetForm}) => {
+                handleClearSearchParams()
                 mutateResetPassword(values)
                 resetForm()
             }}
             >
-                <Form className='flex flex-col gap-5'>
-                    <TextInput labelName='Set Password' name='setPassword' placeholder='example123' type='password'/>
-                    <ErrorMessage name='setPassword' component={'div'} className='text-red-600 text-sm mt-[-10px] ml-4'/>
-                    <TextInput labelName='Confirm Password' name='confirmPassword' placeholder='example123' type='password'/>
-                    <ErrorMessage name='confirmPassword' component={'div'} className='text-red-600 text-sm mt-[-10px] ml-4'/>
-                    <AuthButton isPending={Boolean(isPendingResetPassword || isSuccessResetPassword)} text='Continue'/>
-                </Form>
+                {
+                    ({values}) => (
+                    <Form className='flex flex-col gap-5'>
+                        <TextInput labelName='Set Password' name='setPassword' placeholder='example123' type='password'/>
+                        <ErrorMessage name='setPassword' component={'div'} className='text-red-600 text-sm mt-[-10px] ml-4'/>
+                        <TextInput labelName='Confirm Password' name='confirmPassword' placeholder='example123' type='password'/>
+                        <ErrorMessage name='confirmPassword' component={'div'} className='text-red-600 text-sm mt-[-10px] ml-4'/>
+                        <AuthButton isPending={Boolean(isPendingResetPassword || isSuccessResetPassword || !values.setPassword || !values.confirmPassword)} text='Continue'/>
+                    </Form>
+
+                    )
+                }
             </Formik>
         </section>
     </main>

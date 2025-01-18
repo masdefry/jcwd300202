@@ -15,6 +15,12 @@ import toast from 'react-hot-toast'
 import Link from 'next/link'
 
 const AuthPage = () => {
+
+  const handleClearSearchParams = () => {
+    const url = window.location.protocol + "//" + window.location.host + window.location.pathname;
+    window.history.replaceState({}, "", url)
+  }
+
   const { isPendingOAuth, isPendingReqOAuth, mutateOAuth } =
     useLoginWithGoogleHook()
 
@@ -37,10 +43,14 @@ const AuthPage = () => {
           }}
           validationSchema={loginValidationSchema}
           onSubmit={(values, { resetForm }) => {
+            handleClearSearchParams()
             mutateLogin(values)
             resetForm()
           }}
-        >
+        > 
+        {
+          ({values}) => (
+
           <Form className="flex flex-col gap-5">
             <TextInput
               labelName="Email"
@@ -55,7 +65,7 @@ const AuthPage = () => {
               type="password"
             />
             <AuthButton
-              isPending={Boolean(isPendingLogin || isPendingReqOAuth)}
+              isPending={Boolean(isPendingLogin || isPendingReqOAuth || !values.email || !values.password)}
               text="Continue"
             />
             <span className="text-sm font-light mt-[-15px] ml-5">
@@ -67,6 +77,8 @@ const AuthPage = () => {
               </Link>
             </span>
           </Form>
+          )
+        }
         </Formik>
         <div className="flex gap-2 items-center justify-between">
           <div className="h-[1px] w-full bg-gray-300"></div>

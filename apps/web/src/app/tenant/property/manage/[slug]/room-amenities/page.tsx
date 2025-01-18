@@ -170,7 +170,7 @@ const PropertyManageRoomAmenitiesPage = ({
         )
       }
       <section className="flex items-center gap-5 px-5">
-        <span className="w-fit flex gap-2 items-center">
+        <span className="w-fit flex flex-col sm:flex-row gap-1 items-start sm:items-center">
           <label
             htmlFor="select-room"
             className="text-xs min-w-max font-bold text-gray-500"
@@ -222,7 +222,7 @@ const PropertyManageRoomAmenitiesPage = ({
             }
           }}
           type="text"
-          placeholder="Search facility ( minimum 2 or more characters )"
+          placeholder="Search facility ( minimum 3 or more characters )"
           className="px-5 rounded-full py-3 text-sm font-medium font-gray-800 w-full border-2 border-slate-300 bg-white placeholder-shown:text-sm"
         />
       </div>

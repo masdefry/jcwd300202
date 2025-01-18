@@ -1,5 +1,11 @@
 import { Request, Response, NextFunction } from 'express'
-import { getPropertyRoomTypeService, getPropertyRoomTypeByPropertyService, updatePropertyRoomTypeGeneralService, createPropertyRoomTypeService, deletePropertyRoomTypeService } from '@/services/property.room.type.service'
+import {
+  getPropertyRoomTypeService,
+  getPropertyRoomTypeByPropertyService,
+  updatePropertyRoomTypeGeneralService,
+  createPropertyRoomTypeService,
+  deletePropertyRoomTypeService,
+} from '@/services/property.room.type.service'
 
 export const getPropertyRoomType = async (
   req: Request,
@@ -9,8 +15,8 @@ export const getPropertyRoomType = async (
   try {
     const { id } = req.params
 
-    const getPropertyRoomTypeProcess = await getPropertyRoomTypeService({id})
-    
+    const getPropertyRoomTypeProcess = await getPropertyRoomTypeService({ id })
+
     res.status(200).json({
       error: false,
       message: 'Get property room type success',
@@ -30,17 +36,36 @@ export const getPropertyRoomTypeByProperty = async (
 ) => {
   try {
     const { slug } = req.params
-    const { limit = '2', offset = '0', checkInDate, checkOutDate, capacity } = req.query
+    const {
+      limit = '2',
+      offset = '0',
+      checkInDate,
+      checkOutDate,
+      adult,
+      children,
+    } = req.query
 
-    const getPropertyRoomTypeByPropertyProcess = await getPropertyRoomTypeByPropertyService({ limit:limit as string, offset: offset as string, checkInDate: checkInDate as string, checkOutDate: checkOutDate as string, capacity: capacity as string, slug })
-    
+    const getPropertyRoomTypeByPropertyProcess =
+      await getPropertyRoomTypeByPropertyService({
+        limit: limit as string,
+        offset: offset as string,
+        checkInDate: checkInDate as string,
+        checkOutDate: checkOutDate as string,
+        adult: adult as string,
+        children: children as string,
+        slug,
+      })
+
     res.status(200).json({
       message: 'Successfully fetch room type by property',
       error: false,
       data: {
-        propertyRoomTypeWithSeasonalPrice: getPropertyRoomTypeByPropertyProcess?.propertyRoomTypeWithSeasonalPrice,
-        propertyRoomType: getPropertyRoomTypeByPropertyProcess?.propertyRoomType,
-        isIncludeBreakfast: getPropertyRoomTypeByPropertyProcess?.isIncludeBreakfast,
+        propertyRoomTypeWithSeasonalPrice:
+          getPropertyRoomTypeByPropertyProcess?.propertyRoomTypeWithSeasonalPrice,
+        propertyRoomType:
+          getPropertyRoomTypeByPropertyProcess?.propertyRoomType,
+        isIncludeBreakfast:
+          getPropertyRoomTypeByPropertyProcess?.isIncludeBreakfast,
         totalPage: getPropertyRoomTypeByPropertyProcess?.totalPage,
         pageInUse: getPropertyRoomTypeByPropertyProcess?.pageInUse,
       },
@@ -69,8 +94,20 @@ export const updatePropertyRoomTypeGeneral = async (
     } = req.body
     const { slug } = req.params
 
-    const updatePropertyRoomTypeGeneralProcess = await updatePropertyRoomTypeGeneralService({ name, totalRooms, rooms, bathrooms, capacity, price, id, role, propertyRoomTypeId, slug })
-    
+    const updatePropertyRoomTypeGeneralProcess =
+      await updatePropertyRoomTypeGeneralService({
+        name,
+        totalRooms,
+        rooms,
+        bathrooms,
+        capacity,
+        price,
+        id,
+        role,
+        propertyRoomTypeId,
+        slug,
+      })
+
     res.status(200).json({
       error: false,
       message: 'Update property room type success',
@@ -97,15 +134,28 @@ export const createPropertyRoomType = async (
       bathrooms,
       price,
       totalRooms,
-      propertyRoomFacilitiesId
+      propertyRoomFacilitiesId,
     } = req.body
 
     const { slug } = req.params
     if (Array.isArray(req.files))
-      throw { msg: 'Images not found!', status: 406 }
+      throw { msg: 'Images not found!', status: 404 }
     const imagesUploaded: any = req?.files?.images
 
-    const createPropertyRoomTypeProcess = await createPropertyRoomTypeService({ id, role, slug, name, description, rooms, capacity, bathrooms, price, totalRooms, imagesUploaded, propertyRoomFacilitiesId })
+    const createPropertyRoomTypeProcess = await createPropertyRoomTypeService({
+      id,
+      role,
+      slug,
+      name,
+      description,
+      rooms,
+      capacity,
+      bathrooms,
+      price,
+      totalRooms,
+      imagesUploaded,
+      propertyRoomFacilitiesId,
+    })
 
     res.status(201).json({
       error: false,
@@ -117,20 +167,29 @@ export const createPropertyRoomType = async (
   }
 }
 
-export const deletePropertyRoomType = async(req: Request, res: Response, next: NextFunction) => {
+export const deletePropertyRoomType = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { id, role, password } = req.body
     const { slug } = req.params
     const { propertyRoomTypeId } = req.query
 
-    const deletePropertyRoomTypeProcess = await deletePropertyRoomTypeService({id, role, password, slug, propertyRoomTypeId: propertyRoomTypeId as string})
+    await deletePropertyRoomTypeService({
+      id,
+      role,
+      password,
+      slug,
+      propertyRoomTypeId: propertyRoomTypeId as string,
+    })
 
     res.status(200).json({
       error: false,
       message: 'Delete room type success',
-      data: {}
+      data: {},
     })
-
   } catch (err) {
     next(err)
   }

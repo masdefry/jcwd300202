@@ -14,8 +14,7 @@ const VerifyEmailUserPage = ({ params }: { params: { token: string } }) => {
   const { isPending: isPendingVerifyEmailUser, isError: isErrorVerifyEmailUser, isSuccess: isSuccessVerifyEmailUser, error: errorVerifyEmailUser } = useQuery({
     queryKey: ['verifyUser'],
     queryFn: async() => {
-      setLogout()
-      const res = await instance.patch(`/auth/verify-change-email`, {}, {
+      const res = await instance.patch(`/auth/verify-change-email/${params?.token}`, {}, {
         headers: {
           authorization: `Bearer ${params.token}`
         }
@@ -30,7 +29,7 @@ const VerifyEmailUserPage = ({ params }: { params: { token: string } }) => {
       <div className="flex flex-col items-center justify-center space-y-4">
         <div className="w-16 h-16 border-8 border-t-8 border-transparent border-t-gray-900 rounded-full animate-spin"></div>
         <h2 className="text-gray-800 text-lg font-bold">Loading</h2>
-        <p className="text-gray-600 text-sm font-medium opacity-75 mt-[-30px]">Please wait while we load your content</p>
+        <p className="text-gray-600 text-sm text-center font-medium opacity-75 mt-[-30px]">Please wait while we verify your email</p>
       </div>
     </div>
     )
@@ -42,11 +41,11 @@ const VerifyEmailUserPage = ({ params }: { params: { token: string } }) => {
       <div className="flex items-center justify-center h-screen bg-white text-gray-900 p-5">
         <div className="text-center">
           <div className="flex justify-center items-center mb-8">
-            <div className="text-6xl font-bold">404</div>
+            <div className="text-6xl font-bold">500</div>
           </div>
-          <h1 className="text-2xl font-bold text-slate-800 mb-4">Oops! Page not found</h1>
+          <h1 className="text-2xl font-bold text-slate-800 mb-4">Oops! Sorry</h1>
           <p className="text-sm font-medium text-gray-600 mb-8 opacity-75">
-            We couldn't find the page you're looking for. It may have been moved or deleted.
+            Something went wrong
           </p>
           <Link href='/' className='flex items-center justify-center w-full'>
             <div className="w-fit px-6 py-2 bg-slate-900 text-white rounded-full hover:cursor-pointer hover:opacity-75 transition duration-100 active:scale-90 text-sm font-bold">
@@ -65,7 +64,7 @@ const VerifyEmailUserPage = ({ params }: { params: { token: string } }) => {
       </span>
     ))
     setTimeout(() => {
-      router.push('/auth')
+      window.location.href = '/auth'
     }, 1500)
   }
 

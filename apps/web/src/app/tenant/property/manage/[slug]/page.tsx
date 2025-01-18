@@ -175,18 +175,18 @@ const PropertyDetailPage = ({params, searchParams}:{params : { slug: string }, s
                             bathrooms: 0,
                             price: 0
                             })} className='hover:opacity-60 transition duration-100 hover:cursor-pointer'/></div>
-                        <div className='h-[300px] w-full bg-blue-200 rounded-md relative overflow-hidden'>
-                            <div className={`flex items-center h-full w-[${showDataRoom?.roomImages.length * 100}] transition-transform ease-in-out duration-1000`} style={{transform: `translateX(-${currSlideRoomImages/showDataRoom?.roomImages.length * 100}%)`}}>
+                        <div className='h-[300px] w-full bg-slate-200 rounded-md relative overflow-hidden'>
+                            <div className={`flex items-center h-full min-w-max transition-transform ease-in-out duration-1000`} style={{transform: `translateX(-${currSlideRoomImages/showDataRoom?.roomImages.length * 100}%)`}}>
                                 {
                                     showDataRoom?.roomImages.map((itm: any, idx: number) => {
                                         return (
-                                            <figure className={`w-full h-full`} key={idx}>
+                                            <figure className={`min-w-max h-full`} key={idx}>
                                                 <Image
                                                 src={`http://localhost:5000/api/${itm?.directory}/${itm?.filename}.${itm?.fileExtension}`}
-                                                width={500}
+                                                width={600}
                                                 height={500}
                                                 alt=''
-                                                className='h-full w-full object-cover'
+                                                className='h-full min-w-max object-cover'
                                                 />    
                                             </figure>
                                         )

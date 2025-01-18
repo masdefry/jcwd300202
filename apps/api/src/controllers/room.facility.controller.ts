@@ -1,5 +1,8 @@
 import { Request, Response, NextFunction } from 'express'
-import { createPropertyRoomFacilityService, getPropertyRoomFacilityService } from '@/services/room.facility.service'
+import {
+  createPropertyRoomFacilityService,
+  getPropertyRoomFacilityService,
+} from '@/services/room.facility.service'
 
 export const getPropertyRoomFacility = async (
   req: Request,
@@ -9,7 +12,9 @@ export const getPropertyRoomFacility = async (
   try {
     const { name } = req.query
 
-    const getPropertyRoomFacilityProcess = await getPropertyRoomFacilityService({name: name as string})
+    const getPropertyRoomFacilityProcess = await getPropertyRoomFacilityService(
+      { name: name as string },
+    )
 
     res.status(200).json({
       error: false,
@@ -30,12 +35,17 @@ export const createPropertyRoomFacility = async (
     const { id, role, name } = req.body
 
     if (Array.isArray(req.files))
-      throw { msg: 'Images not found!', status: 406 }
+      throw { msg: 'Images not found!', status: 404 }
     const imagesUploaded: any = req?.files?.images
 
-    const createPropertyRoomFacilityProcess = await createPropertyRoomFacilityService({ id, role, name, imagesUploaded })
+    const createPropertyRoomFacilityProcess =
+      await createPropertyRoomFacilityService({
+        id,
+        role,
+        name,
+        imagesUploaded,
+      })
 
-    
     res.status(201).json({
       error: false,
       message: 'Create room facility success',

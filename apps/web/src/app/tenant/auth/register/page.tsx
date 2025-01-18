@@ -34,26 +34,31 @@ const TenantRegisterPage = () => {
             resetForm()
           }}
         >
-          <Form className="flex flex-col gap-5">
-            <TextInput
-              labelName="Email"
-              name="email"
-              placeholder="example@email.com"
-              type="text"
-            />
-            <AuthButton
-              isPending={isPendingRegister}
-              text="Continue with email"
-            />
-            <span className="text-sm font-light mt-[-15px] ml-4">
-              <span>Have an account?</span>
-              <Link href="/tenant/auth">
-                <span className="ml-1 te xt-sm font-semibold text-blue-600 border-b-2 border-transparent hover:border-blue-600 active:scale-90 transition duration-200 hover:cursor-pointer w-fit">
-                  Login now
-                </span>
-              </Link>
-            </span>
-          </Form>
+          {
+            ({values}) => (
+            <Form className="flex flex-col gap-5">
+              <TextInput
+                labelName="Email"
+                name="email"
+                placeholder="example@email.com"
+                type="text"
+              />
+              <AuthButton
+                isPending={isPendingRegister || !values.email}
+                text="Continue with email"
+              />
+              <span className="text-sm font-light mt-[-15px] ml-4">
+                <span>Have an account?</span>
+                <Link href="/tenant/auth">
+                  <span className="ml-1 te xt-sm font-semibold text-blue-600 border-b-2 border-transparent hover:border-blue-600 active:scale-90 transition duration-200 hover:cursor-pointer w-fit">
+                    Login now
+                  </span>
+                </Link>
+              </span>
+            </Form>
+             
+            )
+          }
         </Formik>
         <Separator />
         <Footer />

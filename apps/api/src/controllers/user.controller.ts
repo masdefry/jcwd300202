@@ -23,7 +23,7 @@ export const getUserProfile = async (
         birthDate: getUserProfileProcess?.birthDate,
         year: getUserProfileProcess?.year,
         month:getUserProfileProcess?.month,
-        datmonthe: getUserProfileProcess?.date,
+        date: getUserProfileProcess?.date,
         gender: getUserProfileProcess?.gender,
         cityId: getUserProfileProcess?.cityId,
         countryId: getUserProfileProcess?.countryId,
@@ -130,9 +130,9 @@ export const deleteUserProfile = async (
   next: NextFunction,
 ) => {
   try {
-    const { id, role } = req.body
+    const { id, role, password } = req.body
 
-    const deleteUserProfileProcess = await deleteUserProfileService({ id, role })
+    const deleteUserProfileProcess = await deleteUserProfileService({ id, role, password })
     
     res.status(200).json({
       error: false,

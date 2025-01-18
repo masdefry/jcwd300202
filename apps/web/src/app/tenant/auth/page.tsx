@@ -12,6 +12,10 @@ import Separator from '@/features/auth/components/Separator'
 import Link from 'next/link'
 
 const TenantAuthPage = () => {
+  const handleClearSearchParams = () => {
+    const url = window.location.protocol + "//" + window.location.host + window.location.pathname;
+    window.history.replaceState({}, "", url)
+  }
   const { mutateLogin, isPendingLogin } = useLoginHook({
     role: 'tenant',
     endPoint: '/auth/tenant',
@@ -31,10 +35,13 @@ const TenantAuthPage = () => {
           }}
           validationSchema={loginValidationSchema}
           onSubmit={(values, { resetForm }) => {
+            handleClearSearchParams()
             mutateLogin(values)
             resetForm()
           }}
-        >
+        > 
+        {
+          ({values}) => (
           <Form className="flex flex-col gap-5">
             <TextInput
               labelName="Email"
@@ -48,7 +55,7 @@ const TenantAuthPage = () => {
               placeholder="example123"
               type="password"
             />
-            <AuthButton isPending={isPendingLogin} text="Continue" />
+            <AuthButton isPending={isPendingLogin || !values.email || !values.password} text="Continue" />
             <span className="text-sm font-light mt-[-15px] ml-4">
               <span>Don't have an account?</span>
               <Link href="/tenant/auth/register">
@@ -58,6 +65,9 @@ const TenantAuthPage = () => {
               </Link>
             </span>
           </Form>
+
+          )
+        }
         </Formik>
         <Separator />
         <Footer />

@@ -186,7 +186,7 @@ export const verifyEmailUser = async (
   next: NextFunction,
 ) => {
   try {
-    const { id, token, password } = req.body
+    const { id, password,  token } = req.body
     
     const verifyEmailUserProcess = await verifyEmailUserService({ id, token, password })
     
@@ -206,7 +206,7 @@ export const verifyEmailTenant = async (
   next: NextFunction,
 ) => {
   try {
-    const { id, token, password } = req.body
+    const { id, password, token  } = req.body
 
     const verifyEmailTenantProcess = await verifyEmailTenantService({ id, token, password })
 
@@ -366,7 +366,8 @@ export const verifyChangeEmailTenant = async (
   next: NextFunction,
 ) => {
   try {
-    const { id, role, token } = req.body
+    const { id, role } = req.body
+    const { token } = req.params
 
     const verifyChangeEmailTenantProcess = await verifyChangeEmailTenantService({ id, role, token })
 
@@ -386,8 +387,8 @@ export const verifyChangeEmailUser = async (
   next: NextFunction,
 ) => {
   try {
-    const { id, role, token } = req.body
-
+    const { id, role } = req.body
+    const { token } = req.params
     const verifyChangeEmailUserProcess = await verifyChangeEmailUserService({ id, role, token })
    
     res.status(200).json({

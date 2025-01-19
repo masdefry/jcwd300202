@@ -49,7 +49,7 @@ const CreatePropertyPage = () => {
     mutateCreateCity,
     isPendingCreateCity,
   } = useCreateCityHook()
-  
+
   const {
     showCreateCountry,
     setShowCreateCountry,
@@ -312,7 +312,6 @@ const CreatePropertyPage = () => {
       ))
     },
   })
-  
 
   const { mutate: mutateCreateProperty, isPending: isPendingCreateProperty } =
     useMutation({
@@ -1098,13 +1097,13 @@ const CreatePropertyPage = () => {
                       labelName="Phone Number"
                       name="phoneNumber"
                       type="text"
-                      placeholder="021-111-xxx"
+                      placeholder="Enter property phone number (e.g., 68793729818)"
                     />
                     <TextInput
                       labelName="Property URL"
                       name="url"
                       type="text"
-                      placeholder="https://www.myhotel.com"
+                      placeholder="Paste your property’s website here (e.g., https://www.example.com/property)"
                     />
                   </section>
                   <Separator />
@@ -1241,10 +1240,11 @@ const CreatePropertyPage = () => {
                       labelName="Full Address"
                       placeholder="Jl. Sudirman-Thamrin No.9, Kec. Menteng, Kota Jakarta Pusat, Jakarta, Indonesia"
                     />
-                    <TextAreaCustom
+                    <TextInput
+                      labelName="Google Maps URL"
                       name="location"
-                      labelName="Location URL"
-                      placeholder="https://maps.app.goo.gl/mZnwt7g1pm88BnCEA"
+                      placeholder="Enter your property’s Google Maps URL (e.g., https://goo.gl/maps/xyz123)"
+                      type="text"
                     />
                   </section>
                   <section className="flex flex-col gap-5">

@@ -48,6 +48,18 @@ export const createCityService = async ({
   if (isTenantExist.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
 
+  const isCityExist = await prisma.city.findFirst({
+    where : {
+      name: {
+        equals: cityName,
+        mode: 'insensitive'
+      },
+      countryId: Number(countryId)
+    }
+  })
+
+  if(isCityExist?.id) throw { msg: 'City already exist', status: 406 }
+
   const createdCity = await prisma.city.create({
     data: {
       name: cityName,

@@ -7,6 +7,7 @@ import fs from 'fs'
 import { compile } from 'handlebars'
 import { ITenant } from './types'
 import { deleteFiles } from '@/utils/deleteFiles'
+import { comparePassword } from '@/utils/hashPassword'
 
 export const getTenantProfileService = async ({
   id,
@@ -195,7 +196,8 @@ export const updateTenantEmailService = async ({
 export const deleteTenantProfileService = async ({
   id,
   role,
-}: Pick<ITenant, 'id' | 'role'>) => {
+  password
+}: Pick<ITenant, 'id' | 'role' | 'password'>) => {
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
@@ -205,6 +207,10 @@ export const deleteTenantProfileService = async ({
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
     throw { msg: 'Tenant not found!', status: 404 }
+  const comparedPassword = comparePassword(password as string, isTenantExist?.password as string)
+  if (!comparedPassword)
+    throw { msg: 'Password invalid!', status: 406 }
+
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
 

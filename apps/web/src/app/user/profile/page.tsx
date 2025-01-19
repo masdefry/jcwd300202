@@ -367,7 +367,10 @@ const ProfileUserPage = () => {
                         </button>
                         <button
                           type="button"
-                          onClick={() => mutateUpdateEmail()}
+                          onClick={() => {
+                            setFieldValue('email', newEmail)
+                            mutateUpdateEmail()
+                          }}
                           disabled={isPendingUpdateEmail}
                           className="disabled:bg-slate-300 disabled:text-white disabled:scale-100 disabled:opacity-100 px-5 hover:opacity-75 transition duration-100 active:scale-90 py-1.5 text-white text-sm font-bold rounded-full shadow-md border bg-gray-900 border-slate-100 "
                         >

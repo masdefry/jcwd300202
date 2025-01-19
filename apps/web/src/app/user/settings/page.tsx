@@ -7,9 +7,13 @@ import { RiDeleteBin6Line } from 'react-icons/ri'
 import toast from 'react-hot-toast'
 import { IoIosSend } from 'react-icons/io'
 import { IoClose } from 'react-icons/io5'
+import authStore from '@/zustand/authStore'
+import Cookies from 'js-cookie'
 
 const UserSettingsPage = () => {
+  const setLogout = authStore(state => state.setLogout())
   const [isSubmitting, setIsSubmitting] = useState(false)
+
   const [change, setChange] = useState(true)
   const [isDeleted, setIsDeleted] = useState(false)
   const [passwordForDelete, setPasswordForDelete] = useState({
@@ -56,11 +60,17 @@ const UserSettingsPage = () => {
       },
       onSuccess: (res) => {
         setIsDeleted(true)
+        setLogout()
+        Cookies.remove('authToken')
+        Cookies.remove('authRole')
         toast((t) => (
           <span className="flex gap-2 items-center font-semibold justify-center text-xs">
             {res?.message}
           </span>
         ))
+        setTimeout(() => {
+          window.location.href = '/'
+        }, 1500)
       },
       onError: (err: any) => {
         toast((t) => (

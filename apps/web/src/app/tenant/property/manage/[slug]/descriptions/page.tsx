@@ -10,6 +10,9 @@ import { FaRegSave } from 'react-icons/fa'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import instance from '@/utils/axiosInstance'
 import toast from 'react-hot-toast'
+import UnauthorizedPage from '@/app/403/page'
+import NotFoundMain from '@/app/not-found'
+import Custom500 from '@/app/500/page'
 import { manageDescriptionValidationSchema } from '@/features/tenant/property/manage/descriptions/manageDescriptionValidationSchema'
 
 const PropertyManageDescriptionPage = ({ params }: { params: { slug: string } }) => {
@@ -21,7 +24,7 @@ const PropertyManageDescriptionPage = ({ params }: { params: { slug: string } })
     },
   })
 
-  const { mutate: mutateUpdatePropertyDescriptions } = useMutation({
+  const { mutate: mutateUpdatePropertyDescriptions, isPending: isPendingUpdatePropertyDescriptions } = useMutation({
     mutationFn: async(values: any) => {
       const res = await instance.patch(`/property/descriptions/${params?.slug}`, {
         propertyDescription: values?.propertyDescription,
@@ -49,6 +52,23 @@ const PropertyManageDescriptionPage = ({ params }: { params: { slug: string } })
     }
   })
   const [ isSubmitting, setIsSubmitting ] = useState(false)
+
+  if(isError) {
+    let getError: any = error
+    if (getError.status === 403) {
+      return <UnauthorizedPage />
+    } else if (getError.status === 404) {
+      return <NotFoundMain />
+    } else if (getError.status === 500) {
+      return <Custom500 />
+    } else {
+      toast((t) => (
+        <span className='flex gap-2 items-center font-semibold justify-center text-xs text-red-600'>
+          {getError?.response?.data?.message || 'Connection error!'}
+        </span>
+      ))
+    }
+  }
   return (
     <main className='flex flex-col gap-5 2xl:p-5'>
       <div className='flex flex-col'>
@@ -153,7 +173,7 @@ const PropertyManageDescriptionPage = ({ params }: { params: { slug: string } })
               )
             }
           </FieldArray>
-            <button type='button' onClick={() => setIsSubmitting(true)} disabled={false} className='transition duration-100 disabled:bg-slate-300 disabled:hover:opacity-100 disabled:active:scale-100 disabled:text-slate-500 flex items-center gap-1.5 rounded-full hover:opacity-75 active:scale-95 bg-slate-900 text-white text-sm font-bold px-5 py-3 shadow-md w-full justify-center'><FaRegSave className='text-base'/>Save Changes</button>
+            <button type='button' onClick={() => setIsSubmitting(true)} disabled={isPendingUpdatePropertyDescriptions} className='transition duration-100 disabled:bg-slate-300 disabled:hover:opacity-100 disabled:active:scale-100 disabled:text-white flex items-center gap-1.5 rounded-full hover:opacity-75 active:scale-95 bg-slate-900 text-white text-sm font-bold px-5 py-3 shadow-md w-full justify-center'><FaRegSave className='text-base'/>Save Changes</button>
             <div className={`${!isSubmitting && 'hidden'} p-5 backdrop-blur-sm fixed top-0 left-0 w-screen h-screen shadow-sm bg-black bg-opacity-20 z-[51] flex items-center justify-center`}>
               <div className='bg-white border border-slate-200 shadow-md p-5 rounded-md flex flex-col gap-5'>
                  <h1 className='text-lg font-bold text-slate-800 pb-2 border-b border-slate-300'>

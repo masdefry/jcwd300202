@@ -12,6 +12,9 @@ import {
 } from 'react-icons/md'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import { FaRegTrashCan } from 'react-icons/fa6'
+import UnauthorizedPage from '@/app/403/page'
+import NotFoundMain from '@/app/not-found'
+import Custom500 from '@/app/500/page'
 import { managePropertyPhotosValidationSchema } from '@/features/tenant/property/manage/photos/schemas/managePropertyPhotosValidationSchema'
 
 const PropertyManagePhotosPage = ({ params }: { params: { slug: string } }) => {
@@ -23,11 +26,10 @@ const PropertyManagePhotosPage = ({ params }: { params: { slug: string } }) => {
     fileExtension: '',
   })
   const [showAddPhoto, setShowAddPhoto] = useState(false)
-  const { data: dataPropertyImages } = useQuery({
+  const { data: dataPropertyImages, isError, error } = useQuery({
     queryKey: ['getPropertyImages'],
     queryFn: async () => {
       const res = await instance.get(`/property-images/${params?.slug}`)
-      console.log(res)
       return res?.data?.data
     },
   })
@@ -89,6 +91,23 @@ const PropertyManagePhotosPage = ({ params }: { params: { slug: string } }) => {
       ))
     },
   })
+
+  if(isError) {
+    let getError: any = error
+    if (getError.status === 403) {
+      return <UnauthorizedPage />
+    } else if (getError.status === 404) {
+      return <NotFoundMain />
+    } else if (getError.status === 500) {
+      return <Custom500 />
+    } else {
+      toast((t) => (
+        <span className='flex gap-2 items-center font-semibold justify-center text-xs text-red-600'>
+          {getError?.response?.data?.message || 'Connection error!'}
+        </span>
+      ))
+    }
+  }
 
   return (
     <main className="flex flex-col gap-7 py-5">
@@ -255,7 +274,7 @@ const PropertyManagePhotosPage = ({ params }: { params: { slug: string } }) => {
                       <span className="font-semibold">Click to upload</span>
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      JPG, PNG or JPEG (MAX. 2MB)
+                      JPG, PNG or JPEG (MAX. 1MB)
                     </p>
                   </div>
                   <input

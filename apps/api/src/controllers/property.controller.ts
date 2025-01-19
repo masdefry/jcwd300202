@@ -13,6 +13,7 @@ import {
   getPropertyRoomTypeByPropertyService,
   updatePropertyDescriptionsService,
   updatePropertyGeneralInfoService,
+  getPropertyDetailByTenantService,
 } from '@/services/property.service'
 import prisma from '@/prisma'
 import { addDays, addHours } from 'date-fns'
@@ -51,7 +52,6 @@ export const createProperty = async (
       throw { msg: 'Images not found!', status: 404 }
 
     const imagesUploaded: any = req?.files?.images
-    console.log('CONTROLLERRRRRRR>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
     const createPropertyProcess = await createPropertyService({
       id,
       role,
@@ -92,8 +92,6 @@ export const createProperty = async (
       },
     })
   } catch (error) {
-    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-    console.log(error)
     if (!Array.isArray(req.files)) {
       deleteFiles({ imagesUploaded: req.files })
     }
@@ -139,6 +137,52 @@ export const getPropertyDetail = async (
         isIncludeBreakfast: getPropertyDetailProcess?.isIncludeBreakfast,
         seasonalPrice: getPropertyDetailProcess?.seasonalPrice,
         excludeDate: getPropertyDetailProcess?.excludeDate,
+      },
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+export const getPropertyDetailByTenant = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { slug } = req.params
+    const { checkInDate, checkOutDate, adult, children } = req.query
+    const { id, role } = req.body
+    const getPropertyDetailByTenantProcess = await getPropertyDetailByTenantService({
+      checkInDate: checkInDate as string,
+      checkOutDate: checkOutDate as string,
+      adult: Number(adult),
+      children: Number(children),
+      slug,
+      id,
+      role
+    })
+    
+    res.status(200).json({
+      error: false,
+      message: 'Get property detail success',
+      data: {
+        property: getPropertyDetailByTenantProcess?.property,
+        propertyDetail: getPropertyDetailByTenantProcess?.propertyDetail,
+        propertyFacilities: getPropertyDetailByTenantProcess?.propertyFacilities,
+        propertyImages: getPropertyDetailByTenantProcess?.propertyImages,
+        propertyImagesPreview: getPropertyDetailByTenantProcess?.propertyImagesPreview,
+        avgRating: getPropertyDetailByTenantProcess?.avgRating,
+        propertyRoomType: getPropertyDetailByTenantProcess?.propertyRoomType,
+        dateAndPrice: getPropertyDetailByTenantProcess?.dateAndPrice,
+        basePrice: getPropertyDetailByTenantProcess?.basePrice,
+        reviews: getPropertyDetailByTenantProcess?.reviews,
+        city: getPropertyDetailByTenantProcess?.city,
+        country: getPropertyDetailByTenantProcess?.country,
+        propertyListByCity: getPropertyDetailByTenantProcess?.propertyListByCity,
+        tenant: getPropertyDetailByTenantProcess?.tenant,
+        isIncludeBreakfast: getPropertyDetailByTenantProcess?.isIncludeBreakfast,
+        seasonalPrice: getPropertyDetailByTenantProcess?.seasonalPrice,
+        excludeDate: getPropertyDetailByTenantProcess?.excludeDate,
       },
     })
   } catch (error) {
@@ -1071,8 +1115,6 @@ export const getPropertiesByTenant = async (
       name,
     } = req.query
 
-    console.log('>>>>>>')
-    console.log(req.query)
     const getPropertiesByTenantProcess = await getPropertiesByTenantService({
       limit: Number(limit),
       offset: Number(offset),

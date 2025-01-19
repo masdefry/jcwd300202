@@ -7,10 +7,11 @@ import { IProperty } from '../property.service/types'
 import { IPropertyRoomType } from './types'
 import { IUser } from '../auth.service/types'
 
-export const getPropertyRoomTypeService = async ({ id }: { id: string }) => {
+export const getPropertyRoomTypeService = async ({ roomTypeId }: { roomTypeId: string }) => {
   const propertyRoomType = await prisma.propertyRoomType.findMany({
+
     where: {
-      id: Number(id),
+      id: Number(roomTypeId),
       deletedAt: null,
     },
     include: {
@@ -30,6 +31,70 @@ export const getPropertyRoomTypeService = async ({ id }: { id: string }) => {
       price: 'asc',
     },
   })
+
+  return {
+    propertyRoomType,
+  }
+
+  // const propertyRoomType = await prisma.propertyRoomType.findMany({
+  //   where: {
+  //     id: Number(id),
+  //   },
+  //   include: {
+  //     propertyRoomImage: true,
+  //     roomHasFacilities: {
+  //       include: {
+  //         propertyRoomFacility: true,
+  //       },
+  //     },
+  //   },
+  //   orderBy: {
+  //     price: 'asc',
+  //   },
+  // })
+}
+export const getSinglePropertyRoomTypeByTenantService = async ({ roomTypeId, id, role }: { roomTypeId: string } & Pick<IUser , 'id' | 'role'>) => {
+  
+  const isTenantExist = await prisma.tenant.findUnique({
+    where: {
+      id,
+      deletedAt: null,
+    },
+  })
+
+  if (!isTenantExist?.id || isTenantExist?.deletedAt)
+    throw { msg: 'Tenant not found!', status: 404 }
+  if (isTenantExist.role !== role)
+    throw { msg: 'Role unauthorized!', status: 401 }
+  
+  const propertyRoomType = await prisma.propertyRoomType.findMany({
+
+    where: {
+      id: Number(roomTypeId),
+      deletedAt: null,
+    },
+    include: {
+      propertyRoomImage: true,
+      roomHasFacilities: {
+        include: {
+          propertyRoomFacility: true,
+        },
+      },
+      property: {
+        select: {
+          tenantId: true,
+        },
+      },
+    },
+    orderBy: {
+      price: 'asc',
+    },
+  })
+
+  if (!propertyRoomType[0]?.id || propertyRoomType[0]?.deletedAt)
+    throw { msg: 'Room type not found!', status: 404 }
+  if (propertyRoomType[0]?.property?.tenantId !== id)
+    throw { msg: 'Actions not permitted!', status: 403 }
 
   return {
     propertyRoomType,
@@ -100,25 +165,6 @@ export const getPropertyRoomTypeByPropertyService = async ({
       lt: ltDate.toISOString(),
     }
   }
-  // const whereCondition = [
-  //     date && new Date(date as string) ? {
-  //         seasonalPrice: {
-  //             some: {
-  //                 date: new Date(date as string).toISOString()
-  //             }
-  //         }
-  //     }: null,
-  //     ( month && !isNaN(Number(month))) && ( year && !isNaN(Number(year))) ? {
-  //         seasonalPrice: {
-  //             some: {
-  //                 date: {
-  //                     lt: new Date(Number(year), Number(month) + 1, 0).toISOString(),
-  //                     gte: new Date(Number(year), Number(month), 0).toISOString()
-  //                 }
-  //             }
-  //         }
-  //     }: null
-  // ].filter(item => item !== null)
   const whereCondition = []
   if (capacity) {
     whereCondition.push({
@@ -132,26 +178,6 @@ export const getPropertyRoomTypeByPropertyService = async ({
       propertyId: isPropertyExist?.id,
       deletedAt: null,
       AND: whereCondition,
-      // OR: [
-      //     {
-      //         seasonalPrice: {
-      //             some: {
-      //                 date: new Date(date as string).toISOString()
-      //             }
-      //         }
-      //     },
-      //     {
-      //         seasonalPrice: {
-      //             some: {
-      //                 date: {
-      //                     lt: new Date(Number(year), Number(month) + 1, 0).toISOString(),
-      //                     gte: new Date(Number(year), Number(month), 0).toISOString()
-      //                 }
-      //             }
-      //         }
-      //     }
-      // ]
-      // OR: whereCondition
     },
     include: {
       propertyRoomImage: true,
@@ -235,25 +261,6 @@ export const getPropertyRoomTypeByPropertyService = async ({
   const seasonalPrice = await prisma.seasonalPrice.findMany({
     where: {
       propertyId: isPropertyExist?.id,
-      // date: {
-      //   gte: checkInDate
-      //     ? new Date(checkInDate as string).toISOString()
-      //     : new Date(
-      //         new Date().getFullYear(),
-      //         new Date().getMonth(),
-      //         new Date().getDate(),
-      //       ).toISOString(),
-      //   lt: checkOutDate
-      //     ? new Date(checkOutDate as string).toISOString()
-      //     : addDays(
-      //         new Date(
-      //           new Date().getFullYear(),
-      //           new Date().getMonth(),
-      //           new Date().getDate(),
-      //         ),
-      //         1,
-      //       ).toISOString(),
-      // },
       date: dataPeriod,
     },
   })
@@ -293,21 +300,6 @@ export const getPropertyRoomTypeByPropertyService = async ({
       roomFilled: {
         some: {
           date: dataPeriod,
-          // date: {
-          //   gte: new Date(
-          //     new Date().getFullYear(),
-          //     new Date().getMonth(),
-          //     new Date().getDate(),
-          //   ).toISOString(),
-          //   lte: addDays(
-          //     new Date(
-          //       new Date().getFullYear(),
-          //       new Date().getMonth(),
-          //       new Date().getDate(),
-          //     ),
-          //     1,
-          //   ).toISOString(),
-          // },
         },
       },
     },
@@ -371,6 +363,258 @@ export const getPropertyRoomTypeByPropertyService = async ({
     isIncludeBreakfast,
     totalPage,
     pageInUse,
+  }
+}
+export const getPropertyRoomTypeByTenantService = async ({
+  id,
+  role,
+  checkInDate,
+  checkOutDate,
+  children,
+  adult,
+  slug,
+}: {
+  checkInDate: string
+  checkOutDate: string
+  children: string
+  adult: string
+} & Pick<IProperty, 'slug'> & Pick<IUser, 'id' | 'role'>) => {
+
+  const isTenantExist = await prisma.tenant.findUnique({
+    where: {
+      id,
+      deletedAt: null,
+    },
+  })
+
+  if (!isTenantExist?.id || isTenantExist?.deletedAt)
+    throw { msg: 'Tenant not found!', status: 404 }
+  if (isTenantExist.role !== role)
+    throw { msg: 'Role unauthorized!', status: 401 }
+
+  const capacity = Number(adult) + Number(children)
+  const isPropertyExist = await prisma.property.findFirst({
+    where: {
+      slug,
+      deletedAt: null,
+    },
+  })
+
+  if (!isPropertyExist?.id || isPropertyExist?.deletedAt)
+    throw { msg: 'Property not found!', status: 404 }
+  if (isPropertyExist?.tenantId !== id)
+    throw { msg: 'Actions not permitted!', status: 403 }
+
+  let gteDate =
+    checkInDate && checkInDate != 'undefined'
+      ? new Date(checkInDate as string)
+      : new Date()
+  gteDate.setHours(0, 0, 0, 0)
+  let ltDate =
+    checkOutDate && checkOutDate != 'undefined'
+      ? new Date(checkOutDate as string)
+      : addDays(gteDate, 1)
+  ltDate.setHours(0, 0, 0, 0)
+
+  let dataPeriod = {}
+  if (isNaN(gteDate.getTime()) || isNaN(ltDate.getTime())) {
+    throw { msg: 'Date range invalid!', status: 406 }
+  } else {
+    dataPeriod = {
+      gte: gteDate.toISOString(),
+      lt: ltDate.toISOString(),
+    }
+  }
+  const whereCondition = []
+  if (capacity) {
+    whereCondition.push({
+      capacity: {
+        gte: Number(capacity),
+      },
+    })
+  }
+  const propertyRoomType = await prisma.propertyRoomType.findMany({
+    where: {
+      propertyId: isPropertyExist?.id,
+      deletedAt: null,
+      AND: whereCondition,
+    },
+    include: {
+      propertyRoomImage: true,
+      roomHasFacilities: {
+        include: {
+          propertyRoomFacility: true,
+        },
+      },
+      season: {
+        include: {
+          seasonalPrice: true,
+        },
+      },
+      seasonalPrice: {
+        orderBy: {
+          date: 'asc',
+        },
+      },
+    },
+    orderBy: {
+      price: 'asc',
+    },
+  })
+
+  const countAllRooms = await prisma.propertyRoomType.count({
+    where: {
+      propertyId: isPropertyExist?.id,
+      deletedAt: null,
+      AND: whereCondition,
+    },
+  })
+
+  const roomHasBreakfast = await prisma.roomHasFacilities.findMany({
+    where: {
+      propertyRoomTypeId: {
+        in: propertyRoomType.map((item) => item.id),
+      },
+      propertyRoomFacility: {
+        name: 'Breakfast',
+      },
+    },
+    orderBy: {
+      propertyRoomType: {
+        price: 'asc',
+      },
+    },
+    include: {
+      propertyRoomFacility: true,
+    },
+  })
+
+  const roomHasBreakfastId = roomHasBreakfast.map(
+    (item) => item.propertyRoomTypeId,
+  )
+  const isIncludeBreakfast = propertyRoomType.map((item) => {
+    if (roomHasBreakfastId.includes(item.id)) {
+      return true
+    } else {
+      return false
+    }
+  })
+
+  const seasonalPriceListView = propertyRoomType.map((room, roomIdx) => {
+    return {
+      id: room?.id,
+      name: room?.name,
+      price: room?.price,
+      totalRooms: room?.totalRooms,
+      seasonalPriceListView: Array.from({ length: 31 }).map((_, idx) => {
+        return {}
+      }),
+    }
+  })
+
+  const seasonalPrice = await prisma.seasonalPrice.findMany({
+    where: {
+      propertyId: isPropertyExist?.id,
+      date: dataPeriod,
+    },
+  })
+
+  let dateForFiltering = [
+    new Date(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      new Date().getDate(),
+    ).toISOString(),
+  ]
+  if (checkInDate && checkOutDate) {
+    dateForFiltering = Array.from({
+      length: differenceInDays(
+        new Date(checkOutDate as string),
+        new Date(checkInDate as string),
+      ),
+    }).map((_, index) => {
+      return addDays(new Date(checkInDate as string), index).toISOString()
+    })
+  }
+
+  const transactions = await prisma.transactionStatus.findMany({
+    where: {
+      AND: [
+        {
+          transaction: {
+            propertyId: isPropertyExist?.id,
+          },
+        },
+        {
+          status: {
+            in: ['PAID', 'WAITING_FOR_CONFIRMATION_PAYMENT'],
+          },
+        },
+      ],
+      roomFilled: {
+        some: {
+          date: dataPeriod,
+        },
+      },
+    },
+    include: {
+      transaction: {
+        include: {
+          room: true,
+        },
+      },
+    },
+  })
+
+  const propertyRoomTypeWithSeasonalPrice = propertyRoomType.map(
+    (item, index) => {
+      let totalPrice = 0
+      const seasonalPriceByPropertyRoomTypeLength = seasonalPrice.filter(
+        (itm) => itm?.propertyRoomTypeId === item?.id,
+      ).length
+      let seasonalPriceByPropertyRoomType = 0
+      let isAvailable = true
+      if (seasonalPriceByPropertyRoomTypeLength > 0) {
+        seasonalPriceByPropertyRoomType = seasonalPrice
+          .filter((itm) => itm?.propertyRoomTypeId === item?.id)
+          .map((itm) => itm.price)
+          .reduce((acc, curr) => acc + curr)
+        isAvailable = seasonalPrice
+          .filter((itm) => itm?.propertyRoomTypeId === item?.id)
+          .map((itm) => itm.roomAvailability)
+          .every((itm) => itm)
+      }
+      const transactionsByPropertyRoomTypeLength = transactions.filter(
+        (itm) => itm?.transaction?.roomId === item?.id,
+      ).length
+      const totalRoomsLeft =
+        item?.totalRooms - transactionsByPropertyRoomTypeLength
+      let totalDays = 1
+      if (checkInDate && checkOutDate) {
+        totalDays = Math.abs(
+          differenceInDays(checkInDate as string, checkOutDate as string),
+        )
+      }
+      const normalTotalPrice = totalDays * item?.price
+      totalPrice =
+        (totalDays - seasonalPriceByPropertyRoomTypeLength) * item.price +
+        seasonalPriceByPropertyRoomType
+      return {
+        ...item,
+        totalPrice,
+        totalDays,
+        seasonalPriceByPropertyRoomType,
+        normalTotalPrice,
+        isAvailable,
+        totalRoomsLeft,
+        totalNights: differenceInDays(ltDate, gteDate),
+      }
+    },
+  )
+  return {
+    propertyRoomTypeWithSeasonalPrice,
+    propertyRoomType,
+    isIncludeBreakfast,
   }
 }
 

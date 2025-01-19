@@ -19,6 +19,9 @@ import { IoCameraOutline } from 'react-icons/io5'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
 import { manageRoomValidationSchema } from '@/features/tenant/property/manage/room-details/edit/schemas/manageRoomValidationSchema'
+import UnauthorizedPage from '@/app/403/page'
+import NotFoundMain from '@/app/not-found'
+import Custom500 from '@/app/500/page'
 
 const PropertyManageRoomDetailsEditPage = ({
   params,
@@ -26,11 +29,11 @@ const PropertyManageRoomDetailsEditPage = ({
   params: { slug: string; id: string }
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const { data: dataPropertyRoomType, isPending: isPendingPropertyRoomType } =
+  const { data: dataPropertyRoomType, isPending: isPendingPropertyRoomType, isError, error } =
     useQuery({
       queryKey: ['getPropertyRoomType'],
       queryFn: async () => {
-        const res = await instance.get(`/room-type/${params?.id}`)
+        const res = await instance.get(`/room-type/tenant/${params?.id}`)
         return res?.data?.data
       },
     })
@@ -68,11 +71,28 @@ const PropertyManageRoomDetailsEditPage = ({
       ))
     },
   })
+
+  if(isError) {
+    let getError: any = error
+    if (getError.status === 403) {
+      return <UnauthorizedPage />
+    } else if (getError.status === 404) {
+      return <NotFoundMain />
+    } else if (getError.status === 500) {
+      return <Custom500 />
+    } else {
+      toast((t) => (
+        <span className='flex gap-2 items-center font-semibold justify-center text-xs text-red-600'>
+          {getError?.response?.data?.message || 'Connection error!'}
+        </span>
+      ))
+    }
+  }
   return (
     <main className="flex flex-col gap-7 py-5">
       <hgroup className="flex flex-col px-5">
         <h1 className="text-lg font-bold text-gray-800">
-          Edit Deluxe Property Room Type
+          Edit {dataPropertyRoomType?.propertyRoomType[0]?.name} Property Room Type
         </h1>
       </hgroup>
       <section className="flex flex-col gap-5 px-5">
@@ -160,7 +180,6 @@ const PropertyManageRoomDetailsEditPage = ({
         validationSchema={manageRoomValidationSchema}
         enableReinitialize={true}
         onSubmit={(values) => {
-          console.log('aaaaaaaaaaaaaaaa')
           mutateUpdatePropertyRoomTypeGeneral(values)
         }}
       >

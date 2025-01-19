@@ -37,8 +37,28 @@ import SelectPicker from 'rsuite/SelectPicker'
 
 import 'rsuite/SelectPicker/styles/index.css'
 import 'rsuite/Rate/styles/index.css'
+import useCreateCityHook from './useCreateCityHook'
+import useCreateCountryHook from './useCreateCountryHook'
 
 const CreatePropertyPage = () => {
+  const {
+    showCreateCity,
+    setShowCreateCity,
+    setDataCreateCity,
+    dataCreateCity,
+    mutateCreateCity,
+    isPendingCreateCity,
+  } = useCreateCityHook()
+  
+  const {
+    showCreateCountry,
+    setShowCreateCountry,
+    setDataCreateCountry,
+    dataCreateCountry,
+    mutateCreateCountry,
+    isPendingCreateCountry,
+  } = useCreateCountryHook()
+
   const [change, setChange] = useState(true)
   const [roomFacilities, setRoomFacilities] = useState<any[]>([[]])
   const [showFormCreatePropertyType, setShowFormCreatePropertyType] =
@@ -169,8 +189,6 @@ const CreatePropertyPage = () => {
       console.log(err?.response?.data?.message || 'Connection error!')
     },
   })
-  // const [changedCheckbox, setChangedCheckbox] = useState(false)
-  // const [uploadFile, setUploadFile] = useState(false)
 
   const {
     mutate: mutateCreatePropertyRoomFacility,
@@ -208,65 +226,13 @@ const CreatePropertyPage = () => {
     },
   })
 
-  const [showCreateCity, setShowCreateCity] = useState(false)
-  const [showCreateCountry, setShowCreateCountry] = useState(false)
   const [uploadFile, setUploadFile] = useState(false)
   const [countryId, setCountryId] = useState<null | number>(null)
   const [propertyTypeId, setPropertyTypeId] = useState<null | number>(null)
   const [dataPropertyTypes, setDataPropertyTypes] = useState<any>([])
-  const [dataCreateCity, setDataCreateCity] = useState<{
-    name: string
-    file: File[]
-    countryId: null | number
-  }>({
-    name: '',
-    file: [] as File[],
-    countryId: null,
-  })
-  const [dataCreateCountry, setDataCreateCountry] = useState<{
-    name: string
-    description: string
-    file: File[]
-  }>({
-    name: '',
-    description: '',
-    file: [] as File[],
-  })
   const [cityList, setCityList] = useState([])
   const [countryList, setCountryList] = useState<any>([])
   const [propertyTypes, setPropertyTypes] = useState([])
-  const { mutate: mutateCreateCountry, isPending: isPendingCreateCountry } =
-    useMutation({
-      mutationFn: async () => {
-        const fd = new FormData()
-        fd.append('name', dataCreateCountry?.name)
-        fd.append('description', dataCreateCountry?.description)
-        fd.append('images', dataCreateCountry?.file[0])
-        const res = await instance.post('/country', fd)
-
-        return res?.data
-      },
-      onSuccess: (res) => {
-        setDataCreateCountry({ name: '', file: [], description: '' })
-        setShowCreateCountry(false)
-        toast((t) => (
-          <span className="flex gap-2 items-center font-semibold justify-center text-xs">
-            {res?.message}
-          </span>
-        ))
-        setTimeout(() => {
-          window.location.reload()
-        }, 1500)
-      },
-      onError: (err: any) => {
-        setDataCreateCountry({ name: '', file: [], description: '' })
-        toast((t) => (
-          <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
-            {err?.response?.data?.message || 'Connection error!'}
-          </span>
-        ))
-      },
-    })
   const { isPending: isPendingCities } = useQuery({
     queryKey: ['getCities'],
     queryFn: async () => {
@@ -347,46 +313,6 @@ const CreatePropertyPage = () => {
     },
   })
   
-  const { mutate: mutateCreateCity, isPending: isPendingCreateCity } =
-    useMutation({
-      mutationFn: async () => {
-        const fd = new FormData()
-        fd.append('cityName', dataCreateCity?.name)
-        fd.append('countryId', (dataCreateCity?.countryId as number).toString())
-        fd.append('images', dataCreateCity?.file[0])
-        const res = await instance.post('/city', fd)
-        return res?.data
-      },
-      onSuccess: (res) => {
-        console.log(res)
-        setShowCreateCity(false)
-        setDataCreateCity({
-          name: '',
-          file: [] as File[],
-          countryId: null,
-        })
-        toast((t) => (
-          <span className="flex gap-2 items-center font-semibold justify-center text-xs">
-            {res?.message}
-          </span>
-        ))
-        setTimeout(() => {
-          window.location.reload()
-        }, 1500)
-      },
-      onError: (err: any) => {
-        setDataCreateCity({
-          name: '',
-          file: [] as File[],
-          countryId: null,
-        })
-        toast((t) => (
-          <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
-            {err?.response?.data?.message || 'Connection error!'}
-          </span>
-        ))
-      },
-    })
 
   const { mutate: mutateCreateProperty, isPending: isPendingCreateProperty } =
     useMutation({

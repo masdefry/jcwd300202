@@ -6,9 +6,47 @@ import { IUser } from '../auth.service/types'
 
 export const getPropertyRoomImagesByPropertyService = async ({
   roomId,
+  id,
+  role
 }: {
   roomId: string | number
-}) => {
+} & Pick<IUser, 'id' | 'role'>) => {
+
+  const isTenantExist = await prisma.tenant.findUnique({
+    where: {
+      id,
+      deletedAt: null,
+    },
+  })
+
+  if (!isTenantExist?.id || isTenantExist?.deletedAt)
+    throw { msg: 'Tenant not found!', status: 404 }
+  if (isTenantExist.role !== role)
+    throw { msg: 'Role unauthorized!', status: 401 }
+
+  const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
+    where: {
+      id: Number(roomId),
+      deletedAt: null,
+    },
+    include: {
+      property: {
+        include: {
+          propertyDetail: true,
+        },
+      },
+    },
+  })
+
+  if (
+    !isPropertyRoomTypeExist?.property?.id ||
+    isPropertyRoomTypeExist?.property?.deletedAt
+  )
+    throw { msg: 'Property room type not found!', status: 404 }
+  if (isPropertyRoomTypeExist?.property?.tenantId !== id)
+    throw { msg: 'Actions not permitted!', status: 403 }
+
+
   const propertyRoomImagesByProperty = await prisma.propertyRoomImage.findMany({
     where: {
       propertyRoomType: {

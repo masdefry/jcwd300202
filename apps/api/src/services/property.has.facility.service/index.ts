@@ -30,6 +30,9 @@ export const getPropertyHasFacilitiesService = async ({
 
   if (!isPropertyExist?.id || isPropertyExist?.deletedAt)
     throw { msg: 'Property not found!', status: 404 }
+  if (isPropertyExist?.tenantId !== id) {
+    throw { msg: 'Actions not permitted!', status: 403 }
+  }
 
   const propertyHasFacility = await prisma.propertyHasFacility.findMany({
     where: {

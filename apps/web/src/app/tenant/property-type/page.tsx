@@ -1,14 +1,14 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import HGroupPropertyType from './HGroupPropertyType'
-import PropertyTypeList from './PropertyTypeList'
-import FilterAndSortPropertyType from './FilterAndSortPropertyType'
+import HGroupPropertyType from '../../../features/tenant/property-type/components/HGroupPropertyType'
+import PropertyTypeList from '../../../features/tenant/property-type/components/PropertyTypeList'
+import FilterAndSortPropertyType from '../../../features/tenant/property-type/components/FilterAndSortPropertyType'
 import instance from '@/utils/axiosInstance'
 import { useMutation } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
-import ButtonPropertyTypePagination from './ButtonPropertyTypePagination'
+import ButtonPropertyTypePagination from '../../../features/tenant/property-type/components/ButtonPropertyTypePagination'
 
 export interface ISearchParamsTenantPropertyType {
   order: string
@@ -22,7 +22,7 @@ const TenantPropertyTypePage = ({
   searchParams: ISearchParamsTenantPropertyType
 }) => {
   const router = useRouter()
-  const [ isLoading, setIsLoading ] = useState(true)
+  const [isLoading, setIsLoading] = useState(true)
   const [paramMutatePage, setParamMutatePage] = useState({
     order: '',
     name: '',
@@ -45,21 +45,22 @@ const TenantPropertyTypePage = ({
     window.history.pushState({}, '', '?' + params.toString())
   }
 
-  const { mutate: mutateRefreshPage, isPending: isPendingRefreshPage } = useMutation({
-    mutationFn: async () => {
-      console.log('res', paramMutatePage)
-      const res = await instance.get(
-        `/property-type?name=${paramMutatePage?.name ? paramMutatePage?.name : searchParams?.name ? searchParams?.name : ''}&order=${paramMutatePage?.order ? paramMutatePage?.order : searchParams?.order ? searchParams?.order : 'asc'}&limit=${paramMutatePage?.limit ? paramMutatePage?.limit : searchParams?.limit ? searchParams?.limit : 5}&offset=${paramMutatePage?.offset ? paramMutatePage?.offset : searchParams?.offset ? searchParams?.offset : 0}`,
-      )
-      return res?.data
-    },
-    onSuccess: (res) => {
-      setDataPropertyTypes(res?.data)
-    },
-    onError: (err) => {
-      console.log(err)
-    },
-  })
+  const { mutate: mutateRefreshPage, isPending: isPendingRefreshPage } =
+    useMutation({
+      mutationFn: async () => {
+        console.log('res', paramMutatePage)
+        const res = await instance.get(
+          `/property-type?name=${paramMutatePage?.name ? paramMutatePage?.name : searchParams?.name ? searchParams?.name : ''}&order=${paramMutatePage?.order ? paramMutatePage?.order : searchParams?.order ? searchParams?.order : 'asc'}&limit=${paramMutatePage?.limit ? paramMutatePage?.limit : searchParams?.limit ? searchParams?.limit : 5}&offset=${paramMutatePage?.offset ? paramMutatePage?.offset : searchParams?.offset ? searchParams?.offset : 0}`,
+        )
+        return res?.data
+      },
+      onSuccess: (res) => {
+        setDataPropertyTypes(res?.data)
+      },
+      onError: (err) => {
+        console.log(err)
+      },
+    })
 
   const fetchDataPropertyTypes = async () => {
     try {
@@ -74,7 +75,10 @@ const TenantPropertyTypePage = ({
     }
   }
 
-  const { mutate: mutateCreatePropertyType, isPending: isPendingCreatePropertyType } = useMutation({
+  const {
+    mutate: mutateCreatePropertyType,
+    isPending: isPendingCreatePropertyType,
+  } = useMutation({
     mutationFn: async (values: any) => {
       const res = await instance.post('/property-type', {
         name: values?.name,
@@ -144,7 +148,10 @@ const TenantPropertyTypePage = ({
     },
   })
 
-  const { mutate: mutateDeletePropertyType, isPending: isPendingDeletePropertyType } = useMutation({
+  const {
+    mutate: mutateDeletePropertyType,
+    isPending: isPendingDeletePropertyType,
+  } = useMutation({
     mutationFn: async ({ id, password }: { id: number; password: string }) => {
       const res = await instance.patch('/property-type/delete', {
         propertyTypeId: id,
@@ -221,9 +228,14 @@ const TenantPropertyTypePage = ({
           handleSort={handleSort}
           handleFilter={handleFilter}
         />
-        <div className="w-[1080px]">
+        <div className="w-[1200px] mx-auto">
           <PropertyTypeList
-            isPending={isLoading || isPendingCreatePropertyType || isPendingDeletePropertyType || isPendingRefreshPage}
+            isPending={
+              isLoading ||
+              isPendingCreatePropertyType ||
+              isPendingDeletePropertyType ||
+              isPendingRefreshPage
+            }
             offset={dataPropertyTypes?.offset}
             handleCreatePropertyType={handleCreatePropertyType}
             handleDeletePropertyType={handleDeletePropertyType}
@@ -232,12 +244,12 @@ const TenantPropertyTypePage = ({
           />
         </div>
         <div className="w-[1080px]">
-        <ButtonPropertyTypePagination
-          isPending={false}
-          dataPropertyTypes={dataPropertyTypes}
-          handlePagination={handlePagination}
+          <ButtonPropertyTypePagination
+            isPending={false}
+            dataPropertyTypes={dataPropertyTypes}
+            handlePagination={handlePagination}
           />
-          </div>
+        </div>
       </section>
     </main>
   )

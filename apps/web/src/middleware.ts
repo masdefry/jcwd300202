@@ -24,8 +24,6 @@ export async function middleware(req: NextRequest) {
     }
     
     if (pathname.includes('/auth')){
-      console.log('middlewareTOKEN', token)
-      console.log('middlewarerole', role)
       return NextResponse.redirect(new URL('/', req.url))}
   } else {
     if (pathname.startsWith('/tenant') && !pathname.includes('/auth')){

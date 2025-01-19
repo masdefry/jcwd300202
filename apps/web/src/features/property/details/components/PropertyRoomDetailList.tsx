@@ -8,7 +8,7 @@ import { differenceInDays } from 'date-fns'
 import { usePathname } from 'next/navigation'
 import { IoIosSearch } from 'react-icons/io'
 
-const PropertyRoomDetailList = ({ dataPropertyRoomType, isPending, setShowDataRoom, token, searchParams, mutatePropertyRoomType, dataPropertyDetail, role, checkInDate, checkOutDate }: any) => {
+const PropertyRoomDetailList = ({ dataPropertyRoomType, isPending, setShowDataRoom, token, searchParams, handlePropertyRoomType, dataPropertyDetail, role, checkInDate, checkOutDate }: any) => {
   
     if(isPending) {
       return (
@@ -226,7 +226,7 @@ const PropertyRoomDetailList = ({ dataPropertyRoomType, isPending, setShowDataRo
                         )
                     }
                     return(
-                        <button key={index} onClick={() => mutatePropertyRoomType({ limit: 2, offset: index * 2, propertyId: dataPropertyDetail?.property?.id  })} className="join-item btn btn-sm">{index + 1}</button>
+                        <button key={index} onClick={() => handlePropertyRoomType({ limit: 2, offset: index * 2, propertyId: dataPropertyDetail?.property?.id  })} className="join-item btn btn-sm">{index + 1}</button>
                     )
                 })
             }

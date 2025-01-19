@@ -17,6 +17,9 @@ import 'rsuite/SelectPicker/styles/index.css'
 import 'rsuite/Rate/styles/index.css'
 import Image from 'next/image'
 import { manageGeneralInfoValidationSchema } from '@/features/tenant/property/manage/general-info/schemas/manageGeneralInfoValidationSchema'
+import UnauthorizedPage from '@/app/403/page'
+import NotFoundMain from '@/app/not-found'
+import Custom500 from '@/app/500/page'
 const PropertyManageGeneralInfoPage = ({
   params,
 }: {
@@ -72,7 +75,6 @@ const PropertyManageGeneralInfoPage = ({
         fd.append('images', dataCreateCountry?.file[0])
         const res = await instance.post('/country', fd)
 
-        console.log(res)
         return res?.data
       },
       onSuccess: (res) => {
@@ -170,6 +172,8 @@ const PropertyManageGeneralInfoPage = ({
   const {
     data: dataPropertyGeneralInfo,
     isPending: isPendingPropertyGeneralInfo,
+    isError,
+    error
   } = useQuery({
     queryKey: ['getPropertyGeneralInfo'],
     queryFn: async () => {
@@ -220,7 +224,22 @@ const PropertyManageGeneralInfoPage = ({
       ))
     },
   })
-
+  if(isError) {
+    let getError: any = error
+    if (getError.status === 403) {
+      return <UnauthorizedPage />
+    } else if (getError.status === 404) {
+      return <NotFoundMain />
+    } else if (getError.status === 500) {
+      return <Custom500 />
+    } else {
+      toast((t) => (
+        <span className='flex gap-2 items-center font-semibold justify-center text-xs text-red-600'>
+          {getError?.response?.data?.message || 'Connection error!'}
+        </span>
+      ))
+    }
+  }
   return (
     <main className="py-5">
       <section className="flex flex-col gap-7 px-5">

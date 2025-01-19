@@ -241,7 +241,7 @@ const ProfileTenantLayout = ({ children }: { children: ReactNode }) => {
             </div>
           </div>
         </div>
-        <section className="w-screen max-w-screen-xl px-5 m-auto rounded-md overflow-hidden bg-white">
+        <section className="w-screen max-w-screen-xl m-auto rounded-md overflow-hidden px-5 bg-white">
           {children}
         </section>
       </section>

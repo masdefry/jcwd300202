@@ -12,10 +12,11 @@ export const getPropertyImagesByProperty = async (
   next: NextFunction,
 ) => {
   try {
+    const { id, role } = req.body
     const { slug } = req.params
 
     const getPropertyImagesByPropertyProcess =
-      await getPropertyImagesByPropertyService({ slug })
+      await getPropertyImagesByPropertyService({ slug, id, role })
 
     res.status(200).json({
       error: false,

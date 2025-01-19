@@ -28,7 +28,6 @@ instance.interceptors.response.use(
         return res
     },
     (error) => {
-        console.log(error)
         if(error?.message === 'Token not found!') {
             Cookies.remove('authToken')
             Cookies.remove('authRole')

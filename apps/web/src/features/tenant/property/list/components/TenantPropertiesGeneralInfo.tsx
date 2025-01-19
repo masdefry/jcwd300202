@@ -6,7 +6,7 @@ import { FaRegStar } from 'react-icons/fa6'
 import { RiLoginBoxLine, RiLogoutBoxRLine } from 'react-icons/ri'
 import { TbHomeCancel } from 'react-icons/tb'
 
-const TenantPropertiesGeneralInfo = ({ dataProperties, isPending }: any) => {
+const TenantPropertiesGeneralInfo = ({ dataProperties, isPending }: {dataProperties: any, isPending: boolean}) => {
     if(isPending) {
         return (
             <section className='min-w-[1080px]'>

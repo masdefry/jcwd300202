@@ -13,6 +13,9 @@ import {
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import { FaRegTrashCan } from 'react-icons/fa6'
 import { manageRoomPhotosValidationSchema } from '@/features/tenant/property/manage/room-details/edit/photos/schemas/manageRoomPhotosValidationSchema'
+import UnauthorizedPage from '@/app/403/page'
+import NotFoundMain from '@/app/not-found'
+import Custom500 from '@/app/500/page'
 
 const PropertyManageRoomPhotosPage = ({
   params,
@@ -27,11 +30,10 @@ const PropertyManageRoomPhotosPage = ({
     fileExtension: '',
   })
   const [showAddPhoto, setShowAddPhoto] = useState(false)
-  const { data: dataPropertyRoomImages } = useQuery({
+  const { data: dataPropertyRoomImages, isPending: isPendingPropertyRoomImages, isError, error } = useQuery({
     queryKey: ['getPropertyRoomImages'],
     queryFn: async () => {
       const res = await instance.get(`/property-room-images/${params?.id}`)
-      console.log(res)
       return res?.data?.data
     },
   })
@@ -95,6 +97,23 @@ const PropertyManageRoomPhotosPage = ({
       ))
     },
   })
+
+  if(isError) {
+    let getError: any = error
+    if (getError.status === 403) {
+      return <UnauthorizedPage />
+    } else if (getError.status === 404) {
+      return <NotFoundMain />
+    } else if (getError.status === 500) {
+      return <Custom500 />
+    } else {
+      toast((t) => (
+        <span className='flex gap-2 items-center font-semibold justify-center text-xs text-red-600'>
+          {getError?.response?.data?.message || 'Connection error!'}
+        </span>
+      ))
+    }
+  }
 
   return (
     <main className="flex flex-col gap-7 py-5">

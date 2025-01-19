@@ -6,8 +6,22 @@ import { IUser } from '../auth.service/types'
 import { IProperty } from '../property.service/types'
 
 export const getPropertyImagesByPropertyService = async ({
+  id,
+  role,
   slug,
-}: Pick<IProperty, 'slug'>) => {
+}: Pick<IUser, 'role' | 'id'> & Pick<IProperty, 'slug'>) => {
+  const isTenantExist = await prisma.tenant.findUnique({
+    where: {
+      id,
+      deletedAt: null,
+    },
+  })
+
+  if (!isTenantExist?.id || isTenantExist?.deletedAt)
+    throw { msg: 'Tenant not found!', status: 404 }
+  if (isTenantExist.role !== role)
+    throw { msg: 'Role unauthorized!', status: 401 }
+  
   const propertyImagesByProperty = await prisma.propertyImage.findMany({
     where: {
       propertyDetail: {
@@ -16,9 +30,19 @@ export const getPropertyImagesByPropertyService = async ({
         },
       },
     },
+    include: {
+      propertyDetail: {
+        include: {
+          property: true
+        }
+      }
+    }
   })
   if (propertyImagesByProperty.length < 0)
     throw { msg: 'Property images not found!', status: 404 }
+  if (propertyImagesByProperty[0]?.propertyDetail?.property?.tenantId !== id) {
+    throw { msg: 'Actions not permitted!', status: 403 }
+  }
 
   return { propertyImagesByProperty }
 }

@@ -76,11 +76,11 @@ const PropertyImages = ({ dataPropertyDetail, setShowPropertyImages, showPropert
                 dataPropertyDetail?.propertyImagesPreview?.map((item: any, index: number) => {
                     let className
                     if(index === 0) {
-                        className = 'overflow-hidden relative rounded-md w-full h-full col-span-3 hover:cursor-pointer row-span-6'
+                        className = 'overflow-hidden relative rounded-md w-full h-full bg-gray-200 col-span-3 hover:cursor-pointer row-span-6'
                     } else if(index === 1 || index === 2) {
-                        className = 'overflow-hidden relative rounded-md w-full h-full col-span-2 hover:cursor-pointer row-span-3'
+                        className = 'overflow-hidden relative rounded-md w-full h-full bg-gray-200 col-span-2 hover:cursor-pointer row-span-3'
                     } else {
-                        className = 'overflow-hidden relative rounded-md w-full h-full col-span-1 hover:cursor-pointer row-span-2'
+                        className = 'overflow-hidden relative rounded-md w-full h-full bg-gray-200 col-span-1 hover:cursor-pointer row-span-2'
                     }
                     if(index === 7) {
                         return (
@@ -99,9 +99,13 @@ const PropertyImages = ({ dataPropertyDetail, setShowPropertyImages, showPropert
                                     </div>
                                 )
                             }
-                            <div className='rounded-md absolute top-0 left-0 w-full h-full hover:bg-opacity-60 bg-black bg-opacity-40 flex items-center justify-center'>
-                                <p className='text-xl text-white font-bold hover:cursor-pointer hover:underline transition duration-100'>+{dataPropertyDetail?.propertyImages.length - dataPropertyDetail?.propertyImagesPreview.length} Photos</p>
-                            </div>
+                            {
+                                (dataPropertyDetail?.propertyImages.length - dataPropertyDetail?.propertyImagesPreview.length > 0) && (
+                                <div className='rounded-md absolute top-0 left-0 w-full h-full hover:bg-opacity-60 bg-black bg-opacity-40 flex items-center justify-center'>
+                                    <p className='text-xl text-white font-bold hover:cursor-pointer hover:underline transition duration-100'>+{dataPropertyDetail?.propertyImages.length - dataPropertyDetail?.propertyImagesPreview.length} Photos</p>
+                                </div>
+                                )
+                            }
                         </div>
                         )
                     }

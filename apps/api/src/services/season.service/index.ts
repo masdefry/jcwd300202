@@ -386,14 +386,8 @@ export const updateSeasonalPriceService = async ({
         roomAvailability: availability,
         propertyRoomTypeId: Number(propertyRoomTypeId),
         isPeak,
-        isStartSeason: Boolean(
-          new Date(addDays(startDate.split('T')[0], index)).toISOString() ===
-            new Date(startDate.split('T')[0]).toISOString(),
-        ),
-        isEndSeason: Boolean(
-          new Date(addDays(startDate.split('T')[0], index)).toISOString() ===
-            new Date(endDate.split('T')[0]).toISOString(),
-        ),
+        isStartSeason: isSeasonalPriceExist?.isStartSeason,
+        isEndSeason: isSeasonalPriceExist?.isEndSeason,
         roomToRent: availability ? Number(roomsToSell) : 0,
         date: new Date(addDays(startDate.split('T')[0], index)).toISOString(),
       }
@@ -404,41 +398,6 @@ export const updateSeasonalPriceService = async ({
     })
   })
 
-  // let updatedSeason : any, updatedSeasonalPrice
-  // await prisma.$transaction(async(tx) => {
-  //     updatedSeason = await tx.season.update({
-  //         where: {
-  //             id: isSeasonExist?.id
-  //         },
-  //         data: {
-  //             name,
-  //             startDate: new Date(startDate.split('T')[0]).toISOString(),
-  //             endDate: new Date(endDate.split('T')[0]).toISOString(),
-  //         }
-  //     })
-
-  //     if(!updatedSeason?.id) throw { msg: 'update season failed!', status: 500 }
-
-  //     const dataToupdateSeasonalPrices = Array.from({ length: differenceInDays(new Date(endDate), new Date(startDate)) + 1}).map((_, index) => {
-  //         return {
-  //             price: roomPrices,
-  //             propertyId: isPropertyExist?.id,
-  //             seasonId: updatedSeason?.id as number,
-  //             propertyRoomTypeId,
-  //             isPeak,
-  //             isStartSeason: Boolean(new Date(addDays(startDate.split('T')[0], index)).toISOString() ===  new Date(startDate.split('T')[0]).toISOString()),
-  //             isEndSeason: Boolean(new Date(addDays(startDate.split('T')[0], index)).toISOString() ===  new Date(endDate.split('T')[0]).toISOString()),
-  //             roomToRent: availability ? roomsToSell : 0,
-  //             date: new Date((addDays(startDate.split('T')[0], index))).toISOString()
-
-  //         }
-  //     })
-
-  //     updatedSeasonalPrice = await tx.seasonalPrice.updateMany({
-  //         data: dataToUpdateSeasonalPrices
-  //     })
-
-  // })
   return {
     updatedSeason: createdSeason,
     updatedSeasonalPrice: createdSeasonalPrice,
@@ -1155,6 +1114,11 @@ export const updateSingleSeasonService = async ({
 
   if (isPropertyRoomTypesExist.length <= 0)
     throw { msg: 'Room type not found!', status: 404 }
+  if (Number(roomsToSell) > isPropertyRoomTypesExist[0]?.totalRooms)
+    throw {
+      msg: 'The number of rooms exceeds the total rooms limit! Change capacity first.',
+      status: 406,
+    }
 
   const isSeasonExist = await prisma.season.findUnique({
     where: {
@@ -1287,6 +1251,7 @@ export const createOneSeasonService = async ({
     throw { msg: 'Property not found!', status: 404 }
   if (isPropertyExist?.tenantId !== id)
     throw { msg: 'Actions not permitted!', status: 403 }
+  
 
   const isPropertyRoomTypesExist = await prisma.propertyRoomType.findMany({
     where: {
@@ -1297,6 +1262,11 @@ export const createOneSeasonService = async ({
 
   if (isPropertyRoomTypesExist.length <= 0)
     throw { msg: 'Room type not found!', status: 404 }
+  if (Number(roomsToSell) > isPropertyRoomTypesExist[0]?.totalRooms)
+    throw {
+      msg: 'The number of rooms exceeds the total rooms limit! Change capacity first.',
+      status: 406,
+    }
 
   let createdSeason: any, createdSeasonalPrices
   await prisma.$transaction(async (tx) => {

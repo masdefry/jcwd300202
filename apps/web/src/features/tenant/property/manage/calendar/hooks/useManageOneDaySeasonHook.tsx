@@ -6,11 +6,15 @@ import React, { useState } from 'react'
 import toast from 'react-hot-toast'
 import useCalendarFunctionalityHook from './useCalendarFunctionalityHook'
 import useStateCalendarHook from './useStateCalendarHook'
-import useMutateCreateOneDaySeasonApi from './useMutateCreateOneDaySeasonApi'
-import useMutateUpdateOneDaySeasonApi from './useMutateUpdateOneDaySeasonApi'
-import useMutateDeleteOneDaySeasonApi from './useMutateDeleteOneDaySeasonApi'
-import useMutateGetOneDaySeasonApi from './useMutateGetOneDaySeasonApi'
-import { IActiveRoomSetter, IDataPropertyRoomTypeSeason, IDateRange } from '@/features/tenant/property/manage/calendar/types'
+import useMutateCreateOneDaySeasonApi from '../api/useMutateCreateOneDaySeasonApi'
+import useMutateUpdateOneDaySeasonApi from '../api/useMutateUpdateOneDaySeasonApi'
+import useMutateDeleteOneDaySeasonApi from '../api/useMutateDeleteOneDaySeasonApi'
+import useMutateGetOneDaySeasonApi from '../api/useMutateGetOneDaySeasonApi'
+import {
+  IActiveRoomSetter,
+  IDataPropertyRoomTypeSeason,
+  IDateRange,
+} from '@/features/tenant/property/manage/calendar/types'
 
 const useManageOneDaySeasonHook = ({
   params,
@@ -28,18 +32,17 @@ const useManageOneDaySeasonHook = ({
 }: {
   params: { slug: string }
   searchParams: { view: string }
-  setDataPropertyRoomTypeSeason: any,
-  dataPropertyRoomTypeSeason: IDataPropertyRoomTypeSeason,
-  setDateRange: any,
-  dateRange: IDateRange,
-  setActiveRoomSetter: any,
-  activeRoomSetter: IActiveRoomSetter,
-  setDataRoomPerDate: any,
-  setRoomAvailability: any,
-  setIsPeakSeason: any,
-  setRatesPercentage: any,
+  setDataPropertyRoomTypeSeason: any
+  dataPropertyRoomTypeSeason: IDataPropertyRoomTypeSeason
+  setDateRange: any
+  dateRange: IDateRange
+  setActiveRoomSetter: any
+  activeRoomSetter: IActiveRoomSetter
+  setDataRoomPerDate: any
+  setRoomAvailability: any
+  setIsPeakSeason: any
+  setRatesPercentage: any
 }) => {
-
   const onSuccess = (res: any) => {
     setDateRange({
       startDate: null,

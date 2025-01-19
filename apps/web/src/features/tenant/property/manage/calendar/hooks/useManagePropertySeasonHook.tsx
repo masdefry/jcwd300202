@@ -2,12 +2,12 @@
 
 import React from 'react'
 import toast from 'react-hot-toast'
-import useMutateCreatePropertySeasonHook from './useMutateCreatePropertySeasonHook'
-import useMutateDeletePropertySeasonHook from './useMutateDeletePropertySeasonHook'
-import useMutateUpdatePropertySeasonHook from './useMutateUpdatePropertySeasonHook'
-import useGetDataPropertySeasonsHook from './useGetDataPropertySeasonsHook'
+import useMutateCreatePropertySeasonApi from '../api/useMutateCreatePropertySeasonApi'
+import useMutateDeletePropertySeasonApi from '../api/useMutateDeletePropertySeasonApi'
+import useMutateUpdatePropertySeasonApi from '../api/useMutateUpdatePropertySeasonApi'
+import useGetDataPropertySeasonsApi from '../api/useGetDataPropertySeasonsApi'
 
-const useManagePropertySeason = ({
+const useManagePropertySeasonHook = ({
   setDateRange,
   setDataBulkSeason,
   params,
@@ -57,7 +57,7 @@ const useManagePropertySeason = ({
     ))
   }
 
-  const { fetchDataSeasonsByProperty } = useGetDataPropertySeasonsHook({
+  const { fetchDataSeasonsByProperty } = useGetDataPropertySeasonsApi({
     handleSuccess(res) {
       setDataSeasonsByProperty(res?.data?.data)
       setPropertyRoomTypes(res?.data?.data?.property?.propertyRoomType)
@@ -80,7 +80,7 @@ const useManagePropertySeason = ({
   })
 
   const { mutateDeletePropertySeason, isPendingDeletePropertySeason } =
-    useMutateDeletePropertySeasonHook({
+    useMutateDeletePropertySeasonApi({
       dataBulkSeason,
       params,
       onError,
@@ -88,7 +88,7 @@ const useManagePropertySeason = ({
     })
 
   const { mutateCreatePropertySeason, isPendingCreatePropertySeason } =
-    useMutateCreatePropertySeasonHook({
+    useMutateCreatePropertySeasonApi({
       dataBulkSeason,
       params,
       onError,
@@ -96,7 +96,7 @@ const useManagePropertySeason = ({
     })
 
   const { mutateUpdatePropertySeason, isPendingUpdatePropertySeason } =
-    useMutateUpdatePropertySeasonHook({
+    useMutateUpdatePropertySeasonApi({
       dataBulkSeason,
       params,
       onError,
@@ -115,4 +115,4 @@ const useManagePropertySeason = ({
   }
 }
 
-export default useManagePropertySeason
+export default useManagePropertySeasonHook

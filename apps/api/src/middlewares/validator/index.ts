@@ -88,9 +88,7 @@ export const createPropertyValidator = [
     (req: Request, res: Response, next: NextFunction) => {
         try {
             const errorResult = validationResult(req);
-            console.log('ERORRRRRRRRRRRRRRRRR')
             if (errorResult.isEmpty() === false) {
-                console.log(errorResult)
                 throw { msg: errorResult.array()[0].msg, status: 406 };
             } else {
                 next();
@@ -338,7 +336,7 @@ export const createSeasonalAvailabiltyByPropertyValidator = [
 ];
 
 export const updateManySeasonsByPropertySeasonValidator = [
-    body(['id', 'role', 'seasonId', 'availability', 'pricePercentage', 'propertyRoomTypeId', 'name', 'startDate', 'endDate', 'isPeak'])
+    body(['id', 'role', 'seasonId', 'availability', 'pricePercentage', 'name', 'startDate', 'endDate', 'isPeak'])
         .notEmpty()
         .withMessage('All fields are required!'),
     body('id').isString().escape(),
@@ -346,7 +344,6 @@ export const updateManySeasonsByPropertySeasonValidator = [
     body('seasonId').isInt().escape(),
     body('availability').isBoolean().escape(),
     body('pricePercentage').isInt().escape(),
-    body('propertyRoomTypeId').isInt().escape(),
     body('name')
         .isString()
         .isLength({ min: 3, max: 100 })

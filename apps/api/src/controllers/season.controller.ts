@@ -20,8 +20,8 @@ export const createSeasonalPrice = async (
       endDate,
       isPeak,
     } = req.body
-
-    const createSeasonalPriceProcess = await createSeasonalPriceService({ id, role, roomPrices, roomsToSell, availability, propertyRoomTypeId, name, startDate, endDate, isPeak, })
+    
+    const createSeasonalPriceProcess = await createSeasonalPriceService({ id, role, roomPrices, roomsToSell, availability: JSON.parse(availability), propertyRoomTypeId, name, startDate, endDate, isPeak: JSON.parse(isPeak), })
     
 
     res.status(201).json({
@@ -105,7 +105,7 @@ export const updateSeasonalPrice = async (
 
     const { propertyRoomTypeId } = req.params
 
-    const updateSeasonalPriceProcess = await updateSeasonalPriceService({ id, role, seasonId, seasonalPriceId, roomPrices, roomsToSell, availability, name, startDate, endDate, isPeak, propertyRoomTypeId: Number(propertyRoomTypeId)})
+    const updateSeasonalPriceProcess = await updateSeasonalPriceService({ id, role, seasonId, seasonalPriceId, roomPrices, roomsToSell, availability: JSON.parse(availability), name, startDate, endDate, isPeak: JSON.parse(isPeak), propertyRoomTypeId: Number(propertyRoomTypeId)})
     
     res.status(200).json({
       error: false,
@@ -166,7 +166,7 @@ export const createSeasonalAvailabiltyByProperty = async (
 
     const { slug } = req.params
     
-    const createSeasonalAvailabiltyByPropertyProcess = await createSeasonalAvailabiltyByPropertyService({ id, role, availability, pricePercentage, name, startDate, endDate, isPeak, slug })
+    const createSeasonalAvailabiltyByPropertyProcess = await createSeasonalAvailabiltyByPropertyService({ id, role, availability: JSON.parse(availability), pricePercentage, name, startDate, endDate, isPeak: JSON.parse(isPeak), slug })
     
     res.status(201).json({
       error: false,
@@ -193,7 +193,6 @@ export const updateManySeasonsByPropertySeason = async (
       seasonId,
       availability,
       pricePercentage,
-      propertyRoomTypeId,
       name,
       startDate,
       endDate,
@@ -202,7 +201,7 @@ export const updateManySeasonsByPropertySeason = async (
 
     const { slug } = req.params
 
-    const updateManySeasonsByPropertySeasonProcess = await updateManySeasonsByPropertySeasonService({ id, role, seasonId, availability, pricePercentage, name, startDate, endDate, isPeak, slug })
+    const updateManySeasonsByPropertySeasonProcess = await updateManySeasonsByPropertySeasonService({ id, role, seasonId, availability: JSON.parse(availability), pricePercentage, name, startDate, endDate, isPeak: JSON.parse(isPeak), slug })
     
     res.status(200).json({
       error: false,
@@ -313,7 +312,7 @@ export const updateSingleSeason = async (
 
     const { seasonId } = req.params
 
-    const updateSingleSeasonProcess = await updateSingleSeasonService({ id, role, roomPrices, roomsToSell, pricePercentage, availability, propertyRoomTypeId, name, startDate, endDate, isPeak, seasonId: Number(seasonId) })
+    const updateSingleSeasonProcess = await updateSingleSeasonService({ id, role, roomPrices, roomsToSell, pricePercentage, availability: JSON.parse(availability), propertyRoomTypeId, name, startDate, endDate, isPeak: JSON.parse(isPeak), seasonId: Number(seasonId) })
     
     res.status(200).json({
       error: false,
@@ -348,7 +347,7 @@ export const createOneSeason = async (
       isPeak,
     } = req.body
 
-    const createOneSeasonProcess = await createOneSeasonService({ id, role, roomPrices, roomsToSell, pricePercentage, availability, propertyRoomTypeId, name, startDate, endDate, isPeak })
+    const createOneSeasonProcess = await createOneSeasonService({ id, role, roomPrices, roomsToSell, pricePercentage, availability: JSON.parse(availability), propertyRoomTypeId, name, startDate, endDate, isPeak: JSON.parse(isPeak) })
 
     
     res.status(200).json({

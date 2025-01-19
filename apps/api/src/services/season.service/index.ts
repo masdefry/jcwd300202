@@ -1,7 +1,6 @@
 import prisma from '@/prisma'
 import { Response, Request, NextFunction } from 'express'
 import { addDays, addMonths, addYears, differenceInDays } from 'date-fns'
-import { error } from 'console'
 import { IUser } from '../auth.service/types'
 import { ISeason, ISeasonalPrice } from './types'
 import { IProperty } from '../property.service/types'
@@ -31,7 +30,7 @@ export const createSeasonalPriceService = async ({
       deletedAt: null,
     },
   })
-
+  
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
     throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
@@ -88,7 +87,7 @@ export const createSeasonalPriceService = async ({
   await prisma.$transaction(async (tx) => {
     createdSeason = await tx.season.create({
       data: {
-        propertyRoomTypeId,
+        propertyRoomTypeId: Number(propertyRoomTypeId),
         propertyId: isPropertyExist?.id,
         name,
         startDate: new Date(startDate.split('T')[0]).toISOString(),
@@ -105,7 +104,7 @@ export const createSeasonalPriceService = async ({
         price: Number(roomPrices),
         propertyId: isPropertyExist?.id,
         seasonId: createdSeason?.id as number,
-        propertyRoomTypeId,
+        propertyRoomTypeId: Number(propertyRoomTypeId),
         roomAvailability: availability,
         isPeak,
         isStartSeason: Boolean(
@@ -125,7 +124,7 @@ export const createSeasonalPriceService = async ({
       data: dataToCreateSeasonalPrices,
     })
   })
-
+  
   return {
     createdSeason,
     createdSeasonalPrice,
@@ -651,7 +650,7 @@ export const createSeasonalAvailabiltyByPropertyService = async ({
                 addDays(startDate.split('T')[0], index),
               ).toISOString() === new Date(endDate.split('T')[0]).toISOString(),
             ),
-            roomToRent: totalRooms,
+            roomToRent: Number(totalRooms),
             date: new Date(
               addDays(startDate.split('T')[0], index),
             ).toISOString(),
@@ -819,7 +818,7 @@ export const updateManySeasonsByPropertySeasonService = async ({
                 addDays(startDate.split('T')[0], index),
               ).toISOString() === new Date(endDate.split('T')[0]).toISOString(),
             ),
-            roomToRent: totalRooms,
+            roomToRent: Number(totalRooms),
             date: new Date(
               addDays(startDate.split('T')[0], index),
             ).toISOString(),
@@ -1216,7 +1215,7 @@ export const updateSingleSeasonService = async ({
           new Date(addDays(startDate.split('T')[0], index)).toISOString() ===
             new Date(endDate.split('T')[0]).toISOString(),
         ),
-        roomToRent: totalRooms,
+        roomToRent: Number(totalRooms),
         date: new Date(addDays(startDate.split('T')[0], index)).toISOString(),
       }
     })
@@ -1338,7 +1337,7 @@ export const createOneSeasonService = async ({
           new Date(addDays(startDate.split('T')[0], index)).toISOString() ===
             new Date(endDate.split('T')[0]).toISOString(),
         ),
-        roomToRent: totalRooms,
+        roomToRent: Number(totalRooms),
         date: new Date(addDays(startDate.split('T')[0], index)).toISOString(),
       }
     })
@@ -1347,7 +1346,6 @@ export const createOneSeasonService = async ({
       data: dataToCreateSeasonalPrices,
     })
   })
-
   return {
     createdSeasons: createdSeason,
     createdSeasonalPrices: createdSeasonalPrices,

@@ -86,7 +86,7 @@ const TenantManagePropertyLayout = ({ children }: { children: ReactNode }) => {
       </section>
       {
         !showMobileNav && (
-        <div onClick={() => setShowMobileNav(true)} className='fixed top-24 left-0  rounded-r-md text-white p-2 py-7 pr-[2px] 2xl:hidden bg-gray-900 opacity-75 hover:cursor-pointer active:scale-95 transition duration-100'>
+        <div onClick={() => setShowMobileNav(true)} className='fixed top-24 left-0 z-30 rounded-r-md text-white p-2 py-7 pr-[2px] 2xl:hidden bg-gray-900 opacity-75 hover:cursor-pointer active:scale-95 transition duration-100'>
         <CiMenuBurger size={15} />
         </div>
         )

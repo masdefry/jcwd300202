@@ -19,6 +19,13 @@ import UnauthorizedPage from '@/app/403/page'
 import NotFoundMain from '@/app/not-found'
 import Custom500 from '@/app/500/page'
 import { differenceInDays } from 'date-fns'
+import useStateCalendarHook from './useStateCalendarHook'
+import useCalendarFunctionalityHook from './useCalendarFunctionalityHook'
+import useGetDataPropertySeasonsHook from './useGetDataPropertySeasonsHook'
+import useGetDataSeasonsHook from './useGetDataSeasonsHook'
+import useManageOneDaySeasonHook from './useManageOneDaySeasonHook'
+import useManagePropertySeason from './useManagePropertySeason'
+import useManageSingleSeasonHook from './useManageSingleSeasonHook'
 
 const CalendarPage = ({
   params,
@@ -27,865 +34,150 @@ const CalendarPage = ({
   params: { slug: string }
   searchParams: { view: string }
 }) => {
-  const [
+  const {
     showDeletePropertySeasonConfirmation,
     setShowDeletePropertySeasonConfirmation,
-  ] = useState(false)
-  const [
     showDeleteSingleSeasonConfirmation,
     setShowDeleteSingleSeasonConfirmation,
-  ] = useState(false)
-  const [selectedPropertyRoomType, setSelectedPropertyRoomType] =
-    useState<any>()
-  const [dataSeasonsByProperty, setDataSeasonsByProperty] = useState<any>()
-  const [errorStatus, setErrorStatus] = useState<null | number>()
-  const [propertyRoomTypes, setPropertyRoomTypes] = useState<any>()
-  const [isPendingSeasons, setIsPendingSeasons] = useState(true)
-  const fetchDataSeasonsByProperty = async () => {
-    try {
-      const res = await instance.get(`season/property/${params?.slug}`)
-      setDataSeasonsByProperty(res?.data?.data)
-      setPropertyRoomTypes(res?.data?.data?.property?.propertyRoomType)
-      setIsPendingSeasons(false)
-    } catch (err: any) {
-      if (err.status === 401 || err.status === 406) {
-        toast((t) => (
-          <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
-            {err?.response?.data?.message || 'Connection error!'}
-          </span>
-        ))
-      } else {
-        setErrorStatus(err.status)
-      }
-    }
-  }
+    selectedPropertyRoomType,
+    setSelectedPropertyRoomType,
+    dataSeasonsByProperty,
+    setDataSeasonsByProperty,
+    errorStatus,
+    setErrorStatus,
+    propertyRoomTypes,
+    setPropertyRoomTypes,
+    isPendingSeasons,
+    setIsPendingSeasons,
+    searchParamsWithValue,
+    setSearchParamsWithValue,
+    paramsSearch,
+    dateRange,
+    setDateRange,
+    dataPropertyRoomTypeSeason,
+    setDataPropertyRoomTypeSeason,
+    dataBulkSeason,
+    setDataBulkSeason,
+    roomName,
+    setRoomName,
+    roomAvailability,
+    setRoomAvailability,
+    isPeakSeason,
+    setIsPeakSeason,
+    changeDate,
+    setChangeDate,
+    dataRoomPerDate,
+    setDataRoomPerDate,
+    ratesPercentage,
+    setRatesPercentage,
+    isEditRateByPercentage,
+    setIsEditRateByPercentage,
+    activeRoomSetter,
+    setActiveRoomSetter,
+    month,
+    setMonth,
+    year,
+    setYear,
+    viewMode,
+    setViewMode,
+    selectRoom,
+    setSelectRoom,
+  } = useStateCalendarHook()
+
+  const {
+    mutateDataSeasonsByProperty,
+    isPendingDataSeasonsByProperty,
+    mutateDataSeasonsByPropertyRoomType,
+    isPendingDataSeasonsByPropertyRoomType,
+  } = useGetDataSeasonsHook({ setDataSeasonsByProperty, selectRoom, params })
+
+  const { handleSearchParams, handleDateRange, handleRoomName } =
+    useCalendarFunctionalityHook({
+      searchParamsWithValue,
+      setSearchParamsWithValue,
+      dataBulkSeason,
+      setDataBulkSeason,
+      setDataPropertyRoomTypeSeason,
+      dataPropertyRoomTypeSeason,
+      selectedPropertyRoomType,
+      selectRoom,
+      setDateRange,
+      dateRange,
+      dataSeasonsByProperty,
+      setRoomName,
+      mutateDataSeasonsByProperty,
+      mutateDataSeasonsByPropertyRoomType,
+    })
+
+
+  const {
+    mutateGetSeasonalPrice,
+    mutateCreateSeason,
+    mutateDeleteSeason,
+    mutateUpdateSeason,
+    isPendingCreateSeason,
+    isPendingGetSeasonalPrice,
+    isPendingDeleteSeason,
+    isPendingUpdateSeason,
+  } = useManageOneDaySeasonHook({
+    params,
+    searchParams,
+    setDataPropertyRoomTypeSeason,
+    dataPropertyRoomTypeSeason,
+    setDateRange,
+    dateRange,
+    setActiveRoomSetter,
+    activeRoomSetter,
+    setDataRoomPerDate,
+    setRoomAvailability,
+    setIsPeakSeason,
+    setRatesPercentage,
+  })
+
+  const {
+    isPendingCreatePropertySeason,
+    isPendingUpdatePropertySeason,
+    isPendingDeletePropertySeason,
+    mutateCreatePropertySeason,
+    mutateUpdatePropertySeason,
+    mutateDeletePropertySeason,
+    fetchDataSeasonsByProperty,
+  } = useManagePropertySeason({
+    setDateRange,
+    setDataBulkSeason,
+    params,
+    dataBulkSeason,
+    setDataSeasonsByProperty,
+    setPropertyRoomTypes,
+    setIsPendingSeasons,
+    setErrorStatus,
+  })
+
+  const {
+    mutateGetSeasonalPriceByRoomType,
+    mutateCreateOneSeason,
+    mutateDeleteSingleSeason,
+    mutateUpdateSingleSeason,
+    isPendingCreateOneSeason,
+    isPendingDeleteSingleSeason,
+    isPendingGetSeasonalPriceByRoomType,
+    isPendingUpdateSingleSeason,
+  } = useManageSingleSeasonHook({
+    setDateRange,
+    setDataPropertyRoomTypeSeason,
+    setDataRoomPerDate,
+    setRatesPercentage,
+    selectRoom,
+    activeRoomSetter,
+    dataPropertyRoomTypeSeason,
+    dateRange,
+    selectedPropertyRoomType,
+  })
+
   useEffect(() => {
     setViewMode(searchParams?.view || 'monthly-view')
     fetchDataSeasonsByProperty()
   }, [])
-
-  const paramsSearch = new URLSearchParams()
-  const [searchParamsWithValue, setSearchParamsWithValue] = useState<any>([])
-  const handleSearchParams = (orderBy: string, value: string) => {
-    let isOrderByExistIndex = -1
-    if (searchParamsWithValue.length > 0) {
-      isOrderByExistIndex = searchParamsWithValue.findIndex(
-        (item: any) => item[0] === orderBy,
-      )
-    }
-    if (isOrderByExistIndex <= -1) {
-      setSearchParamsWithValue((state: any) => {
-        state.push([orderBy, value])
-        return state
-      })
-    } else {
-      setSearchParamsWithValue((state: any) => {
-        state[isOrderByExistIndex] = [orderBy, value]
-        return state
-      })
-    }
-    searchParamsWithValue.forEach((item: any) => {
-      paramsSearch.set(item[0], item[1])
-    })
-    window.history.pushState({}, '', '?' + paramsSearch.toString())
-  }
-  const [dateRange, setDateRange] = useState<{
-    startDate: string | null
-    endDate: string | null
-    id?: string | number
-    name?: string
-  }>({
-    startDate: null,
-    endDate: null,
-  })
-  const [dataPropertyRoomTypeSeason, setDataPropertyRoomTypeSeason] =
-    useState<any>({
-      basePrice: 0,
-      isBulk: false,
-      roomPrices: 0,
-      roomsToSell: 0,
-      totalRooms: 0,
-      pricePercentage: '',
-      availability: true,
-      propertyRoomTypeId: 0,
-      name: '',
-      seasonId: '',
-      seasonalPriceId: '',
-      startDate: '',
-      endDate: '',
-      isPeak: false,
-    })
-  const [dataBulkSeason, setDataBulkSeason] = useState<any>({
-    pricePercentage: 100,
-    availability: true,
-    name: '',
-    seasonId: '',
-    startDate: '',
-    endDate: '',
-    isPeak: false,
-  })
-  const [roomName, setRoomName] = useState('')
-  const [roomAvailability, setRoomAvailability] = useState(true)
-  const [isPeakSeason, setIsPeakSeason] = useState(false)
-  const [changeDate, setChangeDate] = useState(true)
-  const handleDateRange = (date: Date) => {
-    const dateISOString = date.toISOString()
-    if (selectRoom === 'all-rooms') {
-      if (isBefore(addHours(new Date(), 7), date)) {
-        if (
-          !dataBulkSeason?.startDate ||
-          isBefore(date, dataBulkSeason.startDate) ||
-          (dataBulkSeason?.startDate &&
-            dataBulkSeason?.endDate &&
-            dataBulkSeason?.endDate !== dateISOString)
-        ) {
-          setDataBulkSeason((state: any) => {
-            state.endDate = null
-            state.startDate = dateISOString
-            return state
-          })
-          setDateRange((state: any) => {
-            state.endDate = null
-            state.startDate = dateISOString
-            return state
-          })
-        } else if (dataBulkSeason?.endDate === dateISOString) {
-          setDataBulkSeason((state: any) => {
-            state.endDate = null
-            state.startDate = null
-            return state
-          })
-          setDateRange((state: any) => {
-            state.endDate = null
-            state.startDate = null
-            return state
-          })
-        } else if (dataBulkSeason?.startDate && !dataBulkSeason?.endDate) {
-          setDataBulkSeason((state: any) => {
-            state.endDate = dateISOString
-            return state
-          })
-          setDateRange((state: any) => {
-            state.endDate = dateISOString
-            return state
-          })
-        }
-      }
-    } else {
-      if (isBefore(addHours(new Date(), 7), date)) {
-        if (
-          !dataPropertyRoomTypeSeason?.startDate ||
-          isBefore(date, dataPropertyRoomTypeSeason.startDate) ||
-          (dataPropertyRoomTypeSeason?.startDate &&
-            dataPropertyRoomTypeSeason?.endDate &&
-            dataPropertyRoomTypeSeason?.endDate !== dateISOString)
-        ) {
-          setDataPropertyRoomTypeSeason((state: any) => {
-            state.endDate = null
-            state.startDate = dateISOString
-            return state
-          })
-          setDateRange((state: any) => {
-            state.endDate = null
-            state.startDate = dateISOString
-            return state
-          })
-        } else if (dataPropertyRoomTypeSeason?.endDate === dateISOString) {
-          setDataPropertyRoomTypeSeason((state: any) => {
-            state.endDate = null
-            state.startDate = null
-            return state
-          })
-          setDateRange((state: any) => {
-            state.endDate = null
-            state.startDate = null
-            return state
-          })
-        } else if (
-          dataPropertyRoomTypeSeason?.startDate &&
-          !dataPropertyRoomTypeSeason?.endDate
-        ) {
-          setDataPropertyRoomTypeSeason((state: any) => {
-            state.endDate = dateISOString
-            return state
-          })
-          setDateRange((state: any) => {
-            state.endDate = dateISOString
-            return state
-          })
-          setDataPropertyRoomTypeSeason({
-            basePrice: selectedPropertyRoomType?.price,
-            isBulk: true,
-            roomPrices: selectedPropertyRoomType?.price,
-            roomsToSell: selectedPropertyRoomType?.totalRooms,
-            totalRooms: selectedPropertyRoomType?.totalRooms,
-            pricePercentage: 100,
-            availability: true,
-            propertyRoomTypeId: selectedPropertyRoomType?.id,
-            name: '',
-            seasonId: '',
-            seasonalPriceId: '',
-            startDate: dateRange?.startDate,
-            endDate: dateRange?.endDate,
-            isPeak: false,
-          })
-        }
-      }
-    }
-  }
-  const [dataRoomPerDate, setDataRoomPerDate] = useState<any>()
-  const [ratesPercentage, setRatesPercentage] = useState(100)
-  const [isEditRateByPercentage, setIsEditRateByPercentage] = useState(true)
-  const [activeRoomSetter, setActiveRoomSetter] = useState<any>({
-    startDate: '',
-    endDate: '',
-    name: '',
-  })
-  const {
-    mutate: mutateGetSeasonalPrice,
-    isPending: isPendingGetSeasonalPrice,
-  } = useMutation({
-    mutationFn: async ({
-      propertyRoomTypeId,
-      date,
-    }: {
-      propertyRoomTypeId: number
-      date: Date
-    }) => {
-      const res = await instance.get(
-        `/season/single/search?propertyRoomTypeId=${propertyRoomTypeId}&date=${date}`,
-      )
-      return res?.data
-    },
-    onSuccess: (res) => {
-      setDataPropertyRoomTypeSeason({
-        pricePercentage: '',
-        basePrice: res?.data?.seasonalPrice?.basePrice,
-        isBulk: false,
-        totalRooms: res?.data?.seasonalPrice?.totalRooms,
-        roomPrices:
-          res?.data?.seasonalPrice?.price ||
-          res?.data?.seasonalPrice?.basePrice,
-        roomsToSell:
-          res?.data?.seasonalPrice?.roomToRent ||
-          res?.data?.seasonalPrice?.totalRooms,
-        seasonalPriceId: res?.data?.seasonalPrice?.id,
-        seasonId: res?.data?.season?.id || '',
-        availability:
-          res?.data?.seasonalPrice?.roomAvailability === undefined
-            ? true
-            : res?.data?.seasonalPrice?.roomAvailability,
-        propertyRoomTypeId: res?.data?.season?.propertyRoomTypeId,
-        name: res?.data?.season?.name,
-        startDate: dataPropertyRoomTypeSeason.startDate,
-        endDate: dataPropertyRoomTypeSeason.endDate,
-        isPeak: res?.data?.seasonalPrice?.isPeak || false,
-      })
-      setDataRoomPerDate(res?.data)
-      setRoomAvailability(res?.data?.seasonalPrice?.roomAvailability)
-      setIsPeakSeason(res?.data?.seasonalPrice?.isPeak)
-      setRatesPercentage(
-        Math.floor(
-          (res?.data?.seasonalPrice?.price /
-            res?.data?.seasonalPrice?.basePrice) *
-            100,
-        ),
-      )
-    },
-    onError: (err: any) => {
-      toast((t) => (
-        <span className="flex gap-2 items-center text-center font-semibold justify-center text-xs text-red-600">
-          {err?.response?.data?.message || 'Connection error!'}
-        </span>
-      ))
-    },
-  })
-
-  const {
-    mutate: mutateGetSeasonalPriceByRoomType,
-    isPending: isPendingGetSeasonalPriceByRoomType,
-  } = useMutation({
-    mutationFn: async ({
-      startDate,
-      endDate,
-      seasonId,
-    }: {
-      endDate: Date
-      seasonId: number | string
-      startDate: Date
-    }) => {
-      const res = await instance.get(
-        `/season/single/${seasonId}?startDate=${startDate}&endDate=${endDate}`,
-      )
-      return res?.data
-    },
-    onSuccess: (res) => {
-      setDataPropertyRoomTypeSeason({
-        basePrice: res?.data?.propertySeason?.propertyRoomType?.price,
-        isBulk: true,
-        totalRooms: res?.data?.propertySeason?.propertyRoomType?.totalRooms,
-        roomPrices:
-          (Number(res?.data?.propertySeason?.propertyRoomType?.price) *
-            Number(res?.data?.propertySeason?.ratesPercentage)) /
-          100,
-        roomsToSell:
-          res?.data?.propertySeason?.roomToRent ||
-          res?.data?.propertySeason?.propertyRoomType?.totalRooms,
-        seasonalPriceId: res?.data?.seasonalPrice?.id,
-        seasonId: res?.data?.propertySeason?.id,
-        pricePercentage: res?.data?.propertySeason?.ratesPercentage || 100,
-        availability:
-          res?.data?.propertySeason?.availability === undefined
-            ? true
-            : res?.data?.propertySeason?.availability,
-        propertyRoomTypeId: res?.data?.propertySeason?.propertyRoomType?.id,
-        name: res?.data?.propertySeason?.name,
-        startDate: res?.data?.propertySeason?.startDate,
-        endDate: res?.data?.propertySeason?.endDate,
-        isPeak: res?.data?.propertySeason?.isPeak
-          ? res?.data?.propertySeason?.isPeak
-          : false,
-      })
-      setDataRoomPerDate(res?.data)
-      setRatesPercentage(
-        Math.floor(
-          (res?.data?.seasonalPrice?.price /
-            res?.data?.seasonalPrice?.basePrice) *
-            100,
-        ),
-      )
-    },
-    onError: (err: any) => {
-      toast((t) => (
-        <span className="flex gap-2 items-center text-center font-semibold justify-center text-xs text-red-600">
-          {err?.response?.data?.message || 'Connection error!'}
-        </span>
-      ))
-    },
-  })
-
-  const {
-    mutate: mutateDeletePropertySeason,
-    isPending: isPendingDeletePropertySeason,
-  } = useMutation({
-    mutationFn: async () => {
-      const res = await instance.delete(
-        `/season/property/${params?.slug}?seasonId=${dataBulkSeason?.seasonId}`,
-      )
-      return res?.data
-    },
-    onSuccess: (res: any) => {
-      setDateRange({
-        startDate: null,
-        endDate: null,
-      })
-      setDataBulkSeason({
-        pricePercentage: 100,
-        availability: true,
-        name: '',
-        seasonId: '',
-        startDate: '',
-        endDate: '',
-        isPeak: false,
-      })
-      toast((t) => (
-        <span className="flex gap-2 items-center font-semibold justify-center text-xs">
-          {res?.message}
-        </span>
-      ))
-      setTimeout(() => {
-        window.location.reload()
-      }, 1000)
-    },
-    onError: (err: any) => {
-      toast((t) => (
-        <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
-          {err?.response?.data?.message || 'Connection error!'}
-        </span>
-      ))
-    },
-  })
-
-  const { mutate: mutateDeleteSeason, isPending: isPendingDeleteSeason } =
-    useMutation({
-      mutationFn: async () => {
-        const res = await instance.delete(
-          `/season/${dataPropertyRoomTypeSeason?.propertyRoomTypeId}?seasonalPriceId=${dataPropertyRoomTypeSeason?.seasonalPriceId}`,
-        )
-        return res?.data
-      },
-      onSuccess: (res: any) => {
-        setDateRange({
-          startDate: null,
-          endDate: null,
-        })
-        setDataPropertyRoomTypeSeason({
-          basePrice: 0,
-          isBulk: false,
-          roomPrices: 0,
-          roomsToSell: 0,
-          totalRooms: 0,
-          pricePercentage: '',
-          availability: true,
-          propertyRoomTypeId: 0,
-          name: '',
-          seasonId: '',
-          seasonalPriceId: '',
-          startDate: '',
-          endDate: '',
-          isPeak: false,
-        })
-        setActiveRoomSetter({
-          startDate: '',
-          endDate: '',
-          name: '',
-        })
-        toast((t) => (
-          <span className="flex gap-2 items-center font-semibold justify-center text-xs">
-            {res?.message}
-          </span>
-        ))
-        setTimeout(() => {
-          window.location.reload()
-        }, 1000)
-      },
-      onError: (err: any) => {
-        toast((t) => (
-          <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
-            {err?.response?.data?.message || 'Connection error!'}
-          </span>
-        ))
-      },
-    })
-
-  const { mutate: mutateCreateSeason, isPending: isPendingCreateSeason } =
-    useMutation({
-      mutationFn: async () => {
-        const res = await instance.post('/season', {
-          roomPrices: dataPropertyRoomTypeSeason?.roomPrices,
-          roomsToSell: dataPropertyRoomTypeSeason?.roomsToSell,
-          availability: dataPropertyRoomTypeSeason?.availability,
-          propertyRoomTypeId: dataPropertyRoomTypeSeason?.propertyRoomTypeId,
-          name: dataPropertyRoomTypeSeason?.name,
-          startDate: activeRoomSetter?.startDate || dateRange?.startDate,
-          endDate: activeRoomSetter?.endDate || dateRange?.endDate,
-          isPeak: dataPropertyRoomTypeSeason?.isPeak,
-        })
-
-        return res?.data
-      },
-      onSuccess: (res: any) => {
-        setDateRange({
-          startDate: null,
-          endDate: null,
-        })
-        setDataPropertyRoomTypeSeason({
-          basePrice: 0,
-          isBulk: false,
-          roomPrices: 0,
-          roomsToSell: 0,
-          totalRooms: 0,
-          pricePercentage: '',
-          availability: true,
-          propertyRoomTypeId: 0,
-          name: '',
-          seasonId: '',
-          seasonalPriceId: '',
-          startDate: '',
-          endDate: '',
-          isPeak: false,
-        })
-        setActiveRoomSetter({
-          startDate: '',
-          endDate: '',
-          name: '',
-        })
-        toast((t) => (
-          <span className="flex gap-2 items-center font-semibold justify-center text-xs">
-            {res?.message}
-          </span>
-        ))
-        setTimeout(() => {
-          window.location.reload()
-        }, 1000)
-      },
-      onError: (err: any) => {
-        toast((t) => (
-          <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
-            {err?.response?.data?.message || 'Connection error!'}
-          </span>
-        ))
-      },
-    })
-
-  const {
-    mutate: mutateCreatePropertySeason,
-    isPending: isPendingCreatePropertySeason,
-  } = useMutation({
-    mutationFn: async () => {
-      const res = await instance.post(`/season/property/${params?.slug}`, {
-        pricePercentage: dataBulkSeason?.pricePercentage,
-        availability: dataBulkSeason?.availability,
-        name: dataBulkSeason?.name,
-        startDate: dataBulkSeason?.startDate,
-        endDate: dataBulkSeason?.endDate,
-        isPeak: dataBulkSeason?.isPeak,
-      })
-
-      return res?.data
-    },
-    onSuccess: (res: any) => {
-      setDateRange({
-        startDate: null,
-        endDate: null,
-      })
-      setDataBulkSeason({
-        pricePercentage: 100,
-        availability: true,
-        name: '',
-        seasonId: '',
-        startDate: '',
-        endDate: '',
-        isPeak: false,
-      })
-      toast((t) => (
-        <span className="flex gap-2 items-center font-semibold justify-center text-xs">
-          {res?.message}
-        </span>
-      ))
-      setTimeout(() => {
-        window.location.reload()
-      }, 1000)
-    },
-    onError: (err: any) => {
-      toast((t) => (
-        <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
-          {err?.response?.data?.message || 'Connection error!'}
-        </span>
-      ))
-    },
-  })
-
-  const {
-    mutate: mutateUpdatePropertySeason,
-    isPending: isPendingUpdatePropertySeason,
-  } = useMutation({
-    mutationFn: async () => {
-      const res = await instance.put(`/season/property/${params?.slug}`, {
-        pricePercentage: dataBulkSeason?.pricePercentage,
-        seasonId: dataBulkSeason?.seasonId,
-        availability: dataBulkSeason?.availability,
-        name: dataBulkSeason?.name,
-        startDate: dataBulkSeason?.startDate,
-        endDate: dataBulkSeason?.endDate,
-        isPeak: dataBulkSeason?.isPeak,
-      })
-
-      return res?.data
-    },
-    onSuccess: (res: any) => {
-      setDateRange({
-        startDate: null,
-        endDate: null,
-      })
-      setDataBulkSeason({
-        pricePercentage: 100,
-        availability: true,
-        name: '',
-        seasonId: '',
-        startDate: '',
-        endDate: '',
-        isPeak: false,
-      })
-      toast((t) => (
-        <span className="flex gap-2 items-center font-semibold justify-center text-xs">
-          {res?.message}
-        </span>
-      ))
-      setTimeout(() => {
-        window.location.reload()
-      }, 1000)
-    },
-    onError: (err: any) => {
-      toast((t) => (
-        <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
-          {err?.response?.data?.message || 'Connection error!'}
-        </span>
-      ))
-    },
-  })
-
-  const { mutate: mutateCreateOneSeason, isPending: isPendingCreateOneSeason } =
-    useMutation({
-      mutationFn: async () => {
-        const res = await instance.post(`/season/single`, {
-          seasonId: dataPropertyRoomTypeSeason?.seasonId,
-          roomPrices: dataPropertyRoomTypeSeason?.roomPrices,
-          roomsToSell: dataPropertyRoomTypeSeason?.roomsToSell,
-          availability: dataPropertyRoomTypeSeason?.availability,
-          pricePercentage: dataPropertyRoomTypeSeason?.pricePercentage,
-          propertyRoomTypeId: selectRoom,
-          name: dataPropertyRoomTypeSeason?.name,
-          startDate: activeRoomSetter?.startDate || dateRange?.startDate,
-          endDate: activeRoomSetter?.endDate || dateRange?.endDate,
-          isPeak: dataPropertyRoomTypeSeason?.isPeak,
-        })
-        return res?.data
-      },
-      onSuccess: (res: any) => {
-        setDateRange({
-          startDate: null,
-          endDate: null,
-        })
-        setDataPropertyRoomTypeSeason({
-          basePrice: 0,
-          isBulk: false,
-          roomPrices: 0,
-          roomsToSell: 0,
-          totalRooms: 0,
-          pricePercentage: '',
-          availability: true,
-          propertyRoomTypeId: 0,
-          name: '',
-          seasonId: '',
-          seasonalPriceId: '',
-          startDate: '',
-          endDate: '',
-          isPeak: false,
-        })
-        toast((t) => (
-          <span className="flex gap-2 items-center font-semibold justify-center text-xs">
-            {res?.message}
-          </span>
-        ))
-        setTimeout(() => {
-          window.location.reload()
-        }, 1000)
-      },
-      onError: (err: any) => {
-        toast((t) => (
-          <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
-            {err?.response?.data?.message || 'Connection error!'}
-          </span>
-        ))
-      },
-    })
-
-  const {
-    mutate: mutateUpdateSingleSeason,
-    isPending: isPendingUpdateSingleSeason,
-  } = useMutation({
-    mutationFn: async () => {
-      const res = await instance.put(
-        `/season/single/${dataPropertyRoomTypeSeason?.seasonId}`,
-        {
-          seasonId: dataPropertyRoomTypeSeason?.seasonId,
-          roomPrices: dataPropertyRoomTypeSeason?.roomPrices,
-          roomsToSell: dataPropertyRoomTypeSeason?.roomsToSell,
-          availability: dataPropertyRoomTypeSeason?.availability,
-          pricePercentage: dataPropertyRoomTypeSeason?.pricePercentage,
-          propertyRoomTypeId: selectRoom,
-          name: dataPropertyRoomTypeSeason?.name,
-          startDate: dataPropertyRoomTypeSeason?.startDate,
-          endDate: dataPropertyRoomTypeSeason?.endDate,
-          isPeak: dataPropertyRoomTypeSeason?.isPeak,
-        },
-      )
-      return res?.data
-    },
-    onSuccess: (res: any) => {
-      setDateRange({
-        startDate: null,
-        endDate: null,
-      })
-      setDataPropertyRoomTypeSeason({
-        basePrice: 0,
-        isBulk: false,
-        roomPrices: 0,
-        roomsToSell: 0,
-        totalRooms: 0,
-        pricePercentage: '',
-        availability: true,
-        propertyRoomTypeId: 0,
-        name: '',
-        seasonId: '',
-        seasonalPriceId: '',
-        startDate: '',
-        endDate: '',
-        isPeak: false,
-      })
-      toast((t) => (
-        <span className="flex gap-2 items-center font-semibold justify-center text-xs">
-          {res?.message}
-        </span>
-      ))
-      setTimeout(() => {
-        window.location.reload()
-      }, 1000)
-    },
-    onError: (err: any) => {
-      toast((t) => (
-        <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
-          {err?.response?.data?.message || 'Connection error!'}
-        </span>
-      ))
-    },
-  })
-
-  const {
-    mutate: mutateDeleteSingleSeason,
-    isPending: isPendingDeleteSingleSeason,
-  } = useMutation({
-    mutationFn: async () => {
-      const res = await instance.delete(
-        `/season/single/${dataPropertyRoomTypeSeason?.seasonId}?propertyRoomTypeId=${selectedPropertyRoomType?.id}`,
-      )
-      return res?.data
-    },
-    onSuccess: (res: any) => {
-      setDateRange({
-        startDate: null,
-        endDate: null,
-      })
-      setDataPropertyRoomTypeSeason({
-        basePrice: 0,
-        isBulk: false,
-        roomPrices: 0,
-        roomsToSell: 0,
-        totalRooms: 0,
-        pricePercentage: '',
-        availability: true,
-        propertyRoomTypeId: 0,
-        name: '',
-        seasonId: '',
-        seasonalPriceId: '',
-        startDate: '',
-        endDate: '',
-        isPeak: false,
-      })
-      toast((t) => (
-        <span className="flex gap-2 items-center font-semibold justify-center text-xs">
-          {res?.message}
-        </span>
-      ))
-      setTimeout(() => {
-        window.location.reload()
-      }, 1000)
-    },
-    onError: (err: any) => {
-      toast((t) => (
-        <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
-          {err?.response?.data?.message || 'Connection error!'}
-        </span>
-      ))
-    },
-  })
-
-  const { mutate: mutateUpdateSeason, isPending: isPendingUpdateSeason } =
-    useMutation({
-      mutationFn: async () => {
-        const res = await instance.put(
-          `/season/${dataPropertyRoomTypeSeason?.propertyRoomTypeId}`,
-          {
-            seasonId: dataPropertyRoomTypeSeason?.seasonId,
-            seasonalPriceId: dataPropertyRoomTypeSeason?.seasonalPriceId,
-            roomPrices: dataPropertyRoomTypeSeason?.roomPrices,
-            roomsToSell: dataPropertyRoomTypeSeason?.roomsToSell,
-            availability: dataPropertyRoomTypeSeason?.availability,
-            name: dataPropertyRoomTypeSeason?.name,
-            startDate: activeRoomSetter?.startDate || dateRange?.startDate,
-            endDate: activeRoomSetter?.endDate || dateRange?.endDate,
-            isPeak: dataPropertyRoomTypeSeason?.isPeak,
-          },
-        )
-
-        return res?.data
-      },
-      onSuccess: (res: any) => {
-        setDateRange({
-          startDate: null,
-          endDate: null,
-        })
-        setDataPropertyRoomTypeSeason({
-          basePrice: 0,
-          isBulk: false,
-          roomPrices: 0,
-          roomsToSell: 0,
-          totalRooms: 0,
-          pricePercentage: '',
-          availability: true,
-          propertyRoomTypeId: 0,
-          name: '',
-          seasonId: '',
-          seasonalPriceId: '',
-          startDate: '',
-          endDate: '',
-          isPeak: false,
-        })
-        setActiveRoomSetter({
-          startDate: '',
-          endDate: '',
-          name: '',
-        })
-        toast((t) => (
-          <span className="flex gap-2 items-center font-semibold justify-center text-xs">
-            {res?.message}
-          </span>
-        ))
-        setTimeout(() => {
-          window.location.reload()
-        }, 1000)
-      },
-      onError: (err: any) => {
-        toast((t) => (
-          <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
-            {err?.response?.data?.message || 'Connection error!'}
-          </span>
-        ))
-      },
-    })
-
-  const [month, setMonth] = useState(new Date().getMonth())
-  const [year, setYear] = useState(new Date().getFullYear())
-  const [viewMode, setViewMode] = useState('monthly-view')
-  const [selectRoom, setSelectRoom] = useState('all-rooms')
-
-  const {
-    mutate: mutateDataSeasonsByPropertyRoomType,
-    isPending: isPendingDataSeasonsByPropertyRoomType,
-  } = useMutation({
-    mutationFn: async () => {
-      const res = await instance.get(`season/${selectRoom}`)
-      setDataSeasonsByProperty(res?.data?.data)
-      return res
-    },
-  })
-
-  const {
-    mutate: mutateDataSeasonsByProperty,
-    isPending: isPendingDataSeasonsByProperty,
-  } = useMutation({
-    mutationFn: async () => {
-      const res = await instance.get(`season/property/${params?.slug}`)
-      setDataSeasonsByProperty(res?.data?.data)
-      return res
-    },
-  })
-  const handleRoomName = (value: string) => {
-    const findIndex =
-      dataSeasonsByProperty?.property?.propertyRoomType?.findIndex(
-        (item: any) => Number(item?.id) === Number(value),
-      )
-    setRoomName(
-      dataSeasonsByProperty?.property?.propertyRoomType[Number(findIndex)]
-        ?.name,
-    )
-    if (value === 'all-rooms') {
-      mutateDataSeasonsByProperty()
-    } else {
-      mutateDataSeasonsByPropertyRoomType()
-    }
-  }
 
   if (errorStatus === 403) {
     return <UnauthorizedPage />
@@ -1774,7 +1066,7 @@ const CalendarPage = ({
                   name="oneDaySeasonRoomAvailability"
                   checked={dataPropertyRoomTypeSeason.availability}
                   onCheckedChange={(e) => {
-                    if(e) {
+                    if (e) {
                       setDataPropertyRoomTypeSeason((state: any) => {
                         state.availability = true
                         return state
@@ -1786,7 +1078,6 @@ const CalendarPage = ({
                         return state
                       })
                       setChangeDate((state) => !state)
-
                     }
                   }}
                   className="ml-5"
@@ -1832,7 +1123,7 @@ const CalendarPage = ({
                 name="oneDaySeasonIsPeak"
                 checked={dataPropertyRoomTypeSeason.isPeak}
                 onCheckedChange={(e) => {
-                  if(e) {
+                  if (e) {
                     setDataPropertyRoomTypeSeason((state: any) => {
                       state.isPeak = true
                       return state
@@ -1892,7 +1183,10 @@ const CalendarPage = ({
                 type="button"
                 disabled={!dataPropertyRoomTypeSeason?.name}
                 onClick={() => {
-                  if (dataPropertyRoomTypeSeason?.endDate !== dataPropertyRoomTypeSeason?.startDate) {
+                  if (
+                    dataPropertyRoomTypeSeason?.endDate !==
+                    dataPropertyRoomTypeSeason?.startDate
+                  ) {
                     if (dataPropertyRoomTypeSeason?.seasonId) {
                       mutateUpdateSingleSeason()
                     } else {
@@ -2069,7 +1363,7 @@ const CalendarPage = ({
                   name="bulkSeasonRoomAvailability"
                   checked={dataBulkSeason?.availability}
                   onCheckedChange={(e: any) => {
-                    if(e) {
+                    if (e) {
                       setDataBulkSeason((state: any) => {
                         state.availability = true
                         return state
@@ -2081,7 +1375,6 @@ const CalendarPage = ({
                         return state
                       })
                       setChangeDate((state) => !state)
-
                     }
                   }}
                   className="ml-5"
@@ -2126,20 +1419,18 @@ const CalendarPage = ({
                 name="bulkSeasonIsPeak"
                 checked={dataBulkSeason.isPeak}
                 onCheckedChange={(e) => {
-                  if(e) {
+                  if (e) {
                     setDataBulkSeason((state: any) => {
                       state.isPeak = true
                       return state
                     })
                     setChangeDate((state) => !state)
-                    
                   } else {
                     setDataBulkSeason((state: any) => {
                       state.isPeak = false
                       return state
                     })
                     setChangeDate((state) => !state)
-
                   }
                 }}
                 className="ml-5"

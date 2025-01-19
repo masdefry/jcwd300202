@@ -1,11 +1,15 @@
 'use client'
 
-import { IActiveRoomSetter, IDataPropertyRoomTypeSeason, IDateRange } from '@/features/tenant/property/manage/calendar/types'
+import {
+  IActiveRoomSetter,
+  IDataPropertyRoomTypeSeason,
+  IDateRange,
+} from '@/features/tenant/property/manage/calendar/types'
 import instance from '@/utils/axiosInstance'
 import { useMutation } from '@tanstack/react-query'
 import React from 'react'
 
-const useMutateCreateSingleSeasonHook = ({
+const useMutateCreateSingleSeasonApi = ({
   dataPropertyRoomTypeSeason,
   onSuccess,
   onError,
@@ -13,12 +17,12 @@ const useMutateCreateSingleSeasonHook = ({
   dateRange,
   activeRoomSetter,
 }: {
-    dataPropertyRoomTypeSeason: IDataPropertyRoomTypeSeason,
-    selectRoom: string,
-    dateRange: IDateRange,
-    activeRoomSetter: IActiveRoomSetter,
-    onSuccess: (res: any) => void
-    onError: (err: any) => void
+  dataPropertyRoomTypeSeason: IDataPropertyRoomTypeSeason
+  selectRoom: string
+  dateRange: IDateRange
+  activeRoomSetter: IActiveRoomSetter
+  onSuccess: (res: any) => void
+  onError: (err: any) => void
 }) => {
   const { mutate: mutateCreateOneSeason, isPending: isPendingCreateOneSeason } =
     useMutation({
@@ -43,8 +47,8 @@ const useMutateCreateSingleSeasonHook = ({
 
   return {
     mutateCreateOneSeason,
-    isPendingCreateOneSeason
+    isPendingCreateOneSeason,
   }
 }
 
-export default useMutateCreateSingleSeasonHook
+export default useMutateCreateSingleSeasonApi

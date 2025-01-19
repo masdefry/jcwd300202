@@ -4,7 +4,7 @@ import instance from '@/utils/axiosInstance'
 import { AxiosResponse } from 'axios'
 import React from 'react'
 
-const useGetDataPropertySeasonsHook = ({
+const useGetDataPropertySeasonsApi = ({
   handleSuccess,
   handleError,
   handleFinally,
@@ -27,8 +27,8 @@ const useGetDataPropertySeasonsHook = ({
   }
 
   return {
-    fetchDataSeasonsByProperty
+    fetchDataSeasonsByProperty,
   }
 }
 
-export default useGetDataPropertySeasonsHook
+export default useGetDataPropertySeasonsApi

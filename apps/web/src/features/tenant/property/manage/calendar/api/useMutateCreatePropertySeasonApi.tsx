@@ -5,7 +5,7 @@ import instance from '@/utils/axiosInstance'
 import { useMutation } from '@tanstack/react-query'
 import React from 'react'
 
-const useMutateCreatePropertySeasonHook = ({
+const useMutateCreatePropertySeasonApi = ({
   dataBulkSeason,
   params,
   onError,
@@ -37,8 +37,8 @@ const useMutateCreatePropertySeasonHook = ({
   })
   return {
     mutateCreatePropertySeason,
-    isPendingCreatePropertySeason
+    isPendingCreatePropertySeason,
   }
 }
 
-export default useMutateCreatePropertySeasonHook
+export default useMutateCreatePropertySeasonApi

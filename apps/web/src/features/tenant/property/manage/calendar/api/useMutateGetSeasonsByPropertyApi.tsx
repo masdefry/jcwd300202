@@ -4,10 +4,10 @@ import instance from '@/utils/axiosInstance'
 import { useMutation } from '@tanstack/react-query'
 import React from 'react'
 
-const useMutateGetSeasonsByProperty = ({
+const useMutateGetSeasonsByPropertyApi = ({
   params,
   onSuccess,
-  onError
+  onError,
 }: {
   params: { slug: string }
   onSuccess: (res: any) => void
@@ -22,7 +22,7 @@ const useMutateGetSeasonsByProperty = ({
       return res
     },
     onSuccess,
-    onError
+    onError,
   })
 
   return {
@@ -31,4 +31,4 @@ const useMutateGetSeasonsByProperty = ({
   }
 }
 
-export default useMutateGetSeasonsByProperty
+export default useMutateGetSeasonsByPropertyApi

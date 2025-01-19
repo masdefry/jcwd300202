@@ -4,7 +4,7 @@ import Link from 'next/link'
 import React from 'react'
 import { FiSearch } from 'react-icons/fi'
 
-const TablePropertyList = ({ dataProperties, handleMutateRefreshPage, isPending }: any) => {
+const TablePropertyList = ({ dataProperties, handlePagination, isPending }: { dataProperties: any, handlePagination: ({limit, offset} : { limit: number, offset: number }) => void, isPending: boolean }) => {
     if(isPending) {
         return (
           <section>
@@ -37,9 +37,9 @@ const TablePropertyList = ({ dataProperties, handleMutateRefreshPage, isPending 
                     })}
                   </tbody>
                 </table>
-                <div className="flex items-center justify-center w-full">
+                <div className="flex items-center justify-center min-w-[1080px]">
                   <div className="flex items-center gap-1.5">
-                    {Array.from({ length: 3 }).map(
+                    {Array.from({ length: 1 }).map(
                       (_, index) => {
                         return (
                           <button
@@ -58,7 +58,7 @@ const TablePropertyList = ({ dataProperties, handleMutateRefreshPage, isPending 
 
   return (
     <section>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 justify-center">
           <table className="table table-xs min-w-[1080px]">
             <thead className="text-gray-800">
               <tr>
@@ -100,7 +100,7 @@ const TablePropertyList = ({ dataProperties, handleMutateRefreshPage, isPending 
               
             </tbody>
           </table>
-          <div className="flex items-center justify-center w-full">
+          <div className="flex items-center justify-center min-w-[1080px] ">
             <div className="flex items-center gap-1.5">
               {Array.from({ length: dataProperties?.totalPage }).map(
                 (_, index) => {
@@ -108,7 +108,7 @@ const TablePropertyList = ({ dataProperties, handleMutateRefreshPage, isPending 
                     <button
                       disabled={dataProperties?.pageInUse === index + 1}
                       onClick={() =>
-                        handleMutateRefreshPage({ limit: 10, offset: 10 * index })
+                        handlePagination({ limit: 10, offset: 10 * index })
                       }
                       className={`rounded-full flex items-center justify-center h-8 w-8 btn btn-sm scale:90 text-xs disabled:bg-gray-400 disabled:cursor-default ${dataProperties?.pageInUse === index + 1 && 'btn-active'}`}
                     >

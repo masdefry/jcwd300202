@@ -30,10 +30,16 @@ export const getRoomHasFacilitiesService = async ({
       id: Number(propertyRoomTypeId),
       deletedAt: null,
     },
+    include: {
+      property: true
+    }
   })
 
   if (!isPropertyRoomTypeExist?.id || isPropertyRoomTypeExist?.deletedAt)
     throw { msg: 'Room not found!', status: 404 }
+  if (isPropertyRoomTypeExist?.property?.tenantId !== id) {
+    throw { msg: 'Actions not permitted!', status: 403 }
+  }
 
   const roomHasFacilities = await prisma.roomHasFacilities.findMany({
     where: {
@@ -141,6 +147,8 @@ export const getGeneralRoomHasFacilitiesByPropertyService = async ({
 
   if (!isPropertyExist?.id || isPropertyExist?.deletedAt)
     throw { msg: 'Property not found!', status: 404 }
+  if (isPropertyExist?.tenantId !== id)
+    throw { msg: 'Actions not permitted!', status: 403 }
 
   const getRoomHasFacilitiesId = await prisma.roomHasFacilities.findMany({
     where: {
@@ -247,7 +255,7 @@ export const updateRoomHasFacilitiesService = async ({
   if (!isPropertyRoomTypeExist?.id || isPropertyRoomTypeExist?.deletedAt)
     throw { msg: 'Room not found!', status: 404 }
   if (isPropertyRoomTypeExist?.property?.tenantId !== id)
-    throw { msg: 'Actions not permitted!', status: 401 }
+    throw { msg: 'Actions not permitted!', status: 403 }
 
   let dataCreateManyRoomHasFacilities
   await prisma.$transaction(
@@ -318,7 +326,7 @@ export const updateRoomHasFacilitiesByPropertyService = async ({
   if (!isPropertyExist?.id || isPropertyExist?.deletedAt)
     throw { msg: 'Property not found!', status: 404 }
   if (isPropertyExist?.tenantId !== id)
-    throw { msg: 'Actions not permitted!', status: 401 }
+    throw { msg: 'Actions not permitted!', status: 403 }
 
   let dataCreateManyRoomHasFacilities
   await prisma.$transaction(

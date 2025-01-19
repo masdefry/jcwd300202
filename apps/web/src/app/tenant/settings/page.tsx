@@ -8,8 +8,11 @@ import toast from 'react-hot-toast'
 import { IoIosSend } from 'react-icons/io'
 import { PiCity } from 'react-icons/pi'
 import { IoClose } from 'react-icons/io5'
+import Cookies from 'js-cookie'
+import authStore from '@/zustand/authStore'
 
 const UserSettingsPage = () => {
+  const setLogout = authStore(state => state.setLogout())
   const [isDeleted, setIsDeleted] = useState(false)
   const [change, setChange] = useState(true)
   const [passwordForDelete, setPasswordForDelete] = useState({
@@ -24,11 +27,17 @@ const UserSettingsPage = () => {
       },
       onSuccess: (res) => {
         setIsDeleted(true)
+        setLogout()
+        Cookies.remove('authToken')
+        Cookies.remove('authRole')
         toast((t) => (
           <span className="flex gap-2 items-center font-semibold justify-center text-xs">
             {res?.message}
           </span>
         ))
+        setTimeout(() => {
+          window.location.href = '/'
+        }, 1500)
       },
       onError: (err: any) => {
         toast((t) => (

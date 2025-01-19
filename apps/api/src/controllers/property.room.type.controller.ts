@@ -5,6 +5,8 @@ import {
   updatePropertyRoomTypeGeneralService,
   createPropertyRoomTypeService,
   deletePropertyRoomTypeService,
+  getPropertyRoomTypeByTenantService,
+  getSinglePropertyRoomTypeByTenantService,
 } from '@/services/property.room.type.service'
 
 export const getPropertyRoomType = async (
@@ -13,15 +15,37 @@ export const getPropertyRoomType = async (
   next: NextFunction,
 ) => {
   try {
-    const { id } = req.params
+    const { roomTypeId } = req.params
 
-    const getPropertyRoomTypeProcess = await getPropertyRoomTypeService({ id })
+    const getPropertyRoomTypeProcess = await getPropertyRoomTypeService({ roomTypeId })
 
     res.status(200).json({
       error: false,
       message: 'Get property room type success',
       data: {
         propertyRoomType: getPropertyRoomTypeProcess?.propertyRoomType,
+      },
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+export const getSinglePropertyRoomTypeByTenant = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { roomTypeId } = req.params
+    const { id, role } = req.body
+
+    const getSinglePropertyRoomTypeByTenantProcess = await getSinglePropertyRoomTypeByTenantService({ id, role, roomTypeId })
+
+    res.status(200).json({
+      error: false,
+      message: 'Get property room type success',
+      data: {
+        propertyRoomType: getSinglePropertyRoomTypeByTenantProcess?.propertyRoomType,
       },
     })
   } catch (error) {
@@ -68,6 +92,49 @@ export const getPropertyRoomTypeByProperty = async (
           getPropertyRoomTypeByPropertyProcess?.isIncludeBreakfast,
         totalPage: getPropertyRoomTypeByPropertyProcess?.totalPage,
         pageInUse: getPropertyRoomTypeByPropertyProcess?.pageInUse,
+      },
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getPropertyRoomTypeByTenant = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id, role } = req.body
+    const { slug } = req.params
+    const {
+      checkInDate,
+      checkOutDate,
+      adult,
+      children,
+    } = req.query
+
+    const getPropertyRoomTypeByTenantProcess =
+      await getPropertyRoomTypeByTenantService({
+        id,
+        role,
+        checkInDate: checkInDate as string,
+        checkOutDate: checkOutDate as string,
+        adult: adult as string,
+        children: children as string,
+        slug,
+      })
+
+    res.status(200).json({
+      message: 'Successfully fetch room type by property',
+      error: false,
+      data: {
+        propertyRoomTypeWithSeasonalPrice:
+          getPropertyRoomTypeByTenantProcess?.propertyRoomTypeWithSeasonalPrice,
+        propertyRoomType:
+          getPropertyRoomTypeByTenantProcess?.propertyRoomType,
+        isIncludeBreakfast:
+          getPropertyRoomTypeByTenantProcess?.isIncludeBreakfast,
       },
     })
   } catch (error) {

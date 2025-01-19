@@ -14,6 +14,9 @@ import { CiSquareMinus, CiSquarePlus } from 'react-icons/ci'
 import { manageRoomAmenitiesValidationSchema } from '@/features/tenant/property/manage/room-amenities/schemas/manageRoomAmenitiesValidationSchema'
 import FieldArrayRoomAmenities from '@/features/tenant/property/manage/room-amenities/components/FieldArrayRoomAmenities'
 import ButtonUpdate from '@/features/tenant/property/manage/room-amenities/components/ButtonUpdate'
+import UnauthorizedPage from '@/app/403/page'
+import NotFoundMain from '@/app/not-found'
+import Custom500 from '@/app/500/page'
 
 const PropertyManageRoomAmenitiesPage = ({
   params,
@@ -30,15 +33,25 @@ const PropertyManageRoomAmenitiesPage = ({
     useState(false)
   const [selectRoom, setSelectRoom] = useState<null | string>('all-rooms')
   const [ isPendingPropertyHasFacilities, setIsPendingPropertyHasFacilities ] = useState(true)
+  const [ errorStatus, setErrorStatus ] = useState<null | number>()
   const fetchPropertyHasFacilities = async () => {
-    const res = await instance.get(
-      `/room-has-facilities/property/${params?.slug}`,
-    )
-    if (res.status === 200) {
+    try {
+      const res = await instance.get(
+        `/room-has-facilities/property/${params?.slug}`,
+      )
       setDataGeneralRoomFacilities(res?.data?.data)
       setIsPendingPropertyHasFacilities(false)
-    } else {
-      toast.error('Connection error!')
+
+    } catch (err: any) {
+      if(err.status === 401 || err.status === 406) {
+        toast((t) => (
+          <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
+            {err?.response?.data?.message || 'Connection error!'}
+          </span>
+        ))
+      } else {
+        setErrorStatus(err.status)
+      }
     }
   }
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -148,6 +161,14 @@ const PropertyManageRoomAmenitiesPage = ({
       ))
     },
   })
+
+  if (errorStatus === 403) {
+    return <UnauthorizedPage />
+  } else if (errorStatus === 404) {
+    return <NotFoundMain />
+  } else if (errorStatus === 500) {
+    return <Custom500 />
+  }
   return (
     <main className="flex flex-col gap-7 py-5">
       {

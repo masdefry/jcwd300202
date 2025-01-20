@@ -22,8 +22,8 @@ const PropertyTypeInputSection = ({
   setFieldValue: any
   propertyTypeId: number | string | null | undefined
   propertyTypes: { value: string | number; label: string }[]
-  isPendingPropertyGeneralInfo: boolean | undefined
-  isPendingUpdateGeneralInfo: boolean | undefined
+  isPendingPropertyGeneralInfo?: boolean | undefined
+  isPendingUpdateGeneralInfo?: boolean | undefined
   values: (IPropertyGeneralInfo & { propertyTypeName: string }) | undefined
 }) => {
   return (

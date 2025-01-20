@@ -7,8 +7,6 @@ import React, { useState } from 'react'
 
 interface IUseMutateCreatePropertyFacilityApi { 
     dataCreatePropertyFacility: any, 
-    setDataCreatePropertyFacility: any, 
-    setShowCreatePropertyFacilityForm: any,
     onSuccess: (res: any) => void,
     onError: (err: any) => void,
 }

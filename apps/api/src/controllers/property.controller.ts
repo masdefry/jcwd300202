@@ -152,25 +152,28 @@ export const getPropertyDetailByTenant = async (
     const { slug } = req.params
     const { checkInDate, checkOutDate, adult, children } = req.query
     const { id, role } = req.body
-    const getPropertyDetailByTenantProcess = await getPropertyDetailByTenantService({
-      checkInDate: checkInDate as string,
-      checkOutDate: checkOutDate as string,
-      adult: Number(adult),
-      children: Number(children),
-      slug,
-      id,
-      role
-    })
-    
+    const getPropertyDetailByTenantProcess =
+      await getPropertyDetailByTenantService({
+        checkInDate: checkInDate as string,
+        checkOutDate: checkOutDate as string,
+        adult: Number(adult),
+        children: Number(children),
+        slug,
+        id,
+        role,
+      })
+
     res.status(200).json({
       error: false,
       message: 'Get property detail success',
       data: {
         property: getPropertyDetailByTenantProcess?.property,
         propertyDetail: getPropertyDetailByTenantProcess?.propertyDetail,
-        propertyFacilities: getPropertyDetailByTenantProcess?.propertyFacilities,
+        propertyFacilities:
+          getPropertyDetailByTenantProcess?.propertyFacilities,
         propertyImages: getPropertyDetailByTenantProcess?.propertyImages,
-        propertyImagesPreview: getPropertyDetailByTenantProcess?.propertyImagesPreview,
+        propertyImagesPreview:
+          getPropertyDetailByTenantProcess?.propertyImagesPreview,
         avgRating: getPropertyDetailByTenantProcess?.avgRating,
         propertyRoomType: getPropertyDetailByTenantProcess?.propertyRoomType,
         dateAndPrice: getPropertyDetailByTenantProcess?.dateAndPrice,
@@ -178,9 +181,11 @@ export const getPropertyDetailByTenant = async (
         reviews: getPropertyDetailByTenantProcess?.reviews,
         city: getPropertyDetailByTenantProcess?.city,
         country: getPropertyDetailByTenantProcess?.country,
-        propertyListByCity: getPropertyDetailByTenantProcess?.propertyListByCity,
+        propertyListByCity:
+          getPropertyDetailByTenantProcess?.propertyListByCity,
         tenant: getPropertyDetailByTenantProcess?.tenant,
-        isIncludeBreakfast: getPropertyDetailByTenantProcess?.isIncludeBreakfast,
+        isIncludeBreakfast:
+          getPropertyDetailByTenantProcess?.isIncludeBreakfast,
         seasonalPrice: getPropertyDetailByTenantProcess?.seasonalPrice,
         excludeDate: getPropertyDetailByTenantProcess?.excludeDate,
       },
@@ -278,735 +283,53 @@ export const getProperties = async (
       propertystararr = '',
     } = req.headers
 
-    let numberedPropertyFacilityIdArr,
-      numberedPropertyRoomFacilityIdArr,
-      numberedPropertyTypeIdArr,
-      numberedPropertyStarArr
-    let propertyFacilityFromPrisma, propertyRoomFacilityFromPrisma
-    let city, country
-
-    let typeId: null | number = null
-    let typeName = ''
-    if (type) {
-      const getTypeId = await prisma.propertyType.findFirst({
-        where: {
-          name: {
-            contains: type as string,
-            mode: 'insensitive',
-          },
-        },
-      })
-      if (getTypeId?.id) {
-        typeName = getTypeId?.name
-        typeId = getTypeId?.id as number
-      }
-    }
-
-    let gteDate = new Date()
-    gteDate.setHours(0, 0, 0, 0)
-    let ltDate = addDays(gteDate, 1)
-    ltDate.setHours(0, 0, 0, 0)
-
-    let whereConditionDate = {}
-
-    if (isNaN(gteDate.getTime()) || isNaN(ltDate.getTime())) {
-      throw { msg: 'Date range invalid!', status: 406 }
-    } else {
-      whereConditionDate = {
-        ...whereConditionDate,
-        gte: gteDate.toISOString(),
-        lt: ltDate.toISOString(),
-      }
-    }
-
-    if (countryId && !isNaN(Number(countryId))) {
-      country = await prisma.country.findUnique({
-        where: {
-          id: Number(countryId),
-        },
-      })
-      if (cityId && !isNaN(Number(cityId))) {
-        city = await prisma.city.findUnique({
-          where: {
-            id: Number(cityId),
-          },
-        })
-      }
-    }
-
-    if (!sortBy) throw { msg: 'Sort parameter not found!', status: 404 }
-    if (propertyfacilityidarr) {
-      const propertyFacilityIdStr = propertyfacilityidarr as string
-      numberedPropertyFacilityIdArr = propertyFacilityIdStr.split(',')
-      numberedPropertyFacilityIdArr = numberedPropertyFacilityIdArr.map(
-        (item) => Number(item),
-      )
-      propertyFacilityFromPrisma = await prisma.propertyFacility.findMany({
-        where: {
-          id: {
-            notIn: numberedPropertyFacilityIdArr,
-          },
-        },
-        select: {
-          id: true,
-        },
-      })
-    }
-    if (propertyroomfacilityidarr) {
-      const propertyRoomFacilityIdStr = propertyroomfacilityidarr as string
-      numberedPropertyRoomFacilityIdArr = propertyRoomFacilityIdStr.split(',')
-      numberedPropertyRoomFacilityIdArr = numberedPropertyRoomFacilityIdArr.map(
-        (item) => Number(item),
-      )
-      propertyRoomFacilityFromPrisma =
-        await prisma.propertyRoomFacility.findMany({
-          where: {
-            id: {
-              notIn: numberedPropertyRoomFacilityIdArr,
-            },
-          },
-          select: {
-            id: true,
-          },
-        })
-    }
-    if (propertytypeidarr || typeId) {
-      const propertyTypeIdStr = propertytypeidarr as string
-      numberedPropertyTypeIdArr = propertyTypeIdStr.split(',')
-      numberedPropertyTypeIdArr = numberedPropertyTypeIdArr.map((item) =>
-        Number(item),
-      )
-      if (typeId) numberedPropertyTypeIdArr.push(Number(typeId))
-    }
-    if (propertystararr) {
-      const propertyStarStr = propertystararr as string
-      numberedPropertyStarArr = propertyStarStr.split(',')
-      numberedPropertyStarArr = numberedPropertyStarArr.map((item) =>
-        Number(item),
-      )
-    }
-
-    const whereConditionPropertyRoomFacility =
-      propertyroomfacilityidarr &&
-      numberedPropertyRoomFacilityIdArr &&
-      numberedPropertyRoomFacilityIdArr.length > 0
-        ? numberedPropertyRoomFacilityIdArr.map((item) => ({
-            propertyRoomType: {
-              some: {
-                roomHasFacilities: {
-                  some: {
-                    propertyRoomFacilityId: item,
-                  },
-                },
-              },
-            },
-          }))
-        : []
-
-    const whereConditionPropertyFacility =
-      propertyfacilityidarr &&
-      numberedPropertyFacilityIdArr &&
-      numberedPropertyFacilityIdArr.length > 0
-        ? numberedPropertyFacilityIdArr.map((item) => ({
-            propertyHasFacility: {
-              some: {
-                propertyFacilityId: item,
-              },
-            },
-          }))
-        : []
-
-    const whereConditionGeneral: any = [
-      {
-        deletedAt: null,
-      },
-      name 
-      ? {
-          name: {
-            contains: name as string,
-            mode: 'insensitive'
-          }
-        }
-        : null,
-      countryId && !isNaN(Number(countryId))
-        ? {
-            countryId: Number(countryId),
-          }
-        : null,
-      cityId && !isNaN(Number(cityId))
-        ? {
-            cityId: Number(cityId),
-          }
-        : null,
-      minPrice &&
-      !isNaN(Number(minPrice)) &&
-      maxPrice &&
-      !isNaN(Number(maxPrice))
-        ? {
-            propertyRoomType: {
-              some: {
-                price: {
-                  gte: Number(minPrice),
-                  lte: Number(maxPrice),
-                },
-              },
-            },
-          }
-        : null,
-      adult && !isNaN(Number(adult))
-        ? {
-            propertyRoomType: {
-              some: {
-                capacity: {
-                  gte: Number(children) + Number(adult),
-                  lte: Number(children) + Number(adult) + 2,
-                },
-              },
-            },
-          }
-        : null,
-      (propertytypeidarr &&
-        numberedPropertyTypeIdArr &&
-        numberedPropertyTypeIdArr.length > 0) ||
-      (typeId && !isNaN(Number(typeId)))
-        ? {
-            propertyType: {
-              id: {
-                in: numberedPropertyTypeIdArr,
-              },
-            },
-          }
-        : null,
-      propertystararr &&
-      numberedPropertyStarArr &&
-      numberedPropertyStarArr.length > 0
-        ? {
-            star: {
-              in: numberedPropertyStarArr,
-            },
-          }
-        : null,
-    ]
-      .filter(Boolean)
-      .filter((item) => item?.countryId !== null)
-      .filter((item) => item?.cityId !== null)
-
-    const whereCondition =
-      [
-        ...whereConditionGeneral,
-        ...whereConditionPropertyFacility,
-        ...whereConditionPropertyRoomFacility,
-      ].length > 0
-        ? {
-            AND: [
-              ...whereConditionGeneral,
-              ...whereConditionPropertyFacility,
-              ...whereConditionPropertyRoomFacility,
-            ].filter(Boolean),
-          }
-        : {}
-    let properties, propertiesWithoutLimit, sortedProperties, sortedPropertiesId
-
-    if (
-      (countryId && checkInDate && checkOutDate) ||
-      propertytypeidarr ||
-      propertyfacilityidarr ||
-      propertyroomfacilityidarr
-    ) {
-      propertiesWithoutLimit = await prisma.property.findMany({
-        where: whereCondition,
-        include: {
-          propertyRoomType: {
-            orderBy: {
-              price: 'asc',
-            },
-          },
-        },
-        orderBy: {
-          name: order === 'desc' ? 'desc' : 'asc',
-        },
-      })
-      if (
-        minPrice &&
-        !isNaN(Number(minPrice)) &&
-        maxPrice &&
-        !isNaN(Number(maxPrice))
-      ) {
-        propertiesWithoutLimit = propertiesWithoutLimit.filter(
-          (item) => item.propertyRoomType[0].price >= Number(minPrice),
-        )
-      }
-      if (sortBy === 'name') {
-        sortedProperties = await prisma.property.findMany({
-          where: {
-            id: {
-              in: propertiesWithoutLimit.map((item) => item?.id),
-            },
-          },
-          select: {
-            id: true,
-            propertyRoomType: {
-              orderBy: {
-                price: 'asc',
-              },
-            },
-          },
-          orderBy: {
-            name: order === 'desc' ? 'desc' : 'asc',
-          },
-          take: Number(limit),
-          skip: Number(offset),
-        })
-        sortedPropertiesId = sortedProperties?.map((item) => item.id)
-      } else {
-        const getPropertiesId = await prisma.property.findMany({
-          where: {
-            id: {
-              in: propertiesWithoutLimit.map((item) => item?.id),
-            },
-          },
-          select: {
-            id: true,
-            propertyRoomType: {
-              orderBy: {
-                price: 'asc',
-              },
-            },
-          },
-        })
-        sortedProperties = await prisma.propertyRoomType.groupBy({
-          where: {
-            propertyId: {
-              in: getPropertiesId.map((item) => item?.id),
-            },
-          },
-          by: ['propertyId'],
-          orderBy: {
-            _min: {
-              price: order === 'desc' ? 'desc' : 'asc',
-            },
-          },
-          take: Number(limit),
-          skip: Number(offset),
-        })
-        sortedPropertiesId = sortedProperties?.map((item) => item.propertyId)
-      }
-      properties = await prisma.property.findMany({
-        where: {
-          id: {
-            in: sortedPropertiesId,
-          },
-        },
-        include: {
-          propertyRoomType: {
-            orderBy: {
-              price: 'asc',
-            },
-            include: {
-              seasonalPrice: {
-                where: {
-                  date: whereConditionDate,
-                },
-              },
-            },
-          },
-          propertyType: true,
-          propertyHasFacility: {
-            include: {
-              propertyFacility: true,
-            },
-          },
-          city: true,
-          country: true,
-          propertyDetail: {
-            include: {
-              propertyImage: true,
-            },
-          },
-          review: true,
-        },
-        orderBy: {
-          name: order === 'desc' ? 'desc' : 'asc',
-        },
-      })
-    } else {
-      propertiesWithoutLimit = await prisma.property.findMany({
-        include: {
-          propertyRoomType: {
-            orderBy: {
-              price: 'asc',
-            },
-          },
-        },
-        orderBy: {
-          name: order === 'desc' ? 'desc' : 'asc',
-        },
-      })
-      if (
-        minPrice &&
-        !isNaN(Number(minPrice)) &&
-        maxPrice &&
-        !isNaN(Number(maxPrice))
-      ) {
-        propertiesWithoutLimit = propertiesWithoutLimit.filter(
-          (item) => item.propertyRoomType[0].price >= Number(minPrice),
-        )
-      }
-      if (sortBy === 'name') {
-        sortedProperties = await prisma.property.findMany({
-          select: {
-            id: true,
-            propertyRoomType: {
-              orderBy: {
-                price: 'asc',
-              },
-            },
-          },
-          orderBy: {
-            name: order === 'desc' ? 'desc' : 'asc',
-          },
-          take: Number(limit),
-          skip: Number(offset),
-        })
-        sortedPropertiesId = sortedProperties?.map((item) => item.id)
-        if (
-          minPrice &&
-          !isNaN(Number(minPrice)) &&
-          maxPrice &&
-          !isNaN(Number(maxPrice))
-        ) {
-          sortedPropertiesId = sortedProperties
-            .filter(
-              (item) => item.propertyRoomType[0].price >= Number(minPrice),
-            )
-            .map((item) => item.id)
-        }
-      } else {
-        let whereConditionSortedProperties = {}
-        if (
-          minPrice &&
-          !isNaN(Number(minPrice)) &&
-          maxPrice &&
-          !isNaN(Number(maxPrice))
-        ) {
-          whereConditionSortedProperties = {
-            ...whereConditionSortedProperties,
-            price: {
-              gte: Number(minPrice),
-              lte: Number(maxPrice),
-            },
-          }
-        }
-        sortedProperties = await prisma.propertyRoomType.groupBy({
-          where: whereConditionSortedProperties,
-          by: ['propertyId'],
-          orderBy: {
-            _min: {
-              price: order === 'desc' ? 'desc' : 'asc',
-            },
-          },
-          take: Number(limit),
-          skip: Number(offset),
-        })
-        sortedPropertiesId = sortedProperties?.map((item) => item.propertyId)
-      }
-
-      properties = await prisma.property.findMany({
-        where: {
-          id: {
-            in: sortedPropertiesId,
-          },
-        },
-        include: {
-          propertyRoomType: {
-            orderBy: {
-              price: 'asc',
-            },
-            include: {
-              seasonalPrice: {
-                where: {
-                  date: whereConditionDate,
-                },
-              },
-            },
-          },
-          propertyType: true,
-          propertyHasFacility: {
-            include: {
-              propertyFacility: true,
-            },
-          },
-          city: true,
-          country: true,
-          propertyDetail: {
-            include: {
-              propertyImage: true,
-            },
-          },
-          review: true,
-        },
-        orderBy: {
-          name: order === 'desc' ? 'desc' : 'asc',
-        },
-      })
-    }
-
-    if (sortBy !== 'price') {
-    } else {
-      if (order === 'desc') {
-        properties = properties.sort(
-          (a, b) => b.propertyRoomType[0].price - a.propertyRoomType[0].price,
-        )
-      } else {
-        properties = properties.sort(
-          (a, b) => a.propertyRoomType[0].price - b.propertyRoomType[0].price,
-        )
-      }
-    }
-
-    properties = properties.map((item) => {
-      let availability = true
-      let checkAvailability = item?.propertyRoomType?.filter(
-        (item) =>
-          item?.seasonalPrice[0]?.roomAvailability === false ||
-          item?.seasonalPrice[0]?.roomToRent <= 0,
-      )
-
-      if (checkAvailability?.length === item?.propertyRoomType?.length)
-        availability = false
-      const reviewsByProperty = item?.review
-        ?.filter((itm) => !isNaN(Number(itm?.rating)))
-        .map((itm) => itm?.rating)
-
-      let totalRating
-      if (reviewsByProperty.length > 0) {
-        totalRating = reviewsByProperty.reduce(
-          (acc: any, curr: any) => acc + curr,
-        )
-      }
-
-      return {
-        ...item,
-        availability,
-        avgRating: totalRating
-          ? Number(totalRating) / reviewsByProperty.length
-          : 0,
-      }
-    })
-
-    const propertyAvgRating = await prisma.review.aggregate({
-      _avg: {
-        rating: true,
-      },
-      where: {
-        propertyId: {
-          in: properties.map((item) => item.id),
-        },
-      },
-    })
-
-    const propertyType = await prisma.propertyType.findMany({
-      where: {
-        id: {
-          in: propertiesWithoutLimit.map(
-            (item) => item.propertyTypeId,
-          ) as number[],
-        },
-      },
-    })
-
-    const propertyTypeCounter = await prisma.propertyType.count({
-      where: {
-        id: {
-          in: propertiesWithoutLimit.map(
-            (item) => item.propertyTypeId,
-          ) as number[],
-        },
-      },
-    })
-
-    const propertyFacility = await prisma.propertyFacility.findMany({
-      where: {
-        propertyHasFacility: {
-          some: {
-            propertyId: {
-              in: propertiesWithoutLimit.map((item) => item.id),
-            },
-          },
-        },
-      },
-    })
-
-    const propertyFacilityCounter = await prisma.propertyFacility.count({
-      where: {
-        propertyHasFacility: {
-          some: {
-            propertyId: {
-              in: propertiesWithoutLimit.map((item) => item.id),
-            },
-          },
-        },
-      },
-    })
-
-    const propertyRoomTypeId = propertiesWithoutLimit
-      .map((item) => item.propertyRoomType.map((itm) => itm.id))
-      .flat()
-
-    const propertyRoomFacility = await prisma.propertyRoomFacility.findMany({
-      where: {
-        roomHasFacilities: {
-          some: {
-            propertyRoomTypeId: {
-              in: propertyRoomTypeId,
-            },
-          },
-        },
-      },
-    })
-
-    const propertyRoomFacilityCounter = await prisma.propertyRoomFacility.count(
-      {
-        where: {
-          roomHasFacilities: {
-            some: {
-              propertyRoomTypeId: {
-                in: propertyRoomTypeId,
-              },
-            },
-          },
-        },
-      },
-    )
-
-    const countPropertyWith2Star = await prisma.property.count({
-      where: {
-        id: {
-          in: propertiesWithoutLimit.map((item) => item?.id),
-        },
-        star: 2,
-      },
-    })
-
-    const countPropertyWith3Star = await prisma.property.count({
-      where: {
-        id: {
-          in: propertiesWithoutLimit.map((item) => item?.id),
-        },
-        star: 3,
-      },
-    })
-
-    const countPropertyWith4Star = await prisma.property.count({
-      where: {
-        id: {
-          in: propertiesWithoutLimit.map((item) => item?.id),
-        },
-        star: 4,
-      },
-    })
-
-    const countPropertyWith5Star = await prisma.property.count({
-      where: {
-        id: {
-          in: propertiesWithoutLimit.map((item) => item?.id),
-        },
-        star: 5,
-      },
+    const getPropertiesProcess = await getPropertiesService({
+      type: type as string,
+      name: name as string,
+      countryId: Number(countryId),
+      cityId: Number(cityId),
+      checkInDate: checkInDate as string,
+      checkOutDate: checkOutDate as string,
+      minPrice: Number(minPrice),
+      maxPrice: Number(maxPrice),
+      adult: Number(adult),
+      children: Number(children),
+      limit: Number(limit),
+      offset: Number(offset),
+      sortBy: sortBy as string,
+      order: order as string,
+      ratings: ratings as string,
+      propertytypeidarr: propertytypeidarr as string,
+      propertyfacilityidarr: propertyfacilityidarr as string,
+      propertyroomfacilityidarr: propertyroomfacilityidarr as string,
+      propertystararr: propertystararr as string,
     })
 
     res.status(200).json({
       error: false,
       message: 'Get properties success',
       data: {
-        whereConditionGeneral,
-        numberedPropertyFacilityIdArr,
-        countProperties: propertiesWithoutLimit.length,
-        properties,
-        propertyAvgRating,
-        totalPage: Math.ceil(propertiesWithoutLimit.length / Number(limit)),
-        pageInUse: Number(offset) / Number(limit) + 1,
-        propertyTypeCounter,
-        dataForFilteringProperty: {
-          propertyType,
-          propertyTypeCounter,
-          propertyFacility,
-          propertyFacilityCounter,
-          propertyRoomFacility,
-          propertyRoomFacilityCounter,
-          countPropertyWithStar: [
-            countPropertyWith5Star,
-            countPropertyWith4Star,
-            countPropertyWith3Star,
-            countPropertyWith2Star,
-          ],
-        },
-        country: country?.name ? country : {name: typeName},
-        city,
-        countryId,
-        cityId,
+        whereConditionGeneral: getPropertiesProcess?.whereConditionGeneral,
+        numberedPropertyFacilityIdArr:
+          getPropertiesProcess?.numberedPropertyFacilityIdArr,
+        countProperties: getPropertiesProcess?.countProperties,
+        properties: getPropertiesProcess?.properties,
+        propertyAvgRating: getPropertiesProcess?.propertyAvgRating,
+        totalPage: getPropertiesProcess?.totalPage,
+        pageInUse: getPropertiesProcess?.pageInUse,
+        propertyTypeCounter: getPropertiesProcess?.propertyTypeCounter,
+        dataForFilteringProperty:
+          getPropertiesProcess?.dataForFilteringProperty,
+        country: getPropertiesProcess?.country,
+        city: getPropertiesProcess?.city,
+        countryId: getPropertiesProcess?.countryId,
+        cityId: getPropertiesProcess?.cityId,
       },
     })
-  } catch (error: any) {
-    console.log(error)
+  } catch (error) {
     next(error)
   }
 }
-// export const getProperties = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction,
-// ) => {
-//   try {
-//     const {
-//       countryId,
-//       cityId,
-//       checkInDate,
-//       checkOutDate,
-//       minPrice,
-//       maxPrice,
-//       adult = 1,
-//       children = 0,
-//       limit = 5,
-//       offset = 0,
-//       sortBy = 'price',
-//       order = 'asc',
-//       ratings,
-//     } = req.query
-
-//     const {
-//       propertytypeidarr = '',
-//       propertyfacilityidarr = '',
-//       propertyroomfacilityidarr = '',
-//       propertystararr = '',
-//     } = req.headers
-
-//     const getPropertiesProcess = await getPropertiesService({ countryId: Number(countryId), cityId: Number(cityId), checkInDate: checkInDate as string, checkOutDate: checkOutDate as string, minPrice: Number(minPrice), maxPrice: Number(maxPrice), adult: Number(adult), children: Number(children), limit: Number(limit), offset: Number(offset), sortBy: sortBy as string, order: order as string, ratings: ratings as string, propertytypeidarr: propertytypeidarr as string, propertyfacilityidarr: propertyfacilityidarr as string, propertyroomfacilityidarr: propertyroomfacilityidarr as string, propertystararr: propertystararr as string, })
-
-//     res.status(200).json({
-//       error: false,
-//       message: 'Get properties success',
-//       data: {
-//         whereConditionGeneral: getPropertiesProcess?.whereConditionGeneral,
-//         numberedPropertyFacilityIdArr: getPropertiesProcess?.numberedPropertyFacilityIdArr,
-//         countProperties: getPropertiesProcess?.countProperties,
-//         properties: getPropertiesProcess?.properties,
-//         propertyAvgRating: getPropertiesProcess?.propertyAvgRating,
-//         totalPage: getPropertiesProcess?.totalPage,
-//         pageInUse: getPropertiesProcess?.pageInUse,
-//         propertyTypeCounter: getPropertiesProcess?.propertyTypeCounter,
-//         dataForFilteringProperty: getPropertiesProcess?.dataForFilteringProperty,
-//         country: getPropertiesProcess?.country,
-//         city: getPropertiesProcess?.city,
-//         countryId: getPropertiesProcess?.countryId,
-//         cityId: getPropertiesProcess?.cityId,
-//       },
-//     })
-//   } catch (error) {
-//     next(error)
-//   }
-// }
-
 export const getPropertyDescriptions = async (
   req: Request,
   res: Response,
@@ -1261,4 +584,3 @@ export const deleteProperty = async (
     next(err)
   }
 }
-

@@ -6,13 +6,19 @@ import { FaSortAmountDownAlt } from 'react-icons/fa'
 import { IoFilter } from 'react-icons/io5'
 import { TbConfetti } from 'react-icons/tb'
 
-const SortMiddle = ({
+const SortFirstSection = ({
   setFilterMobileMode,
   setSortMobileMode,
   sortMobileMode,
-  mutateExplorePagination,
+  handleSort,
   dataProperties,
-}: any) => {
+}: {
+  setFilterMobileMode: any
+  setSortMobileMode: any
+  sortMobileMode: any
+  handleSort: any
+  dataProperties: any
+}) => {
   return (
     <div className="2xl:hidden text-sm rounded-md w-full flex items-center gap-2 p-3">
       <div
@@ -30,11 +36,11 @@ const SortMiddle = ({
         <span className="text-xs font-bold">Sort</span>
       </div>
       <section
-        className={`${sortMobileMode ? 'fixed' : 'hidden'} top-0 left-0 bg-black w-full h-full bg-opacity-30 backdrop-blur-sm  z-[90]`}
+        className={`${sortMobileMode ? 'fixed' : 'hidden'} top-0 left-0 w-full h-full   z-[90]`}
       >
         <div
           id="sort-mobile"
-          className={`${sortMobileMode ? 'scale-y-100' : 'scale-y-0'} absolute bottom-0 flex flex-col bg-white shadow-md w-full left-0 rounded-t-md transition duration-300`}
+          className={`${sortMobileMode ? 'scale-y-100' : 'scale-y-0'} border-t border-slate-200 absolute bottom-0 flex flex-col bg-white shadow-md w-full left-0 rounded-t-md transition duration-300`}
         >
           <div className="flex justify-center w-full p-2">
             <span
@@ -46,36 +52,28 @@ const SortMiddle = ({
             Sort by:
           </div>
           <div
-            onClick={() =>
-              mutateExplorePagination({ sortBy: 'name', order: 'asc' })
-            }
+            onClick={() => handleSort({ sortBy: 'name', order: 'asc' })}
             className="p-5 hover:bg-slate-300 text-gray-800 text-sm font-medium border-t border-slate-500"
           >
             Ascending by Name
           </div>
           <div
-            onClick={() =>
-              mutateExplorePagination({ sortBy: 'name', order: 'desc' })
-            }
+            onClick={() => handleSort({ sortBy: 'name', order: 'desc' })}
             className="p-5 hover:bg-slate-300 text-gray-800 text-sm font-medium border-t border-slate-300"
           >
             Descending by Name
           </div>
           <div
-            onClick={() =>
-              mutateExplorePagination({ sortBy: 'price', order: 'asc' })
-            }
+            onClick={() => handleSort({ sortBy: 'price', order: 'asc' })}
             className="p-5 hover:bg-slate-300 text-gray-800 text-sm font-medium border-t border-slate-300"
           >
-            Ascending by Price
+            Lowest to Highest by Price
           </div>
           <div
-            onClick={() =>
-              mutateExplorePagination({ sortBy: 'price', order: 'desc' })
-            }
+            onClick={() => handleSort({ sortBy: 'price', order: 'desc' })}
             className="p-5 hover:bg-slate-300 text-gray-800 text-sm font-medium border-t border-slate-300"
           >
-            Ascending by Price
+            Highest to Lowest by Price
           </div>
         </div>
       </section>
@@ -119,4 +117,4 @@ const SortMiddle = ({
   )
 }
 
-export default SortMiddle
+export default SortFirstSection

@@ -58,14 +58,11 @@ const CreatePropertyPage = () => {
             }}
           >
             {({ values, setFieldValue, isValid }) => {
-              const isFormFilled = Object.values(values).every(
-                (value) => value !== '',
-              )
               return (
                 <FormCreateProperty
                   setFieldValue={setFieldValue}
                   values={values}
-                  isFormFilled={isFormFilled}
+                  isFormFilled={true}
                   mutateCreateProperty={mutateCreateProperty}
                 />
               )

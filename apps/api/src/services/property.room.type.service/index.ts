@@ -35,23 +35,6 @@ export const getPropertyRoomTypeService = async ({ roomTypeId }: { roomTypeId: s
   return {
     propertyRoomType,
   }
-
-  // const propertyRoomType = await prisma.propertyRoomType.findMany({
-  //   where: {
-  //     id: Number(id),
-  //   },
-  //   include: {
-  //     propertyRoomImage: true,
-  //     roomHasFacilities: {
-  //       include: {
-  //         propertyRoomFacility: true,
-  //       },
-  //     },
-  //   },
-  //   orderBy: {
-  //     price: 'asc',
-  //   },
-  // })
 }
 export const getSinglePropertyRoomTypeByTenantService = async ({ roomTypeId, id, role }: { roomTypeId: string } & Pick<IUser , 'id' | 'role'>) => {
   
@@ -99,23 +82,6 @@ export const getSinglePropertyRoomTypeByTenantService = async ({ roomTypeId, id,
   return {
     propertyRoomType,
   }
-
-  // const propertyRoomType = await prisma.propertyRoomType.findMany({
-  //   where: {
-  //     id: Number(id),
-  //   },
-  //   include: {
-  //     propertyRoomImage: true,
-  //     roomHasFacilities: {
-  //       include: {
-  //         propertyRoomFacility: true,
-  //       },
-  //     },
-  //   },
-  //   orderBy: {
-  //     price: 'asc',
-  //   },
-  // })
 }
 
 export const getPropertyRoomTypeByPropertyService = async ({

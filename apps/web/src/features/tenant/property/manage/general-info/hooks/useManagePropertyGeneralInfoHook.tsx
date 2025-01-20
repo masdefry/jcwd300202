@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
-import useMutateCreatePropertyTypeApi from '@/app/tenant/property/create/useMutateCreatePropertyTypeApi'
+import useMutateCreatePropertyTypeApi from '@/features/tenant/property/create/api/useMutateCreatePropertyTypeApi'
 import toast from 'react-hot-toast'
 import useGetPropertyTypesApi from '../api/useGetPropertyTypesApi'
 import useQueryCountryApi from '../api/useQueryCountryApi'
 import useQueryCityApi from '../api/useQueryCityApi'
-import useMutateCreateCountryApi from '@/app/tenant/property/create/useMutateCreateCountryApi'
+import useMutateCreateCountryApi from '@/features/tenant/property/create/api/useMutateCreateCountryApi'
 import useMutateUpdateGeneralInfoApi from '../api/useMutateUpdateGeneralInfoApi'
 import useQueryGeneralInfoApi from '../api/useQueryGeneralInfoApi'
-import useMutateCreateCityApi from '@/app/tenant/property/create/useMutateCreateCityApi'
+import useMutateCreateCityApi from '@/features/tenant/property/create/api/useMutateCreateCityApi'
 
 const useManagePropertyGeneralInfoHook = ({
   params,

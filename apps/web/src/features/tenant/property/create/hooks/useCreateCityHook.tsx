@@ -4,24 +4,25 @@ import instance from '@/utils/axiosInstance'
 import { useMutation } from '@tanstack/react-query'
 import React, { useState } from 'react'
 import toast from 'react-hot-toast'
-import useMutateCreateCityApi from './useMutateCreateCityApi'
+import useMutateCreateCityApi from '../api/useMutateCreateCityApi'
+import useQueryCityApi from '@/features/tenant/property/manage/general-info/api/useQueryCityApi'
+import { IUseStateCreatePropertyHook } from '../types'
 
-const useCreateCityHook = () => {
-  const [showCreateCity, setShowCreateCity] = useState(false)
-  const [dataCreateCity, setDataCreateCity] = useState<{
-    name: string
-    file: File[]
-    countryId: null | number
-  }>({
-    name: '',
-    file: [] as File[],
-    countryId: null,
-  })
-
-  const {
-    mutateCreateCity,
-    isPendingCreateCity
-  } = useMutateCreateCityApi({
+const useCreateCityHook = ({
+  setCityList,
+  showCreateCity,
+  setShowCreateCity,
+  dataCreateCity,
+  setDataCreateCity,
+}: Pick<
+  IUseStateCreatePropertyHook,
+  | 'setCityList'
+  | 'showCreateCity'
+  | 'setShowCreateCity'
+  | 'dataCreateCity'
+  | 'setDataCreateCity'
+>) => {
+  const { mutateCreateCity, isPendingCreateCity } = useMutateCreateCityApi({
     dataCreateCity,
     setDataCreateCity,
     setShowCreateCity,
@@ -55,6 +56,8 @@ const useCreateCityHook = () => {
     },
   })
 
+  const { isPendingCities, isErrorCities } = useQueryCityApi({ setCityList })
+
   return {
     showCreateCity,
     setShowCreateCity,
@@ -62,6 +65,8 @@ const useCreateCityHook = () => {
     dataCreateCity,
     mutateCreateCity,
     isPendingCreateCity,
+    isPendingCities,
+    isErrorCities,
   }
 }
 

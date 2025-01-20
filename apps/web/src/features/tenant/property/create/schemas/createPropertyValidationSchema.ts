@@ -27,7 +27,7 @@ export const createPropertyValidationSchema = Yup.object().shape({
     )
     .required('Address is required'),
 
-  location: Yup.string().required('Location is required'),
+  location: Yup.string().url('Invalid URL format').required('Location is required'),
 
   star: Yup.number().max(5, 'Star rating must be between 1 and 5').nullable(),
 

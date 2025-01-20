@@ -76,7 +76,7 @@ const CalendarMonthlyView = ({
                     seasonRatesPercentage = seasonalPrice?.ratesPercentage
                     seasonIsPeak = seasonalPrice?.isPeak
                     seasonRoomToRent = seasonalPrice?.roomToRent
-                    seasonAvailability = seasonalPrice?.roomAvailability
+                    seasonAvailability = seasonalPrice?.availability
                     seasonBasePrice = seasonalPrice?.basePrice
                     seasonRoomTypeTotalRooms = seasonalPrice?.totalRooms
                   }

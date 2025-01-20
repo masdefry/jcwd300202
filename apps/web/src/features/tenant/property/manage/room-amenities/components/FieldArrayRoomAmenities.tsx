@@ -14,41 +14,39 @@ const FieldArrayRoomAmenities = ({
   showMoreRoomHasFacilities,
   setShowMoreRoomHasFacilities,
   setShowMoreRoomNotHasFacilities,
+  setShowCreatePropertyRoomFacilityForm,
   showMoreRoomNotHasFacilities,
-  isPending
+  isPending,
 }: any) => {
-    if(isPending) {
-        return (
-          <div>
-              <div className="flex flex-col gap-7">
-                <section className="px-5 flex flex-col gap-5">
-                    <h1 className="flex items-center gap-1.5 text-md font-bold skeleton bg-slate-300 rounded-none text-transparent w-fit">
-                      Pan Pacific Jakarta Rooms Does Have
-                    </h1>
-                  <section className=" flex flex-col gap-3">
-                      <div className="flex items-center text-sm gap-1.5 font-medium rounded-md skeleton bg-gray-200 text-transparent shadow-md justify-center p-4 border border-slate-200 ">
-         
-                        General room facility not found
-                      </div>
-                  </section>
-                </section>
-                <section className="px-5 flex flex-col gap-5">
-                    <h1 className="flex items-center gap-1.5 text-md font-bold skeleton bg-slate-300 rounded-none text-transparent w-fit">
-           
-                      Pan Pacific Jakarta Rooms Does Not Have
-                    </h1>
-                 
-                  <section className=" flex flex-col gap-3">
-                      <div className="flex items-center text-sm gap-1.5 font-medium rounded-md skeleton bg-gray-200 text-transparent shadow-md justify-center p-4 border border-slate-200 ">
-              
-                        Property facility not found
-                      </div>
-                  </section>
-                </section>
+  if (isPending) {
+    return (
+      <div>
+        <div className="flex flex-col gap-7">
+          <section className="px-5 flex flex-col gap-5">
+            <h1 className="flex items-center gap-1.5 text-md font-bold skeleton bg-slate-300 rounded-none text-transparent w-fit">
+              Pan Pacific Jakarta Rooms Does Have
+            </h1>
+            <section className=" flex flex-col gap-3">
+              <div className="flex items-center text-sm gap-1.5 font-medium rounded-md skeleton bg-gray-200 text-transparent shadow-md justify-center p-4 border border-slate-200 ">
+                General room facility not found
               </div>
-          </div>
-        )
-    }
+            </section>
+          </section>
+          <section className="px-5 flex flex-col gap-5">
+            <h1 className="flex items-center gap-1.5 text-md font-bold skeleton bg-slate-300 rounded-none text-transparent w-fit">
+              Pan Pacific Jakarta Rooms Does Not Have
+            </h1>
+
+            <section className=" flex flex-col gap-3">
+              <div className="flex items-center text-sm gap-1.5 font-medium rounded-md skeleton bg-gray-200 text-transparent shadow-md justify-center p-4 border border-slate-200 ">
+                Property facility not found
+              </div>
+            </section>
+          </section>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <FieldArray name="propertyRoomFacilitiesId">
@@ -189,6 +187,14 @@ const FieldArrayRoomAmenities = ({
                   Show less facilities
                 </div>
               )}
+              <div
+                onClick={() => setShowCreatePropertyRoomFacilityForm(true)}
+                className="transition duration-100 hover:cursor-pointer active:scale-[0.98] hover:opacity-75 flex items-center text-sm gap-1.5 font-bold text-white rounded-md shadow-md justify-center p-4 border border-slate-200 bg-gray-900"
+              >
+                <CiSquarePlus className="text-base" />
+                Doesn’t meet your facility needs? Click this to create a new
+                one!
+              </div>
             </section>
           </section>
           <section className="px-5 flex flex-col gap-5">
@@ -314,6 +320,14 @@ const FieldArrayRoomAmenities = ({
                   Show less facilities
                 </div>
               )}
+              <div
+                onClick={() => setShowCreatePropertyRoomFacilityForm(true)}
+                className="transition duration-100 hover:cursor-pointer active:scale-[0.98] hover:opacity-75 flex items-center text-sm gap-1.5 font-bold text-white rounded-md shadow-md justify-center p-4 border border-slate-200 bg-gray-900"
+              >
+                <CiSquarePlus className="text-base" />
+                Doesn’t meet your facility needs? Click this to create a new
+                one!
+              </div>
             </section>
           </section>
         </div>

@@ -355,6 +355,7 @@ export const updateManySeasonsByPropertySeasonValidator = [
     (req: Request, res: Response, next: NextFunction) => {
         try {
             const errorResult = validationResult(req);
+            console.log(errorResult)
             if (!errorResult.isEmpty()) {
                 throw { msg: errorResult.array()[0].msg, status: 406 };
             } else {

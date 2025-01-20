@@ -23,9 +23,9 @@ const SortSecondSection = ({
   searchName: string
 }) => {
   return (
-    <div className="hidden grid-cols-4 gap-4 2xl:grid">
+    <div className="hidden  2xl:flex col-span-4 w-full">
       <span className="flex items-center gap-5 col-span-4">
-        <div className="w-1/3 text-sm font-bold">
+        <div className="w-full text-sm font-bold">
           {dataProperties?.country?.name ? (
             <p className="text-gray-800">
               {dataProperties?.city?.name && dataProperties?.city?.name + ','}{' '}
@@ -39,7 +39,7 @@ const SortSecondSection = ({
             <CgSearchFound className="ml-2 text-green-600" />
           </p>
         </div>
-        <span className="w-2/3 flex gap-2 items-center">
+        <span className="w-full flex gap-2 items-center min-w-max">
           <label
             htmlFor="sort"
             className="text-xs min-w-max font-bold text-gray-500"
@@ -56,7 +56,7 @@ const SortSecondSection = ({
             }}
             defaultValue={`${searchParams?.order || 'asc'}-${searchParams['sort'] || 'price'}`}
             id="sort"
-            className="bg-gray-50 border border-slate-300 text-gray-800 text-xs font-semibold rounded-full h-[3em] p-1.5 px-2 focus:outline-none focus:ring-slate-400 focus:border-slate-400 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className="min-w-max bg-gray-50 border border-slate-300 text-gray-800 text-xs font-semibold rounded-full h-[3em] p-1.5 px-2 focus:outline-none focus:ring-slate-400 focus:border-slate-400 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
             <option value="asc-price">Lowest to Highest Price</option>
             <option value="desc-price">Highest to Lowest Price</option>
@@ -64,7 +64,7 @@ const SortSecondSection = ({
             <option value="desc-name">Descending by Name</option>
           </select>
         </span>
-        <span className="w-2/3 flex gap-2 items-center">
+        <span className="w-full flex gap-2 items-center">
           <label
             htmlFor="name"
             className="text-xs min-w-max font-bold text-gray-500"
@@ -83,7 +83,7 @@ const SortSecondSection = ({
             value={searchName}
             placeholder="Pan Pacific Jakarta"
             id="name"
-            className="bg-gray-50 border border-slate-300 text-gray-800 text-xs font-medium placeholder-shown:text:xs rounded-full h-[3em] p-1.5 px-2 focus:outline-none focus:ring-amber-400 focus:border-amber-400 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className="min-w-max bg-gray-50 border border-slate-300 text-gray-800 text-xs font-medium placeholder-shown:text:xs rounded-full h-[3em] p-1.5 px-2 focus:outline-none focus:ring-amber-400 focus:border-amber-400 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           />
         </span>
       </span>

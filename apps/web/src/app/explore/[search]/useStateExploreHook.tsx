@@ -45,8 +45,8 @@ const useStateExploreHook = ({ searchParams }: { searchParams: ISearchParamsExpl
     useState(false)
   const [showPropertyType, setShowPropertyType] = useState(false)
 
-  const [minPrice, setMinPrice] = useState(0)
-  const [maxPrice, setMaxPrice] = useState(10000000)
+  const [minPrice, setMinPrice] = useState(searchParams['min-price'] ? Number(searchParams['min-price']) : 0)
+  const [maxPrice, setMaxPrice] = useState(searchParams['max-price'] ? Number(searchParams['max-price']) : 100000000)
   const [changeParameter, setChangeParameter] = useState(false)
 
   return {

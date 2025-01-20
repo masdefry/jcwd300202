@@ -76,7 +76,7 @@ const CardForExplore = ({ item, searchParams, isPending }: any) => {
                     </p>
                   </div>
                     <div
-                      className="rounded-md skeleton w-fit text-transparent bg-slate-300 text-sm font-bold  px-6 py-3  mt-3 flex items-center justify-center gap-2"
+                      className="rounded-md skeleton w-full text-transparent bg-slate-300 text-sm font-bold  px-6 py-3  mt-3 flex items-center justify-center gap-2"
                     >
                       Book this room
                     </div>
@@ -117,7 +117,7 @@ const CardForExplore = ({ item, searchParams, isPending }: any) => {
                 </div>
                   <div
                     
-                    className="min-w-max rounded-full skeleton w-fit  text-transparent bg-slate-300 text-base font-bold px-6 py-3  mt-3 flex items-center gap-2"
+                    className="w-fit min-w-max rounded-full skeleton  text-transparent bg-slate-300 text-base font-bold px-6 py-3  mt-3 flex items-center gap-2"
                   >
                     Book this room
                   </div>

@@ -46,7 +46,7 @@ const useMutateExplorePaginationApi = ({
               },
             },
           )
-      
+          console.log('PAGINATIONNN',res)
           return res?.data
         },
         onSuccess,

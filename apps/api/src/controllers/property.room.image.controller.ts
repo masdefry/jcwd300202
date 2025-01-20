@@ -77,7 +77,7 @@ export const deletePropertyRoomImagesByProperty = async (
     const { propertyRoomImageId } = req.params
 
     const deletePropertyRoomImagesByPropertyProcess =
-      await deletePropertyRoomImagesByPropertyService
+      await deletePropertyRoomImagesByPropertyService({ id, role, propertyRoomImageId })
 
     res.status(200).json({
       error: false,

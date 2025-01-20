@@ -35,7 +35,7 @@ const FormCreatePropertyFacility = ({
   return (
     <section>
       {showCreatePropertyFacilityForm && (
-        <div className="fixed bg-black bg-opacity-20 backdrop-blur-sm w-full h-full z-[51] top-0 left-0 flex items-center justify-center">
+        <div className="fixed bg-black bg-opacity-20 backdrop-blur-sm w-full h-full z-[51] top-0 left-0 flex items-center justify-center p-5">
           <div className="bg-white border border-slate-200 shadow-md p-5 rounded-md flex flex-col gap-7">
             <div className="flex items-center justify-end">
               <IoClose

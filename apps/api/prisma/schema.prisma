@@ -134,6 +134,7 @@ model Property {
   checkInStartTime  DateTime
   checkInEndTime    DateTime?
   checkOutStartTime DateTime?
+  price             Int?
   checkOutEndTime   DateTime
   slug              String    @unique
   star              Int?

@@ -28,7 +28,28 @@ const FilteringExplore = ({
   maxPrice,
   setMinPrice,
   setMaxPrice,
-}: any) => {
+}: {
+  showFilterPropertyRoomFacility: any,
+  setShowFilterPropertyRoomFacility: any,
+  handlePropertyRoomFacilityFilter: any,
+  setShowFilterPropertyFacility: any,
+  handlePropertyFacilityFilter: any,
+  showPropertyType: any,
+  handlePropertyTypeIdFilter: any,
+  showFilterPropertyFacility: any,
+  setShowPropertyType: any,
+  dataForFilteringProperty: any,
+  handlePriceFilterSubmit: any,
+  mutateExploreFilterAndSort: any,
+  handlePropertyStarFilter: any,
+  handlePrice: any,
+  filterMobileMode: any,
+  setFilterMobileMode: any,
+  minPrice: any,
+  maxPrice: any,
+  setMinPrice: any,
+  setMaxPrice: any,
+}) => {
   return (
     <section
       className={`${filterMobileMode ? 'flex' : 'hidden'} 2xl:relative fixed bottom-0 col-span-1 w-full 2xl:flex flex-col 2xl:gap-5 bg-white rounded-t-md z-[54]`}

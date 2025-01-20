@@ -70,6 +70,10 @@ const useExploreFunctionalityHook = ({
   const { fetchDataProperties } = useFetchDataPropertiesApi({
     searchParams,
     handleError(err) {
+      console.log(err?.message)
+      if(err?.message === 'Network Error') {
+        setErrorStatus(500)
+      }
       if (err.status === 406 || err.status === 401) {
         toast((t) => (
           <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
@@ -77,7 +81,7 @@ const useExploreFunctionalityHook = ({
           </span>
         ))
       } else {
-        setErrorStatus(err.status)
+        setErrorStatus(err?.response?.data?.status)
       }
     },
     handleFinally() {

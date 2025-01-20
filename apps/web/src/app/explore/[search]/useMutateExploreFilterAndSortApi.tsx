@@ -41,7 +41,7 @@ const useMutateExploreFilterAndSortApi = ({
           },
         },
       )
-
+      console.log('FILTERRING', res)
       return res?.data
     },
     onSuccess,

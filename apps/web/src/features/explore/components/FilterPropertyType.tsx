@@ -2,10 +2,14 @@
 
 import React from 'react'
 
-const FilterPropertyType = ({ dataForFilteringProperty, setShowPropertyType, showPropertyType, handlePropertyTypeIdFilter }: any) => {
+const FilterPropertyType = ({
+  dataForFilteringProperty,
+  setShowPropertyType,
+  showPropertyType,
+  handlePropertyTypeIdFilter,
+}: any) => {
   return (
     <div
-        id="filter-property-type"
       tabIndex={0}
       className="2xl:rounded-md rounded-none collapse collapse-arrow 2xl:shadow-md 2xl:border-t-0 border-t border-slate-300"
     >

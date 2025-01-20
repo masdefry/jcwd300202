@@ -3,7 +3,15 @@
 import React from 'react'
 import { RangeSlider } from 'rsuite'
 import 'rsuite/RangeSlider/styles/index.css'
-const FilterPrice = ({ minPrice, maxPrice, setMinPrice, setMaxPrice, handlePrice, searchParams, mutateExplorePagination }: any) => {
+const FilterPrice = ({
+  minPrice,
+  maxPrice,
+  setMinPrice,
+  setMaxPrice,
+  handlePrice,
+  handlePriceFilterSubmit,
+  mutateExploreFilterAndSort,
+}: any) => {
   return (
     <div
       className="2xl:rounded-md w-full 2xl:shadow-md flex flex-col overflow-hidden bg-white"
@@ -15,16 +23,13 @@ const FilterPrice = ({ minPrice, maxPrice, setMinPrice, setMaxPrice, handlePrice
       </hgroup>
       <div className="flex flex-col gap-1 p-5">
         <RangeSlider
-          defaultValue={[0, 1000000]}
           value={[minPrice / 100000, maxPrice / 100000]}
           onChange={(value) => {
             setMinPrice(value[0] * 100000)
             setMaxPrice(value[1] * 100000)
           }}
           renderTooltip={(value) => (
-            <div className="font-bold text-xs">
-              {value && value * 100000}
-            </div>
+            <div className="font-bold text-xs">{value && value * 100000}</div>
           )}
         />
         <div className="flex items-center gap-1">
@@ -60,9 +65,8 @@ const FilterPrice = ({ minPrice, maxPrice, setMinPrice, setMaxPrice, handlePrice
         <div className="flex items-center gap-1 mt-3">
           <button
             onClick={() => {
-              searchParams.minPrice = minPrice
-              searchParams.maxPrice = maxPrice
-              mutateExplorePagination({})
+              handlePriceFilterSubmit()
+              mutateExploreFilterAndSort()
             }}
             className="w-full text-xs font-bold hover:opacity-75 transition duration-100 active:scale-90 text-white bg-gray-900 rounded-full py-2 px-3 shadow-md"
             type="button"

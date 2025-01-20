@@ -2,8 +2,8 @@
 
 import React, { useEffect } from 'react'
 import CardForExplore from '@/features/explore/components/CardForExplore'
-import SortDesktop from '@/features/explore/components/SortDesktop'
-import SortMobile from '@/features/explore/components/SortMobile'
+import SortDesktop from '@/features/explore/components/SortFirstSection'
+import SortMobile from '@/features/explore/components/SortThirdSection'
 import FilteringExplore from '@/features/explore/components/FilteringExplore'
 import ButtonPaginationExplore from '@/features/explore/components/ButtonPaginationExplore'
 import useFilterExplorePageHook from '@/features/explore/hooks/useFilterExplorePageHook'

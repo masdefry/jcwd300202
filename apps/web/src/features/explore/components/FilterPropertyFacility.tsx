@@ -2,7 +2,12 @@
 
 import React from 'react'
 
-const FilterPropertyFacility = ({ dataForFilteringProperty, setShowFilterPropertyFacility, showFilterPropertyFacility, handlePropertyFacilityFilter }: any) => {
+const FilterPropertyFacility = ({
+  dataForFilteringProperty,
+  setShowFilterPropertyFacility,
+  showFilterPropertyFacility,
+  handlePropertyFacilityFilter,
+}: any) => {
   return (
     <div
       tabIndex={0}

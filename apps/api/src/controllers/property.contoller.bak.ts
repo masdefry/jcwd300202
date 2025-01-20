@@ -215,7 +215,6 @@ export const createProperty = async (
     next(error)
   }
 
-  //jika punya facility children maka boleh tambah children
 }
 
 export const getPropertyDetail = async (
@@ -630,6 +629,8 @@ export const getProperties = async (
       propertyroomfacilityidarr = '',
       propertystararr = '',
     } = req.headers
+
+ 
 
     let numberedPropertyFacilityIdArr,
       numberedPropertyRoomFacilityIdArr,

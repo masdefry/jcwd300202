@@ -6,13 +6,19 @@ import { FaSortAmountDownAlt } from 'react-icons/fa'
 import { IoFilter } from 'react-icons/io5'
 import { TbConfetti } from 'react-icons/tb'
 
-const SortMobile = ({
+const SortThirdSection = ({
   setFilterMobileMode,
   setSortMobileMode,
   sortMobileMode,
   mutateExplorePagination,
   dataProperties,
-}: any) => {
+}: {
+  setFilterMobileMode: any,
+  setSortMobileMode: any,
+  sortMobileMode: any,
+  mutateExplorePagination: any,
+  dataProperties: any,
+}) => {
   return (
     <div className="2xl:hidden text-sm rounded-md w-full flex items-center gap-2 p-3">
       <div
@@ -119,4 +125,4 @@ const SortMobile = ({
   )
 }
 
-export default SortMobile
+export default SortThirdSection

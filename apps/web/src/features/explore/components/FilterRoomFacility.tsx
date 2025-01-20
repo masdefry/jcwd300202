@@ -2,7 +2,12 @@
 
 import React from 'react'
 
-const FilterRoomFacility = ({ dataForFilteringProperty, setShowFilterPropertyRoomFacility, showFilterPropertyRoomFacility, handlePropertyRoomFacilityFilter }: any) => {
+const FilterRoomFacility = ({
+  dataForFilteringProperty,
+  setShowFilterPropertyRoomFacility,
+  showFilterPropertyRoomFacility,
+  handlePropertyRoomFacilityFilter,
+}: any) => {
   return (
     <div
       tabIndex={0}

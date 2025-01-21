@@ -1,218 +1,33 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import HGroupPropertyType from '../../../features/tenant/property-type/components/HGroupPropertyType'
-import PropertyTypeList from '../../../features/tenant/property-type/components/PropertyTypeList'
-import FilterAndSortPropertyType from '../../../features/tenant/property-type/components/FilterAndSortPropertyType'
-import instance from '@/utils/axiosInstance'
-import { useMutation } from '@tanstack/react-query'
-import toast from 'react-hot-toast'
-import { useRouter } from 'next/navigation'
-import ButtonPropertyTypePagination from '../../../features/tenant/property-type/components/ButtonPropertyTypePagination'
+import React, { useEffect } from 'react'
+import HGroupPropertyType from '@/features/tenant/property-type/components/HGroupPropertyType'
+import PropertyTypeList from '@/features/tenant/property-type/components/PropertyTypeList'
+import FilterAndSortPropertyType from '@/features/tenant/property-type/components/FilterAndSortPropertyType'
+import ButtonPropertyTypePagination from '@/features/tenant/property-type/components/ButtonPropertyTypePagination'
+import { ISearchParamsTenantPropertyType } from '@/features/tenant/property-type/types'
+import useManagePropertyTypeHook from '@/features/tenant/property-type/hooks/useManagePropertyTypeHook'
 
-export interface ISearchParamsTenantPropertyType {
-  order: string
-  name: string
-  limit: string
-  offset: string
-}
 const TenantPropertyTypePage = ({
   searchParams,
 }: {
   searchParams: ISearchParamsTenantPropertyType
 }) => {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(true)
-  const [paramMutatePage, setParamMutatePage] = useState({
-    order: '',
-    name: '',
-    limit: '',
-    offset: '',
-  })
-  const [isError, setIsError] = useState(false)
-  const [dataPropertyTypes, setDataPropertyTypes] = useState<any>()
-  const params = new URLSearchParams()
-  const handleSearchParams = (orderBy: string, value: string) => {
-    const currParams = window.location.href.includes('/property-type?')
-      ? window.location.href.split('?')[1].split('&')
-      : null
-
-    currParams &&
-      currParams.forEach((item: any) => {
-        params.set(item.split('=')[0], item.split('=')[1])
-      })
-    params.set(orderBy, value)
-    window.history.pushState({}, '', '?' + params.toString())
-  }
-
-  const { mutate: mutateRefreshPage, isPending: isPendingRefreshPage } =
-    useMutation({
-      mutationFn: async () => {
-        console.log('res', paramMutatePage)
-        const res = await instance.get(
-          `/property-type?name=${paramMutatePage?.name ? paramMutatePage?.name : searchParams?.name ? searchParams?.name : ''}&order=${paramMutatePage?.order ? paramMutatePage?.order : searchParams?.order ? searchParams?.order : 'asc'}&limit=${paramMutatePage?.limit ? paramMutatePage?.limit : searchParams?.limit ? searchParams?.limit : 5}&offset=${paramMutatePage?.offset ? paramMutatePage?.offset : searchParams?.offset ? searchParams?.offset : 0}`,
-        )
-        return res?.data
-      },
-      onSuccess: (res) => {
-        setDataPropertyTypes(res?.data)
-      },
-      onError: (err) => {
-        console.log(err)
-      },
-    })
-
-  const fetchDataPropertyTypes = async () => {
-    try {
-      const res = await instance.get(
-        `/property-type?name=${searchParams?.name || ''}&order=${searchParams?.order || 'asc'}&limit=${searchParams?.limit || 5}&offset=${searchParams?.offset || 0}`,
-      )
-
-      setDataPropertyTypes(res?.data?.data)
-      setIsLoading(false)
-    } catch (error) {
-      setIsError(true)
-    }
-  }
-
   const {
-    mutate: mutateCreatePropertyType,
-    isPending: isPendingCreatePropertyType,
-  } = useMutation({
-    mutationFn: async (values: any) => {
-      const res = await instance.post('/property-type', {
-        name: values?.name,
-        description: values?.description,
-      })
-
-      return res?.data
-    },
-    onSuccess: (res) => {
-      toast((t) => (
-        <span className="flex gap-2 items-center font-semibold justify-center text-xs">
-          {res?.message}
-        </span>
-      ))
-      window.location.reload()
-    },
-    onError: (err: any) => {
-      toast((t) => (
-        <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
-          {err?.response?.data?.message || 'Connection error!'}
-        </span>
-      ))
-    },
-  })
-
-  const handleCreatePropertyType = (values: any) => {
-    mutateCreatePropertyType(values)
-  }
-
-  const handleDeletePropertyType = ({
-    id,
-    password,
-  }: {
-    id: number
-    password: string
-  }) => {
-    mutateDeletePropertyType({ id, password })
-  }
-
-  const handleUpdatePropertyType = (values: any) => {
-    mutateUpdatePropertyType(values)
-  }
-  const { mutate: mutateUpdatePropertyType } = useMutation({
-    mutationFn: async (values: any) => {
-      const res = await instance.patch('/property-type', {
-        propertyTypeId: values?.id,
-        name: values?.name,
-        description: values?.description,
-      })
-
-      return res?.data
-    },
-    onSuccess: (res) => {
-      toast((t) => (
-        <span className="flex gap-2 items-center font-semibold justify-center text-xs">
-          {res?.message}
-        </span>
-      ))
-      window.location.reload()
-    },
-    onError: (err: any) => {
-      toast((t) => (
-        <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
-          {err?.response?.data?.message || 'Connection error!'}
-        </span>
-      ))
-    },
-  })
-
-  const {
-    mutate: mutateDeletePropertyType,
-    isPending: isPendingDeletePropertyType,
-  } = useMutation({
-    mutationFn: async ({ id, password }: { id: number; password: string }) => {
-      const res = await instance.patch('/property-type/delete', {
-        propertyTypeId: id,
-        password,
-      })
-
-      return res?.data
-    },
-    onSuccess: (res) => {
-      toast((t) => (
-        <span className="flex gap-2 items-center font-semibold justify-center text-xs">
-          {res?.message}
-        </span>
-      ))
-      window.location.reload()
-    },
-    onError: (err: any) => {
-      toast((t) => (
-        <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
-          {err?.response?.data?.message || 'Connection error!'}
-        </span>
-      ))
-    },
-  })
-
-  const handlePagination = ({
-    limit,
-    offset,
-  }: {
-    limit: string
-    offset: string
-  }) => {
-    handleSearchParams('limit', limit)
-    handleSearchParams('offset', offset)
-    setParamMutatePage((state) => {
-      state.limit = limit
-      state.offset = offset
-      return state
-    })
-    mutateRefreshPage()
-  }
-  const handleSort = (order: string) => {
-    handleSearchParams('order', order)
-    setParamMutatePage((state) => {
-      state.order = order
-      state.limit = '5'
-      state.offset = '0'
-      return state
-    })
-    mutateRefreshPage()
-  }
-  const handleFilter = (name: string) => {
-    handleSearchParams('name', name)
-    setParamMutatePage((state) => {
-      state.name = name
-      state.limit = '5'
-      state.offset = '0'
-      return state
-    })
-    mutateRefreshPage()
-  }
+    isLoading,
+    dataPropertyTypes,
+    isPendingCreatePropertyType,
+    isPendingDeletePropertyType,
+    isPendingUpdatePropertyType,
+    isPendingRefreshPage,
+    handleCreatePropertyType,
+    handleDeletePropertyType,
+    handleUpdatePropertyType,
+    handlePagination,
+    handleSort,
+    handleFilter,
+    fetchDataPropertyTypes,
+  } = useManagePropertyTypeHook({ searchParams })
 
   useEffect(() => {
     fetchDataPropertyTypes()
@@ -234,7 +49,8 @@ const TenantPropertyTypePage = ({
               isLoading ||
               isPendingCreatePropertyType ||
               isPendingDeletePropertyType ||
-              isPendingRefreshPage
+              isPendingRefreshPage ||
+              isPendingUpdatePropertyType
             }
             offset={dataPropertyTypes?.offset}
             handleCreatePropertyType={handleCreatePropertyType}
@@ -245,7 +61,13 @@ const TenantPropertyTypePage = ({
         </div>
         <div className="w-[1080px]">
           <ButtonPropertyTypePagination
-            isPending={false}
+            isPending={
+              isLoading ||
+              isPendingCreatePropertyType ||
+              isPendingDeletePropertyType ||
+              isPendingRefreshPage ||
+              isPendingUpdatePropertyType
+            }
             dataPropertyTypes={dataPropertyTypes}
             handlePagination={handlePagination}
           />

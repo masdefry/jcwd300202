@@ -7,7 +7,7 @@ import { GiBackwardTime } from 'react-icons/gi'
 import { IoSearchSharp } from 'react-icons/io5'
 import CreatePropertyType from './CreatePropertyType'
 import { useDebouncedCallback } from 'use-debounce'
-import { ISearchParamsTenantPropertyType } from '../../../../app/tenant/property-type/page'
+import { ISearchParamsTenantPropertyType } from '../types'
 
 const FilterAndSortPropertyType = ({
   isPending,

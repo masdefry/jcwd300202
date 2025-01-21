@@ -4,8 +4,8 @@ import React, { useEffect } from 'react'
 import TablePropertyList from '@/features/tenant/property/list/components/TablePropertyList'
 import TenantPropertiesGeneralInfo from '@/features/tenant/property/list/components/TenantPropertiesGeneralInfo'
 import HGroupPropertyList from '@/features/tenant/property/list/components/HGroupPropertyList'
-import FilterAndSortPropertyList from '../../../../features/tenant/property/list/components/FilterAndSortPropertyList'
-import useFilterAndSortPropertyListHook from '../../../../features/tenant/property/list/hooks/useFilterAndSortPropertyListHook'
+import FilterAndSortPropertyList from '@/features/tenant/property/list/components/FilterAndSortPropertyList'
+import useFilterAndSortPropertyListHook from '@/features/tenant/property/list/hooks/useFilterAndSortPropertyListHook'
 import { ISearchParamsPropertyList } from '@/features/tenant/property/list/types'
 
 
@@ -17,12 +17,10 @@ const PropertyListPage = ({
   const {
     searchProperty,
     setSearchProperty,
-    searchParamsInState,
     handleFilterByName,
     handleFilterByStatus,
     handlePagination,
     handlePeriod,
-    handleSearchParams,
     handleSortedDataProperties,
     fetchDataProperties,
     dataProperties,

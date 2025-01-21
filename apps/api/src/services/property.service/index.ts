@@ -40,7 +40,6 @@ export const createPropertyService = async ({
     propertyRoomTypes: any
     imagesUploaded: any
   }) => {
-    console.log("SERVICEEEEEEEEEEEEEEEEEEEEEEEE")
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
       id,
@@ -131,7 +130,6 @@ export const createPropertyService = async ({
 
       const copiedImagesUploaded = [...imagesUploaded]
       const imagesForProperty: any = []
-      console.log(countPropertyImages)
       for (let i = 0; i < Number(countPropertyImages); i++) {
         imagesForProperty.push({
           propertyDetailId: createdPropertyDetail?.id,
@@ -155,6 +153,24 @@ export const createPropertyService = async ({
             totalRooms: item?.totalRooms,
           }
         }),
+      })
+
+      const findLowestPriceRoomType = await tx.propertyRoomType.findMany({
+        where: {
+          propertyId: createdProperty?.id
+        },
+        orderBy: {
+          price: 'asc'
+        }
+      })
+
+      const updateLowestPriceProperty = await tx.property.update({
+        where: {
+          id: createdProperty?.id
+        },
+        data: {
+          price: findLowestPriceRoomType[0].price
+        }
       })
 
       createdRoomHasFacilities = await tx.roomHasFacilities.createMany({
@@ -1112,11 +1128,11 @@ export const getPropertiesService = async ({
       }
     }
 
-    let gteDate = new Date()
+    let gteDate = ( checkInDate && checkInDate !== 'undefined') && (checkOutDate && checkOutDate !== 'undefined') ? new Date(checkInDate as string) : new Date()
     gteDate.setHours(0, 0, 0, 0)
-    let ltDate = addDays(gteDate, 1)
+    let ltDate = ( checkInDate && checkInDate !== 'undefined') && (checkOutDate && checkOutDate !== 'undefined') ? new Date(checkOutDate as string) : addDays(gteDate, 1)
     ltDate.setHours(0, 0, 0, 0)
-
+ 
     let whereConditionDate = {}
 
     if (isNaN(gteDate.getTime()) || isNaN(ltDate.getTime())) {
@@ -1360,6 +1376,9 @@ export const getPropertiesService = async ({
         },
         include: {
           propertyRoomType: {
+            where: {
+              deletedAt: null
+            },
             orderBy: {
               price: 'asc',
             },
@@ -1811,7 +1830,6 @@ export const getPropertiesByTenantService = async ({
                 status: 'PAID',
               },
             },
-            // createdAt: dataPeriod
           },
         },
       },
@@ -1899,6 +1917,9 @@ export const getPropertiesByTenantService = async ({
     },
     include: {
       propertyRoomType: {
+        where: {
+          deletedAt: null
+        },
         include: {
           seasonalPrice: {
             where: {
@@ -1918,6 +1939,9 @@ export const getPropertiesByTenantService = async ({
     },
     include: {
       propertyRoomType: {
+        where: {
+          deletedAt: null
+        },
         include: {
           seasonalPrice: {
             where: {

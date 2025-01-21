@@ -130,7 +130,6 @@ const PropertyManageRoomPhotosPage = ({
             const fd = new FormData()
             fd.append('images', values?.file[0])
             mutateCreatePropertyRoomImage(fd)
-            console.log(values)
           }}
         >
           {({ setFieldValue, values }) => (

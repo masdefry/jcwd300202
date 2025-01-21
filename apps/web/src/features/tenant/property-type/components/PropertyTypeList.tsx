@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { CiEdit } from 'react-icons/ci'
 import { MdDeleteOutline } from 'react-icons/md'
 import CreatePropertyType from './CreatePropertyType'
-import { ISearchParamsTenantPropertyType } from '../../../../app/tenant/property-type/page'
+import { ISearchParamsTenantPropertyType } from '../types'
 import DeleteConfirmation from './DeleteConfirmation'
 
 type PropertyType = {

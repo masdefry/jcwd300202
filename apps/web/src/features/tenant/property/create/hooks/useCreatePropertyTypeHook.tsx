@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import useMutateCreatePropertyTypeApi from '../api/useMutateCreatePropertyTypeApi'
 import toast from 'react-hot-toast'

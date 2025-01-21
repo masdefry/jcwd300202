@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react'
 import useMutateCreatePropertyImageApi from '../api/useMutateCreatePropertyImageApi'
 import toast from 'react-hot-toast'

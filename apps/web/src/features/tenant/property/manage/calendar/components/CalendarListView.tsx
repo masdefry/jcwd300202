@@ -1,3 +1,5 @@
+'use client'
+
 import Separator from '@/features/auth/components/Separator'
 import { IPropertyRoomType } from '@/features/tenant/property/create/types'
 import { isBefore } from 'date-fns'

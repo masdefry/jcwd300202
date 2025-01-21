@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import React, { useState } from 'react'
+import React from 'react'
 import toast from 'react-hot-toast'
 import { MdOutlineAddPhotoAlternate } from 'react-icons/md'
 import { Formik } from 'formik'

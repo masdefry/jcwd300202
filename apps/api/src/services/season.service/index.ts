@@ -435,6 +435,9 @@ export const getSeasonsByPropertyService = async ({
     },
     include: {
       propertyRoomType: {
+        where: {
+          deletedAt: null
+        },
         include: {
           season: true,
         },
@@ -668,6 +671,9 @@ export const updateManySeasonsByPropertySeasonService = async ({
     },
     include: {
       propertyRoomType: {
+        where: {
+          deletedAt: null
+        },
         include: {
           season: true,
         },
@@ -826,6 +832,9 @@ export const deletePropertySeasonService = async ({
     },
     include: {
       propertyRoomType: {
+        where: {
+          deletedAt: null
+        },
         include: {
           season: true,
         },
@@ -993,6 +1002,7 @@ export const getSeasonsByPropertyRoomTypeService = async ({
       propertyRoomType: {
         where: {
           id: Number(propertyRoomTypeId),
+          deletedAt: null
         },
         include: {
           season: true,
@@ -1093,6 +1103,9 @@ export const updateSingleSeasonService = async ({
     },
     include: {
       propertyRoomType: {
+        where: {
+          deletedAt: null
+        },
         include: {
           season: true,
         },
@@ -1240,6 +1253,9 @@ export const createOneSeasonService = async ({
     },
     include: {
       propertyRoomType: {
+        where: {
+          deletedAt: null
+        },
         include: {
           season: true,
         },
@@ -1429,6 +1445,9 @@ export const getSingleSeasonService = async ({
     },
     include: {
       propertyRoomType: {
+        where: {
+          deletedAt: null
+        },
         include: {
           season: true,
         },

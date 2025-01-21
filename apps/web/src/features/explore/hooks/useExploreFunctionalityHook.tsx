@@ -1,9 +1,9 @@
 import React from 'react'
-import useFetchDataPropertiesApi from './useFetchDataPropertiesApi'
-import { ISearchParamsExplore } from './types'
+import useFetchDataPropertiesApi from '../api/useFetchDataPropertiesApi'
+import { ISearchParamsExplore } from '../types'
 import toast from 'react-hot-toast'
-import useMutateExplorePaginationApi from './useMutateExplorePaginationApi'
-import useMutateExploreFilterAndSortApi from './useMutateExploreFilterAndSortApi'
+import useMutateExplorePaginationApi from '../api/useMutateExplorePaginationApi'
+import useMutateExploreFilterAndSortApi from '../api/useMutateExploreFilterAndSortApi'
 import useStateExploreHook from './useStateExploreHook'
 import useExploreFilterAndSortHook from './useExploreFilterAndSortHook'
 import useFilteringPropertyHook from '@/features/property/hooks/useFilteringPropertyHook'
@@ -65,13 +65,13 @@ const useExploreFunctionalityHook = ({
   } = useStateExploreHook({ searchParams })
 
   const { dataForFilteringProperty, setDataForFilteringProperty } =
-  useFilteringPropertyHook()
+    useFilteringPropertyHook()
 
   const { fetchDataProperties } = useFetchDataPropertiesApi({
     searchParams,
     handleError(err) {
       console.log(err?.message)
-      if(err?.message === 'Network Error') {
+      if (err?.message === 'Network Error') {
         setErrorStatus(500)
       }
       if (err.status === 406 || err.status === 401) {
@@ -146,37 +146,37 @@ const useExploreFunctionalityHook = ({
       },
     })
 
-    const {
-        handleSearchParams,
-        handlePrice,
-        handlePriceFilterSubmit,
-        handlePropertyFacilityFilter,
-        handlePropertyRoomFacilityFilter,
-        handlePropertyTypeIdFilter,
-        handlePropertyStarFilter,
-        handlePagination,
-        handleFilterName,
-        handleSort,
-      } = useExploreFilterAndSortHook({
-        mutateExploreFilterAndSort,
-        mutateExplorePagination,
-        setParamMutateExplore,
-        minPrice,
-        setMinPrice,
-        maxPrice,
-        setMaxPrice,
-        propertyFacilityIdArr,
-        setPropertyFacilityIdArr,
-        propertyRoomFacilityIdArr,
-        setPropertyRoomFacilityIdArr,
-        propertyTypeIdArr,
-        setPropertyTypeIdArr,
-        propertyStarArr,
-        setPropertyStarArr,
-        searchParams,
-        setDataProperties,
-        setErrorStatus,
-      })
+  const {
+    handleSearchParams,
+    handlePrice,
+    handlePriceFilterSubmit,
+    handlePropertyFacilityFilter,
+    handlePropertyRoomFacilityFilter,
+    handlePropertyTypeIdFilter,
+    handlePropertyStarFilter,
+    handlePagination,
+    handleFilterName,
+    handleSort,
+  } = useExploreFilterAndSortHook({
+    mutateExploreFilterAndSort,
+    mutateExplorePagination,
+    setParamMutateExplore,
+    minPrice,
+    setMinPrice,
+    maxPrice,
+    setMaxPrice,
+    propertyFacilityIdArr,
+    setPropertyFacilityIdArr,
+    propertyRoomFacilityIdArr,
+    setPropertyRoomFacilityIdArr,
+    propertyTypeIdArr,
+    setPropertyTypeIdArr,
+    propertyStarArr,
+    setPropertyStarArr,
+    searchParams,
+    setDataProperties,
+    setErrorStatus,
+  })
   return {
     fetchDataProperties,
     isPendingExplorePagination,
@@ -242,7 +242,7 @@ const useExploreFunctionalityHook = ({
     setShowFilterPropertyRoomFacility,
     setShowPropertyType,
     dataForFilteringProperty,
-    setDataForFilteringProperty
+    setDataForFilteringProperty,
   }
 }
 

@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import useMutateCreatePropertyFacilityApi from '../api/useMutateCreatePropertyFacilityApi'
 import useQueryPropertyFacilitiesApi from '../api/useQueryPropertyFacilitiesApi'

@@ -29,6 +29,7 @@ instance.interceptors.response.use(
     },
     (error) => {
         if(error?.message === 'Token not found!') {
+            authStore.getState().setLogout()
             Cookies.remove('authToken')
             Cookies.remove('authRole')
             if(window.location.href.includes('/tenant')) {

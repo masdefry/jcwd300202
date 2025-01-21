@@ -71,9 +71,7 @@ const CalendarPage = ({
 
   const {
     mutateDataSeasonsByProperty,
-    isPendingDataSeasonsByProperty,
     mutateDataSeasonsByPropertyRoomType,
-    isPendingDataSeasonsByPropertyRoomType,
   } = useGetDataSeasonsHook({ setDataSeasonsByProperty, selectRoom, params })
 
   const { handleSearchParams, handleDateRange, handleRoomName } =

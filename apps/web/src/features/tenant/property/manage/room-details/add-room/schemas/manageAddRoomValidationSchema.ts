@@ -1,14 +1,6 @@
 import * as Yup from 'yup'
 
 export const manageAddRoomValidationSchema = Yup.object().shape({
-  // name: '',
-  // capacity: '',
-  // description: '',
-  // totalRooms: '',
-  // rooms: '',
-  // bathrooms: '',
-  // propertyRoomFacilitiesId: [],
-  // file: []
   name: Yup.string()
     .matches(
       /^[a-zA-Z0-9\s]*$/,

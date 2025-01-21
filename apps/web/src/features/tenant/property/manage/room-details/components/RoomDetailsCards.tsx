@@ -8,6 +8,7 @@ import { CiCirclePlus } from 'react-icons/ci'
 import { FaMoneyBillWave } from 'react-icons/fa6'
 import { IoCameraOutline, IoClose } from 'react-icons/io5'
 import { MdOutlinePeople } from 'react-icons/md'
+import { IUseManageRoomDetailsHook } from '../types'
 
 const RoomDetailsCards = ({
   params,
@@ -18,17 +19,19 @@ const RoomDetailsCards = ({
   setDataForDelete,
   setShowDeleteConfirmation,
   showDeleteConfirmation,
-  isPendingDeletePropertyRoomType
-}: {
+  isPendingDeletePropertyRoomType,
+}: Pick<
+  IUseManageRoomDetailsHook,
+  | 'setChange'
+  | 'mutateDeletePropertyRoomType'
+  | 'dataForDelete'
+  | 'dataPropertyRoomTypes'
+  | 'setDataForDelete'
+  | 'setShowDeleteConfirmation'
+  | 'showDeleteConfirmation'
+  | 'isPendingDeletePropertyRoomType'
+> & {
   params: { slug: string }
-  setChange: any
-  mutateDeletePropertyRoomType: any
-  dataForDelete: any
-  dataPropertyRoomTypes: any
-  setDataForDelete: any
-  setShowDeleteConfirmation: any
-  showDeleteConfirmation: boolean
-  isPendingDeletePropertyRoomType: boolean
 }) => {
   return (
     <section className="flex flex-wrap gap-3 p-5 justify-center">
@@ -124,12 +127,9 @@ const RoomDetailsCards = ({
               </h1>
               <p className="text-sm font-light text-gray-500">
                 Are you sure you want to delete{' '}
-                <b className="text-gray-800 font-bold">
-                  {dataForDelete?.name}
-                </b>{' '}
-                type? This action is irreversible and will
-                permanently remove the room details from your
-                property.
+                <b className="text-gray-800 font-bold">{dataForDelete?.name}</b>{' '}
+                type? This action is irreversible and will permanently remove
+                the room details from your property.
               </p>
             </hgroup>
             <div className="flex flex-col gap-3">
@@ -170,10 +170,11 @@ const RoomDetailsCards = ({
               </button>
               <button
                 type="button"
-                disabled={dataForDelete.password.length < 8 || isPendingDeletePropertyRoomType}
-                onClick={() =>
-                  mutateDeletePropertyRoomType(dataForDelete?.id)
+                disabled={
+                  dataForDelete.password.length < 8 ||
+                  isPendingDeletePropertyRoomType
                 }
+                onClick={() => mutateDeletePropertyRoomType(dataForDelete?.id)}
                 className="disabled:bg-slate-300 disabled:text-white disabled:scale-100 disabled:opacity-100 px-5 hover:opacity-75 transition duration-100 active:scale-90 py-1.5 text-white text-sm font-bold rounded-full shadow-md border bg-gray-900 border-slate-100 "
               >
                 Delete Room

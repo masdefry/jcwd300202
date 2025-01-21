@@ -72,9 +72,9 @@ const PropertyDetailDescription = ({ dataPropertyDetail, isPending = true, showM
                                                <p className='text-sm font-bold text-gray-800'>{item?.user?.username}</p>
                                                <div className='flex items-center gap-1'>
                                                    {
-                                                       Array.from({length: item?.rating}).map((_, index) => {
+                                                       Array.from({length: item?.rating}).map((_, idx) => {
                                                            return (
-                                                               <FaStar key={index} size={10} className='text-yellow-400'/>
+                                                               <FaStar key={idx} size={10} className='text-yellow-400'/>
                                                            )
                                                        })
                                                    }

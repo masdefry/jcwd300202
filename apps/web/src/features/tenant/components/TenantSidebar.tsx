@@ -84,7 +84,7 @@ export default function TenantSidebar() {
               <SidebarGroupContent>
                 <SidebarMenu>
                   {item.list.map((itm, idx) => (
-                    <SidebarMenuItem className="text-base font-light text-black" key={item.title}>
+                    <SidebarMenuItem className="text-base font-light text-black" key={idx}>
                       <SidebarMenuButton asChild>
                         <Link href={itm.url} className="px-3 flex items-center gap-5">
                           {itm.icon}

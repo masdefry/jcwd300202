@@ -4,7 +4,7 @@ import React, { ReactNode, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { FaRegBuilding, FaRegCalendarDays, FaRegComments, FaWifi } from 'react-icons/fa6'
-import { TbFileDescription } from 'react-icons/tb'
+import { TbFileDescription, TbListDetails } from 'react-icons/tb'
 import { MdOutlineBedroomParent, MdOutlinePhotoLibrary, MdOutlineRoomService } from 'react-icons/md'
 import { IoClose, IoSettingsOutline, IoStatsChart } from 'react-icons/io5'
 import { CiMenuBurger } from 'react-icons/ci'
@@ -16,8 +16,14 @@ const TenantManagePropertyLayout = ({ children }: { children: ReactNode }) => {
 
   return (
     <main className="flex flex-col relative">
-      <section className={` items-start z-50 2xl:static fixed top-10  ${showMobileNav ? 'flex' : 'hidden 2xl:flex'} left-0 gap-1 transition duration-200 min-h-max`}>
+      <section className={` items-start z-50 2xl:static fixed   ${showMobileNav ? 'flex p-5 top-7' : 'hidden 2xl:flex top-10'} left-0 gap-1 transition duration-200 min-h-max`}>
       <nav className='flex 2xl:flex-row flex-wrap 2xl:gap-0 gap-3 items-center 2xl:bg-opacity-100 bg-opacity-95 backdrop-blur-lg bg-gray-900 text-white rounded-lg w-fit 2xl:w-full overflow-hidden justify-center 2xl:justify-evenly'>
+        <Link href={`/tenant/property/manage/${pathname.split('/')[4]}`}>
+        <div className='text-[10px] font-base flex flex-col gap-1.5 p-4 items-center justify-center 2xl:hover:border-white hover:scale-90 2xl:hover:scale-105 active:opacity-75 transition duration-100 border-b-4 border-transparent'>
+        <TbListDetails className='text-2xl' />
+            Property Details
+        </div>
+        </Link>
         <Link href={`/tenant/property/manage/${pathname.split('/')[4]}/general-info`}>
         <div className='text-[10px] font-base flex flex-col gap-1.5 p-4 items-center justify-center 2xl:hover:border-white hover:scale-90 2xl:hover:scale-105 active:opacity-75 transition duration-100 border-b-4 border-transparent'>
         <FaRegBuilding className='text-2xl' />

@@ -100,7 +100,7 @@ const PropertyRoomTypesInputSection = ({
             {values.propertyRoomTypes.map(
               (item: IPropertyRoomType, index: number) => {
                 return (
-                  <div className="w-full flex flex-col gap-3">
+                  <div key={index} className="w-full flex flex-col gap-3">
                     <hgroup className="text-xl font-bold">
                       <h1>
                         {values.propertyRoomTypes[index].name ||

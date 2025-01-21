@@ -77,6 +77,7 @@ const PropertyManagePhotosPage = ({ params }: { params: { slug: string } }) => {
         {dataPropertyImages?.map((item: any, index: number) => {
           return (
             <figure
+            key={index}
               onClick={() =>
                 setShowPhoto({
                   id: item?.id,

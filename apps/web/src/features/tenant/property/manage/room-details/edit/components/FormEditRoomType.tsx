@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import {  Form } from 'formik'
+import { Form } from 'formik'
 import TextInput from '@/features/tenant/property/create/components/TextInput'
 import { CgRename } from 'react-icons/cg'
 import {
@@ -12,6 +12,7 @@ import {
 import { RiMoneyDollarCircleLine } from 'react-icons/ri'
 import { GiShower } from 'react-icons/gi'
 import { FaRegSave } from 'react-icons/fa'
+import { IUseManageRoomDetailsHook } from '../../types'
 const FormEditRoomType = ({
   dataPropertyRoomType,
   isPendingUpdatePropertyRoomTypeGeneral,

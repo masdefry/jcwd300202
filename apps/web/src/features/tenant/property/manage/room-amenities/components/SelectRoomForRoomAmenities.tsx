@@ -42,7 +42,7 @@ const SelectRoomForRoomAmenities = ({
           <option value="all-rooms">All Room Types</option>
           {dataGeneralRoomFacilities?.property?.propertyRoomType?.map(
             (item: any, index: number) => {
-              return <option value={item?.id}>{item?.name}</option>
+              return <option key={index} value={item?.id}>{item?.name}</option>
             },
           )}
         </select>

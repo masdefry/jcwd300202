@@ -12,8 +12,8 @@ const RoomTypesDescriptionsInputSection = ({ dataPropertyDescriptions }: { dataP
         {dataPropertyDescriptions?.propertyRoomType.map(
           (item: any, index: number) => {
             return (
-              <div className="flex flex-col gap-5">
-                <p className="text-sm font-normal text-gray-700 mb-[-15px] flex items-center gap-1">
+              <div key={index} className="flex flex-col gap-5">
+                <p className="text-sm font-normal text-gray-700 mb-[-15px] sm:flex-row flex-col flex justify-start sm:items-center gap-1">
                   <b className="text-base font-bold">
                     {item?.name}
                   </b>

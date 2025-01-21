@@ -3,13 +3,14 @@
 import instance from '@/utils/axiosInstance'
 import { useMutation } from '@tanstack/react-query'
 import React from 'react'
+import { IDataCreatePropertyRoomFacility } from '../types'
 
 const useMutateCreatePropertyRoomFacilityApi = ({
   dataCreatePropertyRoomFacility,
   onError,
   onSuccess
 }: {
-  dataCreatePropertyRoomFacility: any
+  dataCreatePropertyRoomFacility: IDataCreatePropertyRoomFacility
   onSuccess: (res: any) => void
   onError: (err: any) => void
 }) => {

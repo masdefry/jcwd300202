@@ -133,6 +133,7 @@ const ExplorePage = ({
             ? dataProperties?.properties.map((item: any, index: number) => {
                 return (
                   <CardForExplore
+                    key={index}
                     item={item}
                     searchParams={searchParams}
                     isPending={
@@ -146,6 +147,7 @@ const ExplorePage = ({
             : Array.from({ length: 5 }).map((item: any, index: number) => {
                 return (
                   <CardForExplore
+                    key={index}
                     item={item}
                     searchParams={searchParams}
                     isPending={

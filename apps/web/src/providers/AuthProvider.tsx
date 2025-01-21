@@ -19,47 +19,6 @@ export default function AuthProvider({children}: IAuthProviderProps){
     const role = authStore((state) => state.role)
     const setKeepAuth = authStore((state) => state.setKeepAuth)
 
-    // useQuery({
-    //     queryKey: ["token"],
-    //     queryFn: () => {
-    //         if(Boolean(token)) {
-    //             if(pathname.split('/').includes('auth')) {
-    //                 router.push('/')
-    //                 setTimeout(() =>{ 
-    //                     setLoading(false)
-    //                 } , 1000)
-    //             }
-
-    //             if(role === 'USER' && pathname.split('/').includes('tenant')) {
-    //                 router.push('/403')
-    //                 setTimeout(() =>{ 
-    //                     setLoading(false)
-    //                 } , 1000)
-    //             } else if (role === 'TENANT' && pathname.split('/').includes('user')) {
-    //                 router.push('/403')
-    //                 setTimeout(() =>{ 
-    //                     setLoading(false)
-    //                 } , 1000)
-                    
-    //             }
-    //         } else {
-    //             if ((pathname.split('/').includes('tenant') && !pathname.split('/').includes('auth'))){
-    //                 router.push('/tenant/auth')
-    //                 setTimeout(() =>{ 
-    //                     setLoading(false)
-    //                 } , 1000)
-    //             } else if((pathname.split('/').includes('booking') || pathname.split('/').includes('transactions') || pathname.split('/').includes('user'))) {
-    //                 router.push('/auth')
-    //                 setTimeout(() =>{ 
-    //                     setLoading(false)
-    //                 } , 1000)
-    //             } else {
-    //                 setLoading(false)
-    //             }
-    //         }
-    //         return ""
-    //     }
-    // })
 
     useQuery({
         queryKey: ['keepAuth'],

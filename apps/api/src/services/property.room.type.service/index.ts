@@ -635,22 +635,48 @@ export const updatePropertyRoomTypeGeneralService = async ({
   if (!isPropertyRoomTypeExist?.id || isPropertyRoomTypeExist?.deletedAt)
     throw { msg: 'Property room type not found!', status: 404 }
 
-  const updatedPropertyRoomTypeGeneral = await prisma.propertyRoomType.update({
-    where: {
-      id: Number(propertyRoomTypeId),
-    },
-    data: {
-      name,
-      totalRooms,
-      rooms,
-      bathrooms,
-      capacity,
-      price,
-    },
+  let updatedPropertyRoomTypeGeneral
+  await prisma.$transaction(async(tx) => {
+    try {
+      updatedPropertyRoomTypeGeneral = await tx.propertyRoomType.update({
+        where: {
+          id: Number(propertyRoomTypeId),
+        },
+        data: {
+          name,
+          totalRooms,
+          rooms,
+          bathrooms,
+          capacity,
+          price,
+        },
+      })
+    
+      const findLowestPriceRoomType = await tx.propertyRoomType.findMany({
+        where: {
+          deletedAt: null,
+          propertyId: isPropertyExist?.id
+        },
+        orderBy: {
+          price: 'asc'
+        }
+      })
+    
+      const updateLowestPriceProperty = await tx.property.update({
+        where: {
+          id: isPropertyExist?.id
+        },
+        data: {
+          price: findLowestPriceRoomType[0].price,
+        }
+      })
+    } catch (err) {
+      throw { msg: 'Update property room type failed!', status: 500 }
+    }
+  },
+  {
+    timeout: 25000
   })
-
-  if (!updatedPropertyRoomTypeGeneral?.id)
-    throw { msg: 'Update property room type failed!', status: 500 }
 
   return { updatedPropertyRoomTypeGeneral }
 }
@@ -761,13 +787,32 @@ export const createPropertyRoomTypeService = async ({
 
         if (!createdPropertyRoomImages)
           throw { msg: 'Upload room type images failed!', status: 500 }
+
+        const findLowestPriceRoomType = await tx.propertyRoomType.findMany({
+          where: {
+            deletedAt: null,
+            propertyId: isPropertyExist?.id
+          },
+          orderBy: {
+            price: 'asc'
+          }
+        })
+  
+        const updateLowestPriceProperty = await tx.property.update({
+          where: {
+            id: isPropertyExist?.id
+          },
+          data: {
+            price: findLowestPriceRoomType[0].price
+          }
+        })
       } catch (error) {
         console.log(error)
         throw { msg: 'Connection failed!', status: 500 }
       }
     },
     {
-      timeout: 10000,
+      timeout: 30000,
     },
   )
 
@@ -842,6 +887,8 @@ export const deletePropertyRoomTypeService = async ({
   await prisma.$transaction(
     async (tx) => {
       try {
+        
+
         const deletedRoomHasFacilities = await tx.roomHasFacilities.deleteMany({
           where: {
             propertyRoomTypeId: Number(propertyRoomTypeId),
@@ -875,6 +922,25 @@ export const deletePropertyRoomTypeService = async ({
           data: {
             deletedAt: new Date().toISOString(),
           },
+        })
+
+        const findLowestPriceRoomType = await tx.propertyRoomType.findMany({
+          where: {
+            deletedAt: null,
+            propertyId: isPropertyExist?.id
+          },
+          orderBy: {
+            price: 'asc'
+          }
+        })
+      
+        const updateLowestPriceProperty = await tx.property.update({
+          where: {
+            id: isPropertyExist?.id
+          },
+          data: {
+            price: findLowestPriceRoomType[0].price
+          }
         })
 
         deleteFiles({ imagesUploaded: propertyRoomImagesToDelete })

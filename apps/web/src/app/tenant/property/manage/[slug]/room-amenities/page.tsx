@@ -8,9 +8,11 @@ import ButtonUpdate from '@/features/tenant/property/manage/room-amenities/compo
 import UnauthorizedPage from '@/app/403/page'
 import NotFoundMain from '@/app/not-found'
 import Custom500 from '@/app/500/page'
-import useManageRoomAmenitiesHook from '../../../../../../features/tenant/property/manage/room-amenities/hooks/useManageRoomAmenitiesHook'
-import UpdateConfirmationPopup from '../../../../../../features/tenant/property/manage/room-amenities/components/UpdateConfirmationPopup'
+import useManageRoomAmenitiesHook from '@/features/tenant/property/manage/room-amenities/hooks/useManageRoomAmenitiesHook'
+import UpdateConfirmationPopup from '@/features/tenant/property/manage/room-amenities/components/UpdateConfirmationPopup'
 import FormCreateRoomFacility from '@/features/tenant/property/create/components/FormCreateRoomFacility'
+import SearchInputRoomFacility from '@/features/tenant/property/manage/room-amenities/components/SearchInputRoomFacility'
+import SelectRoomForRoomAmenities from '@/features/tenant/property/manage/room-amenities/components/SelectRoomForRoomAmenities'
 
 const PropertyManageRoomAmenitiesPage = ({
   params,
@@ -87,63 +89,18 @@ const PropertyManageRoomAmenitiesPage = ({
           </p>
         </hgroup>
       )}
-      <section className="flex items-center gap-5 px-5">
-        <span className="w-fit flex flex-col sm:flex-row gap-1 items-start sm:items-center">
-          <label
-            htmlFor="select-room"
-            className="text-xs min-w-max font-bold text-gray-500"
-          >
-            Select Room:
-          </label>
-          <select
-            onChange={(e) => {
-              setSelectRoom((state) => {
-                state = e.target.value
-                return state
-              })
-              if (e.target.value !== 'all-rooms') {
-                mutateSearchRoomFacility('')
-              } else {
-                mutateSearchGeneralRoomFacility('')
-              }
-            }}
-            name="select-room"
-            defaultValue="all-rooms"
-            id="select-room"
-            className="hover:cursor-pointer bg-gray-50 border border-slate-300 text-gray-800 text-xs font-semibold rounded-full h-[3em] p-1.5 px-2 focus:outline-none focus:ring-slate-400 focus:border-slate-400 block w-[200px] min-w-max dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          >
-            <option value="all-rooms">All Room Types</option>
-            {dataGeneralRoomFacilities?.property?.propertyRoomType?.map(
-              (item: any, index: number) => {
-                return <option value={item?.id}>{item?.name}</option>
-              },
-            )}
-          </select>
-        </span>
-      </section>
-      <div className="flex flex-col px-5">
-        <input
-          onChange={(e) => {
-            searchParams.name = e.target.value
-            if (selectRoom !== 'all-rooms') {
-              if (e.target.value.length > 2) {
-                debounceSearchRoomFacility(e.target.value)
-              } else {
-                debounceSearchRoomFacility('')
-              }
-            } else {
-              if (e.target.value.length > 2) {
-                debounceSearchGeneralRoomFacility(e.target.value)
-              } else {
-                debounceSearchGeneralRoomFacility('')
-              }
-            }
-          }}
-          type="text"
-          placeholder="Search facility ( minimum 3 or more characters )"
-          className="px-5 rounded-full py-3 text-sm font-medium font-gray-800 w-full border-2 border-slate-300 bg-white placeholder-shown:text-sm"
-        />
-      </div>
+      <SelectRoomForRoomAmenities
+        setSelectRoom={setSelectRoom}
+        mutateSearchRoomFacility={mutateSearchRoomFacility}
+        mutateSearchGeneralRoomFacility={mutateSearchGeneralRoomFacility}
+        dataGeneralRoomFacilities={dataGeneralRoomFacilities}
+      />
+      <SearchInputRoomFacility
+        searchParams={searchParams}
+        debounceSearchRoomFacility={debounceSearchRoomFacility}
+        debounceSearchGeneralRoomFacility={debounceSearchGeneralRoomFacility}
+        selectRoom={selectRoom}
+      />
       <Formik
         initialValues={{
           propertyRoomFacilitiesId:
@@ -165,7 +122,9 @@ const PropertyManageRoomAmenitiesPage = ({
           return (
             <Form className="flex flex-col gap-7">
               <FieldArrayRoomAmenities
-              setShowCreatePropertyRoomFacilityForm={setShowCreatePropertyRoomFacilityForm}
+                setShowCreatePropertyRoomFacilityForm={
+                  setShowCreatePropertyRoomFacilityForm
+                }
                 isPending={
                   isPendingUpdateGeneralRoomFacilities ||
                   isPendingPropertyHasFacilities
@@ -195,19 +154,25 @@ const PropertyManageRoomAmenitiesPage = ({
                   isPendingUpdateRoomHasFacilities
                 }
               />
-            <FormCreateRoomFacility
-              setDataCreatePropertyRoomFacility={setDataCreatePropertyRoomFacility}
-              isPendingCreatePropertyRoomFacility={
-                isPendingCreatePropertyRoomFacility
-              }
-              setShowCreatePropertyRoomFacilityForm={
-                setShowCreatePropertyRoomFacilityForm
-              }
-              mutateCreatePropertyRoomFacility={mutateCreatePropertyRoomFacility}
-              dataCreatePropertyRoomFacility={dataCreatePropertyRoomFacility}
-              setUploadFile={setUploadFile}
-              showCreatePropertyRoomFacilityForm={showCreatePropertyRoomFacilityForm}
-            />
+              <FormCreateRoomFacility
+                setDataCreatePropertyRoomFacility={
+                  setDataCreatePropertyRoomFacility
+                }
+                isPendingCreatePropertyRoomFacility={
+                  isPendingCreatePropertyRoomFacility
+                }
+                setShowCreatePropertyRoomFacilityForm={
+                  setShowCreatePropertyRoomFacilityForm
+                }
+                mutateCreatePropertyRoomFacility={
+                  mutateCreatePropertyRoomFacility
+                }
+                dataCreatePropertyRoomFacility={dataCreatePropertyRoomFacility}
+                setUploadFile={setUploadFile}
+                showCreatePropertyRoomFacilityForm={
+                  showCreatePropertyRoomFacilityForm
+                }
+              />
             </Form>
           )
         }}

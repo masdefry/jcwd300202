@@ -2,9 +2,7 @@
 
 import React from 'react'
 import instance from '@/utils/axiosInstance'
-import {
-  ISearchParamsExplore,
-} from './types'
+import { ISearchParamsExplore } from '../types'
 import { AxiosResponse } from 'axios'
 const useFetchDataPropertiesApi = ({
   searchParams,
@@ -38,7 +36,7 @@ const useFetchDataPropertiesApi = ({
   }
 
   return {
-    fetchDataProperties
+    fetchDataProperties,
   }
 }
 

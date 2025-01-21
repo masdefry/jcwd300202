@@ -3,7 +3,11 @@
 import instance from '@/utils/axiosInstance'
 import { useMutation } from '@tanstack/react-query'
 import React from 'react'
-import { ISearchParamsExplore, IUseExploreProperties, THandleSearchParams } from './types'
+import {
+  ISearchParamsExplore,
+  IUseExploreProperties,
+  THandleSearchParams,
+} from '../types'
 
 const useMutateExploreFilterAndSortApi = ({
   searchParams,
@@ -13,17 +17,18 @@ const useMutateExploreFilterAndSortApi = ({
   propertyTypeIdArr,
   propertyStarArr,
   onError,
-  onSuccess
-} : Pick<IUseExploreProperties, 
-  'paramMutateExplore' |
-  'propertyFacilityIdArr' |
-  'propertyRoomFacilityIdArr' |
-  'propertyTypeIdArr' |
-  'propertyStarArr'
+  onSuccess,
+}: Pick<
+  IUseExploreProperties,
+  | 'paramMutateExplore'
+  | 'propertyFacilityIdArr'
+  | 'propertyRoomFacilityIdArr'
+  | 'propertyTypeIdArr'
+  | 'propertyStarArr'
 > & {
-    searchParams: ISearchParamsExplore,
-    onError: (err: any) => void,
-    onSuccess: (res: any) => void
+  searchParams: ISearchParamsExplore
+  onError: (err: any) => void
+  onSuccess: (res: any) => void
 }) => {
   const {
     mutate: mutateExploreFilterAndSort,

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { BsBuildingCheck, BsBuildingExclamation } from 'react-icons/bs'
 import { Formik, Form, FieldArray } from 'formik'
 import { FiSend } from 'react-icons/fi'
@@ -8,10 +8,10 @@ import { managePropertyFacilitiesValidationSchema } from '@/features/tenant/prop
 import UnauthorizedPage from '@/app/403/page'
 import NotFoundMain from '@/app/not-found'
 import Custom500 from '@/app/500/page'
-import useManagePropertyFacilitiesHook from '../../../../../../features/tenant/property/manage/facilities/api/useManagePropertyFacilitiesHook'
-import PropertyHasFacilitySection from '../../../../../../features/tenant/property/manage/facilities/components/PropertyHasFacilitySection'
-import PropertyHasNotFacilitySection from '../../../../../../features/tenant/property/manage/facilities/components/PropertyHasNotFacilitySection'
-import UpdateConfirmationPopup from '../../../../../../features/tenant/property/manage/facilities/components/UpdateConfirmationPopup'
+import useManagePropertyFacilitiesHook from '@/features/tenant/property/manage/facilities/api/useManagePropertyFacilitiesHook'
+import PropertyHasFacilitySection from '@/features/tenant/property/manage/facilities/components/PropertyHasFacilitySection'
+import PropertyHasNotFacilitySection from '@/features/tenant/property/manage/facilities/components/PropertyHasNotFacilitySection'
+import UpdateConfirmationPopup from '@/features/tenant/property/manage/facilities/components/UpdateConfirmationPopup'
 import FormCreatePropertyFacility from '@/features/tenant/property/create/components/FormCreatePropertyFacility'
 
 const PropertyManageFacilitiesPage = ({
@@ -30,20 +30,16 @@ const PropertyManageFacilitiesPage = ({
     setUploadFile,
     showCreatePropertyFacilityForm,
     isLoadingFetch,
-    setIsLoadingFetch,
     dataPropertyHasFacilities,
-    setDataPropertyHasFacilities,
     showMorePropertyNotHasFacility,
     setShowMorePropertyNotHasFacility,
     showMorePropertyHasFacility,
     setShowMorePropertyHasFacility,
     fetchPropertyHasFacilities,
     errorStatus,
-    setErrorStatus,
     isSubmitting,
     setIsSubmitting,
     debounceSearchPropertyFacility,
-    mutateSearchPropertyFacility,
     isPendingSearchPropertyFacility,
     mutateUpdatePropertyHasFacilities,
     isPendingUpdatePropertyHasFacilities,

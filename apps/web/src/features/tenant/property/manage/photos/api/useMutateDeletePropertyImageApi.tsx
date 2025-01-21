@@ -1,3 +1,5 @@
+'use client'
+
 import instance from '@/utils/axiosInstance'
 import { useMutation } from '@tanstack/react-query'
 import React from 'react'

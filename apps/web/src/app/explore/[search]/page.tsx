@@ -6,8 +6,8 @@ import CardForExplore from '@/features/explore/components/CardForExplore'
 import CardForNotFound from '@/features/explore/components/CardForNotFound'
 import NotFoundMain from '@/app/not-found'
 import Custom500 from '@/app/500/page'
-import { ISearchParamsExplore } from './types'
-import useExploreFunctionalityHook from './useExploreFunctionalityHook'
+import { ISearchParamsExplore } from '@/features/explore/types'
+import useExploreFunctionalityHook from '@/features/explore/hooks/useExploreFunctionalityHook'
 import FilteringExplore from '@/features/explore/components/FilteringExplore'
 import SortFirstSection from '@/features/explore/components/SortFirstSection'
 import SortSecondSection from '@/features/explore/components/SortSecondSection'
@@ -58,7 +58,6 @@ const ExplorePage = ({
 
   useEffect(() => {
     fetchDataProperties()
-
   }, [])
 
   if (errorStatus) {
@@ -102,18 +101,22 @@ const ExplorePage = ({
           dataProperties={dataProperties}
         />
         <div className="2xl:col-span-3 w-full min-h-min flex flex-col gap-3 px-3">
-              <SortSecondSection
-                searchParams={searchParams}
-                mutateExplorePagination={mutateExplorePagination}
-                dataProperties={dataProperties}
-                handleSort={handleSort}
-                handleFilterName={handleFilterName}
-                setSearchName={setSearchName}
-                searchName={searchName}
-              />
+          <SortSecondSection
+            searchParams={searchParams}
+            mutateExplorePagination={mutateExplorePagination}
+            dataProperties={dataProperties}
+            handleSort={handleSort}
+            handleFilterName={handleFilterName}
+            setSearchName={setSearchName}
+            searchName={searchName}
+          />
           <div className="hidden grid-cols-4 gap-4 2xl:grid">
             <span className="flex items-center gap-5 col-span-4">
-              <FilterByNameMobile setSearchName={setSearchName} handleFilterName={handleFilterName} searchName={searchName}/>
+              <FilterByNameMobile
+                setSearchName={setSearchName}
+                handleFilterName={handleFilterName}
+                searchName={searchName}
+              />
             </span>
           </div>
           <span className="sm:flex bg-blue-900 hidden items-center gap-2 p-3 px-5 text-white text-sm font-bold rounded-md">
@@ -153,7 +156,10 @@ const ExplorePage = ({
                   />
                 )
               })}
-          <ButtonPaginationExplore handlePagination={handlePagination} dataProperties={dataProperties}/>
+          <ButtonPaginationExplore
+            handlePagination={handlePagination}
+            dataProperties={dataProperties}
+          />
         </div>
       </section>
     </main>

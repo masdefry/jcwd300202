@@ -23,6 +23,7 @@ const useManageDescriptionsHook = ({
   } = useMutateUpdatePropertyDescriptions({
     params,
     onSuccess: (res) => {
+      setIsSubmitting(false)
       toast((t) => (
         <span className="flex gap-2 items-center font-semibold justify-center text-xs">
           {res?.message}

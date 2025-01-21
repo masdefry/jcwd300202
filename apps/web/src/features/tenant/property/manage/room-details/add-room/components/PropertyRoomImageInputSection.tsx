@@ -79,7 +79,7 @@ const PropertyRoomImageInputSection = ({
                       <div className="hover:cursor-pointer text-lg absolute right-4 bottom-4 bg-white shadow-md text-red-600 hover:text-opacity-75 active:scale-90 transition duration-100 h-10 w-10 flex items-center justify-center rounded-2xl">
                         <FaRegTrashCan
                           onClick={() => {
-                            removeFile(0)
+                            removeFile(imageIdx + 1)
                             setUploadFile((state: boolean) => !state)
                           }}
                         />

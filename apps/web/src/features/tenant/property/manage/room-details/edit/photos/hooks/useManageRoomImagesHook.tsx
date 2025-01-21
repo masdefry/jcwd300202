@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react'
 import useQueryPropertyRoomImagesApi from '../api/useQueryPropertyRoomImagesApi'
 import useMutateDeleteRoomImagesApi from '../api/useMutateDeleteRoomImagesApi'

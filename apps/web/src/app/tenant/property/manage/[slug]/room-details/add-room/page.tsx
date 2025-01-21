@@ -52,24 +52,7 @@ const ManageAddRoom = ({ params }: { params: { slug: string } }) => {
           validationSchema={manageAddRoomValidationSchema}
           enableReinitialize={true}
           onSubmit={(values) => {
-            console.log('aaaaaa')
-            const fd = new FormData()
-            fd.append('description', values?.description)
-            fd.append('name', values?.name)
-            fd.append('price', values?.price)
-            fd.append('capacity', values?.capacity.toString())
-            fd.append('totalRooms', values?.totalRooms.toString())
-            fd.append('rooms', values?.rooms.toString())
-            fd.append('bathrooms', values?.bathrooms.toString())
-            fd.append(
-              'propertyRoomFacilitiesId',
-              JSON.stringify(values?.propertyRoomFacilitiesId),
-            )
-            values?.file.forEach((item) => {
-              fd.append('images', item)
-            })
-
-            mutateCreateRoom(fd)
+            setIsSubmitting(true)
           }}
         >
           {({ values, setFieldValue }) => (
@@ -124,8 +107,7 @@ const ManageAddRoom = ({ params }: { params: { slug: string } }) => {
                 />
               </section>
               <button
-                type="button"
-                onClick={() => setIsSubmitting(true)}
+                type="submit"
                 disabled={isPendingCreateRoom || isPendingRoomFacilities}
                 className="transition duration-100 disabled:bg-slate-300 disabled:hover:opacity-100 disabled:active:scale-100 disabled:text-slate-500 flex items-center gap-1.5 rounded-full hover:opacity-75 active:scale-95 bg-slate-900 text-white text-sm font-bold px-5 py-3 shadow-md w-full justify-center"
               >
@@ -152,8 +134,27 @@ const ManageAddRoom = ({ params }: { params: { slug: string } }) => {
                       Cancel
                     </button>
                     <button
-                      type="submit"
-                      disabled={false}
+                      type="button"
+                      onClick={() => {
+                        const fd = new FormData()
+                        fd.append('description', values?.description)
+                        fd.append('name', values?.name)
+                        fd.append('price', values?.price)
+                        fd.append('capacity', values?.capacity.toString())
+                        fd.append('totalRooms', values?.totalRooms.toString())
+                        fd.append('rooms', values?.rooms.toString())
+                        fd.append('bathrooms', values?.bathrooms.toString())
+                        fd.append(
+                          'propertyRoomFacilitiesId',
+                          JSON.stringify(values?.propertyRoomFacilitiesId),
+                        )
+                        values?.file.forEach((item) => {
+                          fd.append('images', item)
+                        })
+
+                        mutateCreateRoom(fd)
+                      }}
+                      disabled={isPendingCreateRoom}
                       className="disabled:bg-slate-300 disabled:text-white disabled:scale-100 disabled:opacity-100 px-5 hover:opacity-75 transition duration-100 active:scale-90 py-1.5 text-white text-sm font-bold rounded-full shadow-md border bg-blue-800 border-slate-100"
                     >
                       Confirm Update

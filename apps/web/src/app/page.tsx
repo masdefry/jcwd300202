@@ -34,7 +34,6 @@ export default function Home() {
     queryKey: ['getPropertiesByUser'],
     queryFn: async() => {
       const res = await instance.get('/property/user')
-      console.log('resss', res)
       return res?.data?.data
     }
   })
@@ -87,7 +86,7 @@ export default function Home() {
         </section>
       </section>
       </section>
-      <section className='relative right-4 sm:right-8 md:right-12 lg:right-16'>
+      <section className='relative'>
           <Hero isPending={true}/>
       </section>
       {
@@ -163,7 +162,7 @@ export default function Home() {
                   </div>
                 </Link>
               )
-              }
+            }
             })
           }
         </section>
@@ -172,6 +171,7 @@ export default function Home() {
             dataLandingPage?.data?.cities?.map((item: any, index: number) => {
               if(index >= 2) {
                 return(
+                <Link key={index} href={`/explore/search?city=${item?.id}`}>
                   <div key={index}>
                     <CityRecommendationCard
                     isPending={isPendingDataLandingPage} 
@@ -182,6 +182,7 @@ export default function Home() {
                     h1Size='text-3xl'
                     />
                   </div>
+                </Link>
               )
               }
             })
@@ -189,8 +190,39 @@ export default function Home() {
         </section>
       </section>
       </section>
-      <section className='relative right-4 sm:right-8 md:right-12 lg:right-16'>
+      <section className='relative '>
           <Hero isPending={isPendingDataLandingPage}/>
+      </section>
+      <section className='m-auto max-w-screen-xl w-full h-full'>
+      <section className='flex flex-col gap-5'>
+        <hgroup className='flex flex-col'>
+          <h1 className='lg:text-3xl font-bold text-lg md:text-3xl text-gray-900'>Explore Property</h1>
+          <p className='md:text-base text-sm font-medium text-gray-600'>See, book, and stay in our partner properties</p>
+        </hgroup>
+        <div className="carousel rounded-none flex gap-3 md:gap-5 h-fit py-2">
+        {
+          dataLandingPage?.data?.properties.map((item: any, index: number) => {
+            return (
+            <div className="carousel-item hover:cursor-pointer md:hover:translate-y-2 transition duration-100 active:opacity-75" key={index}>
+              <Link href={`/property/${item?.slug}/details`}>
+                <Card 
+                isPending={isPendingDataLandingPage}
+                propertyType={item?.propertyType?.name}
+                propertyName={item?.name}
+                city={item?.city?.name}
+                country={item?.country?.name}
+                ratingAvg={0}
+                totalReviews={item?.review?.length}
+                price={item?.propertyRoomType[0]?.price}
+                imageUrl={`http://localhost:5000/api/${item.propertyDetail.propertyImage[0].directory}/${item.propertyDetail.propertyImage[0].filename}.jpg`}
+                />
+              </Link>
+            </div>
+            )
+          })
+        }
+        </div>
+      </section>
       </section>
       {
         (token && (role === 'USER')) && (
@@ -207,7 +239,7 @@ export default function Home() {
               <p className='text-gray-300 md:text-base text-xs font-medium'>Explore Roomify and book any properties you want</p>
             </div>
             ):(
-            <div className="carousel rounded-none flex gap-5 h-fit py-2">
+            <div className="carousel rounded-none flex gap-3 md:gap-5 h-fit py-2">
                 { 
                   dataPropertiesByUser?.propertyByRecentBooks.map((item: any, index: number) => {
                     return (
@@ -251,7 +283,7 @@ export default function Home() {
               <p className='text-gray-300 md:text-base text-xs font-medium'>Explore Roomify and look any properties you want</p>
             </div>
             ):(
-            <div className="carousel rounded-none flex gap-5 h-fit py-2">
+            <div className="carousel rounded-none flex gap-3 md:gap-5 h-fit py-2">
                 { 
                   dataPropertiesByUser?.propertyByHistoryView.map((item: any, index: number) => {
                     return (
@@ -280,41 +312,7 @@ export default function Home() {
         </section>
 
         )
-      }
-      <section className='m-auto max-w-screen-xl w-full h-full'>
-      <section className='flex flex-col gap-5'>
-        <hgroup className='flex flex-col'>
-          <h1 className='lg:text-3xl font-bold text-lg md:text-3xl text-gray-900'>Explore Property</h1>
-          <p className='md:text-base text-sm font-medium text-gray-600'>See, book, and stay in our partner properties</p>
-        </hgroup>
-        <div className="carousel rounded-none flex gap-3 md:gap-5 h-fit py-2">
-        {
-          dataLandingPage?.data?.properties.map((item: any, index: number) => {
-            return (
-            <div className="carousel-item hover:cursor-pointer md:hover:translate-y-2 transition duration-100 active:opacity-75" key={index}>
-              <Link href={`/property/${item?.slug}/details`}>
-                <Card 
-                isPending={isPendingDataLandingPage}
-                propertyType={item?.propertyType?.name}
-                propertyName={item?.name}
-                city={item?.city?.name}
-                country={item?.country?.name}
-                ratingAvg={0}
-                totalReviews={item?.review?.length}
-                price={item?.propertyRoomType[0]?.price}
-                // imageUrl={`http://localhost:5000/api/${item.propertyDetail?.propertyImage[0]?.directory}/${item.propertyDetail.propertyImage[0].filename}.jpg`}
-                />
-              </Link>
-            </div>
-            )
-          })
-        }
-        </div>
-      </section>
-      </section>
-
-
-      
+      }     
     </main>
   )
 }

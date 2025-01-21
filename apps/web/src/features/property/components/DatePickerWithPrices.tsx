@@ -17,15 +17,17 @@ interface IDatePickerWithPricesProps {
   setDateRange: any,
   checkInDate: Date,
   checkOutDate: Date,
+  excludeDateList: any
 }
 
-const DatePickerWithPrices = ({ dateAndPrice = {}, basePrice = 0, dateRange, setDateRange, checkInDate, checkOutDate }: IDatePickerWithPricesProps) => {
+const DatePickerWithPrices = ({ dateAndPrice = {}, basePrice = 0, dateRange, setDateRange, checkInDate, checkOutDate, excludeDateList }: IDatePickerWithPricesProps) => {
 
   
   const formatPrice = (price: number): string => {
     return price >= 1000000
       ? `${(price / 1000000).toFixed(price % 1000000 === 0 ? 0 : 1)}M`
-      : price.toString();
+      : price >= 1000
+      ? `${(price / 1000).toFixed(price % 1000 === 0 ? 0 : 1)}K` : price.toString();
   };
   
   const formattedDailyPrices: Record<string, string> = Object.fromEntries(
@@ -44,11 +46,12 @@ const DatePickerWithPrices = ({ dateAndPrice = {}, basePrice = 0, dateRange, set
           </div>
         );
   }
-
   const renderDayContents = (day: number, date: Date) => {
     const dateString = format(date, "yyyy-MM-dd");
     const editedBasePrice = Number(basePrice) >= 1000000
     ? `${(basePrice / 1000000).toFixed(basePrice % 1000000 === 0 ? 0 : 1)}M`
+    : Number(basePrice) >= 1000
+    ? `${(basePrice / 1000).toFixed(basePrice % 1000 === 0 ? 0 : 1)}K`
     : basePrice.toString()
     const dailyPrice = formattedDailyPrices[dateString] || editedBasePrice;
     return (
@@ -59,6 +62,8 @@ const DatePickerWithPrices = ({ dateAndPrice = {}, basePrice = 0, dateRange, set
     );
   };
 
+  const excludeDates = excludeDateList.map((item: string) => new Date(item))
+
   return (
     <div>
       <DatePicker
@@ -68,8 +73,10 @@ const DatePickerWithPrices = ({ dateAndPrice = {}, basePrice = 0, dateRange, set
       onChange={(update) => {
         setDateRange(update);
       }}
+      minDate={new Date()}
       withPortal
       monthsShown={1}
+      excludeDates={excludeDates}
       renderDayContents={renderDayContents}
       renderMonthContent={renderMonthContents}
       placeholderText="Select your period"

@@ -22,7 +22,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors(corsOption))
 app.use('/api', router)
 
-
 // cron.schedule('0 0 * * *', async () => {
 //   console.log('Running cron job: Handling expired transactions...');
 //   await handleExpiredTransaction()
@@ -36,8 +35,8 @@ interface IError extends Error {
 app.use((error: IError, req: Request, res: Response, next: NextFunction) => {
   res.status(error.status || 500).json({
     error: true,
-    message: error.msg ? error.msg : error.name === 'TokenExpiredError' ? error.message : 'Something went wrong!',
-    // message: error.msg || error.message,
+    // message: error.msg ? error.msg : error.name === 'TokenExpiredError' ? error.message : 'Something went wrong!',
+    message: error.msg || error.message,
     data: {}
   })
 })

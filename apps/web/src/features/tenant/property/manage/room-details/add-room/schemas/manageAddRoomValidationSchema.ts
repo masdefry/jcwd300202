@@ -1,14 +1,6 @@
 import * as Yup from 'yup'
 
 export const manageAddRoomValidationSchema = Yup.object().shape({
-  // name: '',
-  // capacity: '',
-  // description: '',
-  // totalRooms: '',
-  // rooms: '',
-  // bathrooms: '',
-  // propertyRoomFacilitiesId: [],
-  // file: []
   name: Yup.string()
     .matches(
       /^[a-zA-Z0-9\s]*$/,
@@ -36,13 +28,7 @@ export const manageAddRoomValidationSchema = Yup.object().shape({
     .min(1, 'Bathrooms must be at least 1')
     .required('Bathrooms are required'),
 
-  description: Yup.string()
-    .matches(
-      /^([^.,-]*([.,-][^.,-]*){0,20}){0,1}$/,
-      'No more than 20 dots, commas, or hyphens allowed',
-    )
-    .matches(/^[a-zA-Z0-9\s.,-]*$/, 'No special characters allowed')
-    .required('Room description are required'),
+  description: Yup.string().required('Room description are required'),
 
   propertyRoomFacilitiesId: Yup.array()
     .of(Yup.number().min(1, 'Room facility ID must be greater than 0'))
@@ -51,8 +37,8 @@ export const manageAddRoomValidationSchema = Yup.object().shape({
   file: Yup.array()
     .of(
       Yup.mixed<File>()
-        .test('fileSize', 'Maximum 2MB file size allowed', (file) => {
-          const limitFileSize = 2000000
+        .test('fileSize', 'Maximum 1MB file size allowed', (file) => {
+          const limitFileSize = 1000000
           return file && file.size <= limitFileSize
         })
         .test('fileFormat', 'File format must be png, jpg, or jpeg', (file) => {
@@ -60,6 +46,6 @@ export const manageAddRoomValidationSchema = Yup.object().shape({
           return file && fileFormatAccepted.includes(file.type.split('/')[1])
         }),
     )
-    .min(1, 'At least one image must be included')
+    .min(3, 'At least 3 image must be included')
     .max(5, 'Maximum 5 image allowed'),
 })

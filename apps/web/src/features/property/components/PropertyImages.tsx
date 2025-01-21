@@ -60,14 +60,8 @@ const PropertyImages = ({ dataPropertyDetail, setShowPropertyImages, showPropert
               )
           }
           <section className='px-5 pt-8 2xl:hidden'>
-              <div onClick={() => setShowPropertyImages(true)} className='bg-blue-200 w-full md:h-[300px] h-[200px] rounded-xl shadow-md overflow-hidden'>
-                  <Image
-                  src={`http://localhost:5000/api/${dataPropertyDetail?.propertyImages[0]?.directory}/${dataPropertyDetail?.propertyImages[0]?.filename}.${dataPropertyDetail?.propertyImages[0]?.fileExtension}`}
-                  width={1000}
-                  height={1000}
-                  alt=''
-                  className='h-full w-full object-cover '
-                  />
+              <div className='bg-slate-200 skeleton w-full md:h-[300px] h-[200px] rounded-xl shadow-md overflow-hidden'>
+
               </div>
           </section>
           </section>
@@ -82,11 +76,11 @@ const PropertyImages = ({ dataPropertyDetail, setShowPropertyImages, showPropert
                 dataPropertyDetail?.propertyImagesPreview?.map((item: any, index: number) => {
                     let className
                     if(index === 0) {
-                        className = 'overflow-hidden relative rounded-md w-full h-full col-span-3 hover:cursor-pointer row-span-6'
+                        className = 'overflow-hidden relative rounded-md w-full h-full bg-gray-200 col-span-3 hover:cursor-pointer row-span-6'
                     } else if(index === 1 || index === 2) {
-                        className = 'overflow-hidden relative rounded-md w-full h-full col-span-2 hover:cursor-pointer row-span-3'
+                        className = 'overflow-hidden relative rounded-md w-full h-full bg-gray-200 col-span-2 hover:cursor-pointer row-span-3'
                     } else {
-                        className = 'overflow-hidden relative rounded-md w-full h-full col-span-1 hover:cursor-pointer row-span-2'
+                        className = 'overflow-hidden relative rounded-md w-full h-full bg-gray-200 col-span-1 hover:cursor-pointer row-span-2'
                     }
                     if(index === 7) {
                         return (
@@ -105,9 +99,13 @@ const PropertyImages = ({ dataPropertyDetail, setShowPropertyImages, showPropert
                                     </div>
                                 )
                             }
-                            <div className='rounded-md absolute top-0 left-0 w-full h-full hover:bg-opacity-60 bg-black bg-opacity-40 flex items-center justify-center'>
-                                <p className='text-xl text-white font-bold hover:cursor-pointer hover:underline transition duration-100'>+{dataPropertyDetail?.propertyImages.length - dataPropertyDetail?.propertyImagesPreview.length} Photos</p>
-                            </div>
+                            {
+                                (dataPropertyDetail?.propertyImages.length - dataPropertyDetail?.propertyImagesPreview.length > 0) && (
+                                <div className='rounded-md absolute top-0 left-0 w-full h-full hover:bg-opacity-60 bg-black bg-opacity-40 flex items-center justify-center'>
+                                    <p className='text-xl text-white font-bold hover:cursor-pointer hover:underline transition duration-100'>+{dataPropertyDetail?.propertyImages.length - dataPropertyDetail?.propertyImagesPreview.length} Photos</p>
+                                </div>
+                                )
+                            }
                         </div>
                         )
                     }
@@ -145,7 +143,7 @@ const PropertyImages = ({ dataPropertyDetail, setShowPropertyImages, showPropert
             )
         }
         <section className='px-5 pt-8 2xl:hidden'>
-            <div onClick={() => setShowPropertyImages(true)} className='bg-blue-200 w-full md:h-[300px] h-[200px] rounded-xl shadow-md overflow-hidden'>
+            <div onClick={() => setShowPropertyImages(true)} className='bg-slate-200 w-full md:h-[300px] h-[200px] rounded-xl shadow-md overflow-hidden'>
                 <Image
                 src={`http://localhost:5000/api/${dataPropertyDetail?.propertyImages[0]?.directory}/${dataPropertyDetail?.propertyImages[0]?.filename}.${dataPropertyDetail?.propertyImages[0]?.fileExtension}`}
                 width={1000}

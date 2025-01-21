@@ -19,6 +19,7 @@ model User {
   role               Role      @default(USER)
   isGoogleRegistered Boolean   @default(false)
   token              String?   @db.Text
+  tokenExpiry        DateTime?
   username           String?   @default("Roomify friend")
   phoneNumber        String?
   birthDate          DateTime?
@@ -100,6 +101,7 @@ model Tenant {
   isVerified    Boolean @default(false)
   companyName   String?
   token         String? @db.Text
+  tokenExpiry   DateTime?
   pic           String? @default("Roomify partner")
   phoneNumber   String?
   address       String?
@@ -109,6 +111,7 @@ model Tenant {
 
   property    Property[]
   transaction Transaction[]
+  propertyType PropertyType[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -131,6 +134,7 @@ model Property {
   checkInStartTime  DateTime
   checkInEndTime    DateTime?
   checkOutStartTime DateTime?
+  price             Int?
   checkOutEndTime   DateTime
   slug              String    @unique
   star              Int?
@@ -204,6 +208,10 @@ model PropertyType {
   id          Int    @id @default(autoincrement())
   name        String
   description String @db.Text
+  isCustom    Boolean @default(false)
+
+  tenantId String?
+  tenant Tenant? @relation(fields: [tenantId], references: [id])
 
   property Property[]
 

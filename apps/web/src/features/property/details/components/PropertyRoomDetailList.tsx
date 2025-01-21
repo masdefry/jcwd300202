@@ -4,9 +4,13 @@ import Image from 'next/image'
 import React from 'react'
 import { IoPerson } from 'react-icons/io5'
 import Link from 'next/link'
+import { differenceInDays } from 'date-fns'
+import { usePathname } from 'next/navigation'
+import { IoIosSearch } from 'react-icons/io'
 
-const PropertyRoomDetailList = ({ dataPropertyRoomType, isPending, setShowDataRoom, token, searchParams, mutatePropertyRoomType, dataPropertyDetail, }: any) => {
-  if(isPending) {
+const PropertyRoomDetailList = ({ dataPropertyRoomType, isPending, setShowDataRoom, token, searchParams, handlePropertyRoomType, dataPropertyDetail, role, checkInDate, checkOutDate }: any) => {
+  
+    if(isPending) {
       return (
       
       <section className='flex flex-col gap-5 2xl:p-0 px-5'>
@@ -26,10 +30,10 @@ const PropertyRoomDetailList = ({ dataPropertyRoomType, isPending, setShowDataRo
                       <table className="table min-w-max">
                               <thead>
                               <tr className='text-base font-bold text-transparent'>
-                                  <th className='skeleton text-transparent bg-slate-300 rounded-none w-fit'>Room Choice</th>
-                                  <th className='skeleton text-transparent bg-slate-300 rounded-none w-fit'>Guest</th>
-                                  <th className='skeleton text-transparent bg-slate-300 rounded-none w-fit'>Price/Room/Night</th>
-                                  <th className='skeleton text-transparent bg-slate-300 rounded-none text-center w-[200px] '></th>
+                                  <th className='text-transparent bg-slate-300 rounded-none w-fit'>Room Choice</th>
+                                  <th className='text-transparent bg-slate-300 rounded-none w-fit'>Guest</th>
+                                  <th className='text-transparent bg-slate-300 rounded-none w-fit'>Price/Room</th>
+                                  <th className='text-transparent bg-slate-300 rounded-none text-center w-[200px] '></th>
                               </tr>
                               </thead>
                               <tbody>
@@ -64,8 +68,8 @@ const PropertyRoomDetailList = ({ dataPropertyRoomType, isPending, setShowDataRo
                                       </div>
                                   </td>
                                   <td className='text-right'>
-                                      <p className='text-lg mb-1 font-bold text-transparent skeleton rounded-none bg-slate-300'>Rp{item?.totalPrice}</p>
-                                      <p className='text-xs font-semibold text-transparent skeleton rounded-none bg-slate-300'>Include taxes and price</p>
+                                      <p className='text-lg mb-1 font-bold text-transparent skeleton rounded-none w-fit bg-slate-300'>Rp5000000</p>
+                                      <p className='text-xs font-semibold text-transparent skeleton rounded-none w-fit bg-slate-300'>Include taxes and price</p>
                                   </td>
                                   <td className='w-[200px]'>
                                     <div className=' my-auto italic text-sm font-bold min-w-max px-8 py-3 rounded-full bg-gray-200 text-transparent skeleton ' >Book Now</div>
@@ -83,9 +87,9 @@ const PropertyRoomDetailList = ({ dataPropertyRoomType, isPending, setShowDataRo
       <div id='pagination-button' className='w-full flex justify-center'>
           <div className="join">
               {
-                  Array.from({ length: 5 }).map((_, index) => {
+                  Array.from({ length: 3 }).map((_, index) => {
                       return(
-                          <button key={index} className="join-item btn btn-sm skeleton text-transparent">{index + 1}</button>
+                          <button key={index} disabled={true} className="disabled:text-transparent disabled:border-none join-item btn btn-sm bg-gray-200 text-transparent">{index + 1}</button>
                       )
                   })
               }
@@ -94,12 +98,12 @@ const PropertyRoomDetailList = ({ dataPropertyRoomType, isPending, setShowDataRo
     </section>
     )
 
-  }
+    }
   
     return (
     
     <section className='flex flex-col gap-5 2xl:p-0 px-5'>
-    { 
+    { dataPropertyRoomType?.propertyRoomTypeWithSeasonalPrice?.length > 0 ? (
         dataPropertyRoomType?.propertyRoomTypeWithSeasonalPrice?.map((item: any, index: number) => {
             return (
             <section key={index} className='w-full grid grid-cols-3 gap-5 2xl:gap-10 items-center rounded-md bg-white shadow-md p-3'>
@@ -134,7 +138,7 @@ const PropertyRoomDetailList = ({ dataPropertyRoomType, isPending, setShowDataRo
                             <tr className='text-base font-bold text-gray-800'>
                                 <th>Room Choice</th>
                                 <th className='text-center'>Guest</th>
-                                <th className='text-right'>Price/Room/Night</th>
+                                <th className='text-right'>Price/Room</th>
                                 <th className='text-center w-[200px]'></th>
                             </tr>
                             </thead>
@@ -183,16 +187,17 @@ const PropertyRoomDetailList = ({ dataPropertyRoomType, isPending, setShowDataRo
                                     }
                                     <p className='text-lg mb-1 font-bold text-orange-500'>Rp{item?.totalPrice}</p>
                                     <p className='text-xs font-semibold text-gray-400'>Include taxes and price</p>
+                                    <p className='text-xs font-semibold text-gray-800'>for {item?.totalNights || 1} Nights</p>
                                 </td>
                                 <td className='w-[200px]'>
                                     {
                                         token ? (
                                             <Link href={`/booking/${item?.id}/details?check-in-date=${searchParams['check-in-date']}&check-out-date=${searchParams['check-out-date']}&adult=${searchParams.adult}&children=${searchParams.children}`}>
-                                                <button disabled={item?.totalRoomsLeft <= 0} className='disabled:bg-slate-300 disabled:opacity-100 disabled:text-white disabled:scale-100 my-auto italic text-sm font-bold min-w-max px-8 py-3 rounded-full bg-blue-800 text-white hover:opacity-75 active:scale-95 transition duration-100' type='button'>{item?.totalRoomsLeft <= 0 ? 'Not available' : 'Book now'}</button>
+                                                <button disabled={item?.totalRoomsLeft <= 0 || !item?.isAvailable || role !== 'USER'} className='disabled:bg-slate-300 disabled:opacity-100 disabled:text-white disabled:scale-100 my-auto italic text-sm font-bold min-w-max px-8 py-3 rounded-full bg-blue-800 text-white hover:opacity-75 active:scale-95 transition duration-100' type='button'>{(item?.totalRoomsLeft <= 0 || !item?.isAvailable)  ? 'Not available' : 'Book now'}</button>
                                             </Link>
                                         ) : (
                                             <Link href='/auth'>
-                                                <button  disabled={item?.totalRoomsLeft <= 0} className='disabled:bg-slate-300 disabled:opacity-100 disabled:text-white disabled:scale-100 my-auto italic text-sm font-bold min-w-max px-8 py-3 rounded-full bg-blue-800 text-white hover:opacity-75 active:scale-95 transition duration-100' type='button'>{item?.totalRoomsLeft <= 0 ? 'Not available' : 'Book now'}</button>
+                                                <button  disabled={item?.totalRoomsLeft <= 0 || !item?.isAvailable || role !== 'USER'} className='disabled:bg-slate-300 disabled:opacity-100 disabled:text-white disabled:scale-100 my-auto italic text-sm font-bold min-w-max px-8 py-3 rounded-full bg-blue-800 text-white hover:opacity-75 active:scale-95 transition duration-100' type='button'>{(item?.totalRoomsLeft <= 0 || !item?.isAvailable)  ? 'Not available' : 'Book now'}</button>
                                             </Link>
                                         )
                                     }
@@ -205,6 +210,11 @@ const PropertyRoomDetailList = ({ dataPropertyRoomType, isPending, setShowDataRo
             </section>
             )
         })
+    ) : (
+            <section className='w-full flex justify-center items-center rounded-md bg-white shadow-md p-3 py-12'>
+                <p className='text-center w-full text-slate-300 text-base justify-center 2xl:text-lg font-bold flex items-center gap-1.5'><IoIosSearch size={30}/>Room type not found! Maybe it's on vacation.</p>
+            </section>
+    )
     }
     <div id='pagination-button' className='w-full flex justify-center'>
         <div className="join">
@@ -216,7 +226,7 @@ const PropertyRoomDetailList = ({ dataPropertyRoomType, isPending, setShowDataRo
                         )
                     }
                     return(
-                        <button key={index} onClick={() => mutatePropertyRoomType({ limit: 2, offset: index * 2, propertyId: dataPropertyDetail?.property?.id  })} className="join-item btn btn-sm">{index + 1}</button>
+                        <button key={index} onClick={() => handlePropertyRoomType({ limit: 2, offset: index * 2, propertyId: dataPropertyDetail?.property?.id  })} className="join-item btn btn-sm">{index + 1}</button>
                     )
                 })
             }

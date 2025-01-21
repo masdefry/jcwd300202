@@ -19,20 +19,18 @@ authRouter.post('/tenant/register', registerValidator, registerTenant)
 
 authRouter.post('/tenant/verify-email-request', verifyEmailRequestValidator, verifyEmailRequestTenant)
 authRouter.post('/tenant/verify-change-email-request', verifyToken, verifyChangeEmailRequestTenant)
-authRouter.patch('/tenant/verify-change-email', verifyToken, verifyChangeEmailTenant)
+authRouter.patch('/tenant/verify-change-email/:token', verifyToken, verifyChangeEmailTenant)
 authRouter.patch('/tenant/verify-email', verifyToken, verifyEmailValidator, verifyEmailTenant)
 
 authRouter.post('/verify-email-request', verifyEmailRequestUser)
 authRouter.post('/verify-change-email-request', verifyToken, verifyChangeEmailRequestUser)
-authRouter.patch('/verify-change-email', verifyToken, verifyChangeEmailUser)
+authRouter.patch('/verify-change-email/:token', verifyToken, verifyChangeEmailUser)
 authRouter.patch('/verify-email', verifyToken, verifyEmailValidator, verifyEmailUser)
 
 authRouter.post('/send-email-reset-password', sendEmailResetPasswordValidator, sendEmailResetPasswordUser)
 authRouter.patch('/reset-password', verifyToken, resetPasswordValidator, resetPasswordUser)
 
 authRouter.post('/tenant/send-email-reset-password', sendEmailResetPasswordValidator, sendEmailResetPasswordTenant)
-authRouter.patch('/tenant/reset-password', verifyToken, resetPasswordValidator, resetPasswordTenant)
-
 authRouter.patch('/tenant/reset-password', verifyToken, resetPasswordValidator, resetPasswordTenant)
 
 authRouter.post('/o-auth', registerValidator, signInWithGoogle)

@@ -10,6 +10,9 @@ export const fetchData = async(req: Request, res: Response, next: NextFunction) 
         let getAllProperty ;
         if(country && city && checkInDate && checkOutDate && adult && children) {
             getAllProperty = await prisma.property.findMany({
+                where: {
+                    deletedAt: null
+                },
                 take: Number(limit),
                 skip: Number(offset),
                 include: {

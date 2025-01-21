@@ -1,9 +1,9 @@
 import * as Yup from 'yup'
 
 export const manageGeneralInfoValidationSchema = Yup.object().shape({
- cityId: Yup.number().required('City ID is required').min(1, 'City ID must be greater than 0'),
+ cityId: Yup.number().required('City is required').min(1, 'City must be filled'),
  
- countryId: Yup.number().required('Country ID is required').min(1, 'Country ID must be greater than 0'),
+ countryId: Yup.number().required('Country is required').min(1, 'Country must be filled'),
  
    name: Yup.string()
      .matches(/^[a-zA-Z0-9\s]*$/, 'Only alphanumeric characters and spaces allowed')

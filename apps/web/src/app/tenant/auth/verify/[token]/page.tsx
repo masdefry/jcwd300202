@@ -66,11 +66,16 @@ const VerifyEmailTenantPage = ({params} : {params: { token: string }}) => {
                 mutateVerifyEmail(values)
             }}
             >
+              {
+                ({values}) => (
                 <Form className='flex flex-col gap-5'>
                     <TextInput labelName='Set Password' name='setPassword' placeholder='example123' type='password'/>
                     <TextInput labelName='Confirm Password' name='confirmPassword' placeholder='example123' type='password'/>
-                    <AuthButton isPending={Boolean(isPendingVerifyEmail || isSuccessVerifyEmail)} text='Continue'/>
+                    <AuthButton isPending={Boolean(isPendingVerifyEmail || isSuccessVerifyEmail || !values.confirmPassword || !values.setPassword)} text='Continue'/>
                 </Form>
+
+                )
+              }
             </Formik>
         </section>
     </main>

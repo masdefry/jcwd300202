@@ -27,7 +27,7 @@ export const createPropertyValidationSchema = Yup.object().shape({
     )
     .required('Address is required'),
 
-  location: Yup.string().required('Location is required'),
+  location: Yup.string().url('Invalid URL format').required('Location is required'),
 
   star: Yup.number().max(5, 'Star rating must be between 1 and 5').nullable(),
 
@@ -68,9 +68,9 @@ export const createPropertyValidationSchema = Yup.object().shape({
   propertyImages: Yup.array()
     .of(
       Yup.mixed<File>()
-      .required('Image is required')
-      .test('fileSize', 'Maximum 2MB file size allowed', (file) => {
-          const limitFileSize = 2000000
+        .required('Image is required')
+        .test('fileSize', 'Maximum 1MB file size allowed', (file) => {
+          const limitFileSize = 1000000
           return file && file.size <= limitFileSize
         })
         .test('fileFormat', 'File format must be png, jpg, or jpeg', (file) => {
@@ -78,24 +78,16 @@ export const createPropertyValidationSchema = Yup.object().shape({
           return file && fileFormatAccepted.includes(file.type.split('/')[1])
         }),
     )
-    .min(1, 'At least one image must be included')
+    .min(5, 'At least 5 image must be included')
     .max(7, 'Maximum 7 image allowed'),
 
-  propertyDescription: Yup.string()
-    .matches(
-      /^([^.,-]*([.,-][^.,-]*){0,20}){0,1}$/,
-      'No more than 20 dots, commas, or hyphens allowed',
-    )
-    .matches(/^[a-zA-Z0-9\s.,-]*$/, 'No special characters allowed')
-    .required('Property description is required'),
+  propertyDescription: Yup.string().required(
+    'Property description is required',
+  ),
 
-  neighborhoodDescription: Yup.string()
-    .matches(
-      /^([^.,-]*([.,-][^.,-]*){0,20}){0,1}$/,
-      'No more than 20 dots, commas, or hyphens allowed',
-    )
-    .matches(/^[a-zA-Z0-9\s.,-]*$/, 'No special characters allowed')
-    .required('Neighborhood description is required'),
+  neighborhoodDescription: Yup.string().required(
+    'Neighborhood description is required',
+  ),
 
   phoneNumber: Yup.string()
     .matches(/^[\+0-9\s]*$/, 'Invalid phone number')
@@ -137,13 +129,7 @@ export const createPropertyValidationSchema = Yup.object().shape({
           .min(1, 'Bathrooms must be at least 1')
           .required('Bathrooms are required'),
 
-        description: Yup.string()
-          .matches(
-            /^([^.,-]*([.,-][^.,-]*){0,20}){0,1}$/,
-            'No more than 20 dots, commas, or hyphens allowed',
-          )
-          .matches(/^[a-zA-Z0-9\s.,-]*$/, 'No special characters allowed')
-          .required('Room description are required'),
+        description: Yup.string().required('Room description are required'),
 
         roomFacilities: Yup.array()
           .of(Yup.number().min(1, 'Room facility ID must be greater than 0'))
@@ -152,9 +138,9 @@ export const createPropertyValidationSchema = Yup.object().shape({
         roomImages: Yup.array()
           .of(
             Yup.mixed<File>()
-            .required('Image is required')
-            .test('fileSize', 'Maximum 2MB file size allowed', (file) => {
-                const limitFileSize = 2000000
+              .required('Image is required')
+              .test('fileSize', 'Maximum 1MB file size allowed', (file) => {
+                const limitFileSize = 1000000
                 return file && file.size <= limitFileSize
               })
               .test(
@@ -168,7 +154,7 @@ export const createPropertyValidationSchema = Yup.object().shape({
                 },
               ),
           )
-          .min(1, 'At least one image must be included')
+          .min(3, 'At least 3 image must be included')
           .max(5, 'Maximum 5 image allowed'),
       }),
     )

@@ -4,7 +4,7 @@ import { verifyToken } from "@/middlewares/verify.token";
 import { Router } from "express";
 const propertyRoomImageRouter = Router()
 
-propertyRoomImageRouter.get('/:roomId', getPropertyRoomImagesByProperty)
+propertyRoomImageRouter.get('/:roomId', verifyToken, getPropertyRoomImagesByProperty)
 propertyRoomImageRouter.post('/:roomId', verifyToken, uploader, createPropertyRoomImagesByProperty)
 propertyRoomImageRouter.delete('/:propertyRoomImageId', verifyToken, deletePropertyRoomImagesByProperty)
 

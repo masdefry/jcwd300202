@@ -1,6 +1,8 @@
 'use client'
 
 import Separator from '@/features/auth/components/Separator'
+import { differenceInDays } from 'date-fns'
+import { difference } from 'next/dist/build/utils'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
@@ -74,7 +76,7 @@ const CardForExplore = ({ item, searchParams, isPending }: any) => {
                     </p>
                   </div>
                     <div
-                      className="rounded-md skeleton w-fit text-transparent bg-slate-300 text-sm font-bold  px-6 py-3  mt-3 flex items-center justify-center gap-2"
+                      className="rounded-md skeleton w-full text-transparent bg-slate-300 text-sm font-bold  px-6 py-3  mt-3 flex items-center justify-center gap-2"
                     >
                       Book this room
                     </div>
@@ -115,7 +117,7 @@ const CardForExplore = ({ item, searchParams, isPending }: any) => {
                 </div>
                   <div
                     
-                    className="min-w-max rounded-full skeleton w-fit  text-transparent bg-slate-300 text-base font-bold px-6 py-3  mt-3 flex items-center gap-2"
+                    className="w-fit min-w-max rounded-full skeleton  text-transparent bg-slate-300 text-base font-bold px-6 py-3  mt-3 flex items-center gap-2"
                   >
                     Book this room
                   </div>
@@ -210,7 +212,7 @@ const CardForExplore = ({ item, searchParams, isPending }: any) => {
                 </p>
               </div>
               <p className="w-full text-xs pr-1 font-semibold text-gray-400 text-right sm:flex 2xl:hidden justify-end hidden">
-                1 Nights | 1 Adults | 1 children
+                {Math.abs(differenceInDays(searchParams['check-in-date'], searchParams['check-out-date']))} Nights | {searchParams?.adult} Adults | {searchParams?.children} children
               </p>
             </div>
             {item?.availability ? (
@@ -232,7 +234,7 @@ const CardForExplore = ({ item, searchParams, isPending }: any) => {
             )}
           </div>
           <p className="w-full text-xs pr-1 font-semibold text-gray-400 text-right 2xl:flex justify-end items-end hidden">
-            1 Nights | 1 Adults | 1 children
+            {differenceInDays(searchParams['check-out-date'], searchParams['check-in-date']) || 1} Nights | 1 Adults | 1 children
           </p>
         </div>
       </div>
@@ -273,7 +275,7 @@ const CardForExplore = ({ item, searchParams, isPending }: any) => {
           </div>
           {item?.availability ? (
             <Link
-              href={`/property/${item?.slug}/details?check-in-date=${searchParams['check-in-date']}&check-out-date=${searchParams['check-out-date']}&adult=${searchParams.adult}&children=${searchParams.children}`}
+              href={`/property/${item?.slug}/details${ (searchParams['check-in-date'] && searchParams['check-out-date']) ? `?check-in-date=${searchParams['check-in-date']}&check-out-date=${searchParams['check-out-date']}&adult=${searchParams.adult}&children=${searchParams.children}` : ''}`}
               className="min-w-max rounded-full bg-black text-base font-bold text-white px-6 py-3 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200 mt-3 flex items-center gap-2"
             >
               <CiBookmarkPlus size={23} />
@@ -281,7 +283,7 @@ const CardForExplore = ({ item, searchParams, isPending }: any) => {
             </Link>
           ) : (
             <Link
-              href={`/property/${item?.slug}/details?check-in-date=${searchParams['check-in-date']}&check-out-date=${searchParams['check-out-date']}&adult=${searchParams.adult}&children=${searchParams.children}`}
+              href={`/property/${item?.slug}/details${ (searchParams['check-in-date'] && searchParams['check-out-date']) ? `?check-in-date=${searchParams['check-in-date']}&check-out-date=${searchParams['check-out-date']}&adult=${searchParams.adult}&children=${searchParams.children}` : ''}`}
               className="min-w-max rounded-full bg-slate-300 text-base font-bold text-white px-6 py-3 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200 mt-3 flex items-center gap-2"
             >
               <CgUnavailable size={23} />

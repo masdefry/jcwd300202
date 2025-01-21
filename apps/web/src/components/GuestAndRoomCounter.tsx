@@ -9,15 +9,17 @@ interface IGuestAndRoomCounterProps {
     setShowGuestAndRoomCounter: any,
     setAllGuest: any,
     allGuest: any,
-    setFieldValue: any
+    setFieldValue: any,
+    totalGuest: { children: number, adult: number },
+    setTotalGuest: any
 }
 
-const GuestAndRoomCounter = ({ setFieldValue, setShowGuestAndRoomCounter, setAllGuest, allGuest }: IGuestAndRoomCounterProps) => {
+const GuestAndRoomCounter = ({ setFieldValue, setShowGuestAndRoomCounter, setAllGuest, allGuest, totalGuest, setTotalGuest }: IGuestAndRoomCounterProps) => {
 
-    const { 
-        totalGuest,
-        setTotalGuest
-     } = useSearchHook()
+    // const { 
+    //     totalGuest,
+    //     setTotalGuest
+    //  } = useSearchHook()
     // const className = 'rounded-md h-8 w-8 flex items-center justify-center '
     // const adult = headerStore((state: any) => state.adult)
     // const setAdult = headerStore((state: any) => state.setAdult)
@@ -34,7 +36,7 @@ const GuestAndRoomCounter = ({ setFieldValue, setShowGuestAndRoomCounter, setAll
 
     const updateTotalGuest = () => {
         if(allGuest.totalGuest <= 10) {
-            setTotalGuest((state) => { 
+            setTotalGuest((state: { adult: number, children: number }) => { 
                 state.adult = Math.min(state.adult, 10) 
                 state.children = Math.min(state.children, 10)
                 return state

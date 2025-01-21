@@ -8,6 +8,7 @@ import { IAuthProviderProps } from './types'
 import { useQuery } from '@tanstack/react-query';
 import LoadingMain from '@/app/loading';
 import Cookies from 'js-cookie';
+import ButtonGoToTop from '@/components/ButtonGoToTop';
 
 export default function AuthProvider({children}: IAuthProviderProps){
     const router = useRouter()
@@ -18,53 +19,11 @@ export default function AuthProvider({children}: IAuthProviderProps){
     const role = authStore((state) => state.role)
     const setKeepAuth = authStore((state) => state.setKeepAuth)
 
-    // useQuery({
-    //     queryKey: ["token"],
-    //     queryFn: () => {
-    //         if(Boolean(token)) {
-    //             if(pathname.split('/').includes('auth')) {
-    //                 router.push('/')
-    //                 setTimeout(() =>{ 
-    //                     setLoading(false)
-    //                 } , 1000)
-    //             }
-
-    //             if(role === 'USER' && pathname.split('/').includes('tenant')) {
-    //                 router.push('/403')
-    //                 setTimeout(() =>{ 
-    //                     setLoading(false)
-    //                 } , 1000)
-    //             } else if (role === 'TENANT' && pathname.split('/').includes('user')) {
-    //                 router.push('/403')
-    //                 setTimeout(() =>{ 
-    //                     setLoading(false)
-    //                 } , 1000)
-                    
-    //             }
-    //         } else {
-    //             if ((pathname.split('/').includes('tenant') && !pathname.split('/').includes('auth'))){
-    //                 router.push('/tenant/auth')
-    //                 setTimeout(() =>{ 
-    //                     setLoading(false)
-    //                 } , 1000)
-    //             } else if((pathname.split('/').includes('booking') || pathname.split('/').includes('transactions') || pathname.split('/').includes('user'))) {
-    //                 router.push('/auth')
-    //                 setTimeout(() =>{ 
-    //                     setLoading(false)
-    //                 } , 1000)
-    //             } else {
-    //                 setLoading(false)
-    //             }
-    //         }
-    //         return ""
-    //     }
-    // })
 
     useQuery({
         queryKey: ['keepAuth'],
         queryFn: async() => {
             let res = await instance.get('/auth/keep-auth')
-            // Cookies.set('authToken', token, { expires: 7, secure: process.env.NODE_ENV === 'production' })
             setKeepAuth({
                 username: res?.data?.data?.username,
                 isVerified: res?.data?.data?.isVerified,
@@ -134,8 +93,11 @@ export default function AuthProvider({children}: IAuthProviderProps){
     // // )
 
     return(
-        <>
+        <main className='relative w-full h-full'>
             {children}
-        </>
+            <div className='absolute bottom-10 right-10'>
+            <ButtonGoToTop />
+            </div>
+        </main>
     )
 }

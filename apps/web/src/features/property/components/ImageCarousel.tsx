@@ -29,18 +29,18 @@ const ImageCarousel = ({ isPending = false, imagesArr }: IHeroProps) => {
 
   return (
         <section id='hero-section-carousel' className='w-full h-full overflow-hidden relative'>
-          <div className={`flex transition-transform ease-in-out duration-1000 h-full min-w-max max-w-max min-w-[${(imagesArr?.length) * 100}%] bg-red-300`} style={{transform: `translateX(-${currSlide/(imagesArr?.length || 1) * 100}%)`}}>
+          <div className={`flex transition-transform ease-in-out duration-1000 h-full min-w-max bg-slate-200`} style={{transform: `translateX(-${currSlide/(imagesArr?.length || 1) * 100}%)`}}>
               {
                 imagesArr?.map((item: any, index: number) => {
                   return(
-                    <section key={index} id={`carousel-${index + 1}`} className="relative rounded-none h-full w-full my-bg-lin-1">
-                      <figure className='w-full h-full'>
+                    <section key={index} id={`carousel-${index + 1}`} className="relative rounded-none h-full min-w-max my-bg-lin-1">
+                      <figure className='min-w-max h-full'>
                         <Image
                           src={`http://localhost:5000/api/${item?.directory}/${item?.filename}.${item?.fileExtension}`}
-                          width={1500}
+                          width={850}
                           height={1500}
                           alt='' 
-                          className="h-full object-cover w-full"
+                          className="h-full object-cover min-w-max"
                         />
                       </figure>
                     </section>

@@ -858,7 +858,6 @@ export const verifyChangeEmailTenantService = async ({
       deletedAt: null,
     },
   })
-  console.log('OOOOOOOOOOOOOOOOOOOO')
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
     throw { msg: 'Tenant not found!', status: 404 }
 
@@ -891,7 +890,6 @@ export const verifyChangeEmailUserService = async ({
       deletedAt: null,
     },
   })
-  console.log('OOOOOOOOOOOOOOOOOOOO')
   if (!isUserExist?.id || isUserExist?.deletedAt)
     throw { msg: 'User not found!', status: 404 }
 

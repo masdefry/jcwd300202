@@ -1,4 +1,4 @@
-// Enum types
+
 export enum Role {
     USER = 'USER',
     TENANT = 'TENANT',

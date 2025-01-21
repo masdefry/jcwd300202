@@ -231,3 +231,4 @@ const ProfileUserLayout = ({ children }: { children: ReactNode }) => {
   )
 }
 export default ProfileUserLayout
+

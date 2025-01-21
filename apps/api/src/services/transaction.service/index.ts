@@ -264,5 +264,72 @@ export const transactionHistoryService = async (id: string) => {
     return null
   }
 
-  return transactions
+    return transactions
 }
+
+export const getTransactionByIdService = async(id: string) => {
+    const transaction = await prisma.transaction.findUnique({
+        where: {
+            id
+        },
+        select: {
+            id: true,
+            checkInDate: true,
+            checkOutDate: true,
+            nights: true,
+            total: true,
+            price: true,
+            qty: true,
+            adult: true,
+            children: true,
+            expiryDate: true,
+            snapToken: true,
+            redirectUrl: true,
+            createdAt: true,
+            room: {
+                select: {
+                    id: true,
+                    name: true,
+                    property: {
+                        select: {
+                            id: true,
+                            name: true,
+                            country: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                },
+                            },
+                            city: {
+                                select: {
+                                    id: true,
+                                    name: true
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            transactionStatus: {
+                orderBy: {
+                    createdAt: 'desc'
+                },
+                take: 1,
+                select: {
+                    id: true,
+                    status: true,
+                    transactionId: true,
+                    createdAt: true,
+                    updatedAt: true,
+                }
+            }
+        }
+    })
+
+    if(!transaction){
+        return null
+    }
+
+    return transaction;
+}
+

@@ -24,7 +24,7 @@ const TablePropertyList = ({ dataProperties, handlePagination, isPending }: { da
                   <tbody>
                     {Array.from({length: 10}).map((_, index: number) => {
                       return (
-                        <tr>
+                        <tr key={index}>
                           <th ><p className='text-transparent bg-gray-200 rounded-none w-fit skeleton'>10</p> </th>
                           <td ><p className='text-transparent bg-gray-200 rounded-none w-fit skeleton'>Pan Pacific Jakarta</p></td>
                           <td ><p className='text-transparent bg-gray-200 rounded-none w-fit skeleton'>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptates </p></td>
@@ -44,7 +44,7 @@ const TablePropertyList = ({ dataProperties, handlePagination, isPending }: { da
                         return (
                           <button
                             className={`rounded-full flex items-center justify-center h-8 w-8 btn btn-sm scale:90 text-xs skeleton bg-slate-200 text-transparent cursor-default`}
-                          >
+                            key={index}>
                           </button>
                         )
                       },
@@ -75,7 +75,7 @@ const TablePropertyList = ({ dataProperties, handlePagination, isPending }: { da
               {Array.isArray(dataProperties?.properties) && dataProperties?.properties?.length > 0 ? (
                 dataProperties?.properties?.map((item: any, index: number) => {
                   return (
-                    <tr>
+                    <tr key={index}>
                       <th>{Number(dataProperties?.offset) + index + 1}</th>
                       <td className="hover:text-blue-800 transition duration-100 underline active:text-blue-500">
                         <Link href={`/tenant/property/manage/${item?.slug}`}>
@@ -111,7 +111,7 @@ const TablePropertyList = ({ dataProperties, handlePagination, isPending }: { da
                         handlePagination({ limit: 10, offset: 10 * index })
                       }
                       className={`rounded-full flex items-center justify-center h-8 w-8 btn btn-sm scale:90 text-xs disabled:bg-gray-400 disabled:cursor-default ${dataProperties?.pageInUse === index + 1 && 'btn-active'}`}
-                    >
+                      key={index}>
                       {index + 1}
                     </button>
                   )

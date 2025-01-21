@@ -49,7 +49,7 @@ export default function Home() {
             Array.from({length: 5}).map((item: any, index: number) => {
               if(index < 2) {
                 return(
-                  <div>
+                  <div key={index}>
                     <CityRecommendationCard
                     isPending={true} 
                     imgSrc=''
@@ -92,7 +92,7 @@ export default function Home() {
       {
         Array.from({length: 3}).map((_, index) => {
           return (
-        <section className='m-auto max-w-screen-xl w-full h-full'>
+        <section key={index} className='m-auto max-w-screen-xl w-full h-full'>
         <section className='flex flex-col gap-5'>
           <hgroup className='flex flex-col '>
             <h1 className='skeleton lg:text-3xl font-bold text-lg md:text-3xl w-fit text-transparent rounded-none bg-slate-300 '>Explore Property</h1>
@@ -100,9 +100,9 @@ export default function Home() {
           </hgroup>
           <div className="carousel rounded-none flex gap-3 md:gap-5 h-fit py-2">
           {
-            Array.from({length: 5}).map((item: any, index: number) => {
+            Array.from({length: 5}).map((item: any, idx: number) => {
               return (
-              <div className="carousel-item  transition duration-100" key={index}>
+              <div className="carousel-item  transition duration-100" key={idx}>
                
                 <Card 
                         isPending={true}

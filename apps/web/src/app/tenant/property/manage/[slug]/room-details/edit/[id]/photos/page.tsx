@@ -87,6 +87,7 @@ const PropertyManageRoomPhotosPage = ({
         {dataPropertyRoomImages?.map((item: any, index: number) => {
           return (
             <figure
+            key={index}
               onClick={() =>
                 setShowPhoto({
                   id: item?.id,

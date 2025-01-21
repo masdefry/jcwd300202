@@ -45,7 +45,7 @@ const PropertyRoomDetailList = ({ dataPropertyRoomType, isPending, setShowDataRo
                                           {
                                               Array.from({length: 4}).map((itm: any, idx: number) => {
                                                   return(
-                                                      <div key={index} className='flex sm:text-sm font-medium text-transparent text-xs tracking-wide items-center gap-2'>
+                                                      <div key={idx} className='flex sm:text-sm font-medium text-transparent text-xs tracking-wide items-center gap-2'>
                                                           <figure className='h-4 w-4 rounded-full bg-slate-300 skeleton'>
                                                           </figure>
                                                           <p className='skeleton  bg-slate-300 rounded-none w-fit'>My Room</p>
@@ -151,7 +151,7 @@ const PropertyRoomDetailList = ({ dataPropertyRoomType, isPending, setShowDataRo
                                         {
                                             item?.roomHasFacilities.slice(0,4).map((itm: any, idx: number) => {
                                                 return(
-                                                    <div key={index} className='flex sm:text-sm font-medium text-slate-800 text-xs tracking-wide items-center gap-2'>
+                                                    <div key={idx} className='flex sm:text-sm font-medium text-slate-800 text-xs tracking-wide items-center gap-2'>
                                                         <figure>
                                                             <Image
                                                             src={`http://localhost:5000/api/${itm?.propertyRoomFacility?.iconDirectory}/${itm?.propertyRoomFacility?.iconFilename}.${itm?.propertyRoomFacility?.iconFileExtension}`}

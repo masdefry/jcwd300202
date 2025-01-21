@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { IUseManageDescriptionsHook } from '../types'
 
 const UpdateDescriptionsConfirmationPopup = ({
   values,
@@ -9,13 +10,15 @@ const UpdateDescriptionsConfirmationPopup = ({
   mutateUpdatePropertyDescriptions,
   isPendingUpdatePropertyDescriptions,
   isPendingPropertyDescriptions,
-}: {
+}: Pick<
+  IUseManageDescriptionsHook,
+  | 'isSubmitting'
+  | 'setIsSubmitting'
+  | 'mutateUpdatePropertyDescriptions'
+  | 'isPendingUpdatePropertyDescriptions'
+  | 'isPendingPropertyDescriptions'
+> & {
   values: any
-  isSubmitting: boolean
-  setIsSubmitting: any
-  mutateUpdatePropertyDescriptions: any
-  isPendingUpdatePropertyDescriptions: any
-  isPendingPropertyDescriptions: any
 }) => {
   return (
     <div

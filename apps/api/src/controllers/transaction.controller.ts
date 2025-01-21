@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express' 
 import { NextApiRequest, NextApiResponse } from 'next';
-import { createTransactionService, updateTransactionStatusService, handleExpiredTransaction, transactionHistoryService } from '@/services/transaction.service'
+import { createTransactionService, updateTransactionStatusService, handleExpiredTransaction, transactionHistoryService, getTransactionByIdService } from '@/services/transaction.service'
 import { ITransaction } from '@/services/transaction.service/types'
 import { Status } from '@/services/transaction.service/types'
 import crypto from 'crypto'
@@ -160,5 +160,29 @@ export const transactionHistory = async (req: Request, res: Response, next: Next
         });
     } catch (error) {
         next(error);
+    }
+}
+
+export const getTransactionById = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const {id} = req.params
+
+        if(!id) {
+            return res.status(400).json({
+                message: 'Transactioin ID is required'
+            })
+        }
+
+        const transaction = await getTransactionByIdService(id)
+
+        res.status(200).json({
+            message: `Successfully get transaction by id ${id}`,
+            error: false,
+            data: transaction
+
+        })
+
+    }  catch (error) {
+        next(error)
     }
 }

@@ -6,7 +6,7 @@ export const manageGeneralInfoValidationSchema = Yup.object().shape({
  countryId: Yup.number().required('Country is required').min(1, 'Country must be filled'),
  
    name: Yup.string()
-     .matches(/^[a-zA-Z0-9\s]*$/, 'Only alphanumeric characters and spaces allowed')
+   .matches(/^[a-zA-Z0-9\s,.'-]*$/, 'Only letters, numbers, spaces, commas, periods, apostrophes, and hyphens are allowed!')
      .required('Property name is required'),
  
    zipCode: Yup.string()
@@ -14,7 +14,7 @@ export const manageGeneralInfoValidationSchema = Yup.object().shape({
      .required('Zip code is required'),
  
    address: Yup.string()
-     .matches(/^[a-zA-Z0-9\s.,]*$/, 'No special characters allowed except . and ,')
+   .matches(/^[a-zA-Z0-9\s,.'-]*$/, 'Only letters, numbers, spaces, commas, periods, apostrophes, and hyphens are allowed!')
      .required('Address is required'),
  
    location: Yup.string().required('Location is required'),

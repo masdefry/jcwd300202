@@ -70,7 +70,6 @@ const useExploreFunctionalityHook = ({
   const { fetchDataProperties } = useFetchDataPropertiesApi({
     searchParams,
     handleError(err) {
-      console.log(err?.message)
       if (err?.message === 'Network Error') {
         setErrorStatus(500)
       }

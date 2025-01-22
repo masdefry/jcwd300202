@@ -27,7 +27,6 @@ const useMutateUpdateRoomTypeApi = ({
             price: values?.price,
             propertyRoomTypeId: params?.id,
           })
-          console.log(res)
           return res?.data
         },
         onSuccess,

@@ -8,4 +8,3 @@ export const searchValidationSchema = Yup.object().shape({
     adult: Yup.number().required('Please choose the number of total guests'),
     children: Yup.number()
 })
-// country, city, checkInDate, checkOutDate, adult, children

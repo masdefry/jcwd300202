@@ -10,7 +10,6 @@ const useMutateUpdateUserEmailApi = ({ newEmail, onSuccess, onError }: { newEmai
           const res = await instance.patch('/user/email', {
             email: newEmail,
           })
-          console.log(res)
           return res?.data
         },
         onSuccess,

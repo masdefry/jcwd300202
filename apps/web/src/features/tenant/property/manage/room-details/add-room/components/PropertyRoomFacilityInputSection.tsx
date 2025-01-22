@@ -5,6 +5,8 @@ import Image from 'next/image'
 import React from 'react'
 import { FaPlus } from 'react-icons/fa6'
 import { IoClose } from 'react-icons/io5'
+import { IUseManageAddRoomHook } from '../types'
+import { IPropertyRoomType } from '@/features/tenant/property/create/types'
 const PropertyRoomFacilityInputSection = ({
   values,
   setUploadFile,
@@ -16,18 +18,21 @@ const PropertyRoomFacilityInputSection = ({
   dataRoomFacilities,
   setChangedCheckbox,
   setShowCreatePropertyRoomFacilityForm,
-}: {
+}: Pick<IUseManageAddRoomHook, 
+  'setUploadFile' |
+  'mutateCreatePropertyRoomFacility' |
+  'isPendingCreatePropertyRoomFacility' |
+  'dataCreatePropertyRoomFacility' |
+  'setDataCreatePropertyRoomFacility' |
+  'showCreatePropertyRoomFacilityForm' |
+  'dataRoomFacilities' |
+  'setChangedCheckbox' |
+  'setShowCreatePropertyRoomFacilityForm'
+> &
+{
   values: any
-  setUploadFile: any
-  mutateCreatePropertyRoomFacility: any
-  isPendingCreatePropertyRoomFacility: boolean
-  dataCreatePropertyRoomFacility: any
-  setDataCreatePropertyRoomFacility: any
-  showCreatePropertyRoomFacilityForm: boolean
-  dataRoomFacilities: any
-  setChangedCheckbox: any
-  setShowCreatePropertyRoomFacilityForm: any
-}) => {
+}
+) => {
   return (
     <FieldArray name="propertyRoomFacilitiesId">
       {({ push: pushRoomFacility, remove: removeRoomFacility }) => (

@@ -75,6 +75,8 @@ const useCreatePropertyFunctionalityHook = () => {
     setPropertyType,
     changedCheckbox,
     setChangedCheckbox,
+    isSubmitting,
+    setIsSubmitting,
   } = useStateCreatePropertyHook()
 
   const { mutateGetPropertyTypes } = useMutateGetPropertyTypeApi({
@@ -87,7 +89,11 @@ const useCreatePropertyFunctionalityHook = () => {
       }
     },
     onError: (err: any) => {
-      console.log(err?.response?.data?.message || 'Connection error!')
+      toast((t) => (
+        <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
+          {err?.response?.data?.message || 'Connection error!'}
+        </span>
+      ))
     },
   })
 
@@ -259,6 +265,8 @@ const useCreatePropertyFunctionalityHook = () => {
     isPendingPropertyFacilities,
     mutateCreatePropertyFacility,
     isPendingCreatePropertyFacility,
+    isSubmitting,
+    setIsSubmitting,
   }
 }
 

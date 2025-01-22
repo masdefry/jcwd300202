@@ -5,6 +5,7 @@ import { ISearchParamsPropertyDetails } from '@/features/property/details/types'
 import React, { useState } from 'react'
 import useFetchPropertyDetailsApi from '../api/useFetchPropertyDetailsApi'
 import useCreateHistoryApi from '../api/useCreateHistoryApi'
+import useFetchPropertyDetailsTenantApi from '../api/useFetchPropertyDetailsTenantApi'
 
 const useGetPropertyDetailHook = ({
   params,
@@ -30,12 +31,30 @@ const useGetPropertyDetailHook = ({
     dataPropertyRoomType,
   } = useGetPropertyRoomTypesHook({ searchParams, params })
   const [isError, setIsError] = useState(false)
+  const [errorStatus, setErrorStatus] = useState<null | number>(null)
   const [dataPropertyDetail, setDataPropertyDetail] = useState<any>()
   const [isPendingPropertyDetail, setIsPendingPropertyDetail] = useState(true)
 
   const { fetchDataPropertyDetail } = useFetchPropertyDetailsApi({
     handleError(err) {
       setIsError(true)
+    },
+    handleSuccess(res) {
+      handlePropertyRoomType({ limit: 2, offset: 0 })
+      if (searchParams?.adult) setAdult(Number(searchParams?.adult))
+      if (searchParams?.children) setChildren(Number(searchParams?.children))
+      setDataPropertyDetail(res?.data?.data)
+    },
+    handleFinally() {
+      setIsPendingPropertyDetail(false)
+    },
+    params,
+  })
+
+  const { fetchDataPropertyDetailTenant } = useFetchPropertyDetailsTenantApi({
+    handleError(err) {
+      setIsError(true)
+      setErrorStatus(err.status)
     },
     handleSuccess(res) {
       handlePropertyRoomType({ limit: 2, offset: 0 })
@@ -72,7 +91,9 @@ const useGetPropertyDetailHook = ({
     isPendingPropertyDetail,
     dataPropertyDetail,
     fetchDataPropertyDetail,
+    fetchDataPropertyDetailTenant,
     createHistory,
+    errorStatus
   }
 }
 

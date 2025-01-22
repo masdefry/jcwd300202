@@ -93,7 +93,6 @@ const TabsRoomImages = ({
                             e.currentTarget.files[0],
                           )
                         }
-                        console.log(values)
                       }}
                     />
                   </label>

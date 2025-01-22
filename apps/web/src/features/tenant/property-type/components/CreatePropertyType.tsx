@@ -14,7 +14,6 @@ const CreatePropertyType = ({ handleCreatePropertyType, handleUpdatePropertyType
       }}
 
       onSubmit={(values) => {
-        console.log(values)
         if(isEdit) {
             handleUpdatePropertyType({
                 name: values?.name,
@@ -25,7 +24,6 @@ const CreatePropertyType = ({ handleCreatePropertyType, handleUpdatePropertyType
             handleCreatePropertyType(values)
         }
         setShowCreatePropertyType(false)
-        console.log(values)
       }}
       >
         {

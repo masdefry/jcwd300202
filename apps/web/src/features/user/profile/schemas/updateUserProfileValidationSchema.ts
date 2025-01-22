@@ -5,7 +5,10 @@ export const updateUserProfileValidationSchema = Yup.object().shape({
     .email('Email address invalid!')
     .required('Field must be filled!'),
   username: Yup.string()
-    .matches(/^[a-zA-Z0-9\s]*$/, 'No special characters allowed!')
+    .matches(
+      /^[a-zA-Z0-9\s,.'-]*$/,
+      'Only letters, numbers, spaces, commas, periods, apostrophes, and hyphens are allowed!',
+    )
     .nullable(),
   gender: Yup.string()
     .matches(/^[a-zA-Z0-9\s]*$/, 'No special characters allowed')
@@ -14,10 +17,16 @@ export const updateUserProfileValidationSchema = Yup.object().shape({
     .matches(/^[a-zA-Z0-9\s]*$/, 'No special characters allowed')
     .nullable(),
   cityName: Yup.string()
-    .matches(/^[a-zA-Z0-9\s]*$/, 'No special characters allowed')
+    .matches(
+      /^[a-zA-Z0-9\s,.'-]*$/,
+      'Only letters, numbers, spaces, commas, periods, apostrophes, and hyphens are allowed!',
+    )
     .nullable(),
   countryName: Yup.string()
-    .matches(/^[a-zA-Z0-9\s]*$/, 'No special characters allowed')
+    .matches(
+      /^[a-zA-Z0-9\s,.'-]*$/,
+      'Only letters, numbers, spaces, commas, periods, apostrophes, and hyphens are allowed!',
+    )
     .nullable(),
   cityId: Yup.number().nullable(),
   countryId: Yup.number().nullable(),
@@ -38,7 +47,7 @@ export const updateUserProfileValidationSchema = Yup.object().shape({
         return file && file.size <= limitFileSize
       })
       .test('fileFormat', 'File format must be png, jpg, or jpeg', (file) => {
-        const fileFormatAccepted = ['jpg', 'jpeg', 'png']
+        const fileFormatAccepted = ['jpg', 'jpeg', 'png', 'gif']
         return file && fileFormatAccepted.includes(file.type.split('/')[1])
       }),
   ),

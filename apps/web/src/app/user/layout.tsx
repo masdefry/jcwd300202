@@ -46,9 +46,14 @@ const ProfileUserLayout = ({ children }: { children: ReactNode }) => {
       icon: <MdOutlineManageAccounts size={20} className="text-blue-400" />,
     },
     {
-      link: '/user/transactions',
+      link: '#',
+      title: 'My Order',
+      icon: <GrNotes size={20} className="text-blue-400" />,
+    },
+    {
+      link: '#',
       title: 'Purchase List',
-      icon: <GrNotes size={20} className='text-blue-400'/>
+      icon: <FaRegListAlt size={20} className="text-blue-400" />,
     },
     {
       link: '#',
@@ -133,12 +138,11 @@ const ProfileUserLayout = ({ children }: { children: ReactNode }) => {
               </nav>
             </section>
           </div>
-          <div className=' max-w-screen-xl m-auto flex items-center justify-start w-full py-2'>
-            {
-              menus.map((item, index) => {
-                return (
-                <Link key={index} href={item.link}>
-                  <div className='border-b-4 border-transparent hover:border-blue-800 p-5 h-full text-base font-bold text-gray-800 hover:cursor-pointer active:scale-90 origin-bottom transition duration-100'> 
+          <div className=" max-w-screen-xl m-auto hidden 2xl:flex items-center justify-start w-full py-2">
+            {menus.map((item, index) => {
+              return (
+                <Link href={item.link} key={index}>
+                  <div className="border-b-4 border-transparent hover:border-blue-800 p-5 h-full text-base font-bold text-gray-800 hover:cursor-pointer active:scale-90 origin-bottom transition duration-100">
                     <p>{item.title}</p>
                   </div>
                 </Link>
@@ -227,3 +231,4 @@ const ProfileUserLayout = ({ children }: { children: ReactNode }) => {
   )
 }
 export default ProfileUserLayout
+

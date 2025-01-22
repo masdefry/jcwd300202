@@ -16,7 +16,6 @@ const useDropdownSearchHook = () => {
         })
       },
       onError: (err) => {
-        console.log(err)
       }
     })
 

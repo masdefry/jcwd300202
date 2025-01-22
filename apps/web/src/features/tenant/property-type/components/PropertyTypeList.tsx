@@ -141,7 +141,7 @@ const PropertyTypeList = ({
         <tbody>
           {dataPropertyTypes?.length > 0 ? (
             dataPropertyTypes?.map((item: any, index: number) => (
-              <tr key={item?.id} className="hover:bg-gray-50 text-sm">
+              <tr key={index} className="hover:bg-gray-50 text-sm">
                 <th className="px-4 py-2 border-b">
                   {offset ? offset + index + 1 : index + 1}
                 </th>

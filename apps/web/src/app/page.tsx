@@ -100,9 +100,9 @@ export default function Home() {
           </hgroup>
           <div className="carousel rounded-none flex gap-3 md:gap-5 h-fit py-2">
           {
-            Array.from({length: 5}).map((item: any, index: number) => {
+            Array.from({length: 5}).map((item: any, idx: number) => {
               return (
-              <div className="carousel-item  transition duration-100" key={index}>
+              <div className="carousel-item  transition duration-100" key={idx}>
                
                 <Card 
                         isPending={true}

@@ -1,12 +1,11 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
-import { Formik, Form, Field, FieldArray, insert, ErrorMessage } from 'formik'
+import React from 'react'
+import { Form, ErrorMessage } from 'formik'
 import { FaPlus } from 'react-icons/fa6'
 import TextInput from '@/features/tenant/property/create/components/TextInput'
 import TextAreaCustom from '@/features/tenant/property/create/components/TextArea'
 import Separator from '@/features/auth/components/Separator'
-import { createPropertyValidationSchema } from '@/features/tenant/property/create/schemas/createPropertyValidationSchema'
 
 import 'rsuite/SelectPicker/styles/index.css'
 import 'rsuite/Rate/styles/index.css'
@@ -20,17 +19,22 @@ import PropertyFacilitiesInputSection from './PropertyFacilitiesInputSection'
 import SectionGeneralInfo from './SectionGeneralInfo'
 import useHandleCreatePropertyHook from '../hooks/useHandleCreatePropertyHook'
 import { IPropertyData } from '../types'
+import CreatePropertyConfirmationPopup from '@/app/tenant/property/create/CreatePropertyConfirmationPopup'
 
 const FormCreateProperty = ({
   setFieldValue,
   values,
   isFormFilled,
   mutateCreateProperty,
+  setIsSubmitting,
+  isSubmitting
 }: {
-  mutateCreateProperty: (values: FormData) => void
-  setFieldValue: (key: string, value: any) => void
-  values: IPropertyData
-  isFormFilled: boolean
+  mutateCreateProperty: (values: FormData) => void,
+  setFieldValue: (key: string, value: any) => void,
+  values: IPropertyData,
+  isFormFilled: boolean,
+  isSubmitting: boolean,
+  setIsSubmitting: any
 }) => {
   const {
     showCreateCity,
@@ -83,6 +87,8 @@ const FormCreateProperty = ({
     dataPropertyFacilities,
     mutateCreatePropertyFacility,
     isPendingCreatePropertyFacility,
+    isPendingPropertyFacilities,
+    isPendingRoomFacilities
   } = useCreatePropertyFunctionalityHook()
 
   return (
@@ -190,6 +196,7 @@ const FormCreateProperty = ({
         </hgroup>
         <PropertyFacilitiesInputSection
           dataPropertyFacilities={dataPropertyFacilities}
+          isPendingPropertyFacilities={isPendingPropertyFacilities}
           values={values}
         />
         <div
@@ -233,6 +240,7 @@ const FormCreateProperty = ({
         </hgroup>
         <PropertyRoomTypesInputSection
           values={values}
+          isPendingRoomFacilities={isPendingRoomFacilities}
           setRoomFacilities={setRoomFacilities}
           setDataCreatePropertyRoomFacility={setDataCreatePropertyRoomFacility}
           isPendingCreatePropertyRoomFacility={
@@ -253,11 +261,33 @@ const FormCreateProperty = ({
       </section>
       <button
         type="submit"
-        disabled={!isFormFilled}
+        disabled={
+          isPendingCreateCity ||
+          isPendingCreateCountry ||
+          isPendingCreateProperty ||
+          isPendingCreatePropertyFacility ||
+          isPendingCreatePropertyRoomFacility ||
+          isPendingCreatePropertyType
+        }
         className="disabled:bg-slate-300 disabled:text-white disabled:scale-100 disabled:opacity-100 rounded-full py-3 flex items-center gap-1.5 justify-center w-full transition duration-100 bg-black hover:opacity-75 active:scale-95 text-white text-sm font-bold"
       >
         Create Property
       </button>
+      <CreatePropertyConfirmationPopup
+        isSubmitting={isSubmitting}
+        setIsSubmitting={setIsSubmitting}
+        isPending={
+          isPendingCreateCity ||
+          isPendingCreateCountry ||
+          isPendingCreateProperty ||
+          isPendingCreatePropertyFacility ||
+          isPendingCreatePropertyRoomFacility ||
+          isPendingCreatePropertyType
+        }
+        mutateCreateProperty={mutateCreateProperty}
+        useHandleCreatePropertyHook={useHandleCreatePropertyHook}
+        values={values}
+      />
     </Form>
   )
 }

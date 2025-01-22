@@ -253,7 +253,6 @@ export const getPropertyDetailService = async ({
   })
 
   if (!property?.id) throw { msg: 'Property not found!', status: 404 }
-  console.log('checkInDate', checkInDate)
   let gteDate =
     checkInDate && checkInDate !== 'undefined'
       ? new Date(checkInDate as string)
@@ -629,7 +628,6 @@ export const getPropertyDetailByTenantService = async ({
   })
 
   if (!property?.id) throw { msg: 'Property not found!', status: 404 }
-  console.log('checkInDate', checkInDate)
   let gteDate =
     checkInDate && checkInDate !== 'undefined'
       ? new Date(checkInDate as string)
@@ -1755,7 +1753,6 @@ export const getPropertiesByTenantService = async ({
   sortBy,
   order,
   filterBy,
-  filterValue,
   period,
   name = '',
   id,
@@ -1855,7 +1852,6 @@ export const getPropertiesByTenantService = async ({
                 status: 'CANCELLED',
               },
             },
-            // createdAt: dataPeriod
           },
         },
       },
@@ -1945,7 +1941,6 @@ export const getPropertiesByTenantService = async ({
         include: {
           seasonalPrice: {
             where: {
-              // date: addHours(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()), 7).toISOString()
               date: dataPeriod,
             },
           },
@@ -2155,7 +2150,6 @@ export const getPropertiesByTenantService = async ({
       checkOutDate: dataPeriod,
     },
   })
-  console.log('period', period)
 
   return {
     properties: addedDataGetProperties.slice(

@@ -60,7 +60,7 @@ const SectionGeneralInfo = ({
         labelName="Property Name"
         name="name"
         type="text"
-        placeholder="Pan Pacific / Westin Hotel"
+        placeholder="What's the name of your property? (at least 8 characters)"
       />
       <PropertyTypeInputSection
         setShowFormCreatePropertyType={setShowFormCreatePropertyType}

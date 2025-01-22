@@ -808,7 +808,6 @@ export const createPropertyRoomTypeService = async ({
           }
         })
       } catch (error) {
-        console.log(error)
         throw { msg: 'Connection failed!', status: 500 }
       }
     },

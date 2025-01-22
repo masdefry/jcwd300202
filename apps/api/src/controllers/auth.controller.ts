@@ -1,4 +1,24 @@
-import { keepAuthService, loginTenantService, loginUserService, registerTenantService, registerUserService, resetPasswordTenantService, resetPasswordUserService, sendEmailResetPasswordTenantService, sendEmailResetPasswordUserService, signInWithGoogleService, verifyChangeEmailRequestTenantService, verifyChangeEmailRequestUserService, verifyChangeEmailTenantService, verifyChangeEmailUserService, verifyEmailRequestTenantService, verifyEmailRequestUserService, verifyEmailTenantService, verifyEmailUserService } from '@/services/auth.service'
+import {
+  keepAuthService,
+  loginTenantService,
+  loginUserService,
+  registerTenantService,
+  registerUserService,
+  resetPasswordTenantService,
+  resetPasswordUserService,
+  sendEmailResetPasswordTenantService,
+  sendEmailResetPasswordUserService,
+  signInWithGoogleService,
+  tenantAccessPropertyService,
+  verifyChangeEmailRequestTenantService,
+  verifyChangeEmailRequestUserService,
+  verifyChangeEmailTenantService,
+  verifyChangeEmailUserService,
+  verifyEmailRequestTenantService,
+  verifyEmailRequestUserService,
+  verifyEmailTenantService,
+  verifyEmailUserService,
+} from '@/services/auth.service'
 import { NextFunction, Request, Response } from 'express'
 
 export const loginTenant = async (
@@ -17,7 +37,7 @@ export const loginTenant = async (
       data: {
         username: loginTenantProcess?.username,
         country: loginTenantProcess?.country,
-        profilePictureUrl: loginTenantProcess?.profilePictureUrl,      
+        profilePictureUrl: loginTenantProcess?.profilePictureUrl,
         companyName: loginTenantProcess?.companyName,
         role: loginTenantProcess?.role,
         isVerified: loginTenantProcess?.isVerified,
@@ -65,7 +85,7 @@ export const registerUser = async (
     const { email } = req.body
 
     const registerUserProcess = await registerUserService({ email })
-   
+
     res.status(201).json({
       error: false,
       message: 'Register user success',
@@ -87,7 +107,7 @@ export const registerTenant = async (
     const { email } = req.body
 
     const registerTenantProcess = await registerTenantService({ email })
-    
+
     res.status(201).json({
       error: false,
       message: 'Register user success',
@@ -108,8 +128,10 @@ export const verifyEmailRequestUser = async (
   try {
     const { email } = req.body
 
-    const verifyEmailRequestUserProcess = await verifyEmailRequestUserService({ email })
-    
+    const verifyEmailRequestUserProcess = await verifyEmailRequestUserService({
+      email,
+    })
+
     res.status(200).json({
       error: false,
       message: 'Send link verify email success',
@@ -128,7 +150,8 @@ export const verifyChangeEmailRequestUser = async (
   try {
     const { id, role } = req.body
 
-    const verifyChangeEmailRequestUserProcess = await verifyChangeEmailRequestUserService({ id, role })
+    const verifyChangeEmailRequestUserProcess =
+      await verifyChangeEmailRequestUserService({ id, role })
 
     res.status(200).json({
       error: false,
@@ -148,7 +171,8 @@ export const verifyChangeEmailRequestTenant = async (
   try {
     const { id, role } = req.body
 
-    const verifyChangeEmailRequestTenantProcess = await verifyChangeEmailRequestTenantService({ id, role })
+    const verifyChangeEmailRequestTenantProcess =
+      await verifyChangeEmailRequestTenantService({ id, role })
 
     res.status(200).json({
       error: false,
@@ -168,8 +192,9 @@ export const verifyEmailRequestTenant = async (
   try {
     const { email } = req.body
 
-    const verifyEmailRequestTenantProcess = await verifyEmailRequestTenantService({ email })
-    
+    const verifyEmailRequestTenantProcess =
+      await verifyEmailRequestTenantService({ email })
+
     res.status(200).json({
       error: false,
       message: 'Send link verify email success',
@@ -186,10 +211,14 @@ export const verifyEmailUser = async (
   next: NextFunction,
 ) => {
   try {
-    const { id, password,  token } = req.body
-    
-    const verifyEmailUserProcess = await verifyEmailUserService({ id, token, password })
-    
+    const { id, password, token } = req.body
+
+    const verifyEmailUserProcess = await verifyEmailUserService({
+      id,
+      token,
+      password,
+    })
+
     res.status(200).json({
       error: false,
       message: 'Verify email and set password success',
@@ -206,9 +235,13 @@ export const verifyEmailTenant = async (
   next: NextFunction,
 ) => {
   try {
-    const { id, password, token  } = req.body
+    const { id, password, token } = req.body
 
-    const verifyEmailTenantProcess = await verifyEmailTenantService({ id, token, password })
+    const verifyEmailTenantProcess = await verifyEmailTenantService({
+      id,
+      token,
+      password,
+    })
 
     res.status(200).json({
       error: false,
@@ -256,7 +289,8 @@ export const sendEmailResetPasswordUser = async (
   try {
     const { email } = req.body
 
-    const sendEmailResetPasswordUserProcess = await sendEmailResetPasswordUserService({ email })
+    const sendEmailResetPasswordUserProcess =
+      await sendEmailResetPasswordUserService({ email })
 
     res.status(200).json({
       error: false,
@@ -278,8 +312,9 @@ export const sendEmailResetPasswordTenant = async (
   try {
     const { email } = req.body
 
-    const sendEmailResetPasswordTenantProcess = await sendEmailResetPasswordTenantService({ email })
-    
+    const sendEmailResetPasswordTenantProcess =
+      await sendEmailResetPasswordTenantService({ email })
+
     res.status(200).json({
       error: false,
       message: 'Send email reset password success',
@@ -300,8 +335,12 @@ export const resetPasswordUser = async (
   try {
     const { password, token, id } = req.body
 
-    const resetPasswordUserProcess = await resetPasswordUserService({ password, token, id })
-    
+    const resetPasswordUserProcess = await resetPasswordUserService({
+      password,
+      token,
+      id,
+    })
+
     res.status(200).json({
       error: false,
       message: 'Update password success',
@@ -320,8 +359,12 @@ export const resetPasswordTenant = async (
   try {
     const { password, token, id } = req.body
 
-    const resetPasswordTenantProcess = await resetPasswordTenantService({ password, token, id })
-    
+    const resetPasswordTenantProcess = await resetPasswordTenantService({
+      password,
+      token,
+      id,
+    })
+
     res.status(200).json({
       error: false,
       message: 'Update password success',
@@ -341,7 +384,7 @@ export const keepAuth = async (
     const { id, role, token } = req.body
 
     const keepAuthProcess = await keepAuthService({ role, token, id })
-   
+
     res.status(200).json({
       error: false,
       message: 'Keep auth success',
@@ -369,7 +412,9 @@ export const verifyChangeEmailTenant = async (
     const { id, role } = req.body
     const { token } = req.params
 
-    const verifyChangeEmailTenantProcess = await verifyChangeEmailTenantService({ id, role, token })
+    const verifyChangeEmailTenantProcess = await verifyChangeEmailTenantService(
+      { id, role, token },
+    )
 
     res.status(200).json({
       error: false,
@@ -389,12 +434,37 @@ export const verifyChangeEmailUser = async (
   try {
     const { id, role } = req.body
     const { token } = req.params
-    const verifyChangeEmailUserProcess = await verifyChangeEmailUserService({ id, role, token })
-   
+    const verifyChangeEmailUserProcess = await verifyChangeEmailUserService({
+      id,
+      role,
+      token,
+    })
+
     res.status(200).json({
       error: false,
       message: 'Verify new email success',
       data: {},
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const tenantAccessProperty = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id, role } = req.body
+    const { slug } = req.params
+
+    const tenantAccessPropertyProcess = await tenantAccessPropertyService({id, role, slug })
+
+    res.status(200).json({
+      error: false,
+      message: 'Tenant authorized',
+      data: {}
     })
   } catch (error) {
     next(error)

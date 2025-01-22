@@ -51,7 +51,6 @@ export const createCity = async (
       data: createCityProcess?.createdCity,
     })
   } catch (error) {
-    console.log(error)
     next(error)
   }
 }

@@ -73,27 +73,19 @@ const DatePickerWithPrices = () => {
       : price.toString();
   };
   
-  // Create formatted prices for display
   const formattedDailyPrices: Record<string, string> = Object.fromEntries(
     Object.entries(rawDailyPrices).map(([date, price]) => [date, formatPrice(price)])
   );
   
-  
-  // Log to verify
-  console.log(formattedDailyPrices);
-  
-  // Create a formatted daily prices object
   const dailyPrices: Record<string, string> = Object.fromEntries(
     Object.entries(rawDailyPrices).map(([date, price]) => [date, formatPrice(price)])
   );
 
-  // Function to handle date selection
   const handleDateChange = (dates: any) => {
     const [start, end] = dates;
     setCheckInDate(start);
     setCheckOutDate(end);
 
-    // Calculate total price based on selected date range
     let totalPrice = 0;
     let currentDate = new Date(start);
     while (currentDate <= end) {

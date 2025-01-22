@@ -1,0 +1,13 @@
+{
+    "builds": [
+      {
+        "src": "apps/web/package.json",
+        "use": "@vercel/node"
+      }
+    ],
+    "build": {
+      "env": {
+        "NPM_FLAGS": "--legacy-peer-deps"
+      }
+    }
+  }

@@ -8,7 +8,7 @@ import useMutateDeleteUserApi from '../api/useMutateDeleteUserApi'
 import authStore from '@/zustand/authStore'
 
 const useManageUserSettingsHook = () => {
-  const setLogout = authStore((state) => state.setLogout())
+  const setLogout = authStore((state) => state.setLogout)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [change, setChange] = useState(true)

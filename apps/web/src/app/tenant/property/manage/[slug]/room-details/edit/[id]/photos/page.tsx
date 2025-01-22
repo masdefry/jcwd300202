@@ -5,7 +5,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import Image from 'next/image'
 import React, { useState } from 'react'
 import toast from 'react-hot-toast'
-import { IoClose, IoCloudUploadOutline } from 'react-icons/io5'
+import { IoCameraOutline, IoClose, IoCloudUploadOutline } from 'react-icons/io5'
 import {
   MdOutlineAddPhotoAlternate,
   MdOutlineDeleteOutline,
@@ -84,30 +84,60 @@ const PropertyManageRoomPhotosPage = ({
         </button>
       </div>
       <section className="gap-3 grid sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-6 px-5">
-        {dataPropertyRoomImages?.map((item: any, index: number) => {
-          return (
-            <figure
-            key={index}
-              onClick={() =>
-                setShowPhoto({
-                  id: item?.id,
-                  directory: item?.directory,
-                  filename: item?.filename,
-                  fileExtension: item?.fileExtension,
-                })
-              }
-              className="p-1 rounded-md h-[200px] bg-slate-200 shadow-md pb-3 overflow-hidden hover:scale-105 transition duration-100 hover:cursor-pointer"
-            >
-              <Image
-                src={`http://localhost:5000/api/${item?.directory}/${item?.filename}.${item?.fileExtension}`}
-                alt=""
-                width={500}
-                height={500}
-                className="w-full h-full object-cover rounded-sm"
-              />
-            </figure>
-          )
-        })}
+      { isPendingPropertyRoomImages ? (
+          Array.from({length:5}).map((_, index: number) => {
+            return (
+              <figure
+              key={index}
+                
+                className="p-1 rounded-md h-[200px] skeleton bg-slate-200 shadow-md pb-3 overflow-hidden"
+              >
+                
+              </figure>
+            )
+          })
+
+        ) : (
+          dataPropertyRoomImages?.map((item: any, index: number) => {
+            return (
+              <figure
+              key={index}
+                onClick={() =>
+                  setShowPhoto({
+                    id: item?.id,
+                    directory: item?.directory,
+                    filename: item?.filename,
+                    fileExtension: item?.fileExtension,
+                  })
+                }
+                className="p-1 rounded-md h-[200px] bg-slate-200 shadow-md pb-3 overflow-hidden hover:scale-105 transition duration-100 hover:cursor-pointer"
+              >
+                <Image
+                  src={`http://localhost:5000/api/${item?.directory}/${item?.filename}.${item?.fileExtension}`}
+                  alt=""
+                  width={500}
+                  height={500}
+                  className="w-full h-full object-cover rounded-sm"
+                />
+              </figure>
+            )
+          })
+
+        )
+      }
+        {!isPendingPropertyRoomImages && (
+          Array.from({length: 5 - dataPropertyRoomImages?.length}).map((_, index: number) => {
+            return (
+              <figure
+              key={index}
+                className="p-1 rounded-md h-[200px] bg-slate-200 shadow-md pb-3 overflow-hidden"
+              >
+                <div className="w-full h-full object-cover rounded-sm bg-gray-300 text-slate-200 flex items-center justify-center"><IoCameraOutline size={40} /></div>
+              </figure>
+            )
+          })
+        ) 
+        }
       </section>
       {showPhoto?.directory && (
         <ShowRoomImagePopup

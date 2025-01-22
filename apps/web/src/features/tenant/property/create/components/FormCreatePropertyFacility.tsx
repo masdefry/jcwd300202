@@ -54,8 +54,8 @@ const FormCreatePropertyFacility = ({
                 Add Property Facility
               </h1>
               <p className="text-sm font-light text-gray-500">
-                Customize Your Stay: Add Any Facility You Need, If It's Not
-                Already on the List!
+               {` Customize Your Stay: Add Any Facility You Need, If It's Not
+                Already on the List!`}
               </p>
             </hgroup>
             <div className="flex flex-col gap-3">

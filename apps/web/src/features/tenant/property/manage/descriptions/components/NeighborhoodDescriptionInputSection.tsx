@@ -3,7 +3,13 @@
 import TextAreaCustom from '@/features/tenant/property/create/components/TextArea'
 import React from 'react'
 import { BsBuildings } from 'react-icons/bs'
-const NeighborhoodDescriptionInputSection = ({ dataPropertyDescriptions }: {dataPropertyDescriptions: any}) => {
+const NeighborhoodDescriptionInputSection = ({
+  dataPropertyDescriptions,
+  isPendingPropertyDescriptions,
+}: {
+  dataPropertyDescriptions: any
+  isPendingPropertyDescriptions: boolean,
+}) => {
   return (
     <section className="p-5 rounded-md shadow-md border border-slate-200 flex flex-col gap-5">
       <h1 className="text-lg font-bold text-gray-800 flex items-center gap-1.5">
@@ -19,6 +25,15 @@ const NeighborhoodDescriptionInputSection = ({ dataPropertyDescriptions }: {data
             ?.neighborhoodDescription
         }
       </div>
+      {
+        isPendingPropertyDescriptions ? (
+      <div className="collapse collapse-plus rounded-md skeleton bg-gray-200 text-transparent">
+        <input type="checkbox" disabled name={`accordion-neighborhood-description`} />
+        <div className="collapse-title text-sm font-bold">
+          Show Edit Description
+        </div>
+      </div>
+        ) : (
       <div className="collapse collapse-plus bg-white rounded-md border border-slate-300">
         <input type="checkbox" name={`accordion-neighborhood-description`} />
         <div className="collapse-title text-sm font-bold">
@@ -32,6 +47,8 @@ const NeighborhoodDescriptionInputSection = ({ dataPropertyDescriptions }: {data
           />
         </div>
       </div>
+        )
+      }
     </section>
   )
 }

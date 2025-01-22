@@ -79,7 +79,7 @@ const PropertyManageFacilitiesPage = ({
           }}
           type="text"
           placeholder="Search facility ( minimum 3 or more characters )"
-          className="disabled:bg-slate-300 disabled:text-white disabled:scale-100 disabled:cursor-not-allowed px-5 rounded-full py-3 text-sm font-medium font-gray-800 w-full border-2 border-slate-300 bg-white placeholder-shown:text-sm"
+          className=" disabled:scale-100 disabled:cursor-not-allowed px-5 rounded-full py-3 text-sm font-medium font-gray-800 w-full border-2 border-slate-300 bg-white placeholder-shown:text-sm"
         />
       </div>
       <Formik

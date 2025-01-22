@@ -1262,9 +1262,7 @@ export const getPropertiesService = async ({
             cityId: Number(cityId),
           }
         : null,
-      // minPrice &&
       !isNaN(Number(minPrice)) &&
-      // maxPrice &&
       !isNaN(Number(maxPrice))
         ? {
             propertyRoomType: {
@@ -1276,6 +1274,13 @@ export const getPropertiesService = async ({
               },
             },
           }
+        : null,
+      !isNaN(Number(minPrice)) &&
+      !isNaN(Number(maxPrice))
+        ? {price: {
+          gte: Number(minPrice),
+          lte: Number(maxPrice),
+        },}
         : null,
       adult && !isNaN(Number(adult))
         ? {

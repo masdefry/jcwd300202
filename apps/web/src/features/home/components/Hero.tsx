@@ -57,12 +57,6 @@ const Hero = ({ isPending }: IHeroProps) => {
                         <h1 className='lg:text-4xl md:text-3xl text-xl font-semibold text-left text-white drop-shadow-sm w-full transition duration-75'>{item.name}</h1>
                         <p className='text-sm md:text-lg lg:text-xl font-light text-white text-left w-full drop-shadow-sm'>{item.description}</p>
                       </article>
-                          {/* <div onClick={prev} className='z-30 hover:cursor-pointer absolute top-0 left-0 bg-transparent transition duration-150 hover:bg-black active:bg-opacity-50 hover:bg-opacity-25 h-full flex items-center px-3'>
-                            <IoMdArrowDropleft size={28} className='text-white'/>
-                          </div>
-                          <div onClick={next} className='z-30 hover:cursor-pointer absolute top-0 right-20 bg-transparent transition duration-150 hover:bg-black active:bg-opacity-50 hover:bg-opacity-25 h-full flex items-center px-3'>
-                            <IoMdArrowDropright size={28} className='text-white'/>
-                          </div> */}
                     </section>
                     </Link>
                   )

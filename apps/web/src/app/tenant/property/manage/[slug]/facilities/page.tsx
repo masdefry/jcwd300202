@@ -8,7 +8,7 @@ import { managePropertyFacilitiesValidationSchema } from '@/features/tenant/prop
 import UnauthorizedPage from '@/app/403/page'
 import NotFoundMain from '@/app/not-found'
 import Custom500 from '@/app/500/page'
-import useManagePropertyFacilitiesHook from '@/features/tenant/property/manage/facilities/api/useManagePropertyFacilitiesHook'
+import useManagePropertyFacilitiesHook from '@/features/tenant/property/manage/facilities/hooks/useManagePropertyFacilitiesHook'
 import PropertyHasFacilitySection from '@/features/tenant/property/manage/facilities/components/PropertyHasFacilitySection'
 import PropertyHasNotFacilitySection from '@/features/tenant/property/manage/facilities/components/PropertyHasNotFacilitySection'
 import UpdateConfirmationPopup from '@/features/tenant/property/manage/facilities/components/UpdateConfirmationPopup'
@@ -121,7 +121,9 @@ const PropertyManageFacilitiesPage = ({
                       setShowMorePropertyHasFacility={
                         setShowMorePropertyHasFacility
                       }
-                      setShowCreatePropertyFacilityForm={setShowCreatePropertyFacilityForm}
+                      setShowCreatePropertyFacilityForm={
+                        setShowCreatePropertyFacilityForm
+                      }
                     />
                   </section>
                   <section className="px-5 flex flex-col gap-5">
@@ -137,7 +139,9 @@ const PropertyManageFacilitiesPage = ({
                       </h1>
                     )}
                     <PropertyHasNotFacilitySection
-                    setShowCreatePropertyFacilityForm={setShowCreatePropertyFacilityForm}
+                      setShowCreatePropertyFacilityForm={
+                        setShowCreatePropertyFacilityForm
+                      }
                       isPending={
                         isPendingSearchPropertyFacility || isLoadingFetch
                       }
@@ -179,12 +183,14 @@ const PropertyManageFacilitiesPage = ({
             <FormCreatePropertyFacility
               setDataCreatePropertyFacility={setDataCreatePropertyFacility}
               isPendingCreatePropertyFacility={isPendingCreatePropertyFacility}
-              setShowCreatePropertyFacilityForm={setShowCreatePropertyFacilityForm}
+              setShowCreatePropertyFacilityForm={
+                setShowCreatePropertyFacilityForm
+              }
               mutateCreatePropertyFacility={mutateCreatePropertyFacility}
               dataCreatePropertyFacility={dataCreatePropertyFacility}
               setUploadFile={setUploadFile}
               showCreatePropertyFacilityForm={showCreatePropertyFacilityForm}
-              />
+            />
           </Form>
         )}
       </Formik>

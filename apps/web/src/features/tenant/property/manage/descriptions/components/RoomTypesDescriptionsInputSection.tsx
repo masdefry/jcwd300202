@@ -3,13 +3,13 @@
 import TextAreaCustom from '@/features/tenant/property/create/components/TextArea'
 import { FieldArray } from 'formik'
 import React from 'react'
+import { IUseManageDescriptionsHook } from '../types'
 
 const RoomTypesDescriptionsInputSection = ({
   dataPropertyDescriptions,
   isPendingPropertyDescriptions,
-}: {
+}: Pick<IUseManageDescriptionsHook, 'isPendingPropertyDescriptions'> & {
   dataPropertyDescriptions: any
-  isPendingPropertyDescriptions: boolean
 }) => {
   return (
     <FieldArray name="propertyRoomType">

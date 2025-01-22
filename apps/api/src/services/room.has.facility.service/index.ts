@@ -128,7 +128,7 @@ export const getGeneralRoomHasFacilitiesByPropertyService = async ({
     throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
-  if (!isTenantExist.isVerified)
+  if (!isTenantExist?.isVerified)
     throw { msg: 'Tenant not verified!', status: 406 }
 
   const isPropertyExist = await prisma.property.findFirst({
@@ -239,7 +239,7 @@ export const updateRoomHasFacilitiesService = async ({
     throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
-  if (!isTenantExist.isVerified)
+  if (!isTenantExist?.isVerified)
     throw { msg: 'Tenant not verified!', status: 406 }
 
   const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
@@ -310,7 +310,7 @@ export const updateRoomHasFacilitiesByPropertyService = async ({
     throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
-  if (!isTenantExist.isVerified)
+  if (!isTenantExist?.isVerified)
     throw { msg: 'Tenant not verified!', status: 406 }
 
   const isPropertyExist = await prisma.property.findUnique({

@@ -165,7 +165,7 @@ const useManagePropertyGeneralInfoHook = ({
       params,
       onSuccess: (res) => {
         setTimeout(() => {
-          window.location.reload()
+          window.location.href = `/tenant/property/manage/${res?.data?.updatedProperty?.slug}/general-info`
         }, 1200)
         toast((t) => (
           <span className="flex gap-2 items-center font-semibold justify-center text-xs">

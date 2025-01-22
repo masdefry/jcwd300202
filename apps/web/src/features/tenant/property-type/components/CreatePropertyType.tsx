@@ -96,9 +96,7 @@ const CreatePropertyType = ({ handleCreatePropertyType, handleUpdatePropertyType
                         disabled={
                         !values?.name ||
                         !values?.description
-                        // !dataCreatePropertyType?.name
                         }
-                        // onClick={() => handleCreatePropertyType()}
                         className="disabled:bg-slate-300 disabled:text-white flex items-center justify-center disabled:scale-100 disabled:opacity-100 px-5 hover:opacity-75 transition duration-100 active:scale-90 py-1.5 text-white text-sm font-bold rounded-full shadow-md border bg-gray-900 border-slate-100 "
                     >
                         {

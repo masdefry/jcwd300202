@@ -4,12 +4,10 @@ const TwoHandleSlider: React.FC = () => {
   const [minValue, setMinValue] = useState<number>(20);
   const [maxValue, setMaxValue] = useState<number>(80);
 
-  // Function to update the slider track background dynamically
   const updateSliderTrack = () => {
     return `linear-gradient(to right, #333 ${minValue}%, #fff ${minValue}%, #fff ${maxValue}%, #333 ${maxValue}%)`;
   };
 
-  // Ensure the handles do not overlap
   const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
     if (value <= maxValue) {
@@ -30,7 +28,7 @@ const TwoHandleSlider: React.FC = () => {
         Range Slider
       </label>
       <div className="relative">
-        {/* First Range Handle */}
+
         <input
           type="range"
           id="range1"
@@ -42,7 +40,7 @@ const TwoHandleSlider: React.FC = () => {
           className="range-slider"
         />
         
-        {/* Second Range Handle */}
+
         <input
           type="range"
           id="range2"
@@ -54,14 +52,14 @@ const TwoHandleSlider: React.FC = () => {
           className="range-slider"
         />
 
-        {/* Slider Track */}
+
         <div
           id="slider-track"
           className="absolute inset-0 rounded-full h-2"
           style={{ background: updateSliderTrack() }}
         ></div>
 
-        {/* Values */}
+  
         <div
           id="range-label"
           className="absolute inset-0 flex justify-between items-center px-2 text-xs text-white"

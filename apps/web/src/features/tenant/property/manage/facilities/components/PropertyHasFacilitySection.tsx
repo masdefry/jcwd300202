@@ -4,6 +4,7 @@ import Image from 'next/image'
 import React from 'react'
 import { CiSquareMinus, CiSquarePlus } from 'react-icons/ci'
 import { IoSearchOutline } from 'react-icons/io5'
+import { IUseManagePropertyFacilitiesHook } from '../types'
 
 const PropertyHasFacilitySection = ({
   showMorePropertyHasFacility,
@@ -13,15 +14,17 @@ const PropertyHasFacilitySection = ({
   remove,
   setShowMorePropertyHasFacility,
   isPending,
-  setShowCreatePropertyFacilityForm
-}: {
-  setShowCreatePropertyFacilityForm: any,
-  showMorePropertyHasFacility: boolean
-  dataPropertyHasFacilities: any
+  setShowCreatePropertyFacilityForm,
+}: Pick<
+  IUseManagePropertyFacilitiesHook,
+  | 'setShowCreatePropertyFacilityForm'
+  | 'showMorePropertyHasFacility'
+  | 'dataPropertyHasFacilities'
+  | 'setShowMorePropertyHasFacility'
+> & {
   values: any
   push: any
   remove: any
-  setShowMorePropertyHasFacility: any
   isPending: boolean
 }) => {
   if (isPending) {
@@ -150,13 +153,13 @@ const PropertyHasFacilitySection = ({
           Show less facilities
         </div>
       )}
-        <div
-          onClick={() => setShowCreatePropertyFacilityForm(true)}
-          className="transition duration-100 hover:cursor-pointer active:scale-[0.98] hover:opacity-75 flex items-center text-sm gap-1.5 font-bold text-white rounded-md shadow-md justify-center p-4 border border-slate-200 bg-gray-900"
-        >
-          <CiSquarePlus className="text-base" />
-          Doesn’t meet your facility needs? Click this to create a new one!
-        </div>
+      <div
+        onClick={() => setShowCreatePropertyFacilityForm(true)}
+        className="transition duration-100 hover:cursor-pointer active:scale-[0.98] hover:opacity-75 flex items-center text-sm gap-1.5 font-bold text-white rounded-md shadow-md justify-center p-4 border border-slate-200 bg-gray-900"
+      >
+        <CiSquarePlus className="text-base" />
+        Doesn’t meet your facility needs? Click this to create a new one!
+      </div>
     </section>
   )
 }

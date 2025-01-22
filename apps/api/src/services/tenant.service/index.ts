@@ -210,7 +210,6 @@ export const deleteTenantProfileService = async ({
   const comparedPassword = comparePassword(password as string, isTenantExist?.password as string)
   if (!comparedPassword)
     throw { msg: 'Password invalid!', status: 406 }
-
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
 

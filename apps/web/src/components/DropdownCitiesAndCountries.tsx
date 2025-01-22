@@ -4,7 +4,6 @@ import instance from '@/utils/axiosInstance'
 import { useMutation } from '@tanstack/react-query'
 import React from 'react'
 import { CiLocationOn } from 'react-icons/ci'
-// import { headerStore } from '@/zustand/headerStore'
 
 export interface IDataDropDown {
   countryId: number,
@@ -25,7 +24,6 @@ interface IDropdownCitesAndCountry {
 }
 
 const DropdownCitiesAndCountries = ({ setFieldValue, searchLocation, setSearchLocation, dataDropdown, setSearchValues, setDataDropdown, handleSearchInput, handleClearSearchInput }: IDropdownCitesAndCountry) => {
-    // const setCityAndCountrySearch = headerStore((state: any) => state.setCityAndCountrySearch)
   
     if(!Array.isArray(dataDropdown) || dataDropdown.length <= 0) {
       return <></>

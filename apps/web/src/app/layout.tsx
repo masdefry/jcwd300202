@@ -4,7 +4,6 @@ import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import TanstackProvider from '@/providers/TanstackProvider';
-// import { Toaster } from '@/components/ui/toaster';
 import { Toaster } from 'react-hot-toast';
 import "primereact/resources/themes/lara-light-cyan/theme.css"; 
 import AuthProvider from '@/providers/AuthProvider';

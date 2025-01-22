@@ -3,13 +3,13 @@
 import TextAreaCustom from '@/features/tenant/property/create/components/TextArea'
 import React from 'react'
 import { BsBuildings } from 'react-icons/bs'
+import { IUseManageDescriptionsHook } from '../types'
 
 const PropertyDescriptionInputSection = ({
   dataPropertyDescriptions,
   isPendingPropertyDescriptions,
-}: {
+}: Pick<IUseManageDescriptionsHook, 'isPendingPropertyDescriptions'> & {
   dataPropertyDescriptions: any
-  isPendingPropertyDescriptions: boolean
 }) => {
   return (
     <section className="p-5 rounded-md shadow-md border border-slate-200 flex flex-col gap-5">

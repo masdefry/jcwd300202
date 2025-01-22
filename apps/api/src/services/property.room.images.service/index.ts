@@ -81,6 +81,8 @@ export const createPropertyRoomImagesByPropertyService = async ({
     throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
+  if (!isTenantExist?.isVerified)
+    throw { msg: 'Tenant not verified!', status: 406 }
 
   const isPropertyRoomTypeExist = await prisma.propertyRoomType.findUnique({
     where: {
@@ -141,6 +143,8 @@ export const deletePropertyRoomImagesByPropertyService = async ({
     throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
+  if (!isTenantExist?.isVerified)
+    throw { msg: 'Tenant not verified!', status: 406 }
 
   const getPropertyRoomImage = await prisma.propertyRoomImage.findUnique({
     where: {

@@ -3,12 +3,12 @@
 import TextAreaCustom from '@/features/tenant/property/create/components/TextArea'
 import React from 'react'
 import { BsBuildings } from 'react-icons/bs'
+import { IUseManageDescriptionsHook } from '../types'
 const NeighborhoodDescriptionInputSection = ({
   dataPropertyDescriptions,
   isPendingPropertyDescriptions,
-}: {
+}: Pick<IUseManageDescriptionsHook, 'isPendingPropertyDescriptions'> & {
   dataPropertyDescriptions: any
-  isPendingPropertyDescriptions: boolean,
 }) => {
   return (
     <section className="p-5 rounded-md shadow-md border border-slate-200 flex flex-col gap-5">
@@ -25,30 +25,32 @@ const NeighborhoodDescriptionInputSection = ({
             ?.neighborhoodDescription
         }
       </div>
-      {
-        isPendingPropertyDescriptions ? (
-      <div className="collapse collapse-plus rounded-md skeleton bg-gray-200 text-transparent">
-        <input type="checkbox" disabled name={`accordion-neighborhood-description`} />
-        <div className="collapse-title text-sm font-bold">
-          Show Edit Description
-        </div>
-      </div>
-        ) : (
-      <div className="collapse collapse-plus bg-white rounded-md border border-slate-300">
-        <input type="checkbox" name={`accordion-neighborhood-description`} />
-        <div className="collapse-title text-sm font-bold">
-          Show Edit Description
-        </div>
-        <div className="collapse-content">
-          <TextAreaCustom
-            labelName="Edit Description"
-            name="neighborhoodDescription"
-            placeholder="Describe the neighborhood, including nearby amenities, transport, parks, and attractions."
+      {isPendingPropertyDescriptions ? (
+        <div className="collapse collapse-plus rounded-md skeleton bg-gray-200 text-transparent">
+          <input
+            type="checkbox"
+            disabled
+            name={`accordion-neighborhood-description`}
           />
+          <div className="collapse-title text-sm font-bold">
+            Show Edit Description
+          </div>
         </div>
-      </div>
-        )
-      }
+      ) : (
+        <div className="collapse collapse-plus bg-white rounded-md border border-slate-300">
+          <input type="checkbox" name={`accordion-neighborhood-description`} />
+          <div className="collapse-title text-sm font-bold">
+            Show Edit Description
+          </div>
+          <div className="collapse-content">
+            <TextAreaCustom
+              labelName="Edit Description"
+              name="neighborhoodDescription"
+              placeholder="Describe the neighborhood, including nearby amenities, transport, parks, and attractions."
+            />
+          </div>
+        </div>
+      )}
     </section>
   )
 }

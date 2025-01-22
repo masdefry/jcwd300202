@@ -51,6 +51,8 @@ export const createPropertyService = async ({
     throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
+  if (!isTenantExist?.isVerified)
+    throw { msg: 'Tenant not verified!', status: 406 }
 
   const uuid = uuidV4()
   const propertyId = uuid
@@ -447,34 +449,6 @@ export const getPropertyDetailService = async ({
       },
     },
   })
-  // const transactions = await prisma.transactionStatus.findMany({
-  //   where: {
-  //     AND: [
-  //       {
-  //         transaction: {
-  //           propertyId: property?.id,
-  //         },
-  //       },
-  //       {
-  //         status: {
-  //           in: ['PAID', 'WAITING_FOR_CONFIRMATION_PAYMENT'],
-  //         },
-  //       },
-  //     ],
-  //     roomFilled: {
-  //       some: {
-  //         date: dataPeriod
-  //       },
-  //     },
-  //   },
-  //   include: {
-  //     transaction: {
-  //       include: {
-  //         room: true,
-  //       },
-  //     },
-  //   },
-  // })
   const countReservedRooms = await prisma.roomFilled.groupBy({
     where: {
       propertyId: property?.id,
@@ -501,7 +475,6 @@ export const getPropertyDetailService = async ({
     }
     if (!isAllRoomAvailable) excludeDate.push(season.date)
   })
-  // property.propertyRoomType
 
   const getAllSeasonalPriceByCheapestRoomType =
     await prisma.seasonalPrice.findMany({
@@ -822,34 +795,6 @@ export const getPropertyDetailByTenantService = async ({
       },
     },
   })
-  // const transactions = await prisma.transactionStatus.findMany({
-  //   where: {
-  //     AND: [
-  //       {
-  //         transaction: {
-  //           propertyId: property?.id,
-  //         },
-  //       },
-  //       {
-  //         status: {
-  //           in: ['PAID', 'WAITING_FOR_CONFIRMATION_PAYMENT'],
-  //         },
-  //       },
-  //     ],
-  //     roomFilled: {
-  //       some: {
-  //         date: dataPeriod
-  //       },
-  //     },
-  //   },
-  //   include: {
-  //     transaction: {
-  //       include: {
-  //         room: true,
-  //       },
-  //     },
-  //   },
-  // })
   const countReservedRooms = await prisma.roomFilled.groupBy({
     where: {
       propertyId: property?.id,
@@ -876,7 +821,6 @@ export const getPropertyDetailByTenantService = async ({
     }
     if (!isAllRoomAvailable) excludeDate.push(season.date)
   })
-  // property.propertyRoomType
 
   const getAllSeasonalPriceByCheapestRoomType =
     await prisma.seasonalPrice.findMany({
@@ -1682,6 +1626,8 @@ export const updatePropertyDescriptionsService = async ({
     throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
+  if (!isTenantExist?.isVerified)
+    throw { msg: 'Tenant not verified!', status: 406 }
 
   const isPropertyExist = await prisma.property.findFirst({
     where: {
@@ -2278,6 +2224,8 @@ export const updatePropertyGeneralInfoService = async ({
   star,
   phoneNumber,
   url,
+  totalRooms,
+  propertyTypeId,
   slug,
 }: Pick<
   IProperty,
@@ -2293,8 +2241,9 @@ export const updatePropertyGeneralInfoService = async ({
   | 'checkOutStartTime'
   | 'zipCode'
   | 'checkOutEndTime'
+  | 'propertyTypeId'
 > &
-  Pick<IPropertyDetail, 'phoneNumber' | 'url'> &
+  Pick<IPropertyDetail, 'phoneNumber' | 'url' | 'totalRooms'> &
   Pick<IUser, 'role' | 'id'>) => {
   const isTenantExist = await prisma.tenant.findUnique({
     where: {
@@ -2307,6 +2256,8 @@ export const updatePropertyGeneralInfoService = async ({
     throw { msg: 'Tenant not found!', status: 404 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
+  if (!isTenantExist?.isVerified)
+    throw { msg: 'Tenant not verified!', status: 406 }
 
   const isPropertyExist = await prisma.property.findFirst({
     where: {
@@ -2322,82 +2273,103 @@ export const updatePropertyGeneralInfoService = async ({
   if (isPropertyExist?.tenantId !== id)
     throw { msg: 'Actions not permitted!', status: 403 }
 
-  let newSlug
+  let newSlug: undefined | null | string
   if (isPropertyExist?.name !== name) {
     newSlug = `${name.toLowerCase().split(' ').join('-')}-${isPropertyExist?.id}`
   }
 
-  const updatedProperty = await prisma.property.update({
+  const findPropertyType = await prisma.propertyType.findUnique({
     where: {
-      id: isPropertyExist?.id,
-    },
-    data: {
-      name,
-      address: address as string,
-      zipCode: zipCode as string,
-      location: location as string,
-      cityId,
-      countryId,
-      checkInStartTime: addHours(
-        new Date(
-          new Date().toISOString().split('T')[0] +
-            'T' +
-            checkInStartTime +
-            ':00',
-        ),
-        7,
-      ),
-      checkInEndTime: checkInEndTime
-        ? addHours(
+      id: Number(propertyTypeId),
+      name: {
+        contains: 'hotel'
+      }
+    }
+  })
+
+  let updatedProperty, updatedPropertyDetail
+  await prisma.$transaction(async(tx) => {
+    try {
+      updatedProperty = await tx.property.update({
+        where: {
+          id: isPropertyExist?.id,
+        },
+        data: {
+          name,
+          address: address as string,
+          zipCode: zipCode as string,
+          location: location as string,
+          cityId: Number(cityId),
+          countryId: Number(countryId),
+          checkInStartTime: addHours(
             new Date(
               new Date().toISOString().split('T')[0] +
                 'T' +
-                checkInEndTime +
+                checkInStartTime +
                 ':00',
             ),
             7,
-          )
-        : null,
-      checkOutStartTime: checkOutStartTime
-        ? addHours(
+          ),
+          checkInEndTime: checkInEndTime
+            ? addHours(
+                new Date(
+                  new Date().toISOString().split('T')[0] +
+                    'T' +
+                    checkInEndTime +
+                    ':00',
+                ),
+                7,
+              )
+            : null,
+          checkOutStartTime: checkOutStartTime
+            ? addHours(
+                new Date(
+                  new Date().toISOString().split('T')[0] +
+                    'T' +
+                    checkOutStartTime +
+                    ':00',
+                ),
+                7,
+              )
+            : null,
+          checkOutEndTime: addHours(
             new Date(
               new Date().toISOString().split('T')[0] +
                 'T' +
-                checkOutStartTime +
+                checkOutEndTime +
                 ':00',
             ),
             7,
-          )
-        : null,
-      checkOutEndTime: addHours(
-        new Date(
-          new Date().toISOString().split('T')[0] +
-            'T' +
-            checkOutEndTime +
-            ':00',
-        ),
-        7,
-      ),
-      star,
-      slug: newSlug || slug,
-    },
+          ),
+          star: findPropertyType?.id ? Number(star) : null,
+          slug: newSlug || slug,
+    
+          propertyTypeId: Number(propertyTypeId)
+        },
+      })
+    
+      if (!updatedProperty)
+        throw { msg: 'Update property general info failed!', status: 500 }
+    
+      updatedPropertyDetail = await tx.propertyDetail.update({
+        where: {
+          propertyId: isPropertyExist?.id,
+        },
+        data: {
+          phoneNumber,
+          url,
+          totalRooms: Number(totalRooms),
+        },
+      })
+    
+      if (!updatedPropertyDetail)
+        throw { msg: 'Update property general info failed!', status: 500 }
+      
+    } catch(error) {
+      throw { msg: 'Update property general info failed!', status: 500 }
+
+    }
   })
-
-  if (!updatedProperty)
-    throw { msg: 'Update property general info failed!', status: 500 }
-
-  const updatedPropertyDetail = await prisma.propertyDetail.update({
-    where: {
-      propertyId: isPropertyExist?.id,
-    },
-    data: {
-      phoneNumber,
-      url,
-    },
-  })
-
-  if (!updatedPropertyDetail)
-    throw { msg: 'Update property general info failed!', status: 500 }
 
   return {
     updatedProperty,
@@ -2427,6 +2399,8 @@ export const deletePropertyService = async ({
   if (!comparingPassword) throw { msg: 'Password invalid!', status: 406 }
   if (isTenantExist?.role !== role)
     throw { msg: 'Role unauthorized!', status: 401 }
+  if (!isTenantExist?.isVerified)
+    throw { msg: 'Tenant not verified!', status: 406 }
 
   const isPropertyExist = await prisma.property.findFirst({
     where: {

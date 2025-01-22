@@ -113,11 +113,6 @@ export const createSearchService = async({country, city , checkInDate, checkOutD
         }
     });
 
-    // console.log("Input Parameters:", {
-    //     country, city, checkInDate, checkOutDate, adult, children
-    // });
-
-    // console.log("property", getProperty)
 
     return getProperty.filter((item) => item.propertyRoomType.length > 0).map((item) => ({
         ...item,

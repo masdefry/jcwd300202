@@ -27,6 +27,8 @@ const useMutateUpdateGeneralInfoApi = ({
           location: values?.location,
           cityId: values?.cityId,
           countryId: values?.countryId,
+          propertyTypeId: values?.propertyTypeId,
+          totalRooms: values?.totalRooms,
           checkInStartTime: values?.checkInStartTime,
           checkInEndTime: values?.checkInEndTime,
           checkOutStartTime: values?.checkOutStartTime,

@@ -91,9 +91,11 @@ const PropertyManageDescriptionPage = ({
           <Form className="flex flex-col gap-5">
             <PropertyDescriptionInputSection
               dataPropertyDescriptions={dataPropertyDescriptions}
+              isPendingPropertyDescriptions={isPendingPropertyDescriptions}
             />
             <NeighborhoodDescriptionInputSection
               dataPropertyDescriptions={dataPropertyDescriptions}
+              isPendingPropertyDescriptions={isPendingPropertyDescriptions}
             />
             <section className="p-5 rounded-md shadow-md border border-slate-200 flex flex-col gap-5">
               <h1 className="text-lg font-bold text-gray-800 flex items-center gap-1.5">
@@ -102,6 +104,7 @@ const PropertyManageDescriptionPage = ({
               </h1>
               <RoomTypesDescriptionsInputSection
                 dataPropertyDescriptions={dataPropertyDescriptions}
+                isPendingPropertyDescriptions={isPendingPropertyDescriptions}
               />
               <button
                 type="submit"

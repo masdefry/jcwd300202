@@ -12,6 +12,7 @@ import { managePropertyPhotosValidationSchema } from '@/features/tenant/property
 import useManagePhotosHook from '@/features/tenant/property/manage/photos/hooks/useManagePhotosHook'
 import ShowPhotoPopup from '@/features/tenant/property/manage/photos/components/ShowPhotoPopup'
 import FormCreateImage from '@/features/tenant/property/manage/photos/components/FormCreateImage'
+import { IoCameraOutline } from 'react-icons/io5'
 
 const PropertyManagePhotosPage = ({ params }: { params: { slug: string } }) => {
   const {
@@ -28,7 +29,7 @@ const PropertyManagePhotosPage = ({ params }: { params: { slug: string } }) => {
     isPendingDeletePropertyImage,
     mutateCreatePropertyImage,
     isPendingCreatePropertyImage,
-    isPendingPropertyImages
+    isPendingPropertyImages,
   } = useManagePhotosHook({ params })
 
   if (isError) {
@@ -63,8 +64,8 @@ const PropertyManagePhotosPage = ({ params }: { params: { slug: string } }) => {
           disabled={
             (Array.isArray(dataPropertyImages) &&
               dataPropertyImages.length >= 7) ||
-            isPendingCreatePropertyImage || 
-            isPendingPropertyImages || 
+            isPendingCreatePropertyImage ||
+            isPendingPropertyImages ||
             isPendingDeletePropertyImage
           }
           className="disabled:bg-slate-300 disabled:text-white disabled:border-none disabled:scale-100 disabled:cursor-not-allowed flex items-center gap-1.5 text-sm px-4 py-2 rounded-md text-gray-800 font-bold border-2 border-gray-800 bg-white hover:bg-gray-800 hover:text-white transition duration-100 active:scale-90"
@@ -74,30 +75,54 @@ const PropertyManagePhotosPage = ({ params }: { params: { slug: string } }) => {
         </button>
       </div>
       <section className="gap-3 grid sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-6 px-5">
-        {dataPropertyImages?.map((item: any, index: number) => {
-          return (
-            <figure
-            key={index}
-              onClick={() =>
-                setShowPhoto({
-                  id: item?.id,
-                  directory: item?.directory,
-                  filename: item?.filename,
-                  fileExtension: item?.fileExtension,
-                })
-              }
-              className="p-1 rounded-md h-[200px] bg-slate-200 shadow-md pb-3 overflow-hidden hover:scale-105 transition duration-100 hover:cursor-pointer"
-            >
-              <Image
-                src={`http://localhost:5000/api/${item?.directory}/${item?.filename}.${item?.fileExtension}`}
-                alt=""
-                width={500}
-                height={500}
-                className="w-full h-full object-cover rounded-sm"
-              />
-            </figure>
-          )
-        })}
+        {isPendingPropertyImages
+          ? Array.from({ length: 7 }).map((item: any, index: number) => {
+              return (
+                <figure
+                  key={index}
+                  className="p-1 rounded-md h-[200px] skeleton bg-slate-200 shadow-md pb-3 overflow-hidden"
+                ></figure>
+              )
+            })
+          : dataPropertyImages?.map((item: any, index: number) => {
+              return (
+                <figure
+                  key={index}
+                  onClick={() =>
+                    setShowPhoto({
+                      id: item?.id,
+                      directory: item?.directory,
+                      filename: item?.filename,
+                      fileExtension: item?.fileExtension,
+                    })
+                  }
+                  className="p-1 rounded-md h-[200px] bg-slate-200 shadow-md pb-3 overflow-hidden hover:scale-105 transition duration-100 hover:cursor-pointer"
+                >
+                  <Image
+                    src={`http://localhost:5000/api/${item?.directory}/${item?.filename}.${item?.fileExtension}`}
+                    alt=""
+                    width={500}
+                    height={500}
+                    className="w-full h-full object-cover rounded-sm"
+                  />
+                </figure>
+              )
+            })}
+        {!isPendingPropertyImages &&
+          Array.from({ length: 7 - dataPropertyImages?.length }).map(
+            (_, index: number) => {
+              return (
+                <figure
+                  key={index}
+                  className="p-1 rounded-md h-[200px] bg-slate-200 shadow-md pb-3 overflow-hidden"
+                >
+                  <div className="w-full h-full object-cover rounded-sm bg-gray-300 text-slate-200 flex items-center justify-center">
+                    <IoCameraOutline size={40} />
+                  </div>
+                </figure>
+              )
+            },
+          )}
       </section>
       {showPhoto?.directory && (
         <ShowPhotoPopup

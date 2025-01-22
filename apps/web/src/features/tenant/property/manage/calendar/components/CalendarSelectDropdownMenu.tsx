@@ -106,7 +106,6 @@ const CalendarSelectDropdownMenu = ({
             >
               {Array.from({ length: 12 }).map((_, index) => {
                 return (
-                  <option value={`${index}-${year}`}>
                   <option key={index} value={`${index}-${year}`}>
                     {index + 1 < 10 ? '0' + (index + 1) : index + 1} - {year}
                   </option>

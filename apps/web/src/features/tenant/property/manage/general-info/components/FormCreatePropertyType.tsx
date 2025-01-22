@@ -36,6 +36,7 @@ const FormCreatePropertyType = ({
             Add Property Type
           </h1>
           <p className="text-sm font-light text-gray-500">
+            {`Can't Find Your Property Type? Build It Here!`}
           </p>
         </hgroup>
         <div className="flex flex-col gap-3">

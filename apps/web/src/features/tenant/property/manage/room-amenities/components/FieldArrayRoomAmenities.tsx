@@ -27,9 +27,15 @@ const FieldArrayRoomAmenities = ({
               Pan Pacific Jakarta Rooms Does Have
             </h1>
             <section className=" flex flex-col gap-3">
-              <div className="flex items-center text-sm gap-1.5 font-medium rounded-md skeleton bg-gray-200 text-transparent shadow-md justify-center p-4 border border-slate-200 ">
-                General room facility not found
-              </div>
+            {
+              Array.from({length: 6}).map((_, index) => {
+                return (
+                  <div className="flex items-center text-sm gap-1.5 font-medium rounded-md skeleton bg-gray-200 text-transparent shadow-md justify-center p-4 border border-slate-200 ">
+                    General room facility not found
+                  </div>
+                )
+              })
+            }
             </section>
           </section>
           <section className="px-5 flex flex-col gap-5">
@@ -38,6 +44,15 @@ const FieldArrayRoomAmenities = ({
             </h1>
 
             <section className=" flex flex-col gap-3">
+            {
+              Array.from({length: 6}).map((_, index) => {
+                return (
+                  <div className="flex items-center text-sm gap-1.5 font-medium rounded-md skeleton bg-gray-200 text-transparent shadow-md justify-center p-4 border border-slate-200 ">
+                    General room facility not found
+                  </div>
+                )
+              })
+            }
               <div className="flex items-center text-sm gap-1.5 font-medium rounded-md skeleton bg-gray-200 text-transparent shadow-md justify-center p-4 border border-slate-200 ">
                 Property facility not found
               </div>

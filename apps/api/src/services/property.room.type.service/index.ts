@@ -24,6 +24,7 @@ export const getPropertyRoomTypeService = async ({ roomTypeId }: { roomTypeId: s
       property: {
         select: {
           tenantId: true,
+          name: true,
         },
       },
     },

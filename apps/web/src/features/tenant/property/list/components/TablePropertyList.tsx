@@ -92,7 +92,6 @@ const TablePropertyList = ({ dataProperties, handlePagination, isPending }: { da
                 })
               ) : (
                     <tr>
-                      <td colSpan={8} className='text-center text-slate-300 font-bold p-3'>Oops! We Couldn't Find the Property You're Looking For</td>
                     </tr>
 
               )

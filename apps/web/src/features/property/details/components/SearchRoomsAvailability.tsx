@@ -10,15 +10,15 @@ const SearchRoomsAvailability = ({ searchParams, checkInDate, checkOutDate, hand
   if(isPending) {
       return (
       <div className='flex flex-col gap-5 2xl:p-0 px-5'>
-              <p className='text-lg md:text-xl 2xl:text-2xl font-bold text-transparent bg-slate-00 skeleton w-fit rounded-none'>Room Availability in New York City</p>
-              <div className='flex items-center gap-2 bg-slate-400 skeleton text-sm font-medium md:font-bold p-3 rounded-md text-transparent'>
+              <p className='text-lg md:text-xl 2xl:text-2xl font-bold text-transparent bg-slate-300  w-fit rounded-none'>Room Availability in New York City</p>
+              <div className='flex items-center gap-2 bg-slate-400  text-sm font-medium md:font-bold p-3 rounded-md text-transparent'>
                   <div className='bg-s flex items-center rounded-full h-9 w-9 p-2'>
                   </div>
-                  <p className='md:text-sm text-xs font-bold skeleton rounded-none bg-slate-200'>Choose the room type according to your needs</p>
+                  <p className='md:text-sm text-xs font-bold  rounded-none bg-slate-200'>Choose the room type according to your needs</p>
               </div>
-              <div className='relative flex items-center justify-center w-full rounded-md  bg-slate-200 skeleton shadow-md border border-slate-200'>
+              <div className='relative flex items-center justify-center w-full rounded-md  bg-slate-200  shadow-md border border-slate-200'>
                   <div className='p-4 overflow-x-auto'>
-                      <div className=' flex items-center justify-center bg-slate-200 skeleton rounded-md p-[1px]'>
+                      <div className=' flex items-center justify-center bg-slate-200  rounded-md p-[1px]'>
                           <button className='min-w-max text-xs font-semibold text-gray-800 px-2 py-2 pr-5 flex items-center gap-3 bg-transparent text-transparent'>Adult . Children . 1 Room</button>
                           <button className=' transition duration-100 text-xs font-semibold  px-2 py-2 pr-5 flex items-center gap-3 rounded-r-md bg-transparent text-transparent'>Search</button>
                       </div>

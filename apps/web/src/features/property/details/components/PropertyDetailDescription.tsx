@@ -21,11 +21,10 @@ const PropertyDetailDescription = ({ dataPropertyDetail, isPending = true, showM
         <section className='flex flex-col 2xl:p-0 px-5 gap-5 rounded-md bg-white'>
                
                <section id='map' className='max-h-[200px] col-span-1 rounded-md drop-shadow-md row-span-2 w-full h-full overflow-hidden'>
-               {/* <SimpleMap latitudeAndLongitude={dataPropertyDetail?.property?.location.split(', ').map((item: string) => Number(item))} /> */}
                </section>
                <section className='p-5 flex flex-col gap-5 col-span-1 rounded-md drop-shadow-md bg-white row-span-2'>
                    <hgroup className='flex items-center justify-between'>
-                       <h1 className='skeleton rounded-none text-transparent font-bold'>Property Highlighted Facilities</h1>
+                       <h1 className='bg-slate-300 rounded-none text-transparent font-bold'>Property Highlighted Facilities</h1>
                    </hgroup>
                    <Separator/>
                    <section className='grid grid-cols-2 gap-5' >
@@ -33,9 +32,9 @@ const PropertyDetailDescription = ({ dataPropertyDetail, isPending = true, showM
                            Array.from({length: 8}).map((item: any, index: number) => {
                                return(
                                    <div key={index} className='flex text-sm tracking-wide items-center gap-2'>
-                                       <figure className='h-4 w-4 bg-slate-300 skeleton rounded-full'>
+                                       <figure className='h-4 w-4 bg-slate-300  rounded-full'>
                                        </figure>
-                                       <p className='skeleton bg-slate-300 text-transparent rounded-none'>Property</p>
+                                       <p className=' bg-slate-300 text-transparent rounded-none'>Property</p>
                                    </div>
                                )
                            })
@@ -43,22 +42,22 @@ const PropertyDetailDescription = ({ dataPropertyDetail, isPending = true, showM
                    </section>
                </section>
                <article className='text-sm font-light text-justify p-5 flex flex-col pjustify-between leading-relaxed col-span-2 rounded-md drop-shadow-md bg-white row-span-1'>
-                   <p className='skeleton rounded-none bg-slate-300 text-transparent'>
+                   <p className=' rounded-none bg-slate-300 text-transparent'>
                        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nostrum exercitationem aut odit, tenetur tempore animi. Esse, officiis maxime! Nemo illum sunt tenetur eos ducimus beatae dolorum porro quibusdam, accusantium laudantium.
                    </p>
-                   <p className='skeleton rounded-none bg-slate-300 text-transparent my-2'>
+                   <p className=' rounded-none bg-slate-300 text-transparent my-2'>
                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat, saepe. Ratione obcaecati doloremque odit est, quas quis aut, animi laborum aperiam, nam voluptatibus consequatur ut. Consectetur at explicabo tenetur laborum.
                    </p>
-                   <button type='button' className='flex items-center gap-2 font-bold '><p className='skeleton rounded-none text-transparent flex items-center gap-2'>Less Description</p></button>
+                   <button type='button' className='flex items-center gap-2 font-bold '><p className=' rounded-none text-transparent flex items-center gap-2'>Less Description</p></button>
                </article>
                
                        <section id='review' className='h-fit max-h-[400px] flex flex-col gap-5 col-span-1 row-span-3 rounded-md drop-shadow-md bg-white w-full p-5'>
                            <hgroup className='flex items-center gap-3 w-full'>
-                               <p className='text-xl font-bold skeleton rounded-none text-transparent bg-slate-300 shadow-md p-3 border border-slate-300'>9.8</p>
+                               <p className='text-xl font-bold  rounded-none text-transparent bg-slate-300 shadow-md p-3 border border-slate-300'>9.8</p>
                                <div className='flex flex-col gap-1 w-full'>
-                                   <p className='text-lg font-bold skeleton rounded-none text-transparent bg-slate-300'>Spectacular</p>
+                                   <p className='text-lg font-bold  rounded-none text-transparent bg-slate-300'>Spectacular</p>
                                    <div className='flex justify-between items-center w-full'>
-                                       <p className='text-sm font-light skeleton rounded-none text-transparent bg-slate-300'>Reviews from 10 Verified Guests</p>
+                                       <p className='text-sm font-light  rounded-none text-transparent bg-slate-300'>Reviews from 10 Verified Guests</p>
                                    </div>
                                </div>
                            </hgroup>
@@ -83,7 +82,7 @@ const PropertyDetailDescription = ({ dataPropertyDetail, isPending = true, showM
                                            <article className='text-sm font-light text-transparent text-justify'>
                                                {
                                                    dummyReview.length > 200 ? (
-                                                   <p className='flex flex-col gap-2 skeleton rounded-none'>{dummyReview?.slice(0,200)}... <b className=' skeleton rounded-none font-bold'>Read more</b></p>
+                                                   <p className='flex flex-col gap-2 bg-slate-300 rounded-none'>{dummyReview?.slice(0,200)}... <b className=' bg-slate-300 rounded-none font-bold'>Read more</b></p>
                                                    ) : dummyReview
                                                }
                                            

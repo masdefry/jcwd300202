@@ -5,37 +5,37 @@ import React from 'react'
 import { IoTimeOutline } from 'react-icons/io5'
 import { MdAttachMoney, MdOutlineEmojiFoodBeverage } from 'react-icons/md'
 
-const PropertyDetailPolicies = ({ dataPropertyDetail, isPending }: any) => {
+const PropertyDetailPolicies = ({ dataPropertyDetail, isPending }: { dataPropertyDetail: any, isPending: boolean }) => {
     if(isPending) {
         return (
           <section className='grid grid-cols-3 gap-5 2xl:p-0 px-5'>
                       <div className='overflow-hidden col-span-3 2xl:col-span-1 rounded-t-3xl 2xl:rounded-l-3xl relative h-[150px] 2xl:h-[210px]'>
-                          <figure className='w-full h-full object-cover overflow-hidden bg-gray-400 skeleton'>
+                          <figure className='w-full h-full object-cover overflow-hidden bg-gray-400 skeleton rounded-br-none'>
                           </figure>
                       </div>
                       <div className='col-span-3 2xl:col-span-2 flex flex-col w-full'>
                           <div id='ci-co-time' className='flex items-center gap-3 border-b border-slate-300 w-full py-3'>
-                              <div className='text-slate-200 rounded-full skeleton h-12 w-12'></div>
+                              <div className='bg-gray-200 rounded-full  h-12 w-12'></div>
                               <article className='flex flex-col gap-1 text-sm'>
-                                  <h1 className='font-bold bg-slate-300 rounded-none w-fit skeleton text-transparent'>Check-in/Check-out Time</h1>
+                                  <h1 className='font-bold bg-slate-300 rounded-none w-fit  text-transparent'>Check-in/Check-out Time</h1>
                                   <span className='flex items-center gap-5 text-gray-600'>
-                                      <p className='bg-slate-300 rounded-none w-fit skeleton text-transparent'>Check-in from:10:00 -  10:00</p>
-                                      <p className='bg-slate-300 rounded-none w-fit skeleton text-transparent'>Check-out at:10:00 -  10:00</p>
+                                      <p className='bg-slate-300 rounded-none w-fit  text-transparent'>Check-in from:10:00 -  10:00</p>
+                                      <p className='bg-slate-300 rounded-none w-fit  text-transparent'>Check-out at:10:00 -  10:00</p>
                                   </span>
                               </article>
                           </div>
                           <div id='ci-co-time' className='flex items-center gap-3 border-b border-slate-300 w-full py-3'>
-                              <div className='text-slate-200 rounded-full skeleton h-12 w-12'></div>
+                              <div className='bg-gray-200 rounded-full  h-12 w-12'></div>
                               <article className='flex flex-col gap-1 text-sm'>
-                                  <h1 className='font-bold bg-slate-300 rounded-none w-fit skeleton text-transparent'>Deposite</h1>
-                                  <p className='bg-slate-300 rounded-none w-fit skeleton text-transparent'>You must pay a deposit of Rp100,000 before staying</p>
+                                  <h1 className='font-bold bg-slate-300 rounded-none w-fit  text-transparent'>Deposite</h1>
+                                  <p className='bg-slate-300 rounded-none w-fit  text-transparent'>You must pay a deposit of Rp100,000 before staying</p>
                               </article>
                           </div>
                           <div id='ci-co-time' className='flex items-center gap-3 border-b border-slate-300 w-full py-3'>
-                              <div className='text-slate-200 rounded-full skeleton h-12 w-12'></div>
+                              <div className='bg-gray-200 rounded-full  h-12 w-12'></div>
                               <article className='flex flex-col gap-1 text-sm'>
-                                  <h1 className='font-bold bg-slate-300 rounded-none w-fit skeleton text-transparent'>Breakfast</h1>
-                                  <p className='bg-slate-300 rounded-none w-fit skeleton text-transparent'> Breakfast facilities for guests follow property management policies</p>
+                                  <h1 className='font-bold bg-slate-300 rounded-none w-fit  text-transparent'>Breakfast</h1>
+                                  <p className='bg-slate-300 rounded-none w-fit  text-transparent'> Breakfast facilities for guests follow property management policies</p>
                               </article>
                           </div>
                       </div>

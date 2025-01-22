@@ -12,7 +12,6 @@ const PropertySettingsPage = ({ params }: { params: { slug: string } }) => {
     setIsSubmitting,
     setChange,
     isDeleted,
-    setIsDeleted,
     dataForDelete,
     setDataForDelete,
     dataProperty,
@@ -21,12 +20,7 @@ const PropertySettingsPage = ({ params }: { params: { slug: string } }) => {
     isPendingDeleteProperty,
   } = useManagePropertySettingsHook({ params })
   if (isPendingProperty) {
-    return (
-      <LoadingPropertySettings
-        isPendingDeleteProperty={isPendingDeleteProperty}
-        isPendingProperty={isPendingProperty}
-      />
-    )
+    return <LoadingPropertySettings />
   }
   return (
     <main className="flex flex-col gap-5 2xl:p-5">

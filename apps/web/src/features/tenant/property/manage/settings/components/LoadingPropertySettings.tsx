@@ -2,13 +2,7 @@
 
 import React from 'react'
 
-const LoadingPropertySettings = ({
-  isPendingDeleteProperty,
-  isPendingProperty,
-}: {
-  isPendingDeleteProperty: boolean
-  isPendingProperty: boolean
-}) => {
+const LoadingPropertySettings = () => {
   return (
     <main className="flex flex-col gap-5 2xl:p-5">
       <div className="flex flex-col gap-1">
@@ -30,7 +24,7 @@ const LoadingPropertySettings = ({
             </p>
           </hgroup>
           <button
-            disabled={isPendingProperty || isPendingDeleteProperty}
+            disabled={true}
             className=" flex items-center gap-1.5 text-sm font-bold  rounded-full px-5 py-3 shadow-sm skeleton bg-gray-200 text-transparent"
           >
             00 Delete

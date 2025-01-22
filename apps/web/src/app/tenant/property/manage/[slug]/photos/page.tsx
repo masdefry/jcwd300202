@@ -54,7 +54,7 @@ const PropertyManagePhotosPage = ({ params }: { params: { slug: string } }) => {
       <hgroup className="flex flex-col px-5">
         <h1 className="text-lg font-bold text-gray-800">Property Photos</h1>
         <p className="text-sm font-medium text-slate-600">
-          Bring Your Property to Life – Upload New Photos Anytime!
+          Bring Your Property to Life – Upload New Photos Anytime! Min. 5 Photos
         </p>
       </hgroup>
       <div className="w-full flex justify-end px-5">
@@ -126,6 +126,7 @@ const PropertyManagePhotosPage = ({ params }: { params: { slug: string } }) => {
       </section>
       {showPhoto?.directory && (
         <ShowPhotoPopup
+          isDisabled={dataPropertyImages?.length <= 5}
           setShowPhoto={setShowPhoto}
           setIsSubmitting={setIsSubmitting}
           isSubmitting={isSubmitting}

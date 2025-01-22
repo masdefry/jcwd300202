@@ -88,7 +88,7 @@ async function Property4 ({ tenantAccounts, countryId, cityId }) {
         const createdProperty4RoomType2 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Garden View Deluxe',
-                description: `The Garden View Deluxe Room offers a tranquil retreat with beautiful views of the hotel’s lush gardens. This room is elegantly furnished with a king-sized bed, plush linens, and a cozy seating area. It also includes a minibar, coffee machine, and a flat-screen TV. The modern bathroom is designed with a spacious rain shower and high-quality toiletries. With a peaceful ambiance, this room is ideal for those looking for comfort and a serene atmosphere while being surrounded by nature, offering the perfect balance of luxury and tranquility.`,
+                description: `The Garden View Deluxe Room offers a tranquil retreat with beautiful views of the hotel's lush gardens. This room is elegantly furnished with a king-sized bed, plush linens, and a cozy seating area. It also includes a minibar, coffee machine, and a flat-screen TV. The modern bathroom is designed with a spacious rain shower and high-quality toiletries. With a peaceful ambiance, this room is ideal for those looking for comfort and a serene atmosphere while being surrounded by nature, offering the perfect balance of luxury and tranquility.`,
                 rooms: 2,
                 capacity: 4,
                 bathrooms: 2,

@@ -25,11 +25,11 @@ async function Property15 ({ tenantAccounts, countryId, cityId }) {
     
     const propertyDetail = {
         propertyDescription: `
-        Elysian Towers is the epitome of luxury in the heart of Manhattan’s prestigious Upper East Side. This iconic residential building combines timeless elegance with modern sophistication, offering spacious suites with breathtaking views of Central Park and the city skyline. 
+        Elysian Towers is the epitome of luxury in the heart of Manhattan's prestigious Upper East Side. This iconic residential building combines timeless elegance with modern sophistication, offering spacious suites with breathtaking views of Central Park and the city skyline. 
         Residents have exclusive access to world-class amenities, including a heated indoor pool, a private cinema, a fully-equipped wellness center, and a rooftop terrace with a lounge area. Each unit features high ceilings, marble flooring, designer furnishings, and state-of-the-art appliances for a truly premium living experience.
         `,
         neighborhoodDescription: `
-            Elysian Towers is perfectly situated near cultural landmarks like the Metropolitan Museum of Art, the Guggenheim, and Madison Avenue’s high-end shopping district. With its proximity to Central Park and excellent transport connections, it offers the ideal blend of urban excitement and serene living.
+            Elysian Towers is perfectly situated near cultural landmarks like the Metropolitan Museum of Art, the Guggenheim, and Madison Avenue's high-end shopping district. With its proximity to Central Park and excellent transport connections, it offers the ideal blend of urban excitement and serene living.
         `,
         phoneNumber: '012125557890',
         url: 'https://www.elysiantowers.com',

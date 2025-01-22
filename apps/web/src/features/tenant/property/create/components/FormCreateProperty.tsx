@@ -17,7 +17,7 @@ import FormCreatePropertyFacility from './FormCreatePropertyFacility'
 import PropertyImagesInputSection from './PropertyImagesInputSection'
 import PropertyFacilitiesInputSection from './PropertyFacilitiesInputSection'
 import SectionGeneralInfo from './SectionGeneralInfo'
-import useHandleCreatePropertyHook from '../hooks/useHandleCreatePropertyHook'
+import handleCreateProperty from '../utils/handleCreateProperty'
 import { IPropertyData } from '../types'
 import CreatePropertyConfirmationPopup from '@/app/tenant/property/create/CreatePropertyConfirmationPopup'
 
@@ -285,7 +285,7 @@ const FormCreateProperty = ({
           isPendingCreatePropertyType
         }
         mutateCreateProperty={mutateCreateProperty}
-        useHandleCreatePropertyHook={useHandleCreatePropertyHook}
+        handleCreateProperty={handleCreateProperty}
         values={values}
       />
     </Form>

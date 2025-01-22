@@ -143,7 +143,7 @@ const PropertyRoomDetailList = ({ dataPropertyRoomType, isPending, setShowDataRo
         })
     ) : (
             <section className='w-full flex justify-center items-center rounded-md bg-white shadow-md p-3 py-12'>
-                <p className='text-center w-full text-slate-300 text-base justify-center 2xl:text-lg font-bold flex items-center gap-1.5'><IoIosSearch size={30}/>Room type not found! Maybe it's on vacation.</p>
+                <p className='text-center w-full text-slate-300 text-base justify-center 2xl:text-lg font-bold flex items-center gap-1.5'><IoIosSearch size={30}/>Room type not found! Maybe it&#39;s on vacation.</p>
             </section>
     )
     }

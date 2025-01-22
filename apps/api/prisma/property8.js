@@ -29,7 +29,7 @@ async function Property8 ({ tenantAccounts, countryId, cityId }) {
                 Rooms here will provide you with a flat-screen tv and air conditioning. There is also an electric kettle. 
                 Featuring a shower, private bathrooms also come with free toiletries. Extras include a desk and a safety deposit box.
             `,
-            neighborhoodDescription: 'Pranaya Suites is 656 feet’ walk from Teras Kota Mall and is 10 minutes’ drive to The Breeze Lifestyle Center and Mall.',
+            neighborhoodDescription: "Pranaya Suites is 656 feet' walk from Teras Kota Mall and is 10 minutes' drive to The Breeze Lifestyle Center and Mall.",
             phoneNumber: '08595213433',
             url: 'https://pranayaboutique.com/',
             totalRooms: 50,
@@ -86,7 +86,7 @@ async function Property8 ({ tenantAccounts, countryId, cityId }) {
         const createdProperty8RoomType2 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Superior King Room',
-                description: `The Superior King Room provides a refined and comfortable retreat with an emphasis on quality and relaxation. This room features a king-sized bed with luxurious linens, a cozy seating area, and a work desk. It’s equipped with modern amenities, including a minibar, flat-screen TV, and high-speed internet. The bathroom is designed with elegance, offering a rain shower, premium toiletries, and soft towels. Perfect for solo travelers or couples, the Superior King Room combines modern luxury with a peaceful atmosphere for a restful stay.`,
+                description: `The Superior King Room provides a refined and comfortable retreat with an emphasis on quality and relaxation. This room features a king-sized bed with luxurious linens, a cozy seating area, and a work desk. It's equipped with modern amenities, including a minibar, flat-screen TV, and high-speed internet. The bathroom is designed with elegance, offering a rain shower, premium toiletries, and soft towels. Perfect for solo travelers or couples, the Superior King Room combines modern luxury with a peaceful atmosphere for a restful stay.`,
                 capacity: 2,
                 bathrooms: 1,
                 price: 1800000,

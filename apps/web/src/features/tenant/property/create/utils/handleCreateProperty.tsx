@@ -3,7 +3,7 @@
 import React from 'react'
 import { IPropertyData } from '../types'
 
-const useHandleCreatePropertyHook = ({
+const handleCreateProperty = ({
   mutateCreateProperty,
   values,
 }: {
@@ -63,4 +63,4 @@ const useHandleCreatePropertyHook = ({
   mutateCreateProperty(fd)
 }
 
-export default useHandleCreatePropertyHook
+export default handleCreateProperty

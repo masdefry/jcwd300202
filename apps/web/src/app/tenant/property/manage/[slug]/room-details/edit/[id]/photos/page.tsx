@@ -63,7 +63,7 @@ const PropertyManageRoomPhotosPage = ({
       <hgroup className="flex flex-col px-5">
         <h1 className="text-lg font-bold text-gray-800">Room Photos</h1>
         <p className="text-sm font-medium text-slate-600">
-          Empower Your Space: Effortlessly Update Your Room Images Anytime!
+          Empower Your Space: Effortlessly Update Your Room Images Anytime! Min. 3 Photos
         </p>
       </hgroup>
       <div className="w-full flex justify-end px-5">
@@ -141,6 +141,7 @@ const PropertyManageRoomPhotosPage = ({
       </section>
       {showPhoto?.directory && (
         <ShowRoomImagePopup
+          isDisabled={dataPropertyRoomImages?.length <= 3}
           setShowPhoto={setShowPhoto}
           setIsSubmitting={setIsSubmitting}
           isSubmitting={isSubmitting}

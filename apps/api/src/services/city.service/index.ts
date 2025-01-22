@@ -17,6 +17,9 @@ export const getCitiesService = async ({
         mode: 'insensitive',
       },
     },
+    include: {
+      country: true
+    },
     orderBy: {
       name: 'asc',
     },

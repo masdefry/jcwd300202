@@ -69,7 +69,7 @@ const ExplorePage = ({
   }
 
   return (
-    <main className="w-full min-h-min py-5">
+    <main className="w-full min-h-min pb-5">
       <section className="m-auto max-w-screen-xl flex flex-col 2xl:grid grid-cols-4  gap-5 w-full h-full">
         <FilteringExplore
           showFilterPropertyRoomFacility={showFilterPropertyRoomFacility}

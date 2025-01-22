@@ -13,6 +13,7 @@ const ShowRoomImagePopup = ({
   mutateDeletePropertyImage,
   isPendingDeletePropertyImage,
   showPhoto,
+  isDisabled
 }: {
   setShowPhoto: any
   setIsSubmitting: any
@@ -20,6 +21,7 @@ const ShowRoomImagePopup = ({
   mutateDeletePropertyImage: any
   isPendingDeletePropertyImage: boolean
   showPhoto: IShowPhoto
+  isDisabled: boolean
 }) => {
   return (
             <section className="p-5 fixed w-full h-full top-0 left-0 bg-black bg-opacity-25 backdrop-blur-sm flex flex-col gap-1 items-center justify-center z-[54]">
@@ -49,12 +51,14 @@ const ShowRoomImagePopup = ({
                   />
                 </figure>
                 <div className="w-full flex justify-center items-center">
-                  <div
+                  <button
+                    type='button'
+                    disabled={isDisabled}
                     onClick={() => setIsSubmitting(true)}
-                    className="flex items-center justify-center rounded-full h-10 w-10 text-gray-800 text-lg bg-slate-300 border-2 border-slate-400 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-100"
+                    className="disabled:bg-slate-300 disabled:text-white disabled:scale-100 disabled:opacity-100 flex items-center justify-center rounded-full h-10 w-10 text-gray-800 text-lg bg-slate-300 border-2 border-slate-400 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-100"
                   >
                     <MdOutlineDeleteOutline />
-                  </div>
+                  </button>
                   <div
                     className={`${!isSubmitting && 'hidden'} p-5 backdrop-blur-sm fixed top-0 left-0 w-screen h-screen shadow-sm bg-black bg-opacity-20 z-[51] flex items-center justify-center`}
                   >

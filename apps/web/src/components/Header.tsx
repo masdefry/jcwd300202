@@ -12,7 +12,6 @@ import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import SearchHeader from './SearchHeader'
 import useDropdownSearchHook from '@/hooks/useDropdownSearchHook'
-import SearchHeaderDefault from './SearchHeaderDefault'
 import HamburgerMenu from './HamburgerMenu'
 import Promotion from './Promotion'
 import authStore from '@/zustand/authStore'
@@ -53,7 +52,7 @@ export default function Header() {
 
   return (
     <header className="w-full flex flex-col">
-      <nav className="hidden lg:flex justify-between items-center bg-white shadow-md fixed top-0 z-50 w-full min-h-min lg:px-16 md:px-12 sm:px-8 px-4">
+      <nav className="hidden lg:flex justify-between items-center bg-white shadow-md fixed top-0 z-[55] w-full min-h-min lg:px-16 md:px-12 sm:px-8 px-4">
         <div className="flex items-center">
           <div className="p-5">
             <Link href='/'>

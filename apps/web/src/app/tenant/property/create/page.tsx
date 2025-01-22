@@ -5,7 +5,6 @@ import { Formik } from 'formik'
 import { createPropertyValidationSchema } from '@/features/tenant/property/create/schemas/createPropertyValidationSchema'
 
 import useCreatePropertyFunctionalityHook from '@/features/tenant/property/create/hooks/useCreatePropertyFunctionalityHook'
-import useHandleCreatePropertyHook from '@/features/tenant/property/create/hooks/useHandleCreatePropertyHook'
 import FormCreateProperty from '@/features/tenant/property/create/components/FormCreateProperty'
 
 const CreatePropertyPage = () => {

@@ -6,14 +6,14 @@ const CreatePropertyConfirmationPopup = ({
   isPending,
   isSubmitting,
   setIsSubmitting,
-  useHandleCreatePropertyHook,
+  handleCreateProperty,
   mutateCreateProperty,
   values,
 }: {
   isPending: boolean
   isSubmitting: boolean
   setIsSubmitting: any
-  useHandleCreatePropertyHook: any
+  handleCreateProperty: any
   mutateCreateProperty: any
   values: any
 }) => {
@@ -41,7 +41,7 @@ const CreatePropertyConfirmationPopup = ({
             type="button"
             onClick={() => {
               setIsSubmitting(false)
-              useHandleCreatePropertyHook({ mutateCreateProperty, values })
+              handleCreateProperty({ mutateCreateProperty, values })
             }}
             disabled={isPending}
             className="disabled:bg-slate-300 disabled:text-white disabled:scale-100 disabled:opacity-100 px-5 hover:opacity-75 transition duration-100 active:scale-90 py-1.5 text-white text-sm font-bold rounded-full shadow-md border bg-blue-800 border-slate-100"

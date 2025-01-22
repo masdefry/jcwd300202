@@ -11,7 +11,7 @@ const useQueryCityApi = ({ setCityList }: { setCityList: any }) => {
           const res = await instance.get('/city?limit=10000')
           const dataForCityList = res?.data?.data?.cities?.map((item: any) => {
             return {
-              label: item?.name,
+              label: `${item?.name}, ${item?.country?.name}`,
               value: item?.id,
             }
           })

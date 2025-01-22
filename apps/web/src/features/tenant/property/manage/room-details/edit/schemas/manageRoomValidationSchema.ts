@@ -1,8 +1,11 @@
 import * as Yup from 'yup'
 
 export const manageRoomValidationSchema = Yup.object().shape({
-    name: Yup.string()
-    .matches(/^[a-zA-Z0-9\s]*$/, 'Only alphanumeric characters and spaces allowed')
+  name: Yup.string()
+    .matches(
+      /^[a-zA-Z0-9\s,.'-]*$/,
+      'Only letters, numbers, spaces, commas, periods, apostrophes, and hyphens are allowed!',
+    )
     .required('Room type name is required'),
 
   capacity: Yup.number()

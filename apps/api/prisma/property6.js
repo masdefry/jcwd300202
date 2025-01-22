@@ -29,7 +29,7 @@ async function Property6 ({ tenantAccounts, countryId, cityId }) {
                 The air-conditioned accommodation is 6.1 miles from Indonesia Convention Exhibition, and guests can benefit from private parking available on site and free Wifi. 
                 The apartment offers an outdoor swimming pool with a fence, as well as a fitness room and an elevator.
             `,
-            neighborhoodDescription: 'Central Park Mall is 16 miles from M-Town Residence Gading Serpong by J`s Luxury Apartment, while Tanah Abang Market is 18 miles away. Soekarno-Hatta International Airport is 8.7 miles from the property.',
+            neighborhoodDescription: "Central Park Mall is 16 miles from M-Town Residence Gading Serpong by J's Luxury Apartment, while Tanah Abang Market is 18 miles away. Soekarno-Hatta International Airport is 8.7 miles from the property.",
             phoneNumber: '08545233533',
             url: 'https://jlux.com/id/m-town/',
             totalRooms: 30,

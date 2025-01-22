@@ -96,7 +96,7 @@ async function Property9 ({ tenantAccounts, countryId, cityId }) {
         const createdProperty9RoomType3 = await prisma.propertyRoomType.create({
             data: {
                 name: 'Luxury Two-Bedroom Suite',
-                description: 'The Luxury Two-Bedroom Suite offers the perfect blend of elegance, comfort, and modern living. Featuring two spacious bedrooms, two bathrooms, and premium design elements, this suite is ideal for families, groups, or business travelers seeking a premium experience. Guests can enjoy access to all necessary amenities while reveling in a stylish, well-thought-out interior. It’s the perfect choice for both long-term and short-term stays.',
+                description: "The Luxury Two-Bedroom Suite offers the perfect blend of elegance, comfort, and modern living. Featuring two spacious bedrooms, two bathrooms, and premium design elements, this suite is ideal for families, groups, or business travelers seeking a premium experience. Guests can enjoy access to all necessary amenities while reveling in a stylish, well-thought-out interior. It's the perfect choice for both long-term and short-term stays.",
                 rooms: 2,
                 capacity: 5,
                 bathrooms: 2,

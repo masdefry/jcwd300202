@@ -144,7 +144,7 @@ const Footer = () => {
       )}
       
       <section className='text-center text-xs sm:text-sm md:text-base font-light flex flex-col justify-center items-center gap-1'>
-        <p className='text-xs'>Roomify is part of Roomify Inc., Indonesian's leading provider of online travel and related services.</p>
+        <p className='text-xs'>Roomify is part of Roomify Inc., Indonesian&#39;s leading provider of online travel and related services.</p>
         <p className='text-xs'><span className='font-bold'>Copyright © 2024 Roomify™</span>. All rights reserved.</p>
       </section>
     </footer>

@@ -70,7 +70,7 @@ const CityInputSection = ({
         <CiSquarePlus size={21} /> City
       </button>
       <p className="text-slate-600 text-xs font-bold">
-        Can't find your city? Simply click button Add City to add it.
+        Can&#39;t find your city? Simply click button Add City to add it.
       </p>
       <ErrorMessage
         name="cityId"

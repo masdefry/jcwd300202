@@ -30,7 +30,7 @@ const FieldArrayRoomAmenities = ({
             {
               Array.from({length: 6}).map((_, index) => {
                 return (
-                  <div className="flex items-center text-sm gap-1.5 font-medium rounded-md skeleton bg-gray-200 text-transparent shadow-md justify-center p-4 border border-slate-200 ">
+                  <div key={index} className="flex items-center text-sm gap-1.5 font-medium rounded-md skeleton bg-gray-200 text-transparent shadow-md justify-center p-4 border border-slate-200 ">
                     General room facility not found
                   </div>
                 )
@@ -47,7 +47,7 @@ const FieldArrayRoomAmenities = ({
             {
               Array.from({length: 6}).map((_, index) => {
                 return (
-                  <div className="flex items-center text-sm gap-1.5 font-medium rounded-md skeleton bg-gray-200 text-transparent shadow-md justify-center p-4 border border-slate-200 ">
+                  <div key={index} className="flex items-center text-sm gap-1.5 font-medium rounded-md skeleton bg-gray-200 text-transparent shadow-md justify-center p-4 border border-slate-200 ">
                     General room facility not found
                   </div>
                 )

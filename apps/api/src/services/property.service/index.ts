@@ -2282,7 +2282,8 @@ export const updatePropertyGeneralInfoService = async ({
     where: {
       id: Number(propertyTypeId),
       name: {
-        contains: 'hotel'
+        contains: 'hotel',
+        mode: 'insensitive'
       }
     }
   })

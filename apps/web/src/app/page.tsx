@@ -235,7 +235,7 @@ export default function Home() {
           {
             Array.isArray(dataPropertiesByUser?.propertyByRecentBooks) && dataPropertiesByUser?.propertyByRecentBooks.length <= 0 ? (
             <div className='flex flex-col gap-1 text-center justify-center w-full'>
-              <h1 className='text-gray-300 lg:text-2xl md:text-xl text-base font-bold'>Oops, Seems you don't have any transactions</h1>
+              <h1 className='text-gray-300 lg:text-2xl md:text-xl text-base font-bold'>Oops, Seems you don&#39;t have any transactions</h1>
               <p className='text-gray-300 md:text-base text-xs font-medium'>Explore Roomify and book any properties you want</p>
             </div>
             ):(
@@ -279,7 +279,7 @@ export default function Home() {
           {
             Array.isArray(dataPropertiesByUser?.propertyByHistoryView) && dataPropertiesByUser?.propertyByHistoryView.length <= 0 ? (
             <div className='flex flex-col gap-1 text-center justify-center w-full'>
-              <h1 className='text-gray-300 lg:text-2xl md:text-xl text-base font-bold'>Oops, Seems you don't have explore Roomify</h1>
+              <h1 className='text-gray-300 lg:text-2xl md:text-xl text-base font-bold'>Oops, Seems you don&#39;t have explore Roomify</h1>
               <p className='text-gray-300 md:text-base text-xs font-medium'>Explore Roomify and look any properties you want</p>
             </div>
             ):(

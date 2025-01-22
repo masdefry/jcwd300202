@@ -63,7 +63,7 @@ const PurchaseDetailPage = () => {
                                 </svg>
                                 <p className='text-xs'>
                                     The payment has been successfully processed. However, please note that the tenant will first review the payment before approving it. <br/>
-                                    Please wait 2 to 5 minutes for the tenant's approval, then refresh this page or check your purchase list. You can also check your notifications or email for any updates that have been sent.
+                                    Please wait 2 to 5 minutes for the tenant&#39;s approval, then refresh this page or check your purchase list. You can also check your notifications or email for any updates that have been sent.
                                 </p> 
                             </div>
                         ): null}

@@ -119,8 +119,8 @@ export const createPropertyValidator = [
   body('propertyTypeId').isString().escape(),
   body('propertyDescription')
     .isString()
-    .isLength({ min: 10, max: 700 })
-    .withMessage('Description must be between 10 and 700 characters long!')
+    .isLength({ min: 10, max: 2000 })
+    .withMessage('Description must be between 10 and 2000 characters long!')
     .matches(/^[a-zA-Z0-9\s,.'-]*$/)
     .withMessage(
       'Only letters, numbers, spaces, commas, periods, apostrophes, and hyphens are allowed!',
@@ -128,8 +128,8 @@ export const createPropertyValidator = [
 
   body('neighborhoodDescription')
     .isString()
-    .isLength({ min: 10, max: 700 })
-    .withMessage('Description must be between 10 and 700 characters long!')
+    .isLength({ min: 10, max: 2000 })
+    .withMessage('Description must be between 10 and 2000 characters long!')
     .matches(/^[a-zA-Z0-9\s,.'-]*$/)
     .withMessage(
       'Only letters, numbers, spaces, commas, periods, apostrophes, and hyphens are allowed!',
@@ -239,8 +239,8 @@ export const updatePropertyDescriptionsValidator = [
   body('role').isString().escape(),
   body('propertyDescription')
     .isString()
-    .isLength({ min: 10, max: 700 })
-    .withMessage('Description must be between 10 and 700 characters long!')
+    .isLength({ min: 10, max: 2000 })
+    .withMessage('Description must be between 10 and 2000 characters long!')
     .matches(/^[a-zA-Z0-9\s,.'-]*$/)
     .withMessage(
       'Only letters, numbers, spaces, commas, periods, apostrophes, and hyphens are allowed!',
@@ -411,8 +411,8 @@ export const createPropertyRoomTypeValidator = [
     ),
   body('description')
     .isString()
-    .isLength({ min: 10, max: 700 })
-    .withMessage('Description must be between 10 and 700 characters long!')
+    .isLength({ min: 10, max: 2000 })
+    .withMessage('Description must be between 10 and 2000 characters long!')
     .matches(/^[a-zA-Z0-9\s,.'-]*$/)
     .withMessage(
       'Only letters, numbers, spaces, commas, periods, apostrophes, and hyphens are allowed!',

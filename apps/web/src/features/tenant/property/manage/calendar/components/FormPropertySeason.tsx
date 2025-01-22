@@ -278,7 +278,7 @@ const FormPropertySeason = ({
           </h1>
           <article className="text-sm font-medium text-gray-500">
             This action will permanently remove the season details from
-            your rental. You won't be able to recover it afterward.
+            your rental. You won&#39;t be able to recover it afterward.
           </article>
           <div className="flex items-center justify-end gap-2">
             <button

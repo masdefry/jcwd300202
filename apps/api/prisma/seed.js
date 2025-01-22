@@ -59,36 +59,7 @@ const users = [
     }
 ]
 
-// const countriesWithCities = [
-//     {
-//         name: 'China',
-//         cities: ['Beijing', 'Hongkong', 'Shenzen', 'Chongqing', 'Wuhan', 'Shanghai', 'Chengdu', 'Nanning', 'Tianjin', 'Nanjing']
-//     },
-//     {
-//         name: 'Indonesia',
-//         cities: ['Jakarta', 'Surabaya', 'Gianyar Regency', 'Denpasar', 'Bandung', 'Surakarta', 'Tangerang', 'Yogyakarta', 'South Tangerang']
-//     },
-//     {
-//         name: 'Japan',
-//         cities: ['Osaka', 'Tokyo']
-//     },
-//     {
-//         name: 'Malaysia',
-//         cities: ['Kuala Lumpur']
-//     },
-//     {
-//         name: 'South Korea',
-//         cities: ['Seoul', 'Busan', 'Daegu']
-//     },
-//     {
-//         name: 'Thailand',
-//         cities: ['Bangkok', 'Pattaya']
-//     },
-//     {
-//         name: 'United States of America',
-//         cities: ['Chicago', 'Los Angeles', 'New York']
-//     },
-// ]
+
 
 
 

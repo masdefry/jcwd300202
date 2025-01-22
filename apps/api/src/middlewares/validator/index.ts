@@ -158,6 +158,78 @@ export const createPropertyValidator = [
   },
 ]
 
+export const updatePropertyGeneralInfoValidator = [
+  body([
+    'id',
+    'role',
+    'cityId',
+    'countryId',
+    'name',
+    'zipCode',
+    'address',
+    'location',
+    'checkInStartTime',
+    'checkOutEndTime',
+    'phoneNumber',
+    'totalRooms',
+    'propertyTypeId',
+  ])
+    .notEmpty()
+    .withMessage('All fields are required!'),
+
+  body('id').isString().escape(),
+  body('role').isString().escape(),
+  body('cityId').isInt().escape(),
+  body('countryId').isInt().escape(),
+  body('name')
+    .isString()
+    .isLength({ min: 8, max: 180 })
+    .withMessage('Name length must be between 8 and 180 characters!')
+    .matches(/^[a-zA-Z0-9\s,.'-]*$/)
+    .withMessage(
+      'Only letters, numbers, spaces, commas, periods, apostrophes, and hyphens are allowed!',
+    ),
+  body('zipCode').isString().escape(),
+  body('address').isString().escape(),
+  body('location').isURL().withMessage('Invalid URL format'),
+  body('star').optional().isInt().escape(),
+
+  body('checkInStartTime')
+    .isString()
+    .matches(/^([01]?[0-9]|2[0-3]):([0-5][0-9])$/)
+    .escape(),
+  body('checkInEndTime').optional().isString().escape(),
+  body('checkOutStartTime').optional().isString().escape(),
+  body('checkOutEndTime')
+    .isString()
+    .matches(/^([01]?[0-9]|2[0-3]):([0-5][0-9])$/)
+    .escape(),
+
+  body('totalRooms').isInt().escape(),
+  body('propertyTypeId').isInt().escape(),
+
+  body('phoneNumber')
+    .isString()
+    .isLength({ min: 10, max: 15 })
+    .withMessage('Phone number should be between 10 and 15 characters!')
+    .escape(),
+
+  body('url').optional().isURL().withMessage('Invalid URL format'),
+
+  (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const errorResult = validationResult(req)
+      if (errorResult.isEmpty() === false) {
+        throw { msg: errorResult.array()[0].msg, status: 406 }
+      } else {
+        next()
+      }
+    } catch (error) {
+      next(error)
+    }
+  },
+]
+
 export const updatePropertyDescriptionsValidator = [
   body(['id', 'role', 'propertyDescription'])
     .notEmpty()

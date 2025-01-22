@@ -18,7 +18,7 @@ authRouter.post('/register', registerValidator,  registerUser)
 authRouter.post('/tenant/register', registerValidator, registerTenant)
 
 authRouter.post('/tenant/verify-email-request', verifyEmailRequestValidator, verifyEmailRequestTenant)
-authRouter.post('/tenant/verify-change-email-request', verifyToken, verifyChangeEmailRequestTenant)
+authRouter.post('/tenant/verify-change-email-request', verifyToken,  verifyChangeEmailRequestTenant)
 authRouter.patch('/tenant/verify-change-email/:token', verifyToken, verifyChangeEmailTenant)
 authRouter.patch('/tenant/verify-email', verifyToken, verifyEmailValidator, verifyEmailTenant)
 

@@ -76,7 +76,7 @@ const LoadingPropertyRoomDetailList = () => {
     <div id='pagination-button' className='w-full flex justify-center'>
         <div className="join">
             {
-                Array.from({ length: 3 }).map((_, index) => {
+                Array.from({ length: 1 }).map((_, index) => {
                     return(
                         <button key={index} disabled={true} className="disabled:text-transparent disabled:border-none join-item btn btn-sm bg-gray-200 text-transparent">{index + 1}</button>
                     )

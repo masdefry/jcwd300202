@@ -28,7 +28,6 @@ export default class App {
   }
 
   private handleError(): void {
-    // not found
     this.app.use((req: Request, res: Response, next: NextFunction) => {
       if (req.path.includes('/api/')) {
         res.status(404).send('Not found !');
@@ -37,7 +36,6 @@ export default class App {
       }
     });
 
-    // error
     this.app.use(
       (err: Error, req: Request, res: Response, next: NextFunction) => {
         if (req.path.includes('/api/')) {

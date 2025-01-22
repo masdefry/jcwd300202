@@ -36,7 +36,6 @@ export const fetchData = async(req: Request, res: Response, next: NextFunction) 
         const parsedCheckInDate = new Date(checkInDate as string);
         const parsedCheckOutDate = new Date(checkOutDate as string);
 
-        // Validate if dates are valid
         if (isNaN(parsedCheckInDate.getTime()) || isNaN(parsedCheckOutDate.getTime())) {
             return res.status(400).json({
                 message: 'Invalid date format',
@@ -45,7 +44,6 @@ export const fetchData = async(req: Request, res: Response, next: NextFunction) 
             });
         }
 
-        // Convert to ISO string and then back to Date
         const isoCheckIn = new Date(parsedCheckInDate.toISOString());
         const isoCheckOut = new Date(parsedCheckOutDate.toISOString());
 

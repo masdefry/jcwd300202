@@ -104,7 +104,7 @@ const PropertyDetailDescription = ({ dataPropertyDetail, isPending = true, showM
     <section className='flex flex-col 2xl:p-0 px-5 gap-5 rounded-md bg-white'>
            
            <section id='map' className='max-h-[200px] col-span-1 rounded-md drop-shadow-md row-span-2 w-full h-full overflow-hidden'>
-           {/* <SimpleMap latitudeAndLongitude={dataPropertyDetail?.property?.location.split(', ').map((item: string) => Number(item))} /> */}
+          
            </section>
            <section className='p-5 flex flex-col gap-5 col-span-1 rounded-md drop-shadow-md bg-white row-span-2'>
                <hgroup className='flex items-center justify-between'>

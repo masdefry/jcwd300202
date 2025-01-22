@@ -1,16 +1,16 @@
 'use client'
 
 import React from 'react'
+import { IUseManagePropertyFacilitiesHook } from '../types'
 
 const UpdateConfirmationPopup = ({
   setIsSubmitting,
   isSubmitting,
   isPendingUpdatePropertyHasFacilities,
-}: {
-  setIsSubmitting: any
-  isSubmitting: boolean
-  isPendingUpdatePropertyHasFacilities: boolean
-}) => {
+}: Pick<
+  IUseManagePropertyFacilitiesHook,
+  'setIsSubmitting' | 'isSubmitting' | 'isPendingUpdatePropertyHasFacilities'
+>) => {
   return (
     <div
       className={`${!isSubmitting && 'hidden'} p-5 backdrop-blur-sm fixed top-0 left-0 w-screen h-screen shadow-sm bg-black bg-opacity-20 z-[51] flex items-center justify-center`}

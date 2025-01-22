@@ -6,7 +6,7 @@ import { FaArrowUpShortWide } from 'react-icons/fa6'
 import { GiBackwardTime } from 'react-icons/gi'
 import { IoSearchSharp } from 'react-icons/io5'
 import LoadingFilterAndSortPropertyList from './LoadingFilterAndSortPropertyList'
-import { ISearchParamsPropertyList } from '../types'
+import { ISearchParamsPropertyList, IUseFilterAndSortPropertyListHook } from '../types'
 
 const FilterAndSortPropertyList = ({
   setSearchProperty,
@@ -17,15 +17,18 @@ const FilterAndSortPropertyList = ({
   handlePeriod,
   searchParams,
   isPending,
-}: {
+}: 
+Pick<IUseFilterAndSortPropertyListHook, 
+'setSearchProperty' |
+'searchProperty' |
+'handleSortedDataProperties' |
+'handleFilterByStatus' |
+'handleFilterByName' |
+'handlePeriod'
+> &
+{
   isPending: boolean
-  setSearchProperty: any
-  searchProperty: string
   searchParams: ISearchParamsPropertyList
-  handleSortedDataProperties: any
-  handleFilterByStatus: any
-  handleFilterByName: any
-  handlePeriod: any
 }) => {
   if (isPending) {
     return <LoadingFilterAndSortPropertyList />

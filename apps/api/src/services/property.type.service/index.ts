@@ -90,7 +90,7 @@ export const createPropertyTypeService = async ({
 
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
     throw { msg: 'Tenant not found!', status: 404 }
-  if (!isTenantExist.isVerified)
+  if (!isTenantExist?.isVerified)
     throw { msg: 'Tenant not verified!', status: 406 }
   if (isTenantExist.role !== role)
     throw { msg: 'Role unauthorized!', status: 403 }
@@ -132,7 +132,7 @@ export const updatePropertyTypeService = async({ id, role, name, description, pr
         
           if (!isTenantExist?.id || isTenantExist?.deletedAt)
             throw { msg: 'Tenant not found!', status: 404 }
-          if (!isTenantExist.isVerified)
+          if (!isTenantExist?.isVerified)
             throw { msg: 'Tenant not verified!', status: 406 }
           if (isTenantExist.role !== role)
             throw { msg: 'Role unauthorized!', status: 403 }
@@ -173,7 +173,7 @@ export const deletePropertyTypeService = async ({
     isTenantExist?.password as string,
   )
   if (!comparedPassword) throw { msg: 'Password invalid!', status: 406 }
-  if (!isTenantExist.isVerified)
+  if (!isTenantExist?.isVerified)
     throw { msg: 'Tenant not verified!', status: 406 }
   if (isTenantExist.role !== role)
     throw { msg: 'Role unauthorized!', status: 403 }

@@ -522,6 +522,8 @@ export const updatePropertyGeneralInfo = async (
       checkOutEndTime,
       star,
       phoneNumber,
+      totalRooms,
+      propertyTypeId,
       url,
     } = req.body
 
@@ -543,6 +545,8 @@ export const updatePropertyGeneralInfo = async (
         phoneNumber,
         url,
         slug,
+        totalRooms,
+        propertyTypeId
       })
 
     res.status(200).json({

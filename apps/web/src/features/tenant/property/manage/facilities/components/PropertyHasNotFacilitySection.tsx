@@ -4,6 +4,7 @@ import Image from 'next/image'
 import React from 'react'
 import { CiSquareMinus, CiSquarePlus } from 'react-icons/ci'
 import { IoSearchOutline } from 'react-icons/io5'
+import { IUseManagePropertyFacilitiesHook } from '../types'
 
 const PropertyHasNotFacilitySection = ({
   showMorePropertyNotHasFacility,
@@ -13,15 +14,17 @@ const PropertyHasNotFacilitySection = ({
   remove,
   setShowMorePropertyNotHasFacility,
   isPending,
-  setShowCreatePropertyFacilityForm
-}: {
-  showMorePropertyNotHasFacility: boolean
-  setShowCreatePropertyFacilityForm: any
-  dataPropertyHasFacilities: any
+  setShowCreatePropertyFacilityForm,
+}: Pick<
+  IUseManagePropertyFacilitiesHook,
+  | 'showMorePropertyNotHasFacility'
+  | 'setShowCreatePropertyFacilityForm'
+  | 'dataPropertyHasFacilities'
+  | 'setShowMorePropertyNotHasFacility'
+> & {
   values: any
   push: any
   remove: any
-  setShowMorePropertyNotHasFacility: any
   isPending: boolean
 }) => {
   if (isPending) {

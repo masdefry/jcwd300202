@@ -2,7 +2,6 @@
 
 import Separator from '@/features/auth/components/Separator'
 import React, { useEffect } from 'react'
-// import { headerStore } from '@/zustand/headerStore'
 import  useSearchHook from '@/hooks/useSearchHook'
 
 interface IGuestAndRoomCounterProps {
@@ -16,23 +15,6 @@ interface IGuestAndRoomCounterProps {
 
 const GuestAndRoomCounter = ({ setFieldValue, setShowGuestAndRoomCounter, setAllGuest, allGuest, totalGuest, setTotalGuest }: IGuestAndRoomCounterProps) => {
 
-    // const { 
-    //     totalGuest,
-    //     setTotalGuest
-    //  } = useSearchHook()
-    // const className = 'rounded-md h-8 w-8 flex items-center justify-center '
-    // const adult = headerStore((state: any) => state.adult)
-    // const setAdult = headerStore((state: any) => state.setAdult)
-
-    // const children = headerStore((state: any) => state.children)
-    // const setChildren = headerStore((state: any) => state.setChildren)
-
-    // const totalRooms = headerStore((state: any) => state.totalRooms)
-    // const setTotalRooms = headerStore((state: any) => state.setTotalRooms)
-
-    // const totalGuest = headerStore((state: any) => state.totalGuest)
-    // const setTotalGuest = headerStore((state: any) => state.setTotalGuest)
-    // const roomCapacityReq = headerStore((state: any) => state.roomCapacityReq)
 
     const updateTotalGuest = () => {
         if(allGuest.totalGuest <= 10) {
@@ -43,7 +25,6 @@ const GuestAndRoomCounter = ({ setFieldValue, setShowGuestAndRoomCounter, setAll
             })
             setAllGuest({totalGuest: Math.min(totalGuest.adult + totalGuest.children, 10)})
         }
-        // headerStore.setState({totalGuest: Math.min(adult + children, 10)})
     };
 
     useEffect(() => {
@@ -66,17 +47,11 @@ const GuestAndRoomCounter = ({ setFieldValue, setShowGuestAndRoomCounter, setAll
                              && setFieldValue('adult', totalGuest.adult)
                              && setFieldValue('children', totalGuest.children)
                         }
-// totalGuest: totalGuest.totalGuest - 1, 
                         className='transition duration-100 h-8 w-8 flex font-bold hover:text-white items-center justify-center hover:bg-slate-400 hover:cursor-pointer active:scale-90'>-
                     </button> 
                     <p className='text-sm'>{totalGuest.adult}</p>
                     <button 
                     type='button'
-                        // onClick={() => totalGuest.totalGuest < 10 && setTotalGuest({ 
-                        //     adult: totalGuest.adult + 1, 
-                        //     children: totalGuest.children, 
-                        //     totalGuest: totalGuest.totalGuest + 1, 
-                        // })}
                         onClick={
                             () => allGuest.totalGuest < 10
                              && (setTotalGuest({ adult: totalGuest.adult + 1, children: totalGuest.children }))
@@ -94,12 +69,6 @@ const GuestAndRoomCounter = ({ setFieldValue, setShowGuestAndRoomCounter, setAll
                 <div className='flex items-center justify-center gap-4'>
                     <button 
                     type='button'
-                    //    onClick={() => totalGuest.children > 0  && setTotalGuest(state => {
-                    //     state.children = state.children - 1
-                    //     state.adult = state.adult
-                    //     state.totalGuest = state.totalGuest
-                    //     return state
-                    //     })
                         onClick={
                         () => totalGuest.children > 0
                              && (setTotalGuest({ children: totalGuest.children - 1, adult: totalGuest.adult }))
@@ -112,16 +81,9 @@ const GuestAndRoomCounter = ({ setFieldValue, setShowGuestAndRoomCounter, setAll
 
                         className='transition duration-100 h-8 w-8 flex font-bold hover:text-white items-center justify-center hover:bg-slate-400 hover:cursor-pointer active:scale-90'>-
                     </button> 
-                    {/* <button onClick={() => totalGuest.children > 0 && setChildren({children: children - 1})} className='transition duration-100 h-8 w-8 flex font-bold hover:text-white items-center justify-center hover:bg-slate-400 hover:cursor-pointer active:scale-90'>-</button>  */}
                     <p className='text-sm'>{totalGuest.children}</p>
                     <button 
                     type='button'
-                        // {() => setTotalGuest(state => {
-                        //     state.children = state.children + 1
-                        //     state.adult = state.adult
-                        //     state.totalGuest = state.totalGuest
-                        //     return state
-                        //     })}
                         onClick={
                             () => allGuest.totalGuest < 10
                              && (setTotalGuest({ adult: totalGuest.adult, children: totalGuest.children + 1}))
@@ -132,7 +94,7 @@ const GuestAndRoomCounter = ({ setFieldValue, setShowGuestAndRoomCounter, setAll
                         disabled={totalGuest.children + totalGuest.children >= 10}  
                         className='transition duration-100 h-8 w-8 flex font-bold hover:text-white items-center justify-center hover:bg-slate-400 hover:cursor-pointer active:scale-90'>+
                     </button> 
-                    {/* <button onClick={() => setChildren({children: children + 1})}  disabled={adult + children >= 10}  className='transition duration-100 h-8 w-8 flex font-bold hover:text-white items-center justify-center hover:bg-slate-400 hover:cursor-pointer active:scale-90'>+</button>  */}
+                 
                 </div>   
             </li>
             <hr />

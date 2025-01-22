@@ -40,6 +40,10 @@ export async function middleware(req: NextRequest) {
     } else if (role === 'TENANT') {
       if (pathname.startsWith('/user')){
         return NextResponse.redirect(new URL('/403', req.url))}
+      if (pathname.startsWith('/booking')){
+        return NextResponse.redirect(new URL('/403', req.url))}
+      if (pathname.startsWith('/transactions')){
+        return NextResponse.redirect(new URL('/403', req.url))}
     }
     
     if (pathname.includes('/auth')){
@@ -50,6 +54,8 @@ export async function middleware(req: NextRequest) {
     if (pathname.startsWith('/user')){
       return NextResponse.redirect(new URL('/auth', req.url))}
     if (pathname.startsWith('/booking')){
+      return NextResponse.redirect(new URL('/auth', req.url))}
+    if (pathname.startsWith('/transactions')){
       return NextResponse.redirect(new URL('/auth', req.url))}
   }
 

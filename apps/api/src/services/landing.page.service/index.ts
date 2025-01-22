@@ -6,7 +6,7 @@ export const getLandingPageDataService = async({ id, role }: Pick<IUser, 'id' | 
 
         let cities, user;
 
-        
+
         const transactions = await prisma.transaction.groupBy({
             by: 'propertyId',
             _sum: {
@@ -18,26 +18,6 @@ export const getLandingPageDataService = async({ id, role }: Pick<IUser, 'id' | 
                 }
             }
         })
-        
-        // if(transactions.length <= 0) {
-        //     const citiesId = await prisma.property.groupBy({
-        //         by: ['cityId'],
-        //         where: {
-        //             id: {
-        //                 in: transactions.map(item => item.propertyId)
-        //             } 
-        //         }
-        //     })
-    
-        //     cities = await prisma.city.findMany({
-        //         where: {
-        //             id: {
-        //                 in: citiesId.map(item => item.cityId)
-        //             }
-        //         }
-        //     })
-        // } else {
-        // }
         
         const properties = await prisma.property.findMany({
             where: {

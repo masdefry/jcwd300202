@@ -16,7 +16,7 @@ async function Property5 ({ tenantAccounts, countryId, cityId }) {
         name: 'Skyline Residence',
         address: 'Jl. Setiabudi No.88, Setiabudi, South Jakarta, Special Capital Region of Jakarta',
         zipCode: '12910',
-        location: '-6.207620, 106.821580',
+        location: 'https://maps.app.goo.gl/96RZFPuBgvQj13vK6',
         checkInStartTime: new Date('2024-12-03T15:00:00Z'),
         checkInEndTime: new Date('2024-12-03T22:00:00Z'),
         checkOutStartTime: new Date('2024-12-04T08:00:00Z'),
@@ -31,7 +31,7 @@ async function Property5 ({ tenantAccounts, countryId, cityId }) {
         neighborhoodDescription: `
             Skyline Residence is conveniently situated near key attractions like Kota Kasablanka Mall, Epicentrum Walk, and Mega Kuningan business district. With easy access to the MRT station and just 7 miles from Halim Perdanakusuma International Airport, it offers unparalleled convenience for commuting and leisure activities.
         `,
-        phoneNumber: '+62-21-567-1234',
+        phoneNumber: '08215671234',
         url: 'https://www.skylineresidence.com',
         totalRooms: 60,
     }  

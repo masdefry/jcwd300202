@@ -16,7 +16,7 @@ async function Property6 ({ tenantAccounts, countryId, cityId }) {
             name: 'M-Town Residence Gading Serpong by J`s Luxury Apartment',
             address: 'Jl. Gading Serpong Boulevard Blok M5 No.3, Pakulonan Bar., Kec. Cpl. Dua, Tangerang Regency, Banten',
             zipCode: '15810',
-            location: '-6.2425476, 106.6296588',
+            location: 'https://maps.app.goo.gl/QtfwUvNhz669HEUj9',
             checkInStartTime: new Date('2024-12-03T15:00:00Z'),
             checkInEndTime: new Date('2024-12-03T23:59:00Z'),
             checkOutStartTime: new Date('2024-12-04T06:00:00Z'),
@@ -30,7 +30,7 @@ async function Property6 ({ tenantAccounts, countryId, cityId }) {
                 The apartment offers an outdoor swimming pool with a fence, as well as a fitness room and an elevator.
             `,
             neighborhoodDescription: 'Central Park Mall is 16 miles from M-Town Residence Gading Serpong by J`s Luxury Apartment, while Tanah Abang Market is 18 miles away. Soekarno-Hatta International Airport is 8.7 miles from the property.',
-            phoneNumber: '+53-545-233-533',
+            phoneNumber: '08545233533',
             url: 'https://jlux.com/id/m-town/',
             totalRooms: 30,
         }

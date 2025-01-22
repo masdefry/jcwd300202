@@ -17,7 +17,7 @@ async function Property2 ({ tenantAccounts, countryId, cityId }) {
             name: 'Ashley Tugu Tani Menteng',
             address: 'Jl. KH Wahid Hasyim No.4A, RT.7/RW.7, Kb. Sirih, Menteng District, Central Jakarta City, Special Capital Region of Jakarta',
             zipCode: '10350',
-            location: '-6.1837852, 106.83133',
+            location: 'https://maps.app.goo.gl/NXJ1NU3v1YNXarDJ7',
             checkInStartTime: new Date('2024-12-03T15:00:00Z'),
             checkInEndTime: new Date('2024-12-03T23:59:00Z'),
             checkOutStartTime: new Date('2024-12-04T06:00:00Z'),
@@ -31,7 +31,7 @@ async function Property2 ({ tenantAccounts, countryId, cityId }) {
                     The property has a 24-hour front desk, airport transportation, room service and free WiFi throughout the property.
                 `,
                 neighborhoodDescription: 'Popular points of interest near Ashley Tugu Tani Menteng include National Monument, Sarinah and Istiqlal Grand Mosque. Halim Perdanakusuma International Airport is 16 miles away.',
-                phoneNumber: '+1-555-123-4533',
+                phoneNumber: '155512314533',
                 url: 'https://ashleyhotelgroup.com/id/ashley-tugu-tani/',
                 totalRooms: 100,
             }

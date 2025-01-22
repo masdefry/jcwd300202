@@ -18,7 +18,7 @@ async function Property14 ({ tenantAccounts, countryId, cityId }) {
         address: 'Jl. Ahmad Yani No.176-178, Gayungan, Gayungan District, Surabaya, East Java',
         zipCode: '60235',
         city: 'Surabaya',
-        location: '-7.3311302,112.7273021',
+        location: 'https://maps.app.goo.gl/rxzVQHB5zdhb2uMT6',
         checkInStartTime: new Date('2024-12-03T15:00:00Z'),
         checkInEndTime: new Date('2024-12-03T23:59:00Z'),
         checkOutStartTime: new Date('2024-12-04T06:00:00Z'),
@@ -34,7 +34,7 @@ async function Property14 ({ tenantAccounts, countryId, cityId }) {
         neighborhoodDescription: `
             Best Western Papilio Hotel is a 15-minute drive away from Royal Plaza and a 20-minute drive away from Juanda International Airport.
         `,
-        phoneNumber: '+62-593-999-844',
+        phoneNumber: '08593999844',
         url: 'https://bwpapilio.com/',
         totalRooms: 120,
     }

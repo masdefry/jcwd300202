@@ -16,7 +16,7 @@ async function Property16 ({ tenantAccounts, countryId, cityId }) {
         name: 'Grand Whiz Poins Simatupang Jakarta',
         address: 'Simatupang, Jl. R.A. Kartini No.1, Lb. Bulus, Cilandak District, Jakarta, Special Capital Region of Jakarta',
         zipCode: '12440',
-        location: '-6.2899462, 106.7755765',
+        location: 'https://maps.app.goo.gl/smi77A6QSaKfQvqZ6',
         checkInStartTime: new Date('2024-12-03T15:00:00Z'),
         checkInEndTime: new Date('2024-12-03T23:59:00Z'),
         checkOutStartTime: new Date('2024-12-04T06:00:00Z'),
@@ -33,7 +33,7 @@ async function Property16 ({ tenantAccounts, countryId, cityId }) {
         neighborhoodDescription: `
             Ragunan Zoo is 5 km from Grand Whiz Poins Square, while Bundaran HI is 12 km from the property. The nearest airport is Halim Perdanakusuma Airport, 12 km from Grand Whiz Poins Square.
         `,
-        phoneNumber: '+62-313-943-122',
+        phoneNumber: '08313943122',
         url: 'https://grandwhiz.intiwhiz.com/poinssimatupang/home.php',
         totalRooms: 160,
     }

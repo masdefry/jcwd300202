@@ -46,11 +46,6 @@ const NavbarContentTenant = ({
       icon: <FaRegListAlt size={20} className="text-blue-400" />,
     },
     {
-      link: '#',
-      title: 'Notification',
-      icon: <TbNotification size={20} className="text-blue-400" />,
-    },
-    {
       link: '/tenant/settings',
       title: 'Settings',
       icon: <IoSettingsOutline size={20} className="text-blue-400" />,

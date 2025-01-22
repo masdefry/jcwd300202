@@ -16,7 +16,7 @@ async function Property4 ({ tenantAccounts, countryId, cityId }) {
             name: 'Apartemen Tera Residence',
             address: 'Jl. Tera No.28, Braga, Sumur Bandung District, Bandung City, West Java',
             zipCode: '40111',
-            location: '-6.9159208, 107.6100328',
+            location: 'https://maps.app.goo.gl/fDSSg9Fko3mgC7JG7',
             checkInStartTime: new Date('2024-12-03T15:00:00Z'),
             checkInEndTime: new Date('2024-12-03T23:59:00Z'),
             checkOutStartTime: new Date('2024-12-04T06:00:00Z'),
@@ -30,7 +30,7 @@ async function Property4 ({ tenantAccounts, countryId, cityId }) {
                 All rooms are equipped with a balcony with city views.
             `,
             neighborhoodDescription: 'Gedung Sate is 1.7 miles from the apartment, while Trans Studio Bandung is 2.3 miles away. The nearest airport is Husein Sastranegara International Airport, 3.1 miles from Apartemen Tera Residence.',
-            phoneNumber: '+13-545-123-4333',
+            phoneNumber: '085451234333',
             url: 'https://www.tamansariteraresidence.com/',
             totalRooms: 120,
         }

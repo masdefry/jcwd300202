@@ -16,7 +16,7 @@ async function Property11 ({ tenantAccounts, countryId, cityId }) {
         name: 'Seaside Inn',
         address: 'Jl. Pantai No.12, Ancol, North Jakarta, Special Capital Region of Jakarta',
         zipCode: '14430',
-        location: '-6.115735, 106.830924',
+        location: 'https://maps.app.goo.gl/qSprXTymPRDd8LkN8',
         checkInStartTime: new Date('2024-12-03T13:00:00Z'),
         checkInEndTime: new Date('2024-12-03T20:00:00Z'),
         checkOutStartTime: new Date('2024-12-04T08:00:00Z'),
@@ -31,7 +31,7 @@ async function Property11 ({ tenantAccounts, countryId, cityId }) {
         neighborhoodDescription: `
             Seaside Inn is conveniently located near attractions like Ancol Dreamland, Dunia Fantasi, and the beautiful Ancol Beach. The area is well connected with public transport and is only 5 miles away from Soekarno-Hatta International Airport, making it an excellent choice for both tourists and business travelers.
         `,
-        phoneNumber: '+62-21-555-1234',
+        phoneNumber: '08215551234',
         url: 'https://www.seasideinnjakarta.com',
         totalRooms: 30
     }  

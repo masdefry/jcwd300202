@@ -18,7 +18,7 @@ async function Property19 ({ tenantAccounts, countryId, cityId }) {
         address: '1012 Sunset Boulevard, Los Angeles, CA 90026',
         zipCode: '90026',
         city: 'Los Angeles',
-        location: '34.070212, -118.258470',
+        location: 'https://maps.app.goo.gl/i93QrSe3DmVA9uvH7',
         checkInStartTime: new Date('2024-12-03T16:00:00Z'),
         checkInEndTime: new Date('2024-12-03T23:00:00Z'),
         checkOutStartTime: new Date('2024-12-04T09:00:00Z'),
@@ -33,7 +33,7 @@ async function Property19 ({ tenantAccounts, countryId, cityId }) {
         neighborhoodDescription: `
             The Grandview Residences are situated on Sunset Boulevard, one of Los Angeles' most iconic streets, surrounded by upscale dining, entertainment, and shopping. Just minutes from the Griffith Observatory, Runyon Canyon, and the Sunset Strip, residents can experience both the vibrant culture of LA and the tranquility of hillside living. With easy access to major highways and LAX, this location offers the perfect balance of city life and privacy.
         `,
-        phoneNumber: '+1-323-555-9876',
+        phoneNumber: '013235559876',
         url: 'https://www.grandviewresidences.com',
         totalRooms: 50,
     }  

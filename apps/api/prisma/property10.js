@@ -16,7 +16,7 @@ async function Property10 ({ tenantAccounts, countryId, cityId }) {
         name: 'Heaven Villa Ubud',
         address: 'Jl. Raya Sanggingan, Banjar Lungsiakan, Kedewatan, Ubud, Gianyar Regency, Indonesia',
         zipCode: '80571',
-        location: '-8.4847646,115.2511835',
+        location: 'https://maps.app.goo.gl/faDy1baSStPD8BYk7',
         checkInStartTime: new Date('2024-12-03T15:00:00Z'),
         checkInEndTime: new Date('2024-12-03T23:59:00Z'),
         checkOutStartTime: new Date('2024-12-04T06:00:00Z'),
@@ -35,7 +35,7 @@ async function Property10 ({ tenantAccounts, countryId, cityId }) {
         Ubud Monkey Forest is 3.7 km from Heaven Villa Ubud, while Elephant Cave is 6 km away. 
         The nearest airport is Ngurah Rai International Airport, 30 km from the property.
     `,
-    phoneNumber: '+62-595-213-444',
+    phoneNumber: '08595213444',
     url: 'https://www.ubudheaven.com/',
     totalRooms: 4,
     }

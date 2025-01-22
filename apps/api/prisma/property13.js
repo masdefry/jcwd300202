@@ -16,7 +16,7 @@ async function Property13 ({ tenantAccounts, countryId, cityId }) {
             name: 'Serenity Park Residences',
             address: 'Jl. Rasuna Said No.35, Kuningan, Setiabudi, South Jakarta, Special Capital Region of Jakarta',
             zipCode: '12950',
-            location: '-6.214992, 106.832457',
+            location: 'https://maps.app.goo.gl/oFSTQLa9gV9g36A96',
             checkInStartTime: new Date('2024-12-03T15:00:00Z'),
             checkInEndTime: new Date('2024-12-03T22:00:00Z'),
             checkOutStartTime: new Date('2024-12-04T08:00:00Z'),
@@ -31,7 +31,7 @@ async function Property13 ({ tenantAccounts, countryId, cityId }) {
         neighborhoodDescription: `
             Located in the prestigious Kuningan area, Serenity Park Residences provide easy access to Jakarta's key business hubs, upscale shopping malls such as Lotte Shopping Avenue and Plaza Indonesia, and entertainment options. The property is well-connected with nearby MRT and TransJakarta stops, and it's only a 30-minute drive to Soekarno-Hatta International Airport. It's an ideal choice for those who value connectivity and luxury.
         `,
-        phoneNumber: '+62-21-567-8910',
+        phoneNumber: '08215678910',
         url: 'https://www.serenityparkresidences.com',
         totalRooms: 80,
     }  

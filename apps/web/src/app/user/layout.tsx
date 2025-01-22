@@ -46,12 +46,7 @@ const ProfileUserLayout = ({ children }: { children: ReactNode }) => {
       icon: <MdOutlineManageAccounts size={20} className="text-blue-400" />,
     },
     {
-      link: '#',
-      title: 'My Order',
-      icon: <GrNotes size={20} className="text-blue-400" />,
-    },
-    {
-      link: '#',
+      link: '/user/transactions',
       title: 'Purchase List',
       icon: <FaRegListAlt size={20} className="text-blue-400" />,
     },

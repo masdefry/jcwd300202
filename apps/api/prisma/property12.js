@@ -16,7 +16,7 @@ async function Property12 ({ tenantAccounts, countryId, cityId }) {
         name: 'Juli House by Mahaputra',
         address: '27 Jl. Bisma, Downtown, Ubud',
         zipCode: '80582',
-        location: '-8.5082263,115.2563687',
+        location: 'https://maps.app.goo.gl/xwvPJqKQCbETbL956',
         checkInStartTime: new Date('2024-12-03T15:00:00Z'),
         checkInEndTime: new Date('2024-12-03T23:59:00Z'),
         checkOutStartTime: new Date('2024-12-04T06:00:00Z'),
@@ -32,7 +32,7 @@ async function Property12 ({ tenantAccounts, countryId, cityId }) {
         neighborhoodDescription: `
             The nearest airport is Ngurah Rai International Airport, 36 km from Juli House by Mahaputra.
         `,
-        phoneNumber: '+62-593-113-444',
+        phoneNumber: '08593113444',
         url: 'https://mahaputrahotelsandresorts.com/property/juli-house/',
         totalRooms: 10,
     }

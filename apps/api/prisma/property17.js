@@ -16,7 +16,7 @@ async function Property17 ({ tenantAccounts, countryId, cityId }) {
         name: 'The Grand Manhattan Residences',
         address: '15 West 53rd Street, Midtown, New York City, NY 10019',
         zipCode: '10019',
-        location: '40.761432, -73.977621',
+        location: 'https://maps.app.goo.gl/rYZ63G3MRMz7kaLq8',
         checkInStartTime: new Date('2024-12-03T15:00:00Z'),
         checkInEndTime: new Date('2024-12-03T22:00:00Z'),
         checkOutStartTime: new Date('2024-12-04T08:00:00Z'),
@@ -31,7 +31,7 @@ async function Property17 ({ tenantAccounts, countryId, cityId }) {
         neighborhoodDescription: `
             Located just steps away from iconic landmarks such as Central Park, Rockefeller Center, and the Museum of Modern Art (MoMA), The Grand Manhattan Residences are at the epicenter of culture, dining, and shopping. Residents enjoy easy access to Fifth Avenue's luxury boutiques, Broadway theaters, and Michelin-starred restaurants. The building is also conveniently located near major transportation hubs, including Grand Central Terminal and Penn Station.
         `,
-        phoneNumber: '+1-212-555-7890',
+        phoneNumber: '012125557890',
         url: 'https://www.grandmanhattanresidences.com',
         totalRooms: 75,
     }  

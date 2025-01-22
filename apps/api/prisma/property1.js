@@ -16,7 +16,7 @@ async function Property1 ({ tenantAccounts, countryId, cityId }) {
             name: 'Pan Pacific Jakarta',
             address: 'Thamrin Nine, Luminary Tower Jalan MH Thamrin No 10, Central Jakarta, Jakarta, Special Capital Region of Jakarta',
             zipCode: '10230',
-            location: '-6.1980338, 106.8213679',
+            location: 'https://maps.app.goo.gl/XvTgcvc2LhpycvFA6',
             checkInStartTime: new Date('2024-12-03T15:00:00Z'),
             checkInEndTime: new Date('2024-12-03T23:59:00Z'),
             checkOutStartTime: new Date('2024-12-04T06:00:00Z'),
@@ -30,7 +30,7 @@ async function Property1 ({ tenantAccounts, countryId, cityId }) {
             The daily breakfast offers buffet, continental or Asian options.
         `,
         neighborhoodDescription: 'Popular points of interest near the accommodation include Grand Indonesia Mall, Sarinah and Tanah Abang Market. Halim Perdanakusuma International Airport is 15 miles from the property.',
-        phoneNumber: '+1-555-123-4567',
+        phoneNumber: '08126812761552',
         url: 'https://www.panpacific.com',
         totalRooms: 100,
     }

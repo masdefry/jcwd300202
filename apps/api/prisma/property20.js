@@ -16,7 +16,7 @@ async function Property20 ({ tenantAccounts, countryId, cityId }) {
         name: 'Whiz Hotel Cikini Jakarta',
         address: 'Jl. Cikini Raya No. 06, RT.13/RW.5, Cikini, Menteng District, Central Jakarta City, Special Capital Region of Jakarta',
         zipCode: '10330',
-        location: '-6.1883333, 106.8340918',
+        location: 'https://maps.app.goo.gl/BBcyTs3HAmbY7Fsf9',
         checkInStartTime: new Date('2024-12-03T15:00:00Z'),
         checkInEndTime: new Date('2024-12-03T23:59:00Z'),
         checkOutStartTime: new Date('2024-12-04T06:00:00Z'),
@@ -34,7 +34,7 @@ async function Property20 ({ tenantAccounts, countryId, cityId }) {
         neighborhoodDescription: `
             Whiz Hotel Cikini Jakarta is 1.9 km from Cikini Train Station, 2.0 km from Hotel Indonesia Roundabout (Bundaran HI) and 39 km from Soekarno-Hatta International Airport.
         `,
-        phoneNumber: '+62-812-671-440',
+        phoneNumber: '0812671440',
         url: 'https://www.whizhotels.intiwhiz.com/cikini/',
         totalRooms: 200,
     }

@@ -16,7 +16,7 @@ async function Property3 ({ tenantAccounts, countryId, cityId }) {
         name: 'Green Haven Apartments',
         address: 'Jl. Senopati No.45, Kebayoran Baru, South Jakarta, Special Capital Region of Jakarta',
         zipCode: '12190',
-        location: '-6.236845, 106.807230',
+        location: 'https://maps.app.goo.gl/y8yQKyim5f8Tbxm76',
         checkInStartTime: new Date('2024-12-03T14:00:00Z'),
         checkInEndTime: new Date('2024-12-03T21:00:00Z'),
         checkOutStartTime: new Date('2024-12-04T07:00:00Z'),
@@ -31,7 +31,7 @@ async function Property3 ({ tenantAccounts, countryId, cityId }) {
         neighborhoodDescription: `
             Green Haven Apartments is located near some of South Jakarta's most popular spots, including Senayan City Mall, Pacific Place, and Gelora Bung Karno Stadium. With easy access to public transportation and just 8 miles from Soekarno-Hatta International Airport, the location is ideal for both short-term and long-term stays.
         `,
-        phoneNumber: '+62-21-555-6789',
+        phoneNumber: '08215556789',
         url: 'https://www.greenhavenapartments.com',
         totalRooms: 50,
     }  

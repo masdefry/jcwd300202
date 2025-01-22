@@ -16,7 +16,7 @@ async function Property18 ({ tenantAccounts, countryId, cityId }) {
         name: 'Sotis Residence Pejompongan',
         address: 'Jl. Penjernihan 1 No.10 B 9, RT.9/RW.6, Bend. Hilir, Tanah Abang District, Central Jakarta City, Special Capital Region of Jakarta',
         zipCode: '10210',
-        location: '-6.2036277, 106.8033332',
+        location: 'https://maps.app.goo.gl/wXZyLknmZEEniv428',
         checkInStartTime: new Date('2024-12-03T15:00:00Z'),
         checkInEndTime: new Date('2024-12-03T23:59:00Z'),
         checkOutStartTime: new Date('2024-12-04T06:00:00Z'),
@@ -33,7 +33,7 @@ async function Property18 ({ tenantAccounts, countryId, cityId }) {
         neighborhoodDescription: `
             Bundaran HI is 1.7 km from Sotis Residence Pejompongan, while Sarinah is 2.3 km from the property. Halim Perdanakusuma Airport is 11 km away.
         `,
-        phoneNumber: '+62-776-521-445',
+        phoneNumber: '08776521445',
         url: 'https://www.sotishotels.com/hotel/view/4/sotis-residence-pejompongan',
         totalRooms: 140,
     }

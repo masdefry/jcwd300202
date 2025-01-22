@@ -16,7 +16,7 @@ async function Property7 ({ tenantAccounts, countryId, cityId }) {
         name: 'Urban Oasis Apartments',
         address: 'Jl. Kemang Raya No.99, Bangka, Mampang Prapatan, South Jakarta, Special Capital Region of Jakarta',
         zipCode: '12730',
-        location: '-6.260664, 106.813970',
+        location: 'https://maps.app.goo.gl/YPANQJhmZarz187S6',
         checkInStartTime: new Date('2024-12-03T14:00:00Z'),
         checkInEndTime: new Date('2024-12-03T21:00:00Z'),
         checkOutStartTime: new Date('2024-12-04T07:00:00Z'),
@@ -31,7 +31,7 @@ async function Property7 ({ tenantAccounts, countryId, cityId }) {
         neighborhoodDescription: `
             Located in the bustling area of Kemang, Urban Oasis Apartments are close to popular cafes, international schools, and art galleries. Nearby attractions include Kemang Village Mall, Pejaten Village, and Cilandak Town Square. With Soekarno-Hatta International Airport just 10 miles away and easy access to public transportation, this property offers the perfect balance of convenience and charm.
         `,
-        phoneNumber: '+62-21-789-4567',
+        phoneNumber: '08217894567',
         url: 'https://www.urbanoasis.com',
         totalRooms: 70,
     } 

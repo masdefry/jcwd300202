@@ -16,7 +16,7 @@ async function Property8 ({ tenantAccounts, countryId, cityId }) {
             name: 'Pranaya Boutique Hotel',
             address: 'Lengkong Gudang, Serpong District, South Tangerang City, Banten',
             zipCode: '15321',
-            location: '-6.2962567, 106.6651068',
+            location: 'https://maps.app.goo.gl/dBA95YyfpthEWvZ27',
             checkInStartTime: new Date('2024-12-03T15:00:00Z'),
             checkInEndTime: new Date('2024-12-03T23:59:00Z'),
             checkOutStartTime: new Date('2024-12-04T06:00:00Z'),
@@ -30,7 +30,7 @@ async function Property8 ({ tenantAccounts, countryId, cityId }) {
                 Featuring a shower, private bathrooms also come with free toiletries. Extras include a desk and a safety deposit box.
             `,
             neighborhoodDescription: 'Pranaya Suites is 656 feet’ walk from Teras Kota Mall and is 10 minutes’ drive to The Breeze Lifestyle Center and Mall.',
-            phoneNumber: '+62-595-213-433',
+            phoneNumber: '08595213433',
             url: 'https://pranayaboutique.com/',
             totalRooms: 50,
     }

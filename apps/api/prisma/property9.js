@@ -16,7 +16,7 @@ async function Property9 ({ tenantAccounts, countryId, cityId }) {
         name: 'The Riverside Residences',
         address: 'Jl. Raya Kuningan No.18, Kuningan, South Jakarta, Special Capital Region of Jakarta',
         zipCode: '12940',
-        location: '-6.232232, 106.828876',
+        location: 'https://maps.app.goo.gl/VagmJ8bTvadmBxwo7',
         checkInStartTime: new Date('2024-12-03T14:00:00Z'),
         checkInEndTime: new Date('2024-12-03T22:00:00Z'),
         checkOutStartTime: new Date('2024-12-04T07:00:00Z'),
@@ -31,7 +31,7 @@ async function Property9 ({ tenantAccounts, countryId, cityId }) {
         neighborhoodDescription: `
             The Riverside Residences is located near several popular Jakarta attractions such as Setiabudi One, Grand Indonesia Mall, and Plaza Semanggi. With easy access to public transportation and just a 10-minute drive to Soekarno-Hatta International Airport, it is a prime location for both tourists and professionals. The scenic riverbank also provides a serene retreat for evening walks or dining with a view.
         `,
-        phoneNumber: '+62-21-987-6543',
+        phoneNumber: '08219876543',
         url: 'https://www.theriversideresidences.com',
         totalRooms: 60,
     }  

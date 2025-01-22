@@ -16,7 +16,7 @@ async function Property15 ({ tenantAccounts, countryId, cityId }) {
         name: 'Elysian Towers',
         address: '789 Park Avenue, Upper East Side, New York, NY 10021',
         zipCode: '10021',
-        location: '40.767676, -73.965836',
+        location: 'https://maps.app.goo.gl/Zejt8Goxn7JXpvEbA',
         checkInStartTime: new Date('2024-12-05T15:00:00Z'),
         checkInEndTime: new Date('2024-12-05T22:00:00Z'),
         checkOutStartTime: new Date('2024-12-06T08:00:00Z'),
@@ -31,7 +31,7 @@ async function Property15 ({ tenantAccounts, countryId, cityId }) {
         neighborhoodDescription: `
             Elysian Towers is perfectly situated near cultural landmarks like the Metropolitan Museum of Art, the Guggenheim, and Madison Avenue’s high-end shopping district. With its proximity to Central Park and excellent transport connections, it offers the ideal blend of urban excitement and serene living.
         `,
-        phoneNumber: '+1-212-555-7890',
+        phoneNumber: '012125557890',
         url: 'https://www.elysiantowers.com',
         totalRooms: 85,
     }  

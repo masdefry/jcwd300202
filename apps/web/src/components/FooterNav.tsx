@@ -23,13 +23,13 @@ const FooterNav = ({ footerNavMenu }: IFooterNavProps) => {
           footerNavMenu.map((item, index) => {
             return(
             <div key={index} className='w-full flex flex-col items-start'>
-              <h1 className='text-base md:text:lg lg:text-xl font-bold mb-5'>{item.title}</h1>
+              <h1 className='text-sm md:text:sm lg:text-sm font-bold mb-5'>{item.title}</h1>
               <ul className="md:flex flex-col hidden">
                 {
                   item.navlist.map((itm, idx) => {
                     return(
                       <Link key={idx} href={itm.url}>
-                        <li className='transition duration-150 py-2 w-full origin-left hover:scale-110 active:text-blue-600 active:scale-100 hover:cursor-pointer font-light text-sm md:text-base'>{itm.title}</li>
+                        <li className=' text-xs transition duration-150 py-2 w-full origin-left hover:scale-110 active:text-blue-600 active:scale-100 hover:cursor-pointer font-light text-sm md:text-sm'>{itm.title}</li>
                       </Link>
                     )
                   })

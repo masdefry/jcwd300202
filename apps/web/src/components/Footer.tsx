@@ -129,17 +129,23 @@ const Footer = () => {
     return <></>
   }
   return (
-    <footer className='bg-slate-200 lg:px-16 md:px-12 sm:px-8 px-4 py-5 flex flex-col gap-10'>
-      <FooterNav footerNavMenu={footerNavMenu}/>
-      <FooterSocialMediaSeparator />
-      <FooterSocialMediaList />
-      <div className='flex items-center'>
-        <div className='h-[0.5px] w-full bg-slate-400 bg-opacity-60'></div>
-      </div>
-
+    <footer className='bg-slate-200 lg:px-16 md:px-12 sm:px-8 py-6 flex flex-col gap-8'>
+      {pathname === '/' && (
+        <>
+          <div className='m-auto max-w-screen-xl w-full flex items-start justify-evenly'>
+            <FooterNav footerNavMenu={footerNavMenu}/>
+          </div>
+          <FooterSocialMediaSeparator />
+          <FooterSocialMediaList />
+          <div className='flex items-center'>
+            <div className='h-[0.5px] w-full bg-slate-400 bg-opacity-60'></div>
+          </div>
+        </>
+      )}
+      
       <section className='text-center text-xs sm:text-sm md:text-base font-light flex flex-col justify-center items-center gap-1'>
-        <p>Roomify is part of Roomify Inc., Indonesian's leading provider of online travel and related services.</p>
-        <p>Copyright © 2024 Roomify™. All rights reserved.</p>
+        <p className='text-xs'>Roomify is part of Roomify Inc., Indonesian's leading provider of online travel and related services.</p>
+        <p className='text-xs'><span className='font-bold'>Copyright © 2024 Roomify™</span>. All rights reserved.</p>
       </section>
     </footer>
   )

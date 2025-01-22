@@ -20,6 +20,7 @@ import { Formik, Form, ErrorMessage } from 'formik'
 import { searchValidationSchema } from '@/features/home/schemas/searchValidationSchema'
 import { FaMapLocationDot } from 'react-icons/fa6';
 import toast from 'react-hot-toast';
+import { usePathname } from 'next/navigation'
 
 interface ISearchHeaderDefaultProps {
   mutateShowDropdownDebounce: any,
@@ -60,6 +61,7 @@ const SearchHeader = ({
     const [ showGuestAndRoomCounter, setShowGuestAndRoomCounter ] = useState(false)
     const [ slug, setSlug ] = useState('')
     const router = useRouter()
+    const pathname = usePathname()
     
     const {
       mutate: mutateSearch,
@@ -85,7 +87,7 @@ const SearchHeader = ({
 
 
   return (
-    <section className="h-full 2xl:h-[5rem] flex flex-col 2xl:grid grid-cols-4 items-center justify-evenly 2xl:rounded-full 2xl:bg-white p-3 relative 2xl:shadow-sm 2xl:border-2 border-amber-400">
+    <section className={`h-full 2xl:h-[5rem] flex flex-col 2xl:grid grid-cols-4 items-center justify-evenly ${window.location.pathname.startsWith('/explore') ? '2xl:rounded-none 2xl:border-0 !2xl:shadow-none' : '2xl:border-amber-400 2xl:shadow-sm'} 2xl:bg-white p-3 relative 2xl:rounded-full 2xl:border-2 border-white border-amber-400`}>
       <Formik
         initialValues={{
           country: searchLocation.countryId,

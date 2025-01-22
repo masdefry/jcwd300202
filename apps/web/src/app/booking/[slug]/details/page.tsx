@@ -74,7 +74,7 @@ const BookingPage = ({ params }: { params: { slug: string }}) => {
 
     
   return (
-    <main className='w-full h-screen'>
+    <main className='w-full h-screen mt-[6rem]'>
       <section className='m-auto max-w-screen-xl w-full h-full flex items-start justify-center gap-5 relative'>
         {dataPropertyRoomType?.map((item: any, index: number) => {
           return (
@@ -87,17 +87,17 @@ const BookingPage = ({ params }: { params: { slug: string }}) => {
                         <p className="text-[25px] font-bold">{item.name}</p>
                       </div>
                       <div className='w-full flex items-center gap-3'>
-                        <div className="bg-[#e2e8f0] w-2/4 h-[14.7rem] rounded-md overflow-hidden relative">
+                        <div className="bg-[#e2e8f0] w-2/4 h-[14.7rem] rounded overflow-hidden relative">
                           <Image 
                             src={`http://localhost:5000/api/${item.propertyRoomImage[0].directory}/${item.propertyRoomImage[0].filename}.${item.propertyRoomImage[0].fileExtension}`}
                             width={400} 
                             height={400} 
                             alt='Proprty Image'
-                            className="object-cover w-full h-full rounded-md absolute top-0 left-0 transition-transform duration-300 ease-in-out hover:scale-110"
+                            className="object-cover w-full h-full rounded absolute top-0 left-0 transition-transform duration-300 ease-in-out hover:scale-110"
                             />
                         </div>
                         <div className='flex flex-col w-2/4 gap-3'>
-                          <div className="bg-[#e2e8f0] w-full h-[7rem] rounded-md overflow-hidden relative">
+                          <div className="bg-[#e2e8f0] w-full h-[7rem] rounded overflow-hidden relative">
                             <Image 
                               src={`http://localhost:5000/api/${item.propertyRoomImage[1].directory}/${item.propertyRoomImage[1].filename}.${item.propertyRoomImage[1].fileExtension}`}
                               width={400} 
@@ -117,6 +117,10 @@ const BookingPage = ({ params }: { params: { slug: string }}) => {
                           </div>
                         </div>
                       </div>
+                      <div className='text-sm'>
+                        <p>{item.description}</p>
+                      </div>
+                     
                     </div>
                   </div>
                   <div className="collapse-content">

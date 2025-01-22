@@ -9,7 +9,8 @@ import useHandleCreatePropertyHook from '@/features/tenant/property/create/hooks
 import FormCreateProperty from '@/features/tenant/property/create/components/FormCreateProperty'
 
 const CreatePropertyPage = () => {
-  const { mutateCreateProperty } = useCreatePropertyFunctionalityHook()
+  const { mutateCreateProperty, setIsSubmitting, isSubmitting } =
+    useCreatePropertyFunctionalityHook()
 
   return (
     <main className={`w-full md:px-5`}>
@@ -54,7 +55,7 @@ const CreatePropertyPage = () => {
             }}
             validationSchema={createPropertyValidationSchema}
             onSubmit={(values) => {
-              useHandleCreatePropertyHook({ mutateCreateProperty, values })
+              setIsSubmitting(true)
             }}
           >
             {({ values, setFieldValue }) => {
@@ -64,6 +65,8 @@ const CreatePropertyPage = () => {
                   values={values}
                   isFormFilled={true}
                   mutateCreateProperty={mutateCreateProperty}
+                  setIsSubmitting={setIsSubmitting} 
+                  isSubmitting={isSubmitting}
                 />
               )
             }}

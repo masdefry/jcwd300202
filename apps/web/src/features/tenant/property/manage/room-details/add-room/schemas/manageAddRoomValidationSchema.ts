@@ -2,10 +2,7 @@ import * as Yup from 'yup'
 
 export const manageAddRoomValidationSchema = Yup.object().shape({
   name: Yup.string()
-    .matches(
-      /^[a-zA-Z0-9\s]*$/,
-      'Only alphanumeric characters and spaces allowed',
-    )
+  .matches(/^[a-zA-Z0-9\s,.'-]*$/, 'Only letters, numbers, spaces, commas, periods, apostrophes, and hyphens are allowed!')
     .required('Room type name is required'),
 
   capacity: Yup.number()
@@ -28,7 +25,7 @@ export const manageAddRoomValidationSchema = Yup.object().shape({
     .min(1, 'Bathrooms must be at least 1')
     .required('Bathrooms are required'),
 
-  description: Yup.string().required('Room description are required'),
+  description: Yup.string().matches(/^[a-zA-Z0-9\s,.'-]*$/, 'Only letters, numbers, spaces, commas, periods, apostrophes, and hyphens are allowed!').required('Room description are required'),
 
   propertyRoomFacilitiesId: Yup.array()
     .of(Yup.number().min(1, 'Room facility ID must be greater than 0'))
@@ -42,7 +39,7 @@ export const manageAddRoomValidationSchema = Yup.object().shape({
           return file && file.size <= limitFileSize
         })
         .test('fileFormat', 'File format must be png, jpg, or jpeg', (file) => {
-          const fileFormatAccepted = ['jpg', 'jpeg', 'png']
+          const fileFormatAccepted = ['jpg', 'jpeg', 'png', 'gif']
           return file && fileFormatAccepted.includes(file.type.split('/')[1])
         }),
     )

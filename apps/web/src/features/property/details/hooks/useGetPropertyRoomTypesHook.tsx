@@ -4,14 +4,16 @@ import React, { useState } from 'react'
 import { ISearchParamsPropertyDetails } from '../types'
 import useFilterRoomHook from './useFilterRoomHook'
 import useMutatePropertyRoomTypeApi from '../api/useMutatePropertyRoomTypeApi'
+import toast from 'react-hot-toast'
 
 const useGetPropertyRoomTypesHook = ({
-  params, searchParams
+  params,
+  searchParams,
 }: {
-  params: { slug: string }  
+  params: { slug: string }
   searchParams: ISearchParamsPropertyDetails
 }) => {
-  const [ dataPropertyRoomType, setDataPropertyRoomType ] = useState<any>([])
+  const [dataPropertyRoomType, setDataPropertyRoomType] = useState<any>([])
   const {
     checkInDate,
     checkOutDate,
@@ -41,50 +43,57 @@ const useGetPropertyRoomTypesHook = ({
     window.history.pushState({}, '', '?' + urlParams.toString())
   }
 
-  const {
-    mutatePropertyRoomType,
-    isPendingPropertyRoomType
-  } = useMutatePropertyRoomTypeApi({
-    onSuccess: (res) => {
+  const { mutatePropertyRoomType, isPendingPropertyRoomType } =
+    useMutatePropertyRoomTypeApi({
+      onSuccess: (res) => {
         setDataPropertyRoomType(res?.data)
       },
       onError: (err: any) => {
-        console.log(err?.response?.data?.message)
+        toast((t) => (
+          <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
+            {err?.response?.data?.message || 'Connection error!'}
+          </span>
+        ))
       },
       searchParams,
       params,
       adult,
-      children
-  })
+      children,
+    })
   const handlePropertyRoomType = ({
-      limit,
-      offset,
-      checkInDate,
-      checkOutDate,
-    }: {
-      limit?: number
-      offset?: number
-      checkInDate?: Date
-      checkOutDate?: Date
-    }) => {
-      if (limit && offset) {
-        handleSearchParams('limit', limit.toString())
-        handleSearchParams('offset', offset.toString())
-        if (searchParams['check-in-date'] && searchParams['check-out-date']) {
-          handleSearchParams('check-in-date', searchParams['check-in-date'])
-          handleSearchParams('check-out-date', searchParams['check-out-date'])
-          handleSearchParams('adult', searchParams?.adult)
-          handleSearchParams('children', searchParams?.children)
-        }
-      } else if (checkInDate && checkOutDate) {
-        handleSearchParams('check-in-date', checkInDate.toISOString())
-        handleSearchParams('check-out-date', checkOutDate.toISOString())
-        handleSearchParams('adult', adult.toString())
-        handleSearchParams('children', children.toString())
+    limit,
+    offset,
+    checkInDate,
+    checkOutDate,
+  }: {
+    limit?: number
+    offset?: number
+    checkInDate?: Date
+    checkOutDate?: Date
+  }) => {
+    if (limit && offset) {
+      handleSearchParams('limit', limit.toString())
+      handleSearchParams('offset', offset.toString())
+      if (searchParams['check-in-date'] && searchParams['check-out-date']) {
+        handleSearchParams('check-in-date', searchParams['check-in-date'])
+        handleSearchParams('check-out-date', searchParams['check-out-date'])
+        handleSearchParams('adult', searchParams?.adult)
+        handleSearchParams('children', searchParams?.children)
       }
-      mutatePropertyRoomType({limit: limit, offset: offset, checkInDate: checkInDate, checkOutDate: checkOutDate})
+    } else if (checkInDate && checkOutDate) {
+      handleSearchParams('check-in-date', checkInDate.toISOString())
+      handleSearchParams('check-out-date', checkOutDate.toISOString())
+      handleSearchParams('adult', adult.toString())
+      handleSearchParams('children', children.toString())
     }
-    
+    mutatePropertyRoomType({
+      limit: limit,
+      offset: offset,
+      checkInDate: checkInDate,
+      checkOutDate: checkOutDate,
+    })
+  }
+
   return {
     checkInDate,
     checkOutDate,
@@ -100,7 +109,6 @@ const useGetPropertyRoomTypesHook = ({
     handlePropertyRoomType,
     isPendingPropertyRoomType,
     dataPropertyRoomType,
-    
   }
 }
 

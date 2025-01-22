@@ -14,6 +14,8 @@ import PropertyDetailPolicies from '@/features/property/details/components/Prope
 import NotFoundPropertyDetails from '@/app/property/not-found'
 import DataRoomDetails from '@/features/property/details/components/DataRoomDetails'
 import useGetPropertyDetailHook from '@/features/property/details/hooks/useGetPropertyDetailHook'
+import UnauthorizedPage from '@/app/403/page'
+import Custom500 from '@/app/500/page'
 
 const TenantPropertyDetailPage = ({
   params,
@@ -59,7 +61,8 @@ const TenantPropertyDetailPage = ({
     isError,
     isPendingPropertyDetail,
     dataPropertyDetail,
-    fetchDataPropertyDetail,
+    errorStatus,
+    fetchDataPropertyDetailTenant,
   } = useGetPropertyDetailHook({ params, searchParams })
 
   useEffect(() => {
@@ -69,15 +72,15 @@ const TenantPropertyDetailPage = ({
         new Date(searchParams['check-out-date']),
       ])
     }
-    fetchDataPropertyDetail()
+    fetchDataPropertyDetailTenant()
   }, [])
 
-  if (isError) {
-    return (
-      <div>
-        <NotFoundPropertyDetails />
-      </div>
-    )
+  if (errorStatus === 403) {
+    return <UnauthorizedPage />
+  } else if (errorStatus === 404) {
+    return <NotFoundPropertyDetails />
+  } else if (errorStatus === 500) {
+    return <Custom500 />
   }
 
   return (
@@ -127,6 +130,8 @@ const TenantPropertyDetailPage = ({
           role={role}
           checkInDate={checkInDate}
           checkOutDate={checkOutDate}
+          children={children}
+          adult={adult}
         />
         {showDataRoom.name && (
           <DataRoomDetails

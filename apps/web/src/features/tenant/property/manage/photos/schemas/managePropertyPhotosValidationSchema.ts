@@ -10,7 +10,7 @@ export const managePropertyPhotosValidationSchema = Yup.object().shape({
           return file && file.size <= limitFileSize
         })
         .test('fileFormat', 'File format must be png, jpg, or jpeg', (file) => {
-          const fileFormatAccepted = ['jpg', 'jpeg', 'png']
+          const fileFormatAccepted = ['jpg', 'jpeg', 'png', 'gif']
           return file && fileFormatAccepted.includes(file.type.split('/')[1])
         }),
     )

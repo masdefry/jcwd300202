@@ -39,7 +39,6 @@ const useManageRoomAmenitiesHook = ({
   const { fetchPropertyHasFacilities } = useFetchPropertyRoomFacilitiesApi({
     params,
     handleError(err) {
-      console.log(err)
       if (err.status === 401 || err.status === 406) {
         toast((t) => (
           <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
@@ -51,7 +50,6 @@ const useManageRoomAmenitiesHook = ({
       }
     },
     handleSuccess(res) {
-      console.log(res)
       setDataGeneralRoomFacilities(res?.data?.data)
     },
     handleFinally() {
@@ -65,7 +63,7 @@ const useManageRoomAmenitiesHook = ({
     useMutateSearchRoomFacilityApi({
       selectRoom,
       onSuccess: (res) => {
-        setDataGeneralRoomFacilities(res?.data?.data)
+        setDataGeneralRoomFacilities(res?.data)
       },
       onError: (err: any) => {
         toast((t) => (
@@ -86,7 +84,7 @@ const useManageRoomAmenitiesHook = ({
   } = useMutateSearchGeneralRoomFacilityApi({
     params,
     onSuccess: (res) => {
-      setDataGeneralRoomFacilities(res?.data?.data)
+      setDataGeneralRoomFacilities(res?.data)
     },
     onError: (err: any) => {
       toast((t) => (
@@ -104,7 +102,7 @@ const useManageRoomAmenitiesHook = ({
   const { mutateRoomFacilityByRoom } = useMutateRoomFacilityByRoomApi({
     selectRoom,
     onSuccess: (res) => {
-      setDataGeneralRoomFacilities(res?.data?.data)
+      setDataGeneralRoomFacilities(res?.data)
     },
     onError: (err: any) => {
       toast((t) => (

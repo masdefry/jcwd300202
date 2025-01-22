@@ -132,6 +132,8 @@ const PropertyDetailPage = ({
           role={role}
           checkInDate={checkInDate}
           checkOutDate={checkOutDate}
+          children={children}
+          adult={adult}
         />
         {showDataRoom.name && (
           <DataRoomDetails

@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 
 const useStateCreatePropertyHook = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [showCreateCity, setShowCreateCity] = useState(false)
   const [dataCreateCity, setDataCreateCity] = useState<{
     name: string
@@ -24,7 +25,6 @@ const useStateCreatePropertyHook = () => {
     description: '',
     file: [] as File[],
   })
-
 
   const [change, setChange] = useState(true)
   const [roomFacilities, setRoomFacilities] = useState<any[]>([[]])
@@ -132,6 +132,8 @@ const useStateCreatePropertyHook = () => {
     setPropertyType,
     changedCheckbox,
     setChangedCheckbox,
+    isSubmitting,
+    setIsSubmitting,
   }
 }
 

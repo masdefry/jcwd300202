@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { addDays, format } from "date-fns";
@@ -21,7 +21,23 @@ interface IDatePickerWithPricesProps {
 }
 
 const DatePickerWithPrices = ({ dateAndPrice = {}, basePrice = 0, dateRange, setDateRange, checkInDate, checkOutDate, excludeDateList }: IDatePickerWithPricesProps) => {
+  const [isDesktop, setIsDesktop] = useState<boolean>(false);
+  const [width, setWidth] = useState<number>(0);
 
+  useEffect(() => {
+    const handleResize = () => {
+      const currentWidth = window.innerWidth;
+      setWidth(currentWidth);
+      setIsDesktop(currentWidth > 1080);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [])
   
   const formatPrice = (price: number): string => {
     return price >= 1000000
@@ -71,11 +87,16 @@ const DatePickerWithPrices = ({ dateAndPrice = {}, basePrice = 0, dateRange, set
       startDate={checkInDate}
       endDate={checkOutDate}
       onChange={(update) => {
+        if(update[1] && update[0]) {
+          if(update[1].toISOString() === update[0].toISOString()) {
+            return setDateRange([update[0], addDays(update[1], 1)]);
+          }
+        }
         setDateRange(update);
       }}
       minDate={new Date()}
       withPortal
-      monthsShown={1}
+      monthsShown={isDesktop ? 2 : 1}
       excludeDates={excludeDates}
       renderDayContents={renderDayContents}
       renderMonthContent={renderMonthContents}

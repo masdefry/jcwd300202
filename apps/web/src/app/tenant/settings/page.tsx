@@ -59,7 +59,6 @@ const UserSettingsPage = () => {
       return res?.data
     },
     onSuccess: (res) => {
-      console.log(res)
       toast((t) => (
         <span className="flex gap-2 items-center font-semibold justify-center text-xs">
           Check your email to verify!

@@ -26,7 +26,6 @@ export const getPropertyRoomImagesByProperty = async (
       data: getPropertyRoomImagesByPropertyProcess?.propertyRoomImagesByProperty,
     })
   } catch (error) {
-    console.log(error)
     next(error)
   }
 }

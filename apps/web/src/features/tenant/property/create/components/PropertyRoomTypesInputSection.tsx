@@ -26,6 +26,7 @@ const PropertyRoomTypesInputSection = ({
   dataRoomFacilities,
   dataCreatePropertyRoomFacility,
   setUploadFile,
+  isPendingRoomFacilities,
   setChangedCheckbox,
   showCreatePropertyRoomFacilityForm,
 }: Pick<
@@ -38,6 +39,7 @@ const PropertyRoomTypesInputSection = ({
   | 'setChangedCheckbox'
   | 'showCreatePropertyRoomFacilityForm'
 > & {
+  isPendingRoomFacilities: boolean
   dataRoomFacilities: IPropertyRoomFacility[]
   mutateCreatePropertyRoomFacility: any
   isPendingCreatePropertyRoomFacility: boolean
@@ -126,6 +128,7 @@ const PropertyRoomTypesInputSection = ({
                       <TabsRoomDetailInfo index={index} />
                       <TabsRoomFacilities
                         values={values}
+                        isPendingRoomFacilities={isPendingRoomFacilities}
                         setDataCreatePropertyRoomFacility={
                           setDataCreatePropertyRoomFacility
                         }

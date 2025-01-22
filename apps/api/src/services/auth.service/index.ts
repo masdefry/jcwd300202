@@ -9,6 +9,7 @@ import { JwtPayload } from 'jsonwebtoken'
 import { text } from 'stream/consumers'
 import { IUser } from './types'
 import { addHours } from 'date-fns'
+import { IProperty } from '../property.service/types'
 
 export const loginTenantService = async ({
   email,
@@ -858,7 +859,6 @@ export const verifyChangeEmailTenantService = async ({
       deletedAt: null,
     },
   })
-  console.log('OOOOOOOOOOOOOOOOOOOO')
   if (!isTenantExist?.id || isTenantExist?.deletedAt)
     throw { msg: 'Tenant not found!', status: 404 }
 
@@ -891,7 +891,6 @@ export const verifyChangeEmailUserService = async ({
       deletedAt: null,
     },
   })
-  console.log('OOOOOOOOOOOOOOOOOOOO')
   if (!isUserExist?.id || isUserExist?.deletedAt)
     throw { msg: 'User not found!', status: 404 }
 
@@ -911,4 +910,32 @@ export const verifyChangeEmailUserService = async ({
       token: '',
     },
   })
+}
+
+export const tenantAccessPropertyService = async ({ id, role, slug }: Pick<IUser, 'id' | 'role'> & Pick<IProperty, 'slug'>) => {
+
+    const isTenantExist = await prisma.tenant.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!isTenantExist?.id || isTenantExist?.deletedAt)
+      throw { msg: 'Tenant not found!', status: 404 }
+    if (isTenantExist?.role !== role)
+      throw { msg: 'Role unauthorized!', status: 401 }
+
+    const isPropertyExist = await prisma.property.findFirst({
+      where: {
+        slug,
+      },
+      include: {
+        propertyDetail: true,
+      },
+    })
+
+    if (!isPropertyExist?.id) throw { msg: 'Property not found!', status: 404 }
+    if (isPropertyExist?.tenantId !== id)
+      throw { msg: 'Tenant unauthorized!', status: 403 }
+
 }

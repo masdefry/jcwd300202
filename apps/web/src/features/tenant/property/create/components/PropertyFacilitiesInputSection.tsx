@@ -13,10 +13,44 @@ import {
 const PropertyFacilitiesInputSection = ({
   dataPropertyFacilities,
   values,
+  isPendingPropertyFacilities
 }: {
   dataPropertyFacilities: IPropertyRoomFacility[]
   values: any
+  isPendingPropertyFacilities: boolean
 }) => {
+  if(isPendingPropertyFacilities) {
+    return (
+      <div>
+          <div className="flex flex-col gap-2 w-full">
+            <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full gap-6">
+              {Array.from({ length: 15 }).map((_, index: number) => {
+                return (
+                  <div key={index} className="flex items-center space-x-2">
+                    <Checkbox
+                      id="terms"
+                      disabled
+                      value=''
+                      name="propertyFacilitesId"
+                      className="scale-90"
+                    />
+                    <label className="text-sm font-medium leading-none  peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1.5">
+                      <figure className="h-4 w-4 bg-gray-200 rounded-full">
+                      </figure>
+                      <p className='bg-slate-300 rounded-none text-transparent w-fit'>
+                      Property Facility
+
+                      </p>
+                    </label>
+                  </div>
+                )
+              })}
+            </section>
+          </div>
+      </div>
+    )
+
+  }
   return (
     <FieldArray name="propertyFacilitiesId">
       {({ push: pushPropertyFacility }) => (

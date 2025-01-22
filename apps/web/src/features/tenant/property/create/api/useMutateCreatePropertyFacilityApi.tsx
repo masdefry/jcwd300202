@@ -22,7 +22,6 @@ const useMutateCreatePropertyFacilityApi = ({ onError, onSuccess, dataCreateProp
           fd.append('images', dataCreatePropertyFacility?.file[0])
           const res = await instance.post('/property-facility', fd)
     
-          console.log(res)
           return res?.data
         },
         onSuccess,

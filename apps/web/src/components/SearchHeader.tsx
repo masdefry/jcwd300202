@@ -19,6 +19,7 @@ import  useSearchHook from '@/hooks/useSearchHook'
 import { Formik, Form, ErrorMessage } from 'formik'
 import { searchValidationSchema } from '@/features/home/schemas/searchValidationSchema'
 import { FaMapLocationDot } from 'react-icons/fa6';
+import toast from 'react-hot-toast';
 
 interface ISearchHeaderDefaultProps {
   mutateShowDropdownDebounce: any,
@@ -73,8 +74,12 @@ const SearchHeader = ({
         onSuccess: (res: any) => {
           window.location.href = `/explore/search${slug}`
       },
-      onError: (error) => {
-        console.log(error)
+      onError: (err: any) => {
+        toast((t) => (
+          <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
+            {err?.response?.data?.message || 'Connection error!'}
+          </span>
+        ))
       }
     })
 

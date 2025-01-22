@@ -82,20 +82,40 @@ const BookingPage = ({ params }: { params: { slug: string }}) => {
               <div className='flex flex-col gap-3'>
                 <div className="collapse bg-white w-[50rem] min-h-min rounded">
                   <div className="collapse-title">
-                    <div className="w-full min-h-min flex items-start gap-3">
-                      <div className="bg-[#e2e8f0] w-[20rem] h-[14rem] rounded-md">
-                        <Image 
-                          src={`http://localhost:5000/api/${item.propertyRoomImage[0].directory}/${item.propertyRoomImage[0].filename}.${item.propertyRoomImage[0].fileExtension}`}
-                          width={400} 
-                          height={400} 
-                          alt='Proprty Image'
-                          className='object-cover w-full h-full rounded-md'
-                          />
-                      </div>
+                    <div className="w-full min-h-min flex flex-col items-start gap-3">
                       <div className="min-h-min flex flex-col gap-3">
                         <p className="text-[25px] font-bold">{item.name}</p>
-                        <p>2 King sized bed</p>
-                        <button className="text-sm underline w-[5rem] flex justify-start">See details</button>
+                      </div>
+                      <div className='w-full flex items-center gap-3'>
+                        <div className="bg-[#e2e8f0] w-2/4 h-[14.7rem] rounded-md overflow-hidden relative">
+                          <Image 
+                            src={`http://localhost:5000/api/${item.propertyRoomImage[0].directory}/${item.propertyRoomImage[0].filename}.${item.propertyRoomImage[0].fileExtension}`}
+                            width={400} 
+                            height={400} 
+                            alt='Proprty Image'
+                            className="object-cover w-full h-full rounded-md absolute top-0 left-0 transition-transform duration-300 ease-in-out hover:scale-110"
+                            />
+                        </div>
+                        <div className='flex flex-col w-2/4 gap-3'>
+                          <div className="bg-[#e2e8f0] w-full h-[7rem] rounded-md overflow-hidden relative">
+                            <Image 
+                              src={`http://localhost:5000/api/${item.propertyRoomImage[1].directory}/${item.propertyRoomImage[1].filename}.${item.propertyRoomImage[1].fileExtension}`}
+                              width={400} 
+                              height={400} 
+                              alt='Proprty Image'
+                              className="object-cover w-full h-full rounded-md absolute top-0 left-0 transition-transform duration-300 ease-in-out hover:scale-110"
+                              />
+                          </div>
+                          <div className="bg-[#e2e8f0] w-full h-[7rem] rounded-md overflow-hidden relative">
+                            <Image 
+                              src={`http://localhost:5000/api/${item.propertyRoomImage[2].directory}/${item.propertyRoomImage[2].filename}.${item.propertyRoomImage[2].fileExtension}`}
+                              width={400} 
+                              height={400} 
+                              alt='Proprty Image'
+                              className="object-cover w-full h-full rounded-md absolute top-0 left-0 transition-transform duration-300 ease-in-out hover:scale-110"
+                              />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -108,8 +128,8 @@ const BookingPage = ({ params }: { params: { slug: string }}) => {
                 </div>
               </div>
               <div className="flex flex-col gap-3 relative p-3">
-                <div className='bg-white w-[30rem] min-h-min border rounded sticky top-3 p-3'>
-                  <p className='text-sm mt-2'>PAN PACIFIC JAKARTA</p>
+                <div className='bg-white w-[30rem] min-h-min border rounded-lg sticky top-3 p-3 mt-[3rem]'>
+                  <p className='text-sm'>{item.property.name}</p>
                   <p className='text-md uppercase font-bold'>{item.name}</p>
                   <p className='text-xs'>CHECK IN 2.00 PM | CHECK OUT 12.00 PM</p>
                   <hr className='mt-3'/>

@@ -28,7 +28,7 @@ export default function RootLayout({
           <AuthProvider>
             <Toaster/>
             <Header />
-            {children}
+              {children}
             <Footer />
           </AuthProvider>
         </TanstackProvider>

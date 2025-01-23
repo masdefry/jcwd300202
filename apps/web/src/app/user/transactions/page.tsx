@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'      
+import React, { useState, useEffect } from 'react'      
 import { useQuery } from '@tanstack/react-query'     
 import { useMutation } from '@tanstack/react-query'; 
 import { useSearchParams, useRouter } from 'next/navigation'
@@ -9,6 +9,7 @@ import Link from 'next/link'
 
 const TransactionPage = () => {
   const [isOpen, setIsOpen] = useState(false)
+  const [retryCount, setRetryCount] = useState(0);
   const router = useRouter()
 
   
@@ -16,7 +17,7 @@ const TransactionPage = () => {
     setIsOpen((prev) => !prev)
   }
 
-  const { data: transaction, isPending } = useQuery({
+  const { data: transaction, isLoading, refetch } = useQuery({
     queryKey: ['getTransaction'],
     queryFn: async() => {
       const res = await instance.get(`/transaction/all`, {
@@ -24,7 +25,7 @@ const TransactionPage = () => {
       })
       console.log(res.data.data)
       return res.data.data
-    }
+    },
   })
 
   const dateFormatter = new Intl.DateTimeFormat('en-US', {
@@ -33,11 +34,37 @@ const TransactionPage = () => {
     day: 'numeric'
   })
 
-  
-  
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await refetch();
+      } catch (error) {
+        console.error('Error fetching transaction:', error);
+        if (retryCount < 1) { 
+          setRetryCount((prev) => prev + 1);
+        }
+      }
+    };
+    fetchData();
 
-  const openModal = () => setIsOpen(true)
-  const closeModal = () => setIsOpen(false)
+    const interval = setInterval(() => {
+      fetchData();
+    }, 60000);
+    const onFocus = () => {
+      fetchData();
+    };
+
+    window.addEventListener('focus', onFocus);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', onFocus);
+    };
+  }, [retryCount, refetch]); 
+
+  if (isLoading) return <div>Loading...</div>;
+
+
 
   return (
     <main className="w-full min-h-min">
@@ -85,7 +112,7 @@ const TransactionPage = () => {
                       <p className="text-xs text-slate-500">Check In</p>
                       <p className="text-sm font-bold">{dateFormatter.format(new Date(item.checkInDate))}</p>
                     </div>
-                    <svg data-slot="icon" width={20} height={20} fill="none" strokeWidth="1.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <svg data-slot="icon" width={18} height={18} fill="none" strokeWidth="1.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"></path>
                     </svg>
                     <div className="min-h-min flex flex-col justify-start">
@@ -94,7 +121,11 @@ const TransactionPage = () => {
                     </div>
                   </div>
                   <div className="w-2/6 min-h-min flex items-center justify-end">
-                    <p className="text-sm font-bold text-end">Expires at 1hr</p>
+                    {item.transactionStatus[0]?.status === 'EXPIRED'? (
+                      <Link href={`/user/purchase-detail/${item.id.split("ORDER_")[1]}`} className="border bg-white text-sm px-4 py-2 rounded-md shadow cursor-pointer">
+                        Purchase Detail
+                      </Link>
+                    ): <p className="text-sm font-bold text-end">Expires at 1hr</p>}
                   </div>
                 </div>
               </div>

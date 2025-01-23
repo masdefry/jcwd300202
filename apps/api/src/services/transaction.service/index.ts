@@ -4,7 +4,8 @@ import { decodeToken } from '@/utils/jwt'
 import { Status } from './types'
 import { v4 } from 'uuid'
 import { addHours } from 'date-fns'
-import { differenceInDays } from 'date-fns'
+import { differenceInDays, differenceInHours } from 'date-fns'
+
 
 const midtransClient = require('midtrans-client')
 
@@ -61,7 +62,8 @@ export const createTransactionService = async ({
   const countryId = propertyInTransaction?.countryId as number
   const cityId = propertyInTransaction?.cityId as number
   const nights = differenceInDays(new Date(checkOutDate), new Date(checkInDate))
-  console.log(cityId, countryId)
+  
+  const expireDurationInHours = 1;
 
   return await prisma.$transaction(async (tx) => {
     const uuid = v4()
@@ -79,7 +81,7 @@ export const createTransactionService = async ({
         qty: qty,
         adult: Number(adult),
         children: Number(children),
-        expiryDate: addHours(new Date(), 1),
+        expiryDate: addHours(new Date(), expireDurationInHours),
         userId: userId,
         tenantId: tenantId,
         propertyId: propertyId,
@@ -182,12 +184,32 @@ export const handleExpiredTransaction = async () => {
   })
 
   for (const transaction of expiredTransactions) {
-    await prisma.transactionStatus.create({
-      data: {
-        transactionId: transaction.id,
-        status: Status.EXPIRED,
-      },
-    })
+    const hoursDifference = differenceInHours(now, new Date(transaction.createdAt));
+    const daysDifference = differenceInDays(now, new Date(transaction.createdAt));
+
+    console.log(`Checking transaction ${transaction.id}:`);
+    console.log(`  Hours difference: ${hoursDifference}`);
+    console.log(`  Days difference: ${daysDifference}`);
+
+    if (hoursDifference > 1 || daysDifference > 0) {
+      const isAlreadyExpired = transaction.transactionStatus.some(
+        (status) => status.status === Status.EXPIRED
+      );
+
+      if (!isAlreadyExpired) {
+        await prisma.transactionStatus.create({
+          data: {
+            transactionId: transaction.id,
+            status: Status.EXPIRED,
+          },
+        });
+        console.log(`Transaction ${transaction.id} marked as expired.`);
+      } else {
+        console.log(`Transaction ${transaction.id} already marked as expired.`);
+      }
+    } else {
+      console.log(`Transaction ${transaction.id} is not expired yet.`);
+    }
   }
 }
 
@@ -322,6 +344,17 @@ export const getTransactionByIdService = async(id: string) => {
                     createdAt: true,
                     updatedAt: true,
                 }
+            },
+            transactionUpload: {
+              orderBy: {
+                createdAt: 'desc'
+              },
+              take: 1,
+              select: {
+                id: true,
+                directory: true,
+                filename: true,
+              }
             }
         }
     })

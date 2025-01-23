@@ -165,7 +165,7 @@ const useCreatePropertyFunctionalityHook = () => {
           </span>
         ))
         setTimeout(() => {
-          window.location.reload()
+          window.location.href = '/tenant/property/list'
         }, 1500)
       },
       onError: (err: any) => {

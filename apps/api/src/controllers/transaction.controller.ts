@@ -10,8 +10,6 @@ const MIDTRANS_SERVER_KEY = 'SB-Mid-server-_RX4QQiIGu3NfkORVQFO-0Zg'
 
 export const createTransaction = async(req: Request, res: Response, next: NextFunction) => {
     try {
-        // const { checkInDate = new Date(), checkOutDate = new Date(), total, price, qty, adult, children, id, tenantId, propertyId, roomId }: ITransaction= req.body
-        // console.log(req.body)
 
         const {
             checkInDate = new Date(),
@@ -186,3 +184,4 @@ export const getTransactionById = async (req: Request, res: Response, next: Next
         next(error)
     }
 }
+

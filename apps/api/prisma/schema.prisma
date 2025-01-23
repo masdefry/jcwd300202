@@ -404,12 +404,26 @@ model Transaction {
   transactionStatus TransactionStatus[]
   review            Review?
   roomFilled        RoomFilled[]
+  transactionUpload TransactionUpload[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   @@map("transactions")
+}
+
+model TransactionUpload {
+  id Int @id @default(autoincrement())
+  directory String
+  filename String
+  transactionId String
+  transaction Transaction @relation(fields: [transactionId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("transaction_upload")
 }
 
 model TransactionStatus {

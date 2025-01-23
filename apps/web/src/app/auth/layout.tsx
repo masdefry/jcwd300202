@@ -1,9 +1,6 @@
 'use client'
 
-import authStore from '@/zustand/authStore'
 import React, { ReactNode } from 'react'
-import { usePathname } from 'next/navigation'
-import { useRouter } from 'next/navigation'
 import { GoHome } from "react-icons/go";
 import Link from 'next/link'
 import { FiSend } from "react-icons/fi";
@@ -14,7 +11,7 @@ interface IAuthLayout {
 
 const AuthLayout = ({ children }: IAuthLayout) => {
   return (
-    <main className='p-10 pb-28 relative h-screen'>
+    <main className=' relative h-screen'>
       <div className='fixed bottom-0 right-0 w-full p-10 flex justify-end flex-wrap items-center gap-5'>
         <Link href='/'>
           <div className="drop-shadow-md bg-black rounded-full text-white active:scale-90 p-2 transition duration-100 hover:opacity-80 hover:cursor-pointer">

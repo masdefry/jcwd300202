@@ -7,22 +7,22 @@ import TextInput from '@/features/auth/components/TextInput'
 import { emailValidationSchema } from '@/features/auth/schemas/emailValidationSchema'
 import instance from '@/utils/axiosInstance'
 import { useMutation } from '@tanstack/react-query'
-import { Formik, Form, ErrorMessage } from 'formik'
+import { Formik, Form } from 'formik'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 import toast from 'react-hot-toast'
 
 const RequestVerifyEmailPage = () => {
   const router = useRouter()
-  interface IValuesRequestEmailResetPassword {
+  interface IValuesRequestVerifyEmailUser {
     email: string
   }
 
   const {
-    mutate: mutateRequestEmailResetPassword,
-    isPending: isPendingRequestEmailResetPassword,
+    mutate: mutateRequestVerifyEmailUser,
+    isPending: isPendingRequestVerifyEmailUser,
   } = useMutation({
-    mutationFn: async (values: IValuesRequestEmailResetPassword) => {
+    mutationFn: async (values: IValuesRequestVerifyEmailUser) => {
       return await instance.post('/auth/verify-email-request', {
         email: values?.email,
       })
@@ -49,7 +49,7 @@ const RequestVerifyEmailPage = () => {
   })
 
   return (
-    <main className="flex justify-center">
+    <main className="flex justify-center items-center h-full w-full">
       <section className="md:w-[768px] w-full flex flex-col gap-8">
         <AuthHGroup
           header1="Request Email Verify"
@@ -61,7 +61,7 @@ const RequestVerifyEmailPage = () => {
           }}
           validationSchema={emailValidationSchema}
           onSubmit={(values) => {
-            mutateRequestEmailResetPassword(values)
+            mutateRequestVerifyEmailUser(values)
           }}
         > 
         {
@@ -74,7 +74,7 @@ const RequestVerifyEmailPage = () => {
                 type="text"
               />
               <AuthButton
-                isPending={isPendingRequestEmailResetPassword || !values.email}
+                isPending={isPendingRequestVerifyEmailUser || !values.email}
                 text="Continue"
               />
             </Form>

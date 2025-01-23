@@ -128,6 +128,10 @@ const Footer = () => {
   if(pathname.includes('/auth')) {
     return <></>
   }
+
+  if(pathname.startsWith('/verify')) {
+    return <></>
+  }
   return (
     <footer className='bg-slate-200 lg:px-16 md:px-12 sm:px-8 py-6 flex flex-col gap-8'>
       {pathname === '/' && (

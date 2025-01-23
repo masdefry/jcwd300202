@@ -5,19 +5,27 @@ import { useQuery } from '@tanstack/react-query'
 import { useMutation } from '@tanstack/react-query'; 
 import { useSearchParams, useRouter } from 'next/navigation'
 import instance from '@/utils/axiosInstance'  
-import Link from 'next/link'          
+import Link from 'next/link'       
+import LoadingMain from '@/app/loading'   
+import { toast, Toaster } from 'react-hot-toast';
 
 const TransactionPage = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [retryCount, setRetryCount] = useState(0);
   const router = useRouter()
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
   
   const toggleAccordion = () => {
     setIsOpen((prev) => !prev)
   }
 
-  const { data: transaction, isLoading, refetch } = useQuery({
+  const { data: transaction, isLoading: isLoadingTransaction, refetch } = useQuery({
     queryKey: ['getTransaction'],
     queryFn: async() => {
       const res = await instance.get(`/transaction/all`, {
@@ -27,6 +35,21 @@ const TransactionPage = () => {
       return res.data.data
     },
   })
+
+  const {mutate: mutateCancel, isPending: isPendingCancel} = useMutation({
+    mutationFn: async(transactionId: any) => {
+      return await instance.post(`/transaction/cancel/${transactionId}`)    
+    },
+    onSuccess: (data: any) => {
+      toast.success('Cancellation successful!')
+      router.push(`/user/transactions`)
+    },
+    onError: (error: any) => {
+      console.log('ERROR', error)
+    }
+  })
+
+  
 
   const dateFormatter = new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
@@ -62,7 +85,11 @@ const TransactionPage = () => {
     };
   }, [retryCount, refetch]); 
 
-  if (isLoading) return <div>Loading...</div>;
+  if(isLoadingTransaction && isPendingCancel){
+    return (
+      <LoadingMain/>
+    )
+  }
 
 
 
@@ -87,9 +114,44 @@ const TransactionPage = () => {
                         </Link>
                       ) : item.transactionStatus[0]?.status === 'WAITING_FOR_PAYMENT' ? (
                         <div className="flex gap-2">
-                          <button className="border bg-white text-sm px-4 py-2 rounded-md shadow cursor-pointer">
+                          <button onClick={openModal} className="border bg-white text-sm px-4 py-2 rounded-md shadow cursor-pointer">
                             Cancel
                           </button>
+
+                          {/* Modal */}
+                          {isModalOpen && (
+                            <dialog open className="modal modal-bottom sm:modal-middle">
+                              <div className="modal-box">
+                                <div className='flex items-center gap-2'>
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48">
+                                      <path d="M24 4C13 4 4 13 4 24s9 20 20 20 20-9 20-20S35 4 24 4zm0 3c9.4 0 17 7.6 17 17s-7.6 17-17 17S7 33.4 7 24 14.6 7 24 7zm0 7a2 2 0 100 4 2 2 0 000-4zm-0.02 6.98A1.5 1.5 0 0022.5 22.5v11a1.5 1.5 0 003 0v-11a1.5 1.5 0 00-1.52-1.52z" />
+                                  </svg>
+                                  <p className="text-sm">Do you wish to proceed with the cancellation?</p>
+                                </div>
+                                <div className="modal-action">
+                                  <form method="dialog">
+                                    <div className='flex items-center gap-3'>
+                                      <button 
+                                        className="px-4 py-2 bg-white border rounded text-xs"
+                                        onClick={closeModal}
+                                      >
+                                        Cancel
+                                      </button>
+                                      <button 
+                                        className="px-4 py-2 bg-black rounded text-white text-xs"
+                                        onClick={()=> {
+                                          mutateCancel(item.id); 
+                                        }}
+                                      >
+                                        Proceed
+                                      </button>
+                                    </div>
+                                  </form>
+                                </div>
+                              </div>
+                            </dialog>
+                          )}
+
                           <Link href={`/user/proceed-to-payment/${item.id.split("ORDER_")[1]}`} className="bg-black text-white text-sm px-4 py-2 rounded-md shadow cursor-pointer">
                             Proceed to Payment
                           </Link>
@@ -121,7 +183,7 @@ const TransactionPage = () => {
                     </div>
                   </div>
                   <div className="w-2/6 min-h-min flex items-center justify-end">
-                    {item.transactionStatus[0]?.status === 'EXPIRED'? (
+                    {item.transactionStatus[0]?.status === 'EXPIRED' || item.transactionStatus[0].status === 'CANCELLED' ? (
                       <Link href={`/user/purchase-detail/${item.id.split("ORDER_")[1]}`} className="border bg-white text-sm px-4 py-2 rounded-md shadow cursor-pointer">
                         Purchase Detail
                       </Link>

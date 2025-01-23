@@ -366,3 +366,24 @@ export const getTransactionByIdService = async(id: string) => {
     return transaction;
 }
 
+export const cancelTransactionService = async(id: string) => {
+  const transaction = await prisma.transaction.findUnique({
+    where: {
+      id,
+    },
+  })
+
+  if (!transaction) {
+      return null; 
+  }
+
+
+  const updatedTransaction = await prisma.transactionStatus.create({
+    data: {
+        status: 'CANCELLED', 
+        transactionId: id,
+    },
+  })
+
+  return updatedTransaction
+}

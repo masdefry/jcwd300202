@@ -144,7 +144,7 @@ const PurchaseDetailPage = () => {
                                                         </div>
                                                         {
                                                             transaction.transactionStatus && (
-                                                                transaction.transactionStatus[0].status === 'EXPIRED' || transaction.transactionStatus[0].status === 'CANCELED' 
+                                                                transaction.transactionStatus[0].status === 'EXPIRED' || transaction.transactionStatus[0].status === 'CANCELLED' 
                                                                 ? (
                                                                     <div className="text-start text-slate-600 text-sm mt-[2rem]">
                                                                         User has not paid or has cancelled the transaction.

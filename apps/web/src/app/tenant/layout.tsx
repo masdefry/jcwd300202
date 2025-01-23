@@ -25,7 +25,7 @@ const ProfileTenantLayout = ({ children }: { children: ReactNode }) => {
   if (pathname.includes('/auth')) {
     return (
       <main className="w-full min-h-min py-5">
-        <section className="m-auto max-w-screen-xl w-full h-full">
+        <section className="m-auto max-w-screen-xl w-full min-h-screen">
           {children}
         </section>
       </main>
@@ -33,7 +33,7 @@ const ProfileTenantLayout = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <main className="w-full min-h-min pb-5">
+    <main className="w-full min-h-screen pb-5">
       <section className=" flex flex-col gap-5 w-full h-full">
         <NavbarContentTenant
           toggleHamburger={toggleHamburger}
@@ -45,7 +45,7 @@ const ProfileTenantLayout = ({ children }: { children: ReactNode }) => {
           showConfirmationToLogout={showConfirmationToLogout}
           setShowConfirmationToLogout={setShowConfirmationToLogout}
         />
-        <section className="w-screen max-w-screen-xl m-auto rounded-md overflow-hidden px-5 bg-white">
+        <section className="w-screen max-w-screen-xl m-auto rounded-md overflow-hidden px-5 bg-white h-full">
           {children}
         </section>
       </section>

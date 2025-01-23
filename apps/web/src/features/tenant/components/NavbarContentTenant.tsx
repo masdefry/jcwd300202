@@ -74,16 +74,6 @@ const NavbarContentTenant = ({
           </div>
           <nav className="text-base font-medium py-5 text-slate-900">
             <ul className="flex gap-8 items-center">
-              {role === 'TENANT' && (
-                <Link
-                  href="/tenant/property/create"
-                  className="2xl:flex hidden"
-                >
-                  <li className="border-b-2 border-transparent hover:border-slate-900 hover:cursor-pointer text-sm font-bold active:scale-90 transition duration-200">
-                    Add property
-                  </li>
-                </Link>
-              )}
 
               {token && (
                 <Link

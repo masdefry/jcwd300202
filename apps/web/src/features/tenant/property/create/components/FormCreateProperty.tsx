@@ -19,7 +19,7 @@ import PropertyFacilitiesInputSection from './PropertyFacilitiesInputSection'
 import SectionGeneralInfo from './SectionGeneralInfo'
 import handleCreateProperty from '../utils/handleCreateProperty'
 import { IPropertyData } from '../types'
-import CreatePropertyConfirmationPopup from '@/app/tenant/property/create/CreatePropertyConfirmationPopup'
+import CreatePropertyConfirmationPopup from '@/features/tenant/property/create/components/CreatePropertyConfirmationPopup'
 
 const FormCreateProperty = ({
   setFieldValue,

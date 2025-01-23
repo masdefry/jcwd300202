@@ -83,13 +83,6 @@ export default function Header() {
         </div>
         <div className="text-base font-medium py-5">
           <ul className="flex gap-8 items-center">
-            {(token && role === 'TENANT') && (
-              <Link href="/tenant/property/create">
-                <li className="border-b-2 border-transparent hover:border-black hover:cursor-pointer active:scale-90 transition duration-200">
-                  Add your property
-                </li>
-              </Link>
-            )}
             {token ? (
               <Link
                 href={role === 'TENANT' ? '/tenant/profile' : '/user/profile'}

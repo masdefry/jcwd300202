@@ -291,7 +291,6 @@ export const sendEmailResetPasswordUser = async (
 
     const sendEmailResetPasswordUserProcess =
       await sendEmailResetPasswordUserService({ email })
-
     res.status(200).json({
       error: false,
       message: 'Send email reset password success',
@@ -334,7 +333,6 @@ export const resetPasswordUser = async (
 ) => {
   try {
     const { password, token, id } = req.body
-
     const resetPasswordUserProcess = await resetPasswordUserService({
       password,
       token,

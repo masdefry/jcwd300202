@@ -25,8 +25,8 @@ export async function middleware(req: NextRequest) {
     }
   }
   const key: string | undefined = process.env.JWT_PASSWORD
-  if (pathname.includes('/reset-password')) {
-    return NextResponse.next()
+  if (pathname.includes('/reset-password') && token) {
+    return NextResponse.redirect(new URL('/', req.url))
   }
 
   if (pathname.includes('/auth/verify')) {

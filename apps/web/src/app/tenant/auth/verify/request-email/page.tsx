@@ -5,51 +5,19 @@ import AuthHGroup from '@/features/auth/components/AuthHGroup'
 import Footer from '@/features/auth/components/Footer'
 import TextInput from '@/features/auth/components/TextInput'
 import { emailValidationSchema } from '@/features/auth/schemas/emailValidationSchema'
-import instance from '@/utils/axiosInstance'
-import { useMutation } from '@tanstack/react-query'
 import { Formik, Form, ErrorMessage } from 'formik'
-import { useRouter } from 'next/navigation'
 import React from 'react'
-import toast from 'react-hot-toast'
+import useRequestVerifyEmailUserHook from '../../../../../features/tenant/auth/verify/request-email/hooks/useRequestVerifyEmailUserHook'
 
 const RequestVerifyEmailPage = () => {
-  const router = useRouter()
-  interface IValuesRequestEmailResetPassword {
-    email: string
-  }
 
-  const {
-    mutate: mutateRequestEmailResetPassword,
-    isPending: isPendingRequestEmailResetPassword,
-  } = useMutation({
-    mutationFn: async (values: IValuesRequestEmailResetPassword) => {
-      return await instance.post('/auth/tenant/verify-email-request', {
-        email: values?.email,
-      })
-    },
-    onSuccess: (res) => {
-      toast((t) => (
-        <span className="flex gap-2 items-center font-semibold justify-center text-xs">
-          Request email verify success
-        </span>
-      ))
-    },
-    onError: (err: any) => {
-      toast((t) => (
-        <span className="flex gap-2 items-center font-semibold justify-center text-xs text-red-600">
-          {err?.response?.data?.message || 'Connection error!'}
-        </span>
-      ))
-      if (err?.response?.data?.message === 'Email already verified!') {
-        setTimeout(() => {
-          router.push('/auth')
-        }, 1500)
-      }
-    },
-  })
+ const {
+  mutateRequestEmailResetPassword,
+  isPendingRequestEmailResetPassword
+ } = useRequestVerifyEmailUserHook()
 
   return (
-    <main className="flex justify-center">
+    <main className="flex justify-center items-center h-full w-full">
       <section className="md:w-[768px] w-full flex flex-col gap-8">
         <AuthHGroup
           header1="Request Email Verify"

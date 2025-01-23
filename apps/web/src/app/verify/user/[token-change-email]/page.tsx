@@ -33,7 +33,7 @@ const VerifyEmailUserPage = ({ params }: { params: { 'token-change-email': strin
     },
     onError: (err) => {
       toast((t) => (
-        <span className='flex gap-2 items-center font-semibold justify-center text-xs'>
+        <span className='flex gap-2 text-red-600 items-center font-semibold justify-center text-xs'>
           Verify new email failed
         </span>
       ))

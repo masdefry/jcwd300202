@@ -727,9 +727,9 @@ export const resetPasswordUserService = async ({
 
   if (!isUserExist?.id || isUserExist?.deletedAt)
     throw { msg: 'User not found!', status: 404 }
-  if (isUserExist?.token !== token)
+  if (isUserExist?.token !== token){
     throw { msg: 'Session expired!', status: 406 }
-
+}
   const comparedPassword = await comparePassword(
     password as string,
     isUserExist?.password as string,

@@ -317,6 +317,29 @@ async function main() {
             await Property19({ tenantAccounts, countryId: country2.id, cityId: cities2Id[1]})
             await Property20({ tenantAccounts, countryId: country1.id, cityId: cities1Id[0]})
         }, 5000)
+        
+        setTimeout(async() => {
+            const getAllProeprties = await prisma.property.findMany({
+                include: {
+                    propertyRoomType: {
+                        orderBy: {
+                            price: 'asc'
+                        }
+                    }
+                }
+            })
+    
+            getAllProeprties.forEach(async(item) => {
+                await prisma.property.update({
+                    where: {
+                        id: item?.id
+                    },
+                    data: {
+                        price: item?.propertyRoomType[0].price
+                    }
+             })
+        })
+        }, 25000)
 
 }
 

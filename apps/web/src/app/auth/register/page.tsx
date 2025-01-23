@@ -22,7 +22,7 @@ const RegisterPage = () => {
     role: 'user',
   })
   return (
-    <main className="flex justify-center">
+    <main className="flex justify-center items-center h-full w-full">
       <section className="md:w-[768px] w-full flex flex-col gap-8">
         <AuthHGroup
           header1="Create an account"

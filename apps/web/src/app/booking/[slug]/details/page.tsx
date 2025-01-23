@@ -24,6 +24,7 @@ const BookingPage = ({ params }: { params: { slug: string }}) => {
 
   const dateCheckIn = checkInDate ? dateFormatter.format(new Date(checkInDate)) : 'Invalid Date'
   const dateCheckOut = checkOutDate ? dateFormatter.format(new Date(checkOutDate)) : 'Invalid Date'
+  const taxes = 263994
 
   const timeFormatter = new Intl.DateTimeFormat('en-US', {
     hour: 'numeric',
@@ -56,7 +57,7 @@ const BookingPage = ({ params }: { params: { slug: string }}) => {
       return await instance.post(`/transaction/create`, transactionDetails)
     },
     onSuccess: (data: any) => {
-      router.push(`/transactions/${params.slug}`)
+      router.push(`/user/transactions`)
     },
     onError: (error: any) => {
       console.log('ERROR', error)
@@ -74,13 +75,13 @@ const BookingPage = ({ params }: { params: { slug: string }}) => {
 
     
   return (
-    <main className='w-full h-screen mt-[6rem]'>
+    <main className='w-full h-screen mt-[6rem] pt-[3rem]'>
       <section className='m-auto max-w-screen-xl w-full h-full flex items-start justify-center gap-5 relative'>
         {dataPropertyRoomType?.map((item: any, index: number) => {
           return (
             <div key={index} className='flex gap-3'>
               <div className='flex flex-col gap-3'>
-                <div className="collapse bg-white w-[50rem] min-h-min rounded">
+                <div className="collapse bg-[#e2e8f0] w-[50rem] min-h-min rounded-lg">
                   <div className="collapse-title">
                     <div className="w-full min-h-min flex flex-col items-start gap-3">
                       <div className="min-h-min flex flex-col gap-3">
@@ -131,8 +132,8 @@ const BookingPage = ({ params }: { params: { slug: string }}) => {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col gap-3 relative p-3">
-                <div className='bg-white w-[30rem] min-h-min border rounded-lg sticky top-3 p-3 mt-[3rem]'>
+              <div className="flex flex-col gap-3 relative">
+                <div className='bg-white w-[30rem] min-h-min border rounded-lg p-3'>
                   <p className='text-sm'>{item.property.name}</p>
                   <p className='text-md uppercase font-bold'>{item.name}</p>
                   <p className='text-xs'>CHECK IN 2.00 PM | CHECK OUT 12.00 PM</p>
@@ -161,10 +162,6 @@ const BookingPage = ({ params }: { params: { slug: string }}) => {
                           <p className='text-xs font-medium'>RP <span className='font-bold'>{item.price}</span></p>
                         </div>
                         <hr/>
-                        <div className='flex items-center justify-between'>
-                          <p className='text-xs font-medium'>TAX</p>
-                          <p className='text-xs font-medium'>RP <span className='font-bold'>460000</span></p>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -189,10 +186,6 @@ const BookingPage = ({ params }: { params: { slug: string }}) => {
                         <hr/>
                         <div className='flex flex-col'>
                           <p className='text-xs font-medium'>TAXES AND FEES</p>
-                          <div className='flex items-center justify-between mt-2'>
-                            <p className='text-xs'>VAT</p>
-                            <p className='text-xs font-medium'>RP <span className='font-bold'>253932</span></p>
-                          </div>
                           <div className='flex items-center justify-between'>
                             <p className='text-xs'>Taxes</p>
                             <p className='text-xs font-medium'>RP <span className='font-bold'>263994</span></p>
@@ -203,14 +196,14 @@ const BookingPage = ({ params }: { params: { slug: string }}) => {
                   </div>
                   <div className='flex items-center justify-between'>
                     <p className='text-sm font-bold'>TOTAL <span className='text-xs font-normal'>(fees and taxes included)</span></p>
-                    <p className='text-xs font-medium'>RP <span className='font-bold text-sm'>{item.price}</span></p>
+                    <p className='text-xs font-medium'>RP <span className='font-bold text-sm'>{Number(item.price) + taxes}</span></p>
                   </div>
                   <button 
                     onClick={() =>
                       mutateTransaction({
                         checkInDate: checkInDate,
                         checkOutDate: checkOutDate,
-                        price: Number(item.price),
+                        price: Number(item.price) + taxes,
                         qty: 1,
                         adult: String(adult),
                         children: String(children),

@@ -86,7 +86,7 @@ const PropertyDetailPage = ({
   }
 
   return (
-    <main className="w-full min-h-min 2xl:py-5 pb-5">
+    <main className="w-full min-h-min 2xl:py-5 pb-5 mt-24">
       <section className="m-auto max-w-screen-xl flex flex-col gap-7">
         <PropertyImages
           showPropertyImages={showPropertyImages}

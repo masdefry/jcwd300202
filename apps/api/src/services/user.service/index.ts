@@ -189,7 +189,7 @@ export const updateUserEmailService = async ({
         if (!updatedEmail?.email)
           throw { msg: 'Update user email failed!', status: 500 }
 
-        const link = `http://localhost:3000/auth/verify/email/${token}`
+        const link = `http://localhost:3000/verify/user/${token}`
 
         const emailBody = fs.readFileSync(
           './src/public/body.email/verify.change.email.html',

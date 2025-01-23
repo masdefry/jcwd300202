@@ -43,7 +43,7 @@ export default function VerifyEmailTenantPage ({ params }: { params: { token: st
   })
 
   return (
-    <div className="flex items-center justify-center w-full h-full">
+    <div className="flex items-center justify-center w-full h-screen">
       <div className="max-w-md p-6 rounded-lg bg-white shadow-lg">
           <div className="text-center">
             <h2 className="text-lg font-semibold text-gray-800">Verify Your Email</h2>

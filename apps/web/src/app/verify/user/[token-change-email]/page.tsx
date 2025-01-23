@@ -8,14 +8,15 @@ import { useRouter } from 'next/navigation'
 import authStore from '@/zustand/authStore'
 import toast from 'react-hot-toast'
 
-export default function VerifyEmailTenantPage ({ params }: { params: { token: string } }) {
-  const router = useRouter()
-  const setLogout = authStore(state => state.setLogout)
+const VerifyEmailUserPage = ({ params }: { params: { 'token-change-email': string } }) => {
+
+
   const { mutate: mutateVerifyEmail, isPending: isPendingVerifyEmail } = useMutation({
     mutationFn: async() => {
-      const res = await instance.patch(`/auth/verify-change-email/${params?.token}`, {}, {
+      console.log('res')
+      const res = await instance.patch(`/auth/verify-change-email/${params['token-change-email']}`, {}, {
         headers: {
-          authorization: `Bearer ${params.token}`
+          authorization: `Bearer ${params['token-change-email']}`
         }
       })
       return res?.data
@@ -43,7 +44,7 @@ export default function VerifyEmailTenantPage ({ params }: { params: { token: st
   })
 
   return (
-    <div className="flex items-center justify-center w-full h-full">
+    <div className="flex items-center justify-center w-full h-screen z-[100]">
       <div className="max-w-md p-6 rounded-lg bg-white shadow-lg">
           <div className="text-center">
             <h2 className="text-lg font-semibold text-gray-800">Verify Your Email</h2>
@@ -61,3 +62,5 @@ export default function VerifyEmailTenantPage ({ params }: { params: { token: st
     </div>
   )
 }
+
+export default VerifyEmailUserPage

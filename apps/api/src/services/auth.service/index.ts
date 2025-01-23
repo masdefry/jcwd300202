@@ -260,7 +260,7 @@ export const verifyEmailRequestUserService = async ({
 
       let verifyEmailLink, emailBody
       if (isUserExist?.password) {
-        verifyEmailLink = `http://localhost:3000/auth/verify/email/${tokenForVerifyEmail}`
+        verifyEmailLink = `http://localhost:3000/verify/user/${tokenForVerifyEmail}`
         emailBody = fs.readFileSync(
           './src/public/body.email/verify.change.email.html',
           'utf-8',
@@ -323,7 +323,7 @@ export const verifyChangeEmailRequestUserService = async ({
         },
       })
 
-      const verifyEmailLink = `http://localhost:3000/auth/verify/email/${tokenForVerifyEmail}`
+      const verifyEmailLink = `http://localhost:3000/verify/user/${tokenForVerifyEmail}`
 
       const emailBody = fs.readFileSync(
         './src/public/body.email/verify.email.html',
@@ -379,7 +379,7 @@ export const verifyChangeEmailRequestTenantService = async ({
         },
       })
 
-      const verifyEmailLink = `http://localhost:3000/tenant/auth/verify/email/${tokenForVerifyEmail}`
+      const verifyEmailLink = `http://localhost:3000/verify/tenant/${tokenForVerifyEmail}`
 
       const emailBody = fs.readFileSync(
         './src/public/body.email/verify.email.html',
@@ -434,7 +434,7 @@ export const verifyEmailRequestTenantService = async ({
 
       let verifyEmailLink, emailBody
       if (isTenantExist?.password) {
-        verifyEmailLink = `http://localhost:3000/tenant/auth/verify/email/${tokenForVerifyEmail}`
+        verifyEmailLink = `http://localhost:3000/verify/tenant/${tokenForVerifyEmail}`
         emailBody = fs.readFileSync(
           './src/public/body.email/verify.change.email.tenant.html',
           'utf-8',

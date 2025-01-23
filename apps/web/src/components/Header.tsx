@@ -50,6 +50,10 @@ export default function Header() {
     return <></>
   }
 
+  if(pathname.startsWith('/verify')) {
+    return <></>
+  }
+  
   return (
     <header className="w-full flex flex-col">
       <nav className="hidden lg:flex justify-between items-center bg-white shadow-md fixed top-0 z-[55] w-full min-h-min lg:px-16 md:px-12 sm:px-8 px-4">
@@ -67,6 +71,15 @@ export default function Header() {
               <p>Explore</p>
             </div>
           </Link>
+          {
+            !token && (
+            <Link href="/tenant/auth">
+              <div className="border-b-4 border-transparent hover:border-blue-800 p-5 h-full text-base font-bold text-gray-800 hover:cursor-pointer active:bg-slate-200 transition duration-100">
+                <p>Tenant</p>
+              </div>
+            </Link>
+            )
+          }
         </div>
         <div className="text-base font-medium py-5">
           <ul className="flex gap-8 items-center">

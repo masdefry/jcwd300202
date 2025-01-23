@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express' 
 import { NextApiRequest, NextApiResponse } from 'next';
-import { createTransactionService, updateTransactionStatusService, handleExpiredTransaction, transactionHistoryService, getTransactionByIdService } from '@/services/transaction.service'
+import { createTransactionService, updateTransactionStatusService, handleExpiredTransaction, transactionHistoryService, getTransactionByIdService, cancelTransactionService } from '@/services/transaction.service'
 import { ITransaction } from '@/services/transaction.service/types'
 import { Status } from '@/services/transaction.service/types'
 import crypto from 'crypto'
@@ -185,3 +185,27 @@ export const getTransactionById = async (req: Request, res: Response, next: Next
     }
 }
 
+export const cancelTransaction = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const {id} = req.params
+
+        if(!id) {
+            return res.status(400).json({
+                message: 'Transaction ID is required'
+            })
+        }
+
+        const result = await cancelTransactionService(id)
+        console.log(result, id, 'INIIII')
+
+        res.status(201).json({
+            message: `Transaction with ${id} has been cancelled successfully`,
+            error: false,
+            data: result
+        })
+
+    } catch(error) {
+        console.log("ERROOORRR")
+        next(error)
+    }
+}

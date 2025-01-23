@@ -5,6 +5,7 @@ import instance from '@/utils/axiosInstance'
 import { useQuery } from '@tanstack/react-query'
 import { useMutation } from '@tanstack/react-query';
 import { useSearchParams, useRouter } from 'next/navigation'
+import LoadingMain from '@/app/loading'
 import Image from 'next/image'
 
 const BookingPage = ({ params }: { params: { slug: string }}) => {
@@ -67,7 +68,13 @@ const BookingPage = ({ params }: { params: { slug: string }}) => {
 
   if(isPendingPropertyRoomType){
     return (
-        <div>Please wait</div>
+      <LoadingMain/>
+    )
+  }
+
+  if(isPendingTransaction){
+    return (
+      <LoadingMain/>
     )
   }
 
@@ -212,7 +219,6 @@ const BookingPage = ({ params }: { params: { slug: string }}) => {
                         roomId: item.id
                       })
                     }
-                    disabled={isPendingTransaction}
                     className="w-full rounded-full bg-[#e2e8f0] text-black px-7 py-3 mt-10 hover:opacity-75 hover:cursor-pointer active:scale-90 transition duration-200">Continue</button>
                 </div>
               </div> 

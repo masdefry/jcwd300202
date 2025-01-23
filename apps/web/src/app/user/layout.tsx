@@ -23,7 +23,7 @@ const ProfileUserLayout = ({ children }: { children: ReactNode }) => {
     pathname.includes('/tenant/property/create')
   ) {
     return (
-      <main className="w-full min-h-min py-5">
+      <main className="w-full min-h-screen py-5">
         <section className="m-auto max-w-screen-xl w-full h-full">
           {children}
         </section>
@@ -32,7 +32,7 @@ const ProfileUserLayout = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <main className="w-full min-h-min pb-5">
+    <main className="w-full min-h-screen pb-5">
       <section className=" flex flex-col gap-5 w-full h-full">
         <NavbarUserContent
           toggleHamburger={toggleHamburger}

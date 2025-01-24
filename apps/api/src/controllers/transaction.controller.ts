@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express' 
 import { NextApiRequest, NextApiResponse } from 'next';
-import { createTransactionService, updateTransactionStatusService, handleExpiredTransaction, transactionHistoryService, getTransactionByIdService, cancelTransactionService } from '@/services/transaction.service'
+import { createTransactionService, updateTransactionStatusService, transactionHistoryService, getTransactionByIdService, cancelTransactionService, uploadPaymentService, getTransactionStatusService } from '@/services/transaction.service'
 import { ITransaction } from '@/services/transaction.service/types'
 import { Status } from '@/services/transaction.service/types'
 import crypto from 'crypto'
@@ -49,6 +49,30 @@ export const createTransaction = async(req: Request, res: Response, next: NextFu
             message: 'Transaction created successfully',
             error: false,
             data: payment
+        })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const checkTransaction = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const {id} = req.params
+
+        if(!id){
+            res.status(400).json({
+                message: 'Transaction ID not found',
+                error: true,
+            })
+        }
+
+        const status = getTransactionStatusService(id)
+
+        res.status(200).json({
+            message: 'Transaction status fetch successfully',
+            error: false,
+            data: status
         })
 
     } catch (error) {
@@ -116,18 +140,18 @@ export const midtransCallback = async (req: Request, res: Response, next: NextFu
     }
 };
 
-export const expiredTransaction = async(req: Request, res: Response, next: NextFunction) => {
-    try {
-        await handleExpiredTransaction()
+// export const expiredTransaction = async(req: Request, res: Response, next: NextFunction) => {
+//     try {
+//         await handleExpiredTransaction()
 
-        res.status(200).json({
-            message: 'Expired transactions handled successfully',
-            error: false
-        })
-    } catch (error) {
-        next(error)
-    }
-}
+//         res.status(200).json({
+//             message: 'Expired transactions handled successfully',
+//             error: false
+//         })
+//     } catch (error) {
+//         next(error)
+//     }
+// }
 
 export const transactionHistory = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -196,7 +220,6 @@ export const cancelTransaction = async(req: Request, res: Response, next: NextFu
         }
 
         const result = await cancelTransactionService(id)
-        console.log(result, id, 'INIIII')
 
         res.status(201).json({
             message: `Transaction with ${id} has been cancelled successfully`,
@@ -205,7 +228,32 @@ export const cancelTransaction = async(req: Request, res: Response, next: NextFu
         })
 
     } catch(error) {
-        console.log("ERROOORRR")
+        next(error)
+    }
+}
+
+export const uploadPayment = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const {id} = req.params
+        
+        if(!req.file){
+            return res.status(400).json({
+                message: 'No file uploaded'
+            })
+        }
+
+        const uploadedImage: any = req.file
+        const filePath = uploadedImage.path;
+
+        const result = await uploadPaymentService(id, filePath)
+
+
+        return res.status(200).json({
+            message: 'File uploaded successfully',
+            error: false,
+            data: result
+        })
+    } catch (error) {
         next(error)
     }
 }

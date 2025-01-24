@@ -74,34 +74,34 @@ export const createPropertyService = async ({
           cityId: Number(cityId),
           tenantId: id,
           propertyTypeId: Number(propertyTypeId),
-          checkInStartTime: new Date(
+          checkInStartTime:  addHours(new Date(
             new Date().toISOString().split('T')[0] +
               'T' +
               checkInStartTime +
               ':00',
-          ),
+          ), 7),
           checkInEndTime: checkInEndTime
-            ? new Date(
+            ? addHours(new Date(
                 new Date().toISOString().split('T')[0] +
                   'T' +
                   checkInEndTime +
                   ':00',
-              )
+              ), 7)
             : null,
           checkOutStartTime: checkOutStartTime
-            ? new Date(
+            ? addHours(new Date(
                 new Date().toISOString().split('T')[0] +
                   'T' +
                   checkOutStartTime +
                   ':00',
-              )
+              ), 7)
             : null,
-          checkOutEndTime: new Date(
+          checkOutEndTime: addHours(new Date(
             new Date().toISOString().split('T')[0] +
               'T' +
               checkOutEndTime +
               ':00',
-          ),
+          ), 7),
           slug,
           location: location as string,
           zipCode: zipCode as string,

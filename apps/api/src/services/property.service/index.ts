@@ -15,6 +15,7 @@ export const createPropertyService = async ({
   countryId,
   name,
   zipCode,
+  star,
   address,
   location,
   checkInStartTime,
@@ -105,6 +106,7 @@ export const createPropertyService = async ({
           location: location as string,
           zipCode: zipCode as string,
           address: address as string,
+          star: Number(star)
         },
       })
 

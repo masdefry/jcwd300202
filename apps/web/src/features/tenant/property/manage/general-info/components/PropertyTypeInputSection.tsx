@@ -41,8 +41,11 @@ const PropertyTypeInputSection = ({
               <Rate
                 value={values?.star}
                 color="yellow"
+                name='star'
                 size="xs"
-                onChangeActive={(value: number) => setFieldValue('star', value)}
+                onChangeActive={(value: number) => {
+                  setFieldValue('star', value)
+                }}
               />
             </div>
           </div>

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express' 
-import { getReservationService, updateReservationService } from '@/services/reservation.service/index'
+import { getReservationService, getReservationByIdService, updateReservationService } from '@/services/reservation.service/index'
 
 
 export const getReservation = async(req: Request, res: Response, next: NextFunction) => {
@@ -29,6 +29,30 @@ export const getReservation = async(req: Request, res: Response, next: NextFunct
             message: 'Successfully fetch reservations',
             error: false,
             data: transactions
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const getReservationById = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const {id} = req.params
+
+        if(!id){
+            return res.status(400).json({
+                message: 'Property Id is required',
+                error: true,
+                data: {}
+            })
+        }
+
+        const reservations = await getReservationByIdService(id)
+
+        res.status(200).json({
+            message: `Successfully fetch reservations from ${id}`,
+            error: false,
+            data: reservations
         })
     } catch (error) {
         next(error)

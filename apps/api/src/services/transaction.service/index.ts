@@ -169,7 +169,7 @@ export const getTransactionStatusService = async (id: string) => {
 
   console.log(`Transaction ID: ${id} - Status: ${transaction_status}`);
 
-  const latestTransaction = await prisma.transactionStatus.findMany({
+  const latestTransaction = await prisma.transactionStatus.findFirst({
     where: {
       transactionId: id,
     },
@@ -179,12 +179,12 @@ export const getTransactionStatusService = async (id: string) => {
     take: 1
   })
 
-  if(!latestTransaction || latestTransaction.length === 0){
-    console.log(`Transaction ${id} not found`)
+  if (!latestTransaction) {
+    console.log(`Transaction ${id} not found`);
     return;
   }
 
-  const latestStatus = latestTransaction[0].status
+  const latestStatus = latestTransaction.status
   const splitId = id.replace('ORDER_', '')
 
   if(transaction_status === 'settlement' && latestStatus === 'WAITING_FOR_PAYMENT'){
@@ -211,18 +211,23 @@ export const getTransactionStatusService = async (id: string) => {
     };
   } 
 
+  if (latestStatus === 'WAITING_FOR_CONFIRMATION_PAYMENT') {
+    console.log(`Transaction ${id} is already in 'WAITING_FOR_CONFIRMATION_PAYMENT'. No further action needed.`);
+    return;
+  }
+
   const now = new Date()
-  const transactionCreatedAt = new Date(latestTransaction[0].createdAt)
+  const transactionCreatedAt = new Date(latestTransaction.createdAt)
   const hoursDifference = differenceInHours(now, transactionCreatedAt)
 
-  if(latestStatus === 'WAITING_FOR_PAYMENT' && transaction_status !== 'settlement' && hoursDifference >=1){
-    await prisma.transactionStatus.create({
-      data: {
-        transactionId: id,
-        status: Status.EXPIRED
-      }
-    })
-  }
+  // if(latestStatus === 'WAITING_FOR_PAYMENT' && transaction_status !== 'settlement' && hoursDifference >=1){
+  //   await prisma.transactionStatus.create({
+  //     data: {
+  //       transactionId: id,
+  //       status: Status.EXPIRED
+  //     }
+  //   })
+  // }
 
   return {
     status_code,

@@ -5,9 +5,11 @@ import { Status } from './types'
 import { v4 } from 'uuid'
 import { addHours } from 'date-fns'
 import { differenceInDays, differenceInHours } from 'date-fns'
+import axios from 'axios'
 
 
 const midtransClient = require('midtrans-client')
+const MIDTRANS_SERVER_KEY = 'SB-Mid-server-_RX4QQiIGu3NfkORVQFO-0Zg'
 
 const tokenSnap = new midtransClient.Snap({
   isProduction: false,
@@ -94,13 +96,16 @@ export const createTransactionService = async ({
       },
     })
 
+    const splitId = setTransaction.id.replace('ORDER_', '')
+    
     const params = {
       transaction_details: {
         order_id: setTransaction.id,
         gross_amount: setTransaction.total,
       },
-      finish_url: 'http://localhost:3000/transaction/all',
-      callback_url: 'http://localhost:5000/transaction/callback',
+      "callbacks": {
+        "finish": `https://0da6-103-47-133-164.ngrok-free.app/${splitId}`
+      }
     }
 
     const snapTokenResponse = await tokenSnap.createTransaction(params)
@@ -144,6 +149,93 @@ export const createTransactionService = async ({
   })
 }
 
+export const getTransactionStatusService = async (id: string) => {
+  const res = await axios.get(`https://api.sandbox.midtrans.com/v2/${id}/status`, {
+    auth: {
+      username: MIDTRANS_SERVER_KEY,
+      password: ''
+    },
+  })
+
+  const {
+    status_code,
+    gross_amount,
+    order_id,
+    payment_type,
+    signature_key,
+    transaction_status,
+    va_numbers,
+  } = res.data
+
+  console.log(`Transaction ID: ${id} - Status: ${transaction_status}`);
+
+  const latestTransaction = await prisma.transactionStatus.findMany({
+    where: {
+      transactionId: id,
+    },
+    orderBy: {
+      createdAt: 'desc'
+    },
+    take: 1
+  })
+
+  if(!latestTransaction || latestTransaction.length === 0){
+    console.log(`Transaction ${id} not found`)
+    return;
+  }
+
+  const latestStatus = latestTransaction[0].status
+  const splitId = id.replace('ORDER_', '')
+
+  if(transaction_status === 'settlement' && latestStatus === 'WAITING_FOR_PAYMENT'){
+    await prisma.transactionStatus.create({
+      data: {
+        transactionId: id,
+        status: 'WAITING_FOR_CONFIRMATION_PAYMENT'
+      }
+    })
+
+    return {
+      success: true,
+      message: 'Transaction settled successfully',
+      redirectUrl: `http://localhost:3000/user/purchase-detail/${splitId}`,
+      data: {
+        status_code,
+        gross_amount,
+        order_id,
+        payment_type,
+        signature_key,
+        transaction_status,
+        va_numbers
+      }
+    };
+  } 
+
+  const now = new Date()
+  const transactionCreatedAt = new Date(latestTransaction[0].createdAt)
+  const hoursDifference = differenceInHours(now, transactionCreatedAt)
+
+  if(latestStatus === 'WAITING_FOR_PAYMENT' && transaction_status !== 'settlement' && hoursDifference >=1){
+    await prisma.transactionStatus.create({
+      data: {
+        transactionId: id,
+        status: Status.EXPIRED
+      }
+    })
+  }
+
+  return {
+    status_code,
+    gross_amount,
+    order_id,
+    payment_type,
+    signature_key,
+    transaction_status,
+    va_numbers
+  }
+}
+
+
 export const updateTransactionStatusService = async (
   order_id: string,
   status: Status,
@@ -164,54 +256,44 @@ export const updateTransactionStatusService = async (
   return updatedTransaction
 }
 
-export const handleExpiredTransaction = async () => {
-  const now = new Date()
+// export const handleExpiredTransaction = async () => {
+//   const now = new Date()
 
-  const expiredTransactions = await prisma.transaction.findMany({
-    where: {
-      expiryDate: {
-        lte: now,
-      },
-      transactionStatus: {
-        some: {
-          status: Status.WAITING_FOR_PAYMENT,
-        },
-      },
-    },
-    include: {
-      transactionStatus: true,
-    },
-  })
+//   const expiredTransactions = await prisma.transaction.findMany({
+//     where: {
+//       expiryDate: {
+//         lte: now,
+//       },
+//     },
+//     include: {
+//       transactionStatus: {
+//         orderBy: {
+//           createdAt: 'desc'
+//         },
+//         take: 1
+//       }
+//     },
+//   })
 
-  for (const transaction of expiredTransactions) {
-    const hoursDifference = differenceInHours(now, new Date(transaction.createdAt));
-    const daysDifference = differenceInDays(now, new Date(transaction.createdAt));
+//   for (const transaction of expiredTransactions) {
+//     const hoursDifference = differenceInHours(now, new Date(transaction.createdAt));
+//     const daysDifference = differenceInDays(now, new Date(transaction.createdAt));
 
-    console.log(`Checking transaction ${transaction.id}:`);
-    console.log(`  Hours difference: ${hoursDifference}`);
-    console.log(`  Days difference: ${daysDifference}`);
+//     if(hoursDifference >=1){
+//       const latestStatus = transaction.transactionStatus[0]
+//       console.log(latestStatus)
 
-    if (hoursDifference > 1 || daysDifference > 0) {
-      const isAlreadyExpired = transaction.transactionStatus.some(
-        (status) => status.status === Status.EXPIRED
-      );
-
-      if (!isAlreadyExpired) {
-        await prisma.transactionStatus.create({
-          data: {
-            transactionId: transaction.id,
-            status: Status.EXPIRED,
-          },
-        });
-        console.log(`Transaction ${transaction.id} marked as expired.`);
-      } else {
-        console.log(`Transaction ${transaction.id} already marked as expired.`);
-      }
-    } else {
-      console.log(`Transaction ${transaction.id} is not expired yet.`);
-    }
-  }
-}
+//       if(latestStatus && latestStatus.status === Status.WAITING_FOR_PAYMENT){
+//         await prisma.transactionStatus.create({
+//           data: {
+//             transactionId: transaction.id,
+//             status: Status.EXPIRED
+//           }
+//         })
+//       }
+//     }
+//   }
+// }
 
 export const transactionHistoryService = async (id: string) => {
   let transactions: any = []
@@ -386,4 +468,44 @@ export const cancelTransactionService = async(id: string) => {
   })
 
   return updatedTransaction
+}
+
+export const uploadPaymentService = async(id: string, filePath: string) => {
+  const transaction = await prisma.transaction.findUnique({
+    where: {
+      id
+    },
+    include: {
+      transactionStatus: true
+    }
+  })
+
+  if(!transaction) {
+    return null
+  }
+
+  const transactionStatus = transaction.transactionStatus[0]; 
+
+  if (transactionStatus) {
+    const status = transactionStatus.status;
+  
+    if (status === 'WAITING_FOR_PAYMENT') {
+      return { message: 'You need to proceed with the payment.' };
+    }
+  } else {
+    return { message: 'Transaction status not found.' };
+  }
+
+  const filename = filePath.split('/').pop() || 'default_filename';
+
+  const uploadTransaction = await prisma.transactionUpload.create({
+    data: {
+      directory: filePath,
+      filename: filename,
+      transactionId: id
+    }
+  })
+
+  return uploadTransaction
+
 }

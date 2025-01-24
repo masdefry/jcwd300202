@@ -107,12 +107,11 @@ const TransactionPage = () => {
                       <div className="flex flex-col">
                         <p className="font-bold">{item.room.property.name}</p>
                       </div>
-                      {item.transactionStatus[0]?.status === 'PAID' || 
-                      item.transactionStatus[0]?.status === 'WAITING_FOR_CONFIRMATION_PAYMENT' ? (
+                      {item.transactionStatus && item.transactionStatus[0]?.status === 'PAID' || item.transactionStatus && item.transactionStatus[0]?.status === 'WAITING_FOR_CONFIRMATION_PAYMENT'  ? (
                         <Link href={`/user/purchase-detail/${item.id.split("ORDER_")[1]}`} className="border bg-white text-sm px-4 py-2 rounded-md shadow cursor-pointer">
                           Purchase Detail
                         </Link>
-                      ) : item.transactionStatus[0]?.status === 'WAITING_FOR_PAYMENT' ? (
+                      ) : item.transactionStatus && item.transactionStatus[0]?.status === 'WAITING_FOR_PAYMENT' ? (
                         <div className="flex gap-2">
                           <button onClick={openModal} className="border bg-white text-sm px-4 py-2 rounded-md shadow cursor-pointer">
                             Cancel
@@ -156,11 +155,11 @@ const TransactionPage = () => {
                             Proceed to Payment
                           </Link>
                         </div>
-                      ) : item.transactionStatus[0]?.status === 'CANCELLED' ? (
+                      ) : item.transactionStatus && item.transactionStatus[0]?.status === 'CANCELLED' ? (
                         <p className="text-sm font-bold">CANCELLED</p>
-                      ) : item.transactionStatus[0]?.status === 'EXPIRED' ? (
+                      ) : item.transactionStatus &&  item.transactionStatus[0]?.status === 'EXPIRED' ? (
                         <p className="text-sm font-bold">EXPIRED</p>
-                      ) : null}
+                      ) :  <p></p> }
                     </div>
                   </div>
                 </div>
@@ -183,11 +182,13 @@ const TransactionPage = () => {
                     </div>
                   </div>
                   <div className="w-2/6 min-h-min flex items-center justify-end">
-                    {item.transactionStatus[0]?.status === 'EXPIRED' || item.transactionStatus[0].status === 'CANCELLED' ? (
+                    {item.transactionStatus && item.transactionStatus[0]?.status === 'EXPIRED' || item.transactionStatus &&  item.transactionStatus[0]?.status === 'CANCELLED' ? (
                       <Link href={`/user/purchase-detail/${item.id.split("ORDER_")[1]}`} className="border bg-white text-sm px-4 py-2 rounded-md shadow cursor-pointer">
                         Purchase Detail
                       </Link>
-                    ): <p className="text-sm font-bold text-end">Expires at 1hr</p>}
+                    ): item.transactionStatus && item.transactionStatus[0]?.status === 'WAITING_FOR_CONFIRMATION_PAYMENT' ? (
+                        <p className="text-sm font-bold text-end"></p>
+                    ):  <p className="text-sm font-bold text-end">Expires at 1hr</p>}
                   </div>
                 </div>
               </div>

@@ -28,6 +28,8 @@ const PurchaseDetailPage = () => {
         // enabled: !!id,
     })
 
+
+
     const dateFormatter = new Intl.DateTimeFormat('en-US', {
         year: 'numeric',
         month: 'long',
@@ -56,24 +58,29 @@ const PurchaseDetailPage = () => {
                                 <p className='font-bold'>{transaction.room.property.name}</p>
                                 <span className='text-xs text-slate-500'>{transaction.room.property.city.name}, {transaction.room.property.country.name}</span>
                             </div>
-                            {transaction.transactionStatus[0]?.status === 'PAID' ? (
+                            {transaction.transactionStatus && transaction.transactionStatus[0]?.status === 'PAID' ? (
                                 <div className='flex items-center justify-end gap-2'>
                                     <p className='border rounded text-xs px-2 py-1'>PAID</p>
                                     <p className='bg-black rounded text-xs text-white px-2 py-1'>{transaction.id}</p>
                                 </div>        
-                            ): transaction.transactionStatus[0]?.status === 'WAITING_FOR_CONFIRMATION_PAYMENT' ? (
+                            ): transaction.transactionStatus && transaction.transactionStatus[0]?.status === 'WAITING_FOR_CONFIRMATION_PAYMENT' ? (
                                 <div className='flex items-center justify-end gap-2'>
                                     <p className='border rounded text-xs px-2 py-1'>WAITING FOR CONFIRMATION PAYMENT</p>
                                     <p className='bg-black rounded text-xs text-white px-2 py-1'>{transaction.id}</p>
                                 </div>
-                            ): transaction.transactionStatus[0]?.status === 'EXPIRED' ? (
+                            ): transaction.transactionStatus && transaction.transactionStatus[0]?.status === 'EXPIRED' ? (
                                 <div className='flex items-center justify-end gap-2'>
                                     <p className='border rounded text-xs px-2 py-1'>EXPIRED</p>
                                     <p className='bg-black rounded text-xs text-white px-2 py-1'>{transaction.id}</p>
                                 </div>
-                            ): null}
+                            ): transaction.transactionStatus && transaction.transactionStatus[0]?.status === 'CANCELLED' ? (
+                                <div className='flex items-center justify-end gap-2'>
+                                    <p className='border rounded text-xs px-2 py-1'>CANCELLED</p>
+                                    <p className='bg-black rounded text-xs text-white px-2 py-1'>{transaction.id}</p>
+                                </div>
+                            ): <p></p>}
                         </div>
-                        {transaction.transactionStatus[0]?.status === 'WAITING_FOR_CONFIRMATION_PAYMENT' ? (
+                        {transaction.transactionStatus && transaction.transactionStatus[0]?.status === 'WAITING_FOR_CONFIRMATION_PAYMENT' ? (
                             <div className='bg-[#fef9ec] border border-[#e2e8f0] rounded-lg w-full min-h-min flex items-center justify-start gap-3 px-5 py-2 mt-5'>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48">
                                     <path d="M24 4C13 4 4 13 4 24s9 20 20 20 20-9 20-20S35 4 24 4zm0 3c9.4 0 17 7.6 17 17s-7.6 17-17 17S7 33.4 7 24 14.6 7 24 7zm0 7a2 2 0 100 4 2 2 0 000-4zm-0.02 6.98A1.5 1.5 0 0022.5 22.5v11a1.5 1.5 0 003 0v-11a1.5 1.5 0 00-1.52-1.52z" />
@@ -83,7 +90,7 @@ const PurchaseDetailPage = () => {
                                     Please wait 2 to 5 minutes for the tenant's approval, then refresh this page or check your purchase list. You can also check your notifications or email for any updates that have been sent.
                                 </p> 
                             </div>
-                        ): transaction. transactionStatus[0]?.status === 'EXPIRED' ? (
+                        ): transaction.transactionStatus && transaction. transactionStatus[0]?.status === 'EXPIRED' ? (
                             <div className='bg-[#fef9ec] border border-[#e2e8f0] rounded-lg w-full min-h-min flex items-center justify-start gap-3 px-5 py-2 mt-5'>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48">
                                     <path d="M24 4C13 4 4 13 4 24s9 20 20 20 20-9 20-20S35 4 24 4zm0 3c9.4 0 17 7.6 17 17s-7.6 17-17 17S7 33.4 7 24 14.6 7 24 7zm0 7a2 2 0 100 4 2 2 0 000-4zm-0.02 6.98A1.5 1.5 0 0022.5 22.5v11a1.5 1.5 0 003 0v-11a1.5 1.5 0 00-1.52-1.52z" />
@@ -93,7 +100,7 @@ const PurchaseDetailPage = () => {
                                     Please initiate a new transaction to complete your purchase. You can check your purchase list for further updates or check your notifications and email for more details on the payment status.
                                 </p> 
                             </div>
-                        ): null}
+                        ): <p></p>}
                         <div className='w-full flex'>
                             <div className='w-1/2 w-full flex flex-col items-start mt-[2rem] gap-[2rem]'>
                                 <div className="w-full min-h-min flex flex-col justify-start">
@@ -144,7 +151,7 @@ const PurchaseDetailPage = () => {
                                                         </div>
                                                         {
                                                             transaction.transactionStatus && (
-                                                                transaction.transactionStatus[0].status === 'EXPIRED' || transaction.transactionStatus[0].status === 'CANCELLED' 
+                                                                transaction.transactionStatus[0]?.status === 'EXPIRED' || transaction.transactionStatus && transaction.transactionStatus[0]?.status === 'CANCELLED' 
                                                                 ? (
                                                                     <div className="text-start text-slate-600 text-sm mt-[2rem]">
                                                                         User has not paid or has cancelled the transaction.
@@ -152,10 +159,10 @@ const PurchaseDetailPage = () => {
                                                                 ) 
                                                                 : (
                                                                     <Image 
-                                                                        src={`http://localhost:5000/api/${transaction.transactionUpload[0].directory}/${transaction.transactionUpload[0].filename}.${transaction.transactionUpload[0].fileExtension}`}
+                                                                        src={`http://localhost:5000/api/${transaction.transactionUpload[0]?.directory}/${transaction.transactionUpload[0]?.filename}.${transaction.transactionUpload[0]?.fileExtension}`}
                                                                         width={400} 
                                                                         height={400} 
-                                                                        alt="Property Image"
+                                                                        alt="Payment"
                                                                         className="object-cover w-full h-full rounded absolute top-0 left-0 transition-transform duration-300 ease-in-out hover:scale-110 mt-[2rem]"
                                                                     />
                                                                 )

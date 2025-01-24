@@ -31,8 +31,8 @@ const useMutateUpdateOneDaySeasonApi = ({
             roomsToSell: dataPropertyRoomTypeSeason?.roomsToSell,
             availability: dataPropertyRoomTypeSeason?.availability,
             name: dataPropertyRoomTypeSeason?.name,
-            startDate: activeRoomSetter?.startDate || dateRange?.startDate,
-            endDate: activeRoomSetter?.endDate || dateRange?.endDate,
+            startDate: activeRoomSetter?.startDate ? activeRoomSetter?.startDate : dateRange?.startDate ? dateRange?.startDate : dataPropertyRoomTypeSeason?.startDate,
+            endDate: activeRoomSetter?.endDate ? activeRoomSetter?.endDate : dateRange?.endDate ? dateRange?.endDate : dataPropertyRoomTypeSeason?.endDate,
             isPeak: dataPropertyRoomTypeSeason?.isPeak,
           },
         )

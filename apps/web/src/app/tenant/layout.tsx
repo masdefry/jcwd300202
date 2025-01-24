@@ -24,7 +24,7 @@ const ProfileTenantLayout = ({ children }: { children: ReactNode }) => {
 
   if (pathname.includes('/auth')) {
     return (
-      <main className="w-full min-h-min py-5">
+      <main className="w-full min-h-min">
         <section className="m-auto max-w-screen-xl w-full min-h-screen">
           {children}
         </section>

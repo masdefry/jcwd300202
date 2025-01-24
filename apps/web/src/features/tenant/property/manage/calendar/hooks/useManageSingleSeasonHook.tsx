@@ -49,7 +49,7 @@ const useManageSingleSeasonHook = ({
         roomsToSell:
           res?.data?.propertySeason?.roomToRent ||
           res?.data?.propertySeason?.propertyRoomType?.totalRooms,
-        seasonalPriceId: res?.data?.seasonalPrice[0]?.id,
+        seasonalPriceId: res?.data?.propertySeason?.seasonalPrice[0]?.id,
         seasonId: res?.data?.propertySeason?.id,
         pricePercentage: res?.data?.propertySeason?.ratesPercentage || 100,
         availability:

@@ -19,6 +19,7 @@ const TablePropertyList = ({
   }) => void
   isPending: boolean
 }) => {
+  console.log('dataProperties:', dataProperties);
   if (isPending) {
     return (
       <section>
@@ -35,6 +36,11 @@ const TablePropertyList = ({
                 <th>
                   <p className="text-transparent bg-gray-200 rounded-none w-fit skeleton ">
                     Location
+                  </p>{' '}
+                </th>
+                <th>
+                  <p className="text-transparent bg-gray-200 rounded-none w-fit skeleton">
+                    Reservations
                   </p>{' '}
                 </th>
                 <th>
@@ -130,6 +136,7 @@ const TablePropertyList = ({
               <th></th>
               <th>Name</th>
               <th>Location</th>
+              <th>Reservations</th>
               <th>Status (Today)</th>
               <th>Booked</th>
               <th>Ratings (Accumulation)</th>
@@ -149,6 +156,9 @@ const TablePropertyList = ({
                       </Link>
                     </td>
                     <td>{item?.address}</td>
+                    <td>
+                      <Link href={`/tenant/property/manage/${item?.id}/reservations`}>Check reservations</Link>
+                    </td>
                     <td
                       className={`${item?.availability ? 'text-green-700' : 'text-red-600'}`}
                     >

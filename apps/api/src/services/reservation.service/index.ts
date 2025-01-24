@@ -61,6 +61,68 @@ export const getReservationService = async(id: string) => {
     return transactions
 }
 
+export const getReservationByIdService = async(id: string) => {
+    let reservations: any = []
+
+    await prisma.$transaction(async(tx) => {
+        reservations = await tx.transaction.findMany({
+            where: {
+                property: {
+                    id
+                }
+            },
+            select: {
+                id: true,
+                userId: true,
+                checkInDate: true,
+                checkOutDate: true,
+                roomId: true,
+                room: {
+                    select: {
+                        id: true,
+                        name: true,
+                        capacity: true,
+                    }
+                },
+                transactionStatus: {
+                    orderBy: {
+                        createdAt: 'desc'
+                    },
+                    take: 1,
+                    select: {
+                        status: true,
+                        createdAt: true
+                    }
+                },
+                transactionUpload: {
+                    orderBy: {
+                        createdAt: 'desc'
+                    },
+                    take: 1,
+                    select: {
+                        directory: true,
+                        filename: true
+                    }
+                },
+                user: {  
+                    select: {
+                        id: true,
+                        email: true,
+                    },
+                },
+                
+            }
+        })
+    })
+
+    if (!Array.isArray(reservations) || reservations.length <=0){
+        return null;
+    }
+
+    return reservations
+
+}
+
 export const updateReservationService = async(transactionId: string, status: Status) => {
     if (![Status.PAID, Status.CANCELLED].includes(status)) {
         throw new Error('Invalid status')

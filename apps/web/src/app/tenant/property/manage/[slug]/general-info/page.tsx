@@ -106,18 +106,18 @@ const PropertyManageGeneralInfoPage = ({
                 .split(':')
                 .slice(0, 2)
                 .join(':') || '',
-            checkInEndTime:
+            checkInEndTime: dataPropertyGeneralInfo?.property?.checkInEndTime ?
               dataPropertyGeneralInfo?.property?.checkInEndTime
                 .split('T')[1]
                 .split(':')
                 .slice(0, 2)
-                .join(':') || '',
-            checkOutStartTime:
+                .join(':') : '',
+            checkOutStartTime: dataPropertyGeneralInfo?.property?.checkOutStartTime ?
               dataPropertyGeneralInfo?.property?.checkOutStartTime
                 .split('T')[1]
                 .split(':')
                 .slice(0, 2)
-                .join(':') || '',
+                .join(':') : '',
             checkOutEndTime:
               dataPropertyGeneralInfo?.property?.checkOutEndTime
                 .split('T')[1]

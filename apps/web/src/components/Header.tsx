@@ -26,7 +26,6 @@ export default function Header() {
 
   const role = authStore((state) => state.role)
   const token = authStore((state) => state.token)
-  const setLogout = authStore((state) => state.setLogout)
   const profilePictureUrl = authStore((state) => state.profilePictureUrl)
 
   const [showConfirmationToLogout, setShowConfirmationToLogout] = useState(false)

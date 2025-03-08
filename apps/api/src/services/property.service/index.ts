@@ -1103,6 +1103,25 @@ export const getPropertiesService = async ({
         })
       }
     }
+    
+    if (cityId && !isNaN(Number(cityId))) {
+      city = await prisma.city.findUnique({
+          where: {
+            id: Number(cityId),
+          },
+        })
+      country = await prisma.country.findFirst({
+        where: {
+          cities: {
+            some: {
+              id: Number(cityId)
+            }
+          }
+        },
+      })
+    }
+
+
 
     if (!sortBy) throw { msg: 'Sort parameter not found!', status: 404 }
     if (propertyfacilityidarr) {
